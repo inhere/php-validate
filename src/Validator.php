@@ -6,11 +6,11 @@
  * Time: 23:19
  */
 
-namespace slimExtend\validate;
+namespace inhere\validate;
 
 /**
  * Class Validator
- * @package slimExtend\validate
+ * @package inhere\validate
  */
 class Validator
 {
