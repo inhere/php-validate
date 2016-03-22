@@ -315,7 +315,7 @@ trait ValidatorTrait
     {
         $e =  $this->_errors;
 
-        return array_shift($e);
+        return array_values(array_shift($e))[0];
     }
 
     /**
@@ -328,7 +328,7 @@ trait ValidatorTrait
     {
         $e =  $this->_errors;
 
-        return array_pop($e);
+        return array_values(array_pop($e))[0];
     }
 
     /**
@@ -349,9 +349,9 @@ trait ValidatorTrait
             'required' => '{attr} is not block!',
             'length' => '{attr} length must at rang {min} ~ {max}',
             'size'  => '{attr} must be an integer and at rang {min} ~ {max}',
-            'min'   => '{attr} minimum boundary is {min}',
-            'max'   => '{attr} maximum boundary is {max}',
-            'in'    => '{attr} must in {range}',
+            'min'   => '{attr} minimum boundary is {value}',
+            'max'   => '{attr} maximum boundary is {value}',
+            'in'    => '{attr} must in ({value})',
             'string' => '{attr} must be a string',
             'isArray' => '{attr} must be an array',
             'callback' => 'The custom callback validation fails of the [{attr}]!',
@@ -386,7 +386,7 @@ trait ValidatorTrait
         $params['{attr}'] = isset($trans[$attrName]) ? $trans[$attrName] : $attrName;
 
         foreach ($rule as $key => $value) {
-            $params['{' . $key . '}'] = $value;
+            $params['{' . $key . '}'] = is_array($value) ? implode(',', $value) : $value;
         }
 
         return strtr($msg, $params);

@@ -69,7 +69,7 @@ run: `composer update`
             ];
         }
         
-        // custom validator message
+        // custom validator message, more {@see ValidatorTrait::defaultMessages()}
         public function messages()
         {
             return [
@@ -81,7 +81,7 @@ run: `composer update`
 //
 //  use, at other class
 
-$valid = Validator::make($_POST,)->validate();
+$valid = PageRequest::make($_POST,)->validate();
 if ( $valid->fail() ) {
     return $valid->getErrors();
 }
@@ -186,7 +186,7 @@ validator | description | rule example
 `required`  | validate required | `['tagId,userId', 'required' ]`
 `length`    | validate length | ....
 `size`  | validate size | `['tagId', 'size', 'min'=>4, 'max'=>567]`
-`min`   | validate min | `['title', 'min', 'min' => 40],`
+`min`   | validate min | `['title', 'min', 'value' => 40],`
 `max`   | validate max | ....
 `in`    | validate in | ....
 `string`    | validate string | ....
