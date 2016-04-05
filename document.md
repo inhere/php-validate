@@ -78,7 +78,7 @@ run: `composer update`
             ];
         }
         
-        // custom validator message, more {@see ValidatorTrait::defaultMessages()}
+        // custom validator message, more {@see ValidationTrait::defaultMessages}
         public function messages()
         {
             return [
@@ -155,7 +155,8 @@ $valid = Validation::make($_POST,[
 
 > 如果需要让一个验证器在多个类似情形下使用,在验证时也表明要验证的场景
 
-```
+```php
+
 // at a subclass of the Validation class
 <?php 
     
@@ -172,7 +173,8 @@ $valid = Validation::make($_POST,[
 
 > 在下面设置了场景时，将只会使用上面的第 1,3 条规则. (第 1 条没有限制规则使用场景的，在所有场景都可用)
 
-```
+```php
+
 // at logic 
 <?php
 
@@ -189,7 +191,8 @@ $valid = Validation::make($_POST,[
 当其返回 `true` 验证此条规则，
 否则不会验证此条规则
 
-```
+```php
+
 // at a subclass of the Validation class
 <?php 
     
