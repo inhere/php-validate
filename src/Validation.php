@@ -9,12 +9,12 @@
 namespace inhere\validate;
 
 /**
- * Class Validator
+ * Class Validation
  * @package inhere\validate
  */
-class Validator
+class Validation
 {
-    use ValidatorTrait {
+    use ValidationTrait {
         set as traitSet;
         get as traitGet;// Methods to define an alias, can be used in the current class.
     }

@@ -10,12 +10,12 @@
 namespace inhere\validate;
 
 /**
- * Trait ValidatorTrait
+ * Trait ValidationTrait
  * @package inhere\validate
  *
  * @property array $data
  */
-trait ValidatorTrait
+trait ValidationTrait
 {
     /**
      * 当前验证的场景 -- 如果需要让一个验证器在多个类似情形下使用
@@ -48,6 +48,11 @@ trait ValidatorTrait
      * @var array
      */
     private $_rules   = [];
+
+    /**
+     * @var array
+     */
+    private $_validators   = [];
 
     /**
      * attribute field translate list
@@ -99,7 +104,7 @@ trait ValidatorTrait
     }
 
     /**
-     * custom validator's message
+     * custom validator's message, to override default message.
      * @return array
      */
     public function messages()
@@ -115,7 +120,7 @@ trait ValidatorTrait
     public function beforeValidate(){}
 
     /**
-     * [Validator::required] 验证是必定被调用的
+     * [ValidatorList::required] 验证是必定被调用的
      * @author inhere
      * @date   2015-08-11
      * @param array $onlyChecked 只检查一部分属性
@@ -217,27 +222,61 @@ trait ValidatorTrait
 
             // if it's a closure
             if ( is_callable($validator) && $validator instanceof \Closure) {
-                $result = call_user_func_array($validator, $copy);
+                $callback  = $validator;
                 $validator = 'callback';
 
-            // if it is a method of the subclass.
+            // if it is a custom add callback in the property {@see $_validators}.
+            } elseif ( is_string($validator) && isset($this->_validators['validator']) ) {
+
+                $callback = $this->_validators['validator'];
+
+            // if it is a custom method of the subclass.
             } elseif ( is_string($validator) && method_exists($this, $validator) ) {
 
-                $result = call_user_func_array( [ $this, $validator ] , $copy);
+                $callback = [ $this, $validator ];
 
             // it's a method of the class 'ValidatorList'
-            } elseif ( is_callable([ValidatorList::class, $validator]) ) {
+            } elseif ( is_string($validator) && is_callable([ValidatorList::class, $validator]) ) {
 
-                $result = call_user_func_array( [ ValidatorList::class, $validator ] , $copy);
+                $callback = [ ValidatorList::class, $validator];
             } else {
                 throw new \InvalidArgumentException("validator [$validator] don't exists!");
             }
+
+            $result = call_user_func_array($callback, $copy);
         }
 
         return [$result,$validator];
     }
 
     public function afterValidate(){}
+
+    /**
+     * add a custom validator
+     *
+     * ```
+     * $valid = ValidatorClass::make($_POST)
+     *          ->addValidator('name',function($var [, $arg1, $arg2 ... ]){
+     *              return $var === 23;
+     *          });
+     * $valid->validate();
+     * ```
+     *
+     * @param string $name
+     * @param \Closure $callback
+     * @param string $msg
+     * @return $this
+     */
+    public function addValidator($name, \Closure $callback, $msg = '')
+    {
+        $this->_validators[$name] = $callback;
+
+        if ($msg) {
+            $this->defaultMessages[$name] = $msg;
+        }
+
+        return $this;
+    }
 
     /**
      * @return array
@@ -345,33 +384,30 @@ trait ValidatorTrait
      * (过滤器)默认的错误提示信息
      * @return array
      */
-    public function defaultMessages()
-    {
-        return [
-            'int'    => '{attr} must be an integer!',
-            'number' => '{attr} must be an integer greater than 0!',
-            'bool'   => '{attr} must be is boolean!',
-            'float'  => '{attr} must be is float!',
-            'regexp' => '{attr} does not meet the conditions',
-            'url'    => '{attr} not is url address!',
-            'email'  => '{attr} not is email address!',
-            'ip'     => '{attr} not is ip address!',
-            'required' => '{attr} is not block!',
-            'length' => '{attr} length must at rang {min} ~ {max}',
-            'size'  => '{attr} must be an integer and at rang {min} ~ {max}',
-            'min'   => '{attr} minimum boundary is {value}',
-            'max'   => '{attr} maximum boundary is {value}',
-            'in'    => '{attr} must in ({value})',
-            'string' => '{attr} must be a string',
-            'isArray' => '{attr} must be an array',
-            'callback' => 'The custom callback validation fails of the [{attr}]!',
-            '_' => '{attr} validation is not through!',
-        ];
-    }
+    public $defaultMessages = [
+        'int'    => '{attr} must be an integer!',
+        'number' => '{attr} must be an integer greater than 0!',
+        'bool'   => '{attr} must be is boolean!',
+        'float'  => '{attr} must be is float!',
+        'regexp' => '{attr} does not meet the conditions',
+        'url'    => '{attr} not is url address!',
+        'email'  => '{attr} not is email address!',
+        'ip'     => '{attr} not is ip address!',
+        'required' => '{attr} is not block!',
+        'length' => '{attr} length must at rang {min} ~ {max}',
+        'size'  => '{attr} must be an integer and at rang {min} ~ {max}',
+        'min'   => '{attr} minimum boundary is {value}',
+        'max'   => '{attr} maximum boundary is {value}',
+        'in'    => '{attr} must in ({value})',
+        'string' => '{attr} must be a string',
+        'isArray' => '{attr} must be an array',
+        'callback' => 'The custom callback validation fails of the [{attr}]!',
+        '_'      => '{attr} validation is not through!',
+    ];
 
     public function getMessages()
     {
-        return array_merge($this->defaultMessages(), $this->messages());
+        return array_merge($this->defaultMessages, $this->messages());
     }
 
     /**

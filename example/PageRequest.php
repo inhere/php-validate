@@ -9,7 +9,7 @@
 /**
  * Class PageRequest
  */
-class PageRequest extends \slimExtend\validate\Validator
+class PageRequest extends \inhere\validate\Validation
 {
     public function rules()
     {
