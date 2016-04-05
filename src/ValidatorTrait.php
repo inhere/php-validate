@@ -125,15 +125,14 @@ trait ValidatorTrait
      */
     public function validate(array $onlyChecked = [],$hasErrorStop=null)
     {
-        if ( $this->_hasValidated ) {
-            return $this;
-        }
-
         if ( !property_exists($this, 'data') ) {
             throw new \InvalidArgumentException('Must be defined property \'data (array)\' in the classes used.');
         }
 
-        $data = $this->data;
+        if ( $this->_hasValidated || !($data = $this->data) ) {
+            return $this;
+        }
+
         $this->beforeValidate();
         $this->clearErrors();
         $this->hasErrorStop($hasErrorStop);
