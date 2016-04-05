@@ -119,11 +119,11 @@ trait ValidatorTrait
      * @author inhere
      * @date   2015-08-11
      * @param array $onlyChecked 只检查一部分属性
-     * @param  boolean $hasErrorStop
+     * @param  boolean $hasErrorStop 出现错误即停止验证
      * @return static
      * @throws \RuntimeException
      */
-    public function validate(array $onlyChecked = [],$hasErrorStop=null)
+    public function validate(array $onlyChecked = [], $hasErrorStop=false)
     {
         if ( !property_exists($this, 'data') ) {
             throw new \InvalidArgumentException('Must be defined property \'data (array)\' in the classes used.');
@@ -133,8 +133,7 @@ trait ValidatorTrait
             return $this;
         }
 
-        $this->beforeValidate();
-        $this->clearErrors();
+        $this->clearErrors()->beforeValidate();
         $this->hasErrorStop($hasErrorStop);
 
         // 循环规则
@@ -216,12 +215,17 @@ trait ValidatorTrait
         if ($result && $validator !== 'required') {
             array_unshift($copy, $data[$name]);// 压入当前属性值
 
+            // if it's a closure
             if ( is_callable($validator) && $validator instanceof \Closure) {
                 $result = call_user_func_array($validator, $copy);
                 $validator = 'callback';
+
+            // if it is a method of the subclass.
             } elseif ( is_string($validator) && method_exists($this, $validator) ) {
 
                 $result = call_user_func_array( [ $this, $validator ] , $copy);
+
+            // it's a method of the class 'ValidatorList'
             } elseif ( is_callable([ValidatorList::class, $validator]) ) {
 
                 $result = call_user_func_array( [ ValidatorList::class, $validator ] , $copy);
@@ -260,19 +264,22 @@ trait ValidatorTrait
 
 //////////////////////////////////// error info ////////////////////////////////////
 
+    /**
+     * @return $this
+     */
     public function clearErrors()
     {
         $this->_errors = [];
+
+        return $this;
     }
 
     /**
-     * @param null|bool $val
+     * @param bool $val
      */
     public function hasErrorStop($val)
     {
-        if ($val !== null ) {
-            $this->_hasErrorStop = (bool)$val;
-        }
+        $this->_hasErrorStop = (bool)$val;
     }
 
     /**
@@ -296,7 +303,7 @@ trait ValidatorTrait
      */
     public function addError($attr, $msg)
     {
-        $this->_errors[$attr] = $msg;
+        $this->_errors[] = [$attr, $msg];
     }
 
     public function getErrors()
@@ -308,26 +315,30 @@ trait ValidatorTrait
      * 得到第一个错误信息
      * @author inhere
      * @date   2015-09-27
-     * @return array
+     * @param bool $onlyMsg
+     * @return array|string
      */
-    public function firstError()
+    public function firstError($onlyMsg=true)
     {
         $e =  $this->_errors;
+        $first = array_shift($e);
 
-        return array_values(array_shift($e))[0];
+        return $onlyMsg ? array_values($first)[0] : $first;
     }
 
     /**
      * 得到最后一个错误信息
      * @author inhere
      * @date   2015-09-27
-     * @return array
+     * @param bool $onlyMsg
+     * @return array|string
      */
-    public function lastError()
+    public function lastError($onlyMsg=true)
     {
         $e =  $this->_errors;
+        $last = array_pop($e);
 
-        return array_values(array_pop($e))[0];
+        return $onlyMsg ? array_values($last)[0] : $last;
     }
 
     /**
