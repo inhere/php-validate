@@ -272,7 +272,7 @@ trait ValidationTrait
         $this->_validators[$name] = $callback;
 
         if ($msg) {
-            $this->defaultMessages[$name] = $msg;
+            $this->_defaultMessages[$name] = $msg;
         }
 
         return $this;
@@ -384,7 +384,7 @@ trait ValidationTrait
      * (过滤器)默认的错误提示信息
      * @return array
      */
-    public $defaultMessages = [
+    private $_defaultMessages = [
         'int'    => '{attr} must be an integer!',
         'number' => '{attr} must be an integer greater than 0!',
         'bool'   => '{attr} must be is boolean!',
@@ -407,7 +407,7 @@ trait ValidationTrait
 
     public function getMessages()
     {
-        return array_merge($this->defaultMessages, $this->messages());
+        return array_merge($this->_defaultMessages, $this->messages());
     }
 
     /**
