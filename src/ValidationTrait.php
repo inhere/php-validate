@@ -71,6 +71,11 @@ trait ValidationTrait
      */
     private $_hasValidated = false;
 
+    private $_position = [
+        'attr'      => 0,
+        'validator' => 1,
+    ];
+
     /**
      * @return array
      */
@@ -215,36 +220,42 @@ trait ValidationTrait
      */
     protected function doValidate($data, $name, $validator, $copy)
     {
-        $result = ValidatorList::required($data, $name);
-
-        if ($result && $validator !== 'required') {
-            array_unshift($copy, $data[$name]);// 压入当前属性值
-
-            // if it's a closure
-            if ( is_callable($validator) && $validator instanceof \Closure) {
-                $callback  = $validator;
-                $validator = 'callback';
-
-            // if it is a custom add callback in the property {@see $_validators}.
-            } elseif ( is_string($validator) && isset($this->_validators['validator']) ) {
-
-                $callback = $this->_validators['validator'];
-
-            // if it is a custom method of the subclass.
-            } elseif ( is_string($validator) && method_exists($this, $validator) ) {
-
-                $callback = [ $this, $validator ];
-
-            // it's a method of the class 'ValidatorList'
-            } elseif ( is_string($validator) && is_callable([ValidatorList::class, $validator]) ) {
-
-                $callback = [ ValidatorList::class, $validator];
-            } else {
-                throw new \InvalidArgumentException("validator [$validator] don't exists!");
-            }
-
-            $result = call_user_func_array($callback, $copy);
+        if ( !isset($data[$name]) ) {
+            return [false, $validator instanceof \Closure ? 'callback' : $validator];
         }
+
+        if ( $validator === 'required' ) {
+            $result = ValidatorList::required($data, $name);
+
+            return [$result,$validator];
+        }
+
+        array_unshift($copy, $data[$name]);// 压入当前属性值
+
+        // if it's a closure
+        if ( is_callable($validator) && $validator instanceof \Closure) {
+            $callback  = $validator;
+            $validator = 'callback';
+
+        // if it is a custom add callback in the property {@see $_validators}.
+        } elseif ( is_string($validator) && isset($this->_validators['validator']) ) {
+
+            $callback = $this->_validators['validator'];
+
+        // if it is a custom method of the subclass.
+        } elseif ( is_string($validator) && method_exists($this, $validator) ) {
+
+            $callback = [ $this, $validator ];
+
+        // it's a method of the class 'ValidatorList'
+        } elseif ( is_string($validator) && is_callable([ValidatorList::class, $validator]) ) {
+
+            $callback = [ ValidatorList::class, $validator];
+        } else {
+            throw new \InvalidArgumentException("validator [$validator] don't exists!");
+        }
+
+        $result = call_user_func_array($callback, $copy);
 
         return [$result,$validator];
     }
@@ -288,6 +299,12 @@ trait ValidationTrait
 
         // 循环规则, 搜集当前场景的规则
         foreach ($this->getRules() as $rule) {
+
+            // check validator
+            if ( !is_string($rule[1]) && !($rule[1] instanceof \Closure) ) {
+                throw new \InvalidArgumentException("validator setting error!");
+            }
+
             if ( empty($rule['scene']) ) {
                 $availableRules[] = $rule;
             } else {

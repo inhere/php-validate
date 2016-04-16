@@ -83,7 +83,7 @@ abstract class ValidatorList
      */
     public static function required($data, $required)
     {
-        return isset($data[$required]) && $data[$required]!=='';
+        return isset($data[$required]) && $data[$required]!=='' && $data[$required]!==null;
     }
 
     /**
@@ -103,6 +103,10 @@ abstract class ValidatorList
      */
     public static function integer($int, array $options=[], $flags=0)
     {
+        if (!is_numeric($int)) {
+            return false;
+        }
+
         $settings = [];
 
         if ($options) {
@@ -143,10 +147,14 @@ abstract class ValidatorList
     {
         $options   = [];
 
-        if (is_string($var)) {
+        if (is_numeric($var)) {
+            $var = (int)$var;
+        } elseif (is_string($var)) {
             $var = StrHelper::strlen($var);
         } elseif (is_array($var)) {
             $var = count($var);
+        } else {
+            return false;
         }
 
         if ( is_numeric($min) ) {
