@@ -3,25 +3,15 @@
 ### Install
 
 - use composer
-
-edit `composer.json`
+    - in command: `composer require inhere/php-validate`
+    - or edit `composer.json`
 
 _require_ add
 
 ```
-"inhere/php-validate": "dev-master",
+"inhere/php-validate": "^1.0",
 ```
 
-_repositories_ add 
-
-```
-"repositories": [
-    {
-      "type": "git",
-      "url": "https://git.oschina.net/inhere/php-validate"
-    }
-  ]
-```
 
 run: `composer update`
 
@@ -78,7 +68,7 @@ run: `composer update`
             ];
         }
         
-        // custom validator message, more {@see ValidationTrait::defaultMessages}
+        // custom validator message, more {@see ValidationTrait::_defaultMessages}
         public function messages()
         {
             return [
@@ -138,13 +128,13 @@ $valid = Validation::make($_POST,[
             // add rule
             ['title', 'min', 'min' => 40],
             ['freeTime', 'number'],
-            ['title', 'checkTitle', 'msg' => 'Title didn't pass the validate!' ],
+            ['title', 'checkTitle', 'msg' => 'Title didn\'t pass the validate!' ],
         ])
         ->addValidator('checkTitle',function($title){
             // some logic ...
             
             return true; // if validate fail, return false.
-        })
+        }, '{attr} default message!')
         ->validate();
 
 ```
@@ -159,8 +149,7 @@ $valid = Validation::make($_POST,[
 
 // at a subclass of the Validation class
 <?php 
-    
-    '''
+        
     public function rules() 
     {
          return [
@@ -195,8 +184,6 @@ $valid = Validation::make($_POST,[
 
 // at a subclass of the Validation class
 <?php 
-    
-    '''
     public function rules() 
     {
          return [
