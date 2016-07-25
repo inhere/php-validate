@@ -1,0 +1,9 @@
+.idea/
+.phpintel/
+/vendor/
+!README.md
+!.gitkeep
+composer.lock
+*.swp
+*.swo
+.DS_Store

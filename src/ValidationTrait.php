@@ -139,9 +139,11 @@ trait ValidationTrait
             throw new \InvalidArgumentException('Must be defined property \'data (array)\' in the classes used.');
         }
 
-        if ( $this->_hasValidated || !($data = $this->data) ) {
+        if ( $this->_hasValidated ) {
             return $this;
         }
+
+        $data = $this->data;
 
         $this->clearErrors()->beforeValidate();
         $this->hasErrorStop($hasErrorStop);
