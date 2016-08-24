@@ -140,7 +140,7 @@ trait ValidationTrait
             throw new \InvalidArgumentException('Must be defined property \'data (array)\' in the class used.');
         }
 
-        if ( $this->_hasValidated || !$this->data ) {
+        if ( $this->_hasValidated ) {
             return $this;
         }
 
