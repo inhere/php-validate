@@ -1,0 +1,17 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea/
+
+### OSX template
+*.DS_Store
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+

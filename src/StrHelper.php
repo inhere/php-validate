@@ -326,61 +326,14 @@ class StrHelper
      * Transform a CamelCase string to underscore_case string
      *
      * @param string $string
+     * @param string $sep
      * @return string
      */
-    static public function toUnderscoreCase($string)
+    static public function toUnderscoreCase($string, $sep='_')
     {
         // 'CMSCategories' => 'cms_categories'
         // 'RangePrice' => 'range_price'
-        return self::strtolower(trim(preg_replace('/([A-Z][a-z])/', '_$1', $string), '_'));
+        return self::strtolower(trim(preg_replace('/([A-Z][a-z])/', $sep . '$1', $string), $sep));
     }
 
-    /**
-     * Convert a shorthand byte value from a PHP configuration directive to an integer value
-     * @param string $value value to convert
-     * @return int
-     */
-    static public function convertBytes($value)
-    {
-        if (is_numeric($value))
-            return $value;
-        else {
-            $value_length = strlen($value);
-            $qty = (int)substr($value, 0, $value_length - 1 );
-            $unit = self::strtolower(substr($value, $value_length - 1));
-            switch ($unit)
-            {
-                case 'k':
-                    $qty *= 1024;
-                    break;
-                case 'm':
-                    $qty *= 1048576;
-                    break;
-                case 'g':
-                    $qty *= 1073741824;
-                    break;
-            }
-            return $qty;
-        }
-    }
-
-    /**
-     * Format a number into a human readable format
-     * e.g. 24962496 => 23.81M
-     * @param     $size
-     * @param int $precision
-     * @return string
-     */
-    static public function formatBytes($size, $precision = 2)
-    {
-        if (!$size) {
-            return '0';
-        }
-
-        $base     = log($size) / log(1024);
-        $suffixes = array('', 'k', 'M', 'G', 'T');
-        $floorBase = floor($base);
-
-        return round(pow(1024, $base - $floorBase), $precision).$suffixes[(int)$floorBase];
-    }
 }

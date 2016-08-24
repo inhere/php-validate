@@ -2,7 +2,12 @@
 
 spl_autoload_register(function($class)
 {
-    $file = __DIR__ . '/' . $class. '.php';
+    // e.g. "inhere\validate\ValidationTrait"
+    if (strpos($class,'\\')) {
+        $file = dirname(__DIR__) . '/src/' . trim(strrchr($class,'\\'),'\\'). '.php';
+    } else {
+        $file = __DIR__ . '/' . $class. '.php';
+    }
 
     if (is_file($file)) {
         include $file;
@@ -14,30 +19,55 @@ $data = [
     'tagId' => '234535',
     // 'freeTime' => 'sdfdffffffffff',
     'distanceRequire' => 'sdfdffffffffff',
-    'note' => 'sdfdffffffffff',
-    'insertTime' => '',
-    'lastReadTime' => 'sdfdffffffffff',
+    'note' => '',
+    'insertTime' => '1456767657',
+    'lastReadTime' => '1456767657',
 ];
 
 $rules = [
-    ['tagId,userId,freeTime', 'required', 'msg' => '{field} is required!'],
-    ['note', 'email'],
-    ['tagId', 'size', 'min'=>4, 'max'=>567, 'msg' => '{field} must is big!'], // 4<= tagId <=567
-    ['freeTime', 'size', 'min'=>4, 'max'=>567, 'msg' => '{field} must is big!'], // 4<= tagId <=567
-    ['userId', function($value){ echo $value."\n"; return false;}, 'msg' => '{field} check filare!'],
+    ['tagId,userId,freeTime', 'required', 'msg' => '{attr} is required!'],// set message
+    ['note', 'email', 'skipOnEmpty' => false], // set skipOnEmpty is false.
+    ['insertTime', 'email', 'scene' => 'otherScene' ],// set scene. will is not validate it on default.
+    ['tagId', 'size', 'min'=>4, 'max'=>567], // 4<= tagId <=567
+    ['freeTime', 'size', 'min'=>4, 'max'=>567, 'when' => function($data, $valid) {
+        echo "  use when pre-check\n";
+
+        // $valid is current validation instance.
+
+        return true;
+    }], // 4<= tagId <=567
+
+    ['userId', function($value, $data){
+        echo "  use custom validate\n";
+
+        var_dump($value, $data);
+
+        echo __LINE__ . "\n";
+
+        return false;
+    }, 'msg' => 'userId check failure!'],
 ];
 
-/*
-$model = new TestModel();
-$ret = $model->load($_POST)->validate();
-*/
-$model = new DataModel($_POST,$rules);
-$ret = $model->validate([], true);
+echo "use ValidationTrait\n";
 
-// echo "<pre>";
-var_dump($ret,
-$model->firstError()
+//$model = new DataModel($_POST,$rules);
+$model = new DataModel;
+$model->setData($data)->setRules($rules);
+$model->validate();
+
+var_dump(
+    $model->all(),
+    $model->getErrors()
 );
 
+/*
+echo "--------------\n";
+echo "use Validation\n";
 
-// echo "</pre>";
+$valid = \inhere\validate\Validation::make($data, $rules)->validate();
+
+var_dump(
+    $valid->all(),
+    $valid->getErrors()
+);
+*/

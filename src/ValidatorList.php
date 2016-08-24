@@ -76,14 +76,26 @@ abstract class ValidatorList
     }
 
     /**
-     * 数据中是否存在
-     * @param  array  $data
-     * @param  string $required
+     * 属性是否为空判断
+     * @param array $data
+     * @param $attr
      * @return bool
      */
-    public static function required($data, $required)
+    public static function isEmpty(array $data, $attr)
     {
-        return isset($data[$required]) && $data[$required]!=='' && $data[$required]!==null;
+        return empty($data[$attr]);
+    }
+
+    /**
+     * 数据中是否存在
+     * @param  array  $data
+     * @param  string $attr
+     * @return bool
+     */
+    public static function required($data, $attr)
+    {
+        return isset($data[$attr]) && $data[$attr]!=='' &&
+                $data[$attr]!==null && $data[$attr] !== [];
     }
 
     /**

@@ -1,4 +1,4 @@
-## simple validator
+## a simple php data validator
 
 ### Install
 
@@ -156,11 +156,12 @@ $valid = Validation::make($_POST,[
             ['title', 'required' ],
             ['userId', 'number', 'scene' => 'scene1' ],
             ['userId', 'int',    'scene' => 'scene2' ],
+            ['name', 'string',    'scene' => 'scene1,scene2' ],
         ];
     }
 ```
 
-> 在下面设置了场景时，将只会使用上面的第 1,3 条规则. (第 1 条没有限制规则使用场景的，在所有场景都可用)
+> 在下面设置了场景时，将会使用上面的第 1,3,4 条规则. (第 1 条没有限制规则使用场景的，在所有场景都可用)
 
 ```php
 
@@ -196,6 +197,40 @@ $valid = Validation::make($_POST,[
     }
 ```
 
+- skipOnEmpty -- 为空是否跳过验证
+
+为空是否跳过验证,默认值是 `true`. (reference yii2)
+
+> 'required' 规则不在此限制内.
+
+如,有一条规则:
+
+```
+['name', 'string'],
+```
+
+提交的数据中 没有'name'字段或者 `$data['name']` 等于空都不会进行 `string` 验证;只有当`$data['name']`有值时才会验证是否是string
+
+
+如果要想为空时也检查, 请将此字段同时加入 'required' 规则中.
+也可以设置 `'skipOnEmpty' => false`:
+
+```
+['name', 'string', 'skipOnEmpty' => false ]
+```
+
+- isEmpty -- 是否为空判断
+
+是否为空判断, 这个判断作为 `skipOnEmpty` 的依据.
+默认使用 `empty($data['attr'])` 来判断.
+
+你也可以自定义判断规则
+
+```
+['name', 'string', 'isEmpty' => function($data, $attr) {
+    return true or false;
+ }]
+```
 
 ### Existing validators 
 
@@ -212,9 +247,9 @@ validator | description | rule example
 `required`  | validate required | `['tagId,userId', 'required' ]`
 `length`    | validate length | ....
 `size`  | validate size | `['tagId', 'size', 'min'=>4, 'max'=>567]`
-`min`   | validate min | `['title', 'min', 'value' => 40],`
+`min`   | validate min | `['title', 'min', 'value' => 40],]`
 `max`   | validate max | ....
-`in`    | validate in | ....
+`in`    | validate in | `['id', 'in', 'value' => [1,2,3],]`
 `string`    | validate string | ....
 `isArray`   | validate is Array | ....
 `callback`  | validate by custom callback | ....
