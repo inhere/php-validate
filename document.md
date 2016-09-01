@@ -20,7 +20,7 @@ run: `composer update`
 
 - Method 1: create a new class
     e.g.
-    
+
 ```php
 
     use inhere\validate\Validation;
@@ -34,15 +34,15 @@ run: `composer update`
                 ['tagId', 'size', 'min'=>4, 'max'=>567], // 4<= tagId <=567
                 ['title', 'min', 'min' => 40],
                 ['freeTime', 'number'],
-                ['tagId', 'number', 'when' => function($data) 
+                ['tagId', 'number', 'when' => function($data)
                 {
                     return isset($data['status']) && $data['status'] > 2;
                 }],
-                ['userId', 'number', 'scene' => 'scene1' ],
-                ['userId', 'int', 'scene'    => 'scene2' ],
+                ['userId', 'number', 'on' => 'scene1' ],
+                ['userId', 'int', 'on'    => 'scene2' ],
                 ['title', 'customValidator', 'msg' => '{attr} error msg!' ],
                 ['status', function($status)
-                { 
+                {
 
                     if ( .... ) {
                         return true;
@@ -50,16 +50,15 @@ run: `composer update`
                     return false;
                 }],
             ];
-        }
-        
+
         // custom validator at the class. return a bool.
         protected function customValidator($title)
         {
             // some logic ...
-            
+
             return true; // Or false;
         }
-        
+
         // define field attribute's translate.
         public function attrTrans()
         {
@@ -67,7 +66,7 @@ run: `composer update`
               'userId' => '用户Id',
             ];
         }
-        
+
         // custom validator message, more {@see ValidationTrait::_defaultMessages}
         public function messages()
         {
@@ -87,7 +86,7 @@ if ( $valid->fail() ) {
     return $valid->getErrors();
 }
 ...
-    
+
 ```
 
 
@@ -97,7 +96,7 @@ if ( $valid->fail() ) {
 
     use inhere\validate\Validation;
 
-    class SomeClass 
+    class SomeClass
     {
         public function demo()
         {
@@ -111,7 +110,7 @@ if ( $valid->fail() ) {
                 return $valid->getErrors();
             }
 
-            // 
+            //
             // some logic ... ...
         }
     }
@@ -132,14 +131,14 @@ $valid = Validation::make($_POST,[
         ])
         ->addValidator('checkTitle',function($title){
             // some logic ...
-            
+
             return true; // if validate fail, return false.
         }, '{attr} default message!')
         ->validate();
 
 ```
 
-### keywords 
+### keywords
 
 - scene -- 设置验证场景
 
@@ -148,15 +147,15 @@ $valid = Validation::make($_POST,[
 ```php
 
 // at a subclass of the Validation class
-<?php 
-        
-    public function rules() 
+<?php
+
+    public function rules()
     {
          return [
             ['title', 'required' ],
-            ['userId', 'number', 'scene' => 'scene1' ],
-            ['userId', 'int',    'scene' => 'scene2' ],
-            ['name', 'string',    'scene' => 'scene1,scene2' ],
+            ['userId', 'number', 'on' => 'scene1' ],
+            ['userId', 'int',    'on' => 'scene2' ],
+            ['name', 'string',    'on' => 'scene1,scene2' ],
         ];
     }
 ```
@@ -165,7 +164,7 @@ $valid = Validation::make($_POST,[
 
 ```php
 
-// at logic 
+// at logic
 <?php
 
     ...
@@ -184,12 +183,12 @@ $valid = Validation::make($_POST,[
 ```php
 
 // at a subclass of the Validation class
-<?php 
-    public function rules() 
+<?php
+    public function rules()
     {
          return [
             ['title', 'required' ],
-            ['tagId', 'number', 'when' => function($data, $validator) 
+            ['tagId', 'number', 'when' => function($data, $validator)
             {
                return isset($data['status']) && $data['status'] > 2;
             }],
@@ -232,7 +231,7 @@ $valid = Validation::make($_POST,[
  }]
 ```
 
-### Existing validators 
+### Existing validators
 
 validator | description | rule example
 ----------|-------------|------------

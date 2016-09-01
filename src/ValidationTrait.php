@@ -26,6 +26,13 @@ trait ValidationTrait
 
 ////////////////////////////////////////// validate data //////////////////////////////////////////
 
+
+    /**
+     * Through the validation of the data
+     * @var array
+     */
+    private $_safeData = [];
+
     /**
      * 保存所有的验证错误信息
      * @var array[]
@@ -45,9 +52,16 @@ trait ValidationTrait
     private $_hasErrorStop   = false;
 
     /**
+     * all rules
      * @var array
      */
     private $_rules   = [];
+
+    /**
+     * available rules at current scene
+     * @var array
+     */
+    private $_availableRules  = [];
 
     /**
      * @var array
@@ -59,12 +73,6 @@ trait ValidationTrait
      * @var array
      */
     private $_attrTrans = [];
-
-    /**
-     * Through the validation of the data
-     * @var array
-     */
-    private $_safeData = [];
 
     /**
      * @var bool
@@ -88,7 +96,7 @@ trait ValidationTrait
                 [ 'tagId,userId', 'required', 'msg' => '{attr} is required!'],
 
                 // set scene is add -- when `$this->scene == 'add'` enable this rule.
-                [ 'tagId', 'size', 'min'=>4, 'max'=>567, 'scene' => 'add' ],
+                [ 'tagId', 'size', 'min'=>4, 'max'=>567, 'on' => 'add' ],
 
                 // use callback and custom error message
                 [ 'userId', function($value){ echo "$value ttg tg tt";}, 'msg' => '{attr} is required!'],
@@ -195,6 +203,11 @@ trait ValidationTrait
                     ( $validator !== 'required' && $skipOnEmpty && call_user_func($isEmpty, $data, $attr))
                 ) {
                      continue;
+
+                // mark attribute is safe. not need validate. like. 'created_at'
+                } elseif ( $validator === 'safe' ) {
+                    $this->_safeData[$attr] = $data[$attr];
+                    continue;
                 }
 
                 list($result,$validator) = $this->doValidate($data, $attr, $validator, $copy);
@@ -332,20 +345,20 @@ trait ValidationTrait
                 throw new \InvalidArgumentException("validator setting error!");
             }
 
-            if ( empty($rule['scene']) ) {
+            if ( empty($rule['on']) ) {
                 $availableRules[] = $rule;
             } else {
-                $ruleScene = $rule['scene'];
+                $ruleScene = $rule['on'];
                 $ruleScene = is_string($ruleScene) ? array_filter(explode(',', $ruleScene),'trim') : (array)$ruleScene;
 
                 if ( in_array($scene,$ruleScene) ) {
-                    unset($rule['scene']);
+                    unset($rule['on']);
                     $availableRules[] = $rule;
                 }
             }
         }
 
-        return $availableRules;
+        return ($this->_availableRules = $availableRules);
     }
 
 //////////////////////////////////// error info ////////////////////////////////////
