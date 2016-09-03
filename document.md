@@ -50,7 +50,8 @@ run: `composer update`
                     return false;
                 }],
             ];
-
+        }
+        
         // custom validator at the class. return a bool.
         protected function customValidator($title)
         {

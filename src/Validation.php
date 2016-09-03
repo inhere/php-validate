@@ -15,7 +15,7 @@ namespace inhere\validate;
 class Validation
 {
     use ValidationTrait {
-        set as traitSet;
+        //set as traitSet;
         get as traitGet;// Methods to define an alias, can be used in the current class.
     }
 
@@ -54,9 +54,9 @@ class Validation
         return new static($data, $rules, $attrTrans, $scene, $startValidate);
     }
 
-//    public function get($key, $value=null)
-//    {
-//        return self::traitGet($key, $value);
-//    }
+    public function get($key, $value=null)
+    {
+        return self::traitGet($key, $value);
+    }
 
 }

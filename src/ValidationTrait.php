@@ -52,7 +52,7 @@ trait ValidationTrait
     private $_hasErrorStop   = false;
 
     /**
-     * all rules
+     * the rules is by setRules()
      * @var array
      */
     private $_rules   = [];
@@ -64,6 +64,7 @@ trait ValidationTrait
     private $_availableRules  = [];
 
     /**
+     * custom append's validator by addValidator()
      * @var array
      */
     private $_validators   = [];
@@ -79,10 +80,10 @@ trait ValidationTrait
      */
     private $_hasValidated = false;
 
-    private $_position = [
-        'attr'      => 0,
-        'validator' => 1,
-    ];
+//    private $_position = [
+//        'attr'      => 0,
+//        'validator' => 1,
+//    ];
 
     /**
      * @return array
@@ -152,7 +153,7 @@ trait ValidationTrait
             return $this;
         }
 
-        $this->clearErrors()->beforeValidate();
+        $this->resetRuntimeData(true)->beforeValidate();
         $this->hasErrorStop($hasErrorStop);
 
         $data = $this->data;
@@ -161,7 +162,7 @@ trait ValidationTrait
         foreach ($this->collectRules() as $rule) {
             // 要检查的属性(字段)名称集
             $attrs = array_shift($rule);
-            $attrs = is_string($attrs) ? array_filter(explode(',', $attrs),'trim') : (array)$attrs;
+            $attrs = is_string($attrs) ? array_map('trim', explode(',', $attrs)) : (array)$attrs;
 
             // 要使用的验证器(a string or a Closure)
             $validator = array_shift($rule);
@@ -273,19 +274,19 @@ trait ValidationTrait
             $args[] = $data;
 
         } elseif ( is_string($validator) ) {
-            
+
             // if $validator is a custom add callback in the property {@see $_validators}.
             if ( isset($this->_validators['validator']) ) {
                 $callback = $this->_validators['validator'];
-                
+
             // if $validator is a custom method of the subclass.
             } elseif ( is_string($validator) && method_exists($this, $validator) ) {
-    
+
                 $callback = [ $this, $validator ];
-    
+
             // $validator is a method of the class 'ValidatorList'
             } elseif ( is_string($validator) && is_callable([ValidatorList::class, $validator]) ) {
-    
+
                 $callback = [ ValidatorList::class, $validator];
             } else {
                 throw new \InvalidArgumentException("validator [$validator] don't exists!");
@@ -300,6 +301,21 @@ trait ValidationTrait
     }
 
     public function afterValidate(){}
+
+    /**
+     * @param bool|false $clearErrors
+     * @return $this
+     */
+    protected function resetRuntimeData($clearErrors = false)
+    {
+        $this->_safeData = $this->_availableRules = [];
+
+        if ( $clearErrors ) {
+            $this->clearErrors();
+        }
+
+        return $this;
+    }
 
     /**
      * add a custom validator
@@ -349,7 +365,7 @@ trait ValidationTrait
                 $availableRules[] = $rule;
             } else {
                 $ruleScene = $rule['on'];
-                $ruleScene = is_string($ruleScene) ? array_filter(explode(',', $ruleScene),'trim') : (array)$ruleScene;
+                $ruleScene = is_string($ruleScene) ? array_map('trim',explode(',', $ruleScene)) : (array)$ruleScene;
 
                 if ( in_array($scene,$ruleScene) ) {
                     unset($rule['on']);
@@ -523,7 +539,7 @@ trait ValidationTrait
      */
     public function setAttrTrans(array $attrTrans)
     {
-        $this->_attrTrans = array_merge($this->_attrTrans, $attrTrans);
+        $this->_attrTrans = $attrTrans;
 
         return $this;
     }
@@ -541,11 +557,7 @@ trait ValidationTrait
      */
     public function getRules()
     {
-        if ( !$this->_rules ) {
-            $this->_rules = $this->rules();
-        }
-
-        return $this->_rules;
+        return array_merge($this->rules(), $this->_rules);
     }
 
     /**
@@ -557,6 +569,14 @@ trait ValidationTrait
         $this->_rules = $rules;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAvailableRules()
+    {
+        return $this->_availableRules;
     }
 
     /**
@@ -590,9 +610,7 @@ trait ValidationTrait
 
     /**
      * Does this collection have a given key?
-     *
      * @param string $key The data key
-     *
      * @return bool
      */
     public function has($key)
@@ -602,24 +620,21 @@ trait ValidationTrait
 
     /**
      * Set data item
-     *
      * @param string $key The data key
      * @param mixed $value The data value
      * @return $this
      */
-    public function set($key, $value)
-    {
-        $this->data[$key] = $value;
-
-        return $this;
-    }
+//    public function set($key, $value)
+//    {
+//        $this->data[$key] = $value;
+//
+//        return $this;
+//    }
 
     /**
      * Get data item for key
-     *
      * @param string $key     The data key
      * @param mixed  $default The default value to return if data key does not exist
-     *
      * @return mixed The key's value, or the default value
      */
     public function get($key, $default = null)
@@ -648,5 +663,13 @@ trait ValidationTrait
     public function getSafeData()
     {
         return $this->_safeData;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSafeKeys()
+    {
+        return array_keys($this->_safeData);
     }
 }
