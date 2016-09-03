@@ -21,7 +21,7 @@ class PageRequest extends \inhere\validate\Validation
             ['test', 'number', 'when' => function($data) {
                 return isset($data['status']) && $data['status'] > 2;
             }],
-            ['userId', 'number', 'scene' => 'other' ],
+            ['userId', 'number', 'on' => 'other' ],
 //            ['userId', function($value){ return false;}],
         ];
     }
