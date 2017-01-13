@@ -15,67 +15,6 @@ abstract class ValidatorList
 /////////////////////////////// validator list ///////////////////////////////
 
     /**
-     * @link http://php.net/manual/zh/function.filter-input.php
-     * @param  int $type INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV
-     * @param $varName
-     * @param  array $filter 过滤/验证器 {@link http://php.net/manual/zh/filter.filters.php}
-     * @param  array $options 一个选项的关联数组，或者按位区分的标示。
-     *                         如果过滤器接受选项，可以通过数组的 "flags" 位去提供这些标示。
-     * @return mixed 如果成功的话返回所请求的变量。
-     * 如果成功的话返回所请求的变量。
-     * 如果过滤失败则返回 FALSE ，
-     * 如果 varName 不存在的话则返回 NULL 。
-     * 如果标示 FILTER_NULL_ON_FAILURE 被使用了，那么当变量不存在时返回 FALSE ，当过滤失败时返回 NULL 。
-     */
-    public static function input($type, $varName , $filter, array $options=[])
-    {
-        # code...
-    }
-
-    public static function multi(array $data, array $filters=[])
-    {
-        # code...
-    }
-
-    /**
-     * @link http://php.net/manual/zh/function.filter-input-array.php
-     * 检查(验证/过滤)输入数据中的多个变量名 like filter_input_array()
-     * 当需要获取很多变量却不想重复调用 filter_input()时很有用。
-     * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
-     * @param  mixed  $definition 一个定义参数的数组。
-     *                            一个有效的键必须是一个包含变量名的string，
-     *                            一个有效的值要么是一个filter type，或者是一个array 指明了过滤器、标示和选项。
-     *                            如果值是一个数组，那么它的有效的键可以是 :
-     *                                filter， 用于指明 filter type，
-     *                                flags 用于指明任何想要用于过滤器的标示，
-     *                                options 用于指明任何想要用于过滤器的选项。
-     *                            参考下面的例子来更好的理解这段说明。
-     * @param  bool  $addEmpty 在返回值中添加 NULL 作为不存在的键。
-     * @return mixed
-     * 如果成功的话返回一个所请求的变量的数组，
-     * 如果失败的话返回 FALSE 。
-     * 对于数组的值，
-     *     如果过滤失败则返回 FALSE ，
-     *     如果 variable_name 不存在的话则返回 NULL 。
-     * 如果标示 FILTER_NULL_ON_FAILURE 被使用了，那么当变量不存在时返回 FALSE ，当过滤失败时返回 NULL 。
-     */
-    public static function inputMulti($type, $definition, $addEmpty=true)
-    {
-        # code...
-    }
-
-    /**
-     * 检查变量名是否存在
-     * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
-     * @param  string $varName Name of a variable to check. 要检查的变量名
-     * @return bool
-     */
-    public static function inputHasVar($type, $varName)
-    {
-        # code...
-    }
-
-    /**
      * 属性是否为空判断
      * @param array $data
      * @param $attr
@@ -146,6 +85,15 @@ abstract class ValidatorList
     public static function number($int, array $options=[], $flags=0)
     {
         return self::integer($int, $options, $flags) && self::size($int, 1);
+    }
+
+    /**
+     * @param  mixed     $var
+     * @return mixed
+     */
+    public static function string($var, $minLength=0, $maxLength=null)
+    {
+        return !is_string($var) ? false : self::length($var, $minLength, $maxLength);
     }
 
     /**
@@ -220,13 +168,12 @@ abstract class ValidatorList
     public static function length($var, $minLength=0, $maxLength=null)
     {
         if (is_string($var) ) {
-            $length    = StrHelper::strlen($var);
+            $length = StrHelper::strlen($var);
         }elseif (is_array($var)) {
-            $length    = count($var);
+            $length = count($var);
         } else {
             return false;
         }
-
 
         return self::size($length, $minLength, $maxLength);
     }
@@ -386,17 +333,8 @@ abstract class ValidatorList
     }
 
     /**
-     * @param  mixed     $var
-     * @return mixed
-     */
-    public static function string($var)
-    {
-        return is_string($var) ? $var : false;
-    }
-
-    /**
-     * @param  mixed     $var
-     * @return mixed
+     * @param  mixed  $var
+     * @return bool
      */
     public static function isArray($var)
     {
@@ -406,29 +344,52 @@ abstract class ValidatorList
     /**
      * @param  mixed $var
      * @param array $range
-     * @return array $range
+     * @return bool
      */
     public static function in($var, array $range)
     {
         return in_array($var, $range) ? $var : false;
     }
 
+    /**
+     * @param mixed $var
+     * @param mixed $compareVar
+     * @return bool
+     */
+    public static function compare($var, $compareVar)
+    {
+        return $var === $compareVar;
+    }
+
 
 /////////////////////////////// extension validator ///////////////////////////////
 
-    public static function phoneNumber($value='')
+    public static function phone($value)
     {
-        # code...
+        return preg_match(
+            '/^(?:(?:1(?:3[4-9]|5[012789]|8[78])\d{8}|1(?:3[0-2]|5[56]|8[56])\d{8}|18[0-9]\d{8}|1[35]3\d{8})|14[57]\d{8}|170[059]\d{7}|17\d{9})$/',
+            $value
+        );
     }
 
-    public static function telNumber($value='')
+    public static function telNumber($value)
     {
         # code...
     }
 
     /**
-     * Check for price validity
+     * Check for postal code validity
      *
+     * @param string $postcode Postal code to validate
+     * @return bool Validity is ok or not
+     */
+    public static function postCode($postcode)
+    {
+        return empty($postcode) || preg_match('/^[0-9]{6}$/', $postcode);
+    }
+
+    /**
+     * Check for price validity
      * @param string $price Price to validate
      * @return bool Validity is ok or not
      */
@@ -439,7 +400,6 @@ abstract class ValidatorList
 
     /**
     * Check for price validity (including negative price)
-    *
     * @param string $price Price to validate
     * @return bool Validity is ok or not
     */
@@ -450,7 +410,6 @@ abstract class ValidatorList
 
     /**
      * Check for date format
-     *
      * @param string $date Date to validate
      * @return bool Validity is ok or not
      */
@@ -461,7 +420,6 @@ abstract class ValidatorList
 
     /**
      * Check for date validity
-     *
      * @param string $date Date to validate
      * @return bool Validity is ok or not
      */
@@ -474,39 +432,15 @@ abstract class ValidatorList
         return checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1]);
     }
 
-
-    /**
-     * Check for boolean validity
-     *
-     * @param bool $bool Boolean to validate
-     * @return bool Validity is ok or not
-     */
-    public static function isBool($bool)
-    {
-        return $bool === null || is_bool($bool) || preg_match('/^(0|1)$/', $bool);
-    }
-
-    /**
-     * Check for postal code validity
-     *
-     * @param string $postcode Postal code to validate
-     * @return bool Validity is ok or not
-     */
-    public static function isPostCode($postcode)
-    {
-        return empty($postcode) || preg_match('/^[a-zA-Z 0-9-]+$/', $postcode);
-    }
-
     /**
      * Check for a float number validity
-     *
      * @param float $float Float number to validate
      * @return bool Validity is ok or not
      */
-    public static function isFloat($float)
-    {
-        return (string)((float)$float) === (string)$float;
-    }
+    // public static function isFloat($float)
+    // {
+    //     return (string)((float)$float) === (string)$float;
+    // }
 
     public static function isUnsignedFloat($float)
     {
@@ -515,19 +449,16 @@ abstract class ValidatorList
 
     /**
      * Check for an integer validity
-     *
      * @param int $value Integer to validate
      * @return bool Validity is ok or not
      */
-    public static function isInt($value)
-    {
-        return ((string)(int)$value === (string)$value || $value === false);
-    }
-
+    // public static function isInt($value)
+    // {
+    //     return ((string)(int)$value === (string)$value || $value === false);
+    // }
 
     /**
      * Check for an integer validity (unsigned)
-     *
      * @param int $value Integer to validate
      * @return bool Validity is ok or not
      */
@@ -538,7 +469,6 @@ abstract class ValidatorList
 
     /**
      * Check for MD5 string validity
-     *
      * @param string $md5 MD5 string to validate
      * @return bool Validity is ok or not
      */
@@ -549,7 +479,6 @@ abstract class ValidatorList
 
     /**
      * Check for SHA1 string validity
-     *
      * @param string $sha1 SHA1 string to validate
      * @return bool Validity is ok or not
      */
@@ -560,7 +489,6 @@ abstract class ValidatorList
 
     /**
      * Check object validity
-     *
      * @param $color
      * @return bool Validity is ok or not
      */
@@ -576,7 +504,6 @@ abstract class ValidatorList
 
     /**
      * Check if URL is absolute
-     *
      * @param string $url URL to validate
      * @return bool Validity is ok or not
      */
@@ -610,4 +537,68 @@ abstract class ValidatorList
     {
         return (bool)preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
     }
+
+    ///////////////////////////////////////////
+
+    /**
+     * @link http://php.net/manual/zh/function.filter-input.php
+     * @param  int $type INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV
+     * @param $varName
+     * @param  array $filter 过滤/验证器 {@link http://php.net/manual/zh/filter.filters.php}
+     * @param  array $options 一个选项的关联数组，或者按位区分的标示。
+     *                         如果过滤器接受选项，可以通过数组的 "flags" 位去提供这些标示。
+     * @return mixed 如果成功的话返回所请求的变量。
+     * 如果成功的话返回所请求的变量。
+     * 如果过滤失败则返回 FALSE ，
+     * 如果 varName 不存在的话则返回 NULL 。
+     * 如果标示 FILTER_NULL_ON_FAILURE 被使用了，那么当变量不存在时返回 FALSE ，当过滤失败时返回 NULL 。
+     */
+    public static function input($type, $varName , $filter, array $options=[])
+    {
+        # code...
+    }
+
+    public static function multi(array $data, array $filters=[])
+    {
+        # code...
+    }
+
+    /**
+     * @link http://php.net/manual/zh/function.filter-input-array.php
+     * 检查(验证/过滤)输入数据中的多个变量名 like filter_input_array()
+     * 当需要获取很多变量却不想重复调用 filter_input()时很有用。
+     * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
+     * @param  mixed  $definition 一个定义参数的数组。
+     *                            一个有效的键必须是一个包含变量名的string，
+     *                            一个有效的值要么是一个filter type，或者是一个array 指明了过滤器、标示和选项。
+     *                            如果值是一个数组，那么它的有效的键可以是 :
+     *                                filter， 用于指明 filter type，
+     *                                flags 用于指明任何想要用于过滤器的标示，
+     *                                options 用于指明任何想要用于过滤器的选项。
+     *                            参考下面的例子来更好的理解这段说明。
+     * @param  bool  $addEmpty 在返回值中添加 NULL 作为不存在的键。
+     * @return mixed
+     * 如果成功的话返回一个所请求的变量的数组，
+     * 如果失败的话返回 FALSE 。
+     * 对于数组的值，
+     *     如果过滤失败则返回 FALSE ，
+     *     如果 variable_name 不存在的话则返回 NULL 。
+     * 如果标示 FILTER_NULL_ON_FAILURE 被使用了，那么当变量不存在时返回 FALSE ，当过滤失败时返回 NULL 。
+     */
+    public static function inputMulti($type, $definition, $addEmpty=true)
+    {
+        # code...
+    }
+
+    /**
+     * 检查变量名是否存在
+     * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
+     * @param  string $varName Name of a variable to check. 要检查的变量名
+     * @return bool
+     */
+    public static function inputHasVar($type, $varName)
+    {
+        # code...
+    }
+
 }
