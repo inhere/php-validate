@@ -366,7 +366,7 @@ abstract class ValidatorList
 
     public static function phone($value)
     {
-        return preg_match(
+        return 1 === preg_match(
             '/^(?:(?:1(?:3[4-9]|5[012789]|8[78])\d{8}|1(?:3[0-2]|5[56]|8[56])\d{8}|18[0-9]\d{8}|1[35]3\d{8})|14[57]\d{8}|170[059]\d{7}|17\d{9})$/',
             $value
         );
@@ -395,7 +395,7 @@ abstract class ValidatorList
      */
     public static function price($price)
     {
-        return preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
     }
 
     /**
@@ -405,7 +405,7 @@ abstract class ValidatorList
     */
     public static function negativePrice($price)
     {
-        return preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
     }
 
     /**
