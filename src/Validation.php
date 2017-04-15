@@ -11,6 +11,21 @@ namespace inhere\validate;
 /**
  * Class Validation
  * @package inhere\validate
+ *
+ * usage:
+ *
+ * $vd = Validation::make($_POST, [
+ *  ['tagId,userId,name,email,freeTime', 'required'],
+ *  ['email', 'email'],
+ *  ['userId', 'number'],
+ *  ['name', function ($name) {
+ *      return preg_match('/[a-z]\w{2,12}/', $name);
+ *  }],
+ * ])->validate();
+ *
+ * $vd->hasError();// bool
+ * $vd->firstError(); // get first error message.
+ *
  */
 class Validation
 {
@@ -31,10 +46,12 @@ class Validation
      * @param string $scene
      * @param bool $startValidate 立即开始验证
      */
-    public function __construct(array $data=[], array $rules = [], array $attrTrans = [], $scene='', $startValidate=false)
+    public function __construct(array $data=[], array $rules = [], array $attrTrans = [], $scene = '', $startValidate = false)
     {
         $this->data = $data;
-        $this->setRules($rules)->setScene($scene)->setAttrTrans($attrTrans);
+        $this->setRules($rules)
+             ->setScene($scene)
+             ->setAttrTrans($attrTrans);
 
         if ( $startValidate ) {
             $this->validate();

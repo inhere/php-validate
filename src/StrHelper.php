@@ -42,16 +42,6 @@ class StrHelper
     }
 
     /**
-     * 检查字符串是否是正确的变量名
-     * @param $string
-     * @return bool
-     */
-    public static function isVarName($string)
-    {
-        return preg_match('@^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*@i', $string)===1;
-    }
-
-    /**
      * 计算字符长度
      * @param  [type] $str
      * @return int|string [type]
@@ -73,107 +63,6 @@ class StrHelper
         preg_match_all('/./u', $str, $arr);
 
         return count($arr[0]);
-    }
-
-    /**
-     * @from web
-     * 可以统计中文字符串长度的函数
-     * @param string $str 要计算长度的字符串
-     * @internal param bool $type 计算长度类型，0(默认)表示一个中文算一个字符，1表示一个中文算两个字符
-     * @return int
-     */
-    public static function abs_length($str)
-    {
-        if (empty($str)){
-            return 0;
-        }
-
-        if (function_exists('mb_strwidth')){
-            return mb_strwidth($str,'utf-8');
-        }
-
-        if (function_exists('mb_strlen')){
-            return mb_strlen($str,'utf-8');
-        }
-
-        preg_match_all('/./u', $str, $ar);
-        return count($ar[0]);
-    }
-
-    /**
-     * @from web
-     *  utf-8编码下截取中文字符串,参数可以参照substr函数
-     * @param string $str 要进行截取的字符串
-     * @param int $start 要进行截取的开始位置，负数为反向截取
-     * @param int $end 要进行截取的长度
-     * @return string
-     */
-    public static function utf8_substr($str,$start=0,$end=null)
-    {
-        if (empty($str)){
-            return false;
-        }
-
-        if (function_exists('mb_substr')){
-            if (func_num_args() >= 3) {
-                $end = func_get_arg(2);
-
-                return mb_substr($str,$start,$end,'utf-8');
-            }
-
-            mb_internal_encoding('UTF-8');
-
-            return mb_substr($str,$start);
-
-        }
-
-        $null = '';
-        preg_match_all('/./u', $str, $ar);
-
-        if (func_num_args() >= 3) {
-            $end = func_get_arg(2);
-
-            return implode($null, array_slice($ar[0],$start,$end));
-        }
-
-        return implode($null, array_slice($ar[0],$start));
-    }
-
-
-    /**
-     * @from web
-     * 中文截取，支持gb2312,gbk,utf-8,big5   *
-     * @param string $str 要截取的字串
-     * @param int $start 截取起始位置
-     * @param int $length 截取长度
-     * @param string $charset utf-8|gb2312|gbk|big5 编码
-     * @param bool $suffix 是否加尾缀
-     * @return string
-     */
-    public static function zh_substr($str, $start=0, $length, $charset = 'utf-8', $suffix=true)
-    {
-        if (function_exists('mb_substr'))
-        {
-            if (mb_strlen($str, $charset) <= $length) {
-                return $str;
-            }
-
-            $slice = mb_substr($str, $start, $length, $charset);
-        } else {
-            $re['utf-8']   = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
-            $re['gb2312']  = "/[\x01-\x7f]|[\xb0-\xf7][\xa0-\xfe]/";
-            $re['gbk']     = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
-            $re['big5']    = "/[\x01-\x7f]|[\x81-\xfe]([\x40-\x7e]|\xa1-\xfe])/";
-
-            preg_match_all($re[$charset], $str, $match);
-            if (count($match[0]) <= $length) {
-                return $str;
-            }
-
-            $slice = implode('',array_slice($match[0], $start, $length));
-        }
-
-        return (bool)$suffix ? $slice. '…' : $slice;
     }
 
     /**

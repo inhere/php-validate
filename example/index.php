@@ -15,20 +15,27 @@ spl_autoload_register(function($class)
 });
 
 $data = [
+    // 'userId' => 234,
     'userId' => 'sdfdffffffffff',
     'tagId' => '234535',
     // 'freeTime' => 'sdfdffffffffff',
     'distanceRequire' => 'sdfdffffffffff',
     'note' => '',
+    'name' => 'john',
+    'passwd' => 'password',
+    'repasswd' => 'repassword',
     'insertTime' => '1456767657',
     'lastReadTime' => '1456767657',
 ];
 
 $rules = [
     ['tagId,userId,freeTime', 'required', 'msg' => '{attr} is required!'],// set message
+    ['tagId,userId,freeTime', 'number'],
     ['note', 'email', 'skipOnEmpty' => false], // set skipOnEmpty is false.
     ['insertTime', 'email', 'scene' => 'otherScene' ],// set scene. will is not validate it on default.
-    ['tagId', 'size', 'min'=>4, 'max'=>567], // 4<= tagId <=567
+    ['tagId', 'size', 'max'=>567, 'min'=>4, ], // 4<= tagId <=567
+    ['passwd', 'compare', 'repasswd'], //
+
     ['freeTime', 'size', 'min'=>4, 'max'=>567, 'when' => function($data, $valid) {
         echo "  use when pre-check\n";
 
@@ -60,14 +67,14 @@ var_dump(
     $model->getErrors()
 );
 
-/*
+
 echo "--------------\n";
 echo "use Validation\n";
 
-$valid = \inhere\validate\Validation::make($data, $rules)->validate();
+$valid = \inhere\validate\Validation::make($data, $rules)->validate([], false);
 
 var_dump(
     $valid->all(),
     $valid->getErrors()
 );
-*/
+

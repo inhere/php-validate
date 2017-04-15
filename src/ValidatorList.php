@@ -76,7 +76,7 @@ abstract class ValidatorList
     }
 
     /**
-     * a integer and greater than 0
+     * check var is a integer and greater than 0
      * @param $int
      * @param array $options
      * @param int $flags
@@ -86,23 +86,30 @@ abstract class ValidatorList
     {
         return self::integer($int, $options, $flags) && self::size($int, 1);
     }
+    public static function num($int, array $options=[], $flags=0)
+    {
+        return self::number($int, $options, $flags);
+    }
 
     /**
+     * check var is a string
      * @param mixed $var
      * @param int $minLength
      * @param null|int $maxLength
      * @return mixed
      */
-    public static function string($var, $minLength=0, $maxLength=null)
+    public static function string($var, $minLength = 0, $maxLength=null)
     {
         return !is_string($var) ? false : self::length($var, $minLength, $maxLength);
     }
 
     /**
      * 范围检查
-     * @param  int|string|array  $var 检查数字范围； 字符串、数组则检查长度
-     * @param  null|integer $min
-     * @param  null|int  $max
+     * $min $max 即使传错位置也会自动调整
+     *
+     * @param  int|string|array $var 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
+     * @param  null|integer     $min 最小值
+     * @param  null|int         $max 最大值
      * @return mixed
      */
     public static function size($var, $min = null, $max = null)
@@ -119,13 +126,17 @@ abstract class ValidatorList
             return false;
         }
 
-        if ( is_numeric($min) ) {
-            $options['min_range'] = (int)$min;
-
-            if ( is_numeric($max) && $max > $min ) {
+        if (is_numeric($min) && is_numeric($max)) {
+            if ($max > $min) {
+                $options['min_range'] = (int)$min;
                 $options['max_range'] = (int)$max;
+            } else {
+                $options['min_range'] = (int)$max;
+                $options['max_range'] = (int)$min;
             }
-        } elseif ( is_numeric($max) ) {
+        } elseif (is_numeric($min)) {
+            $options['min_range'] = (int)$min;
+        } elseif (is_numeric($max)) {
             $options['max_range'] = (int)$max;
         } else {
             return false;

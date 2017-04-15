@@ -7,11 +7,9 @@
  */
 class DataModel
 {
-
     use \inhere\validate\ValidationTrait;
 
     protected $data = [];
-
 
     /**
      * @param array $data
@@ -23,6 +21,4 @@ class DataModel
 
         return $this;
     }
-
-
 }
