@@ -549,7 +549,7 @@ abstract class ValidatorList
      * @param  array $filter 过滤/验证器 {@link http://php.net/manual/zh/filter.filters.php}
      * @param  array $options 一个选项的关联数组，或者按位区分的标示。
      *                         如果过滤器接受选项，可以通过数组的 "flags" 位去提供这些标示。
-     * @return mixed 如果成功的话返回所请求的变量。
+     * 如果成功的话返回所请求的变量。
      * 如果成功的话返回所请求的变量。
      * 如果过滤失败则返回 FALSE ，
      * 如果 varName 不存在的话则返回 NULL 。
@@ -579,7 +579,6 @@ abstract class ValidatorList
      *                                options 用于指明任何想要用于过滤器的选项。
      *                            参考下面的例子来更好的理解这段说明。
      * @param  bool  $addEmpty 在返回值中添加 NULL 作为不存在的键。
-     * @return mixed
      * 如果成功的话返回一个所请求的变量的数组，
      * 如果失败的话返回 FALSE 。
      * 对于数组的值，
@@ -596,7 +595,6 @@ abstract class ValidatorList
      * 检查变量名是否存在
      * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
      * @param  string $varName Name of a variable to check. 要检查的变量名
-     * @return bool
      */
     public static function inputHasVar($type, $varName)
     {

@@ -168,20 +168,20 @@ trait ValidationTrait
             $validator = array_shift($rule);
 
             // 为空时是否跳过(非 required 时). 参考自 yii2
-            $skipOnEmpty   = isset($rule['skipOnEmpty']) ? $rule['skipOnEmpty'] : true;
+            $skipOnEmpty   = $rule['skipOnEmpty'] ?? true;
 
             // 如何判断属性为空 默认使用 empty($data[$attr]). 也可自定义
+            $isEmpty = [ ValidatorList::class, 'isEmpty'];
+
             if ( isset($rule['isEmpty']) && $rule['isEmpty'] instanceof \Closure ) {
-                $isEmpty   = $rule['isEmpty'];
-            } else {
-                $isEmpty = [ ValidatorList::class, 'isEmpty'];
+                $isEmpty = $rule['isEmpty'];
             }
 
             // 自定义当前验证的错误提示消息
-            $message   = isset($rule['msg']) ? $rule['msg'] : null;
+            $message   = $rule['msg'] ?? null;
 
             // 验证的前置条件
-            $when   = isset($rule['when']) ? $rule['when'] : null;
+            $when   = $rule['when'] ?? null;
             if ( $when && $when instanceof \Closure ) {
 
                 // 检查失败 -- 跳过此条规则
@@ -212,7 +212,7 @@ trait ValidationTrait
                     continue;
                 }
 
-                list($result,$validator) = $this->doValidate($data, $attr, $validator, $copy);
+                [$result,$validator] = $this->doValidate($data, $attr, $validator, $copy);
 
                 if ($result === false) {
                     $this->_errors[] = [
@@ -504,7 +504,7 @@ trait ValidationTrait
     {
         if ( !$msg ) {
             $msgList = $this->getMessages();
-            $msg = isset($msgList[$name]) ? $msgList[$name]: $msgList['_'];
+            $msg = $msgList[$name] ?? $msgList['_'];
         }
 
         $params['{attr}'] = $this->getAttrTran($params['{attr}']);
@@ -526,7 +526,7 @@ trait ValidationTrait
     {
         $trans = $this->getAttrTrans();
 
-        return isset($trans[$attr]) ? $trans[$attr] : StrHelper::toUnderscoreCase($attr, ' ');
+        return $trans[$attr] ?? StrHelper::toUnderscoreCase($attr, ' ');
     }
 
     /**

@@ -30,10 +30,10 @@ abstract class StrainerList
      */
     public static function trim($var)
     {
-        return is_array($var) ? array_walk_recursive(function($val)
+        return is_array($var) ? array_walk_recursive($var, function(&$val)
         {
-            return trim((string)$val);
-        }, $var) : trim((string)$var);
+            $val = trim((string)$val);
+        }) : trim((string)$var);
     }
 
     /**
