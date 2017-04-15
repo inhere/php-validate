@@ -1,6 +1,6 @@
-#php-validate
+# php-validate
 
-> a simple validate library of the php
+> a simple validate library of the php. the is for php5 branch.
 
 ### Install
 
@@ -11,18 +11,7 @@ edit `composer.json`
 _require_ add
 
 ```
-"inhere/php-validate": "dev-master",
-```
-
-_repositories_ add 
-
-```
-"repositories": [
-    {
-      "type": "git",
-      "url": "https://git.oschina.net/inhere/php-validate"
-    }
-  ]
+"inhere/php-validate": "dev-php5",
 ```
 
 run: `composer update`

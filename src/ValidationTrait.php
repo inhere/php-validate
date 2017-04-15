@@ -171,10 +171,10 @@ trait ValidationTrait
             $skipOnEmpty   = isset($rule['skipOnEmpty']) ? $rule['skipOnEmpty'] : true;
 
             // 如何判断属性为空 默认使用 empty($data[$attr]). 也可自定义
+            $isEmpty = [ ValidatorList::class, 'isEmpty'];
+
             if ( isset($rule['isEmpty']) && $rule['isEmpty'] instanceof \Closure ) {
                 $isEmpty   = $rule['isEmpty'];
-            } else {
-                $isEmpty = [ ValidatorList::class, 'isEmpty'];
             }
 
             // 自定义当前验证的错误提示消息
