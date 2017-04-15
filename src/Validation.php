@@ -54,9 +54,14 @@ class Validation
         return new static($data, $rules, $attrTrans, $scene, $startValidate);
     }
 
+    /**
+     * @param $key
+     * @param null $value
+     * @return mixed
+     */
     public function get($key, $value=null)
     {
-        return self::traitGet($key, $value);
+        return $this->traitGet($key, $value);
     }
 
 }

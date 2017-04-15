@@ -88,7 +88,9 @@ abstract class ValidatorList
     }
 
     /**
-     * @param  mixed     $var
+     * @param mixed $var
+     * @param int $minLength
+     * @param null|int $maxLength
      * @return mixed
      */
     public static function string($var, $minLength=0, $maxLength=null)
@@ -188,7 +190,7 @@ abstract class ValidatorList
      * @param  int $flags 标志  FILTER_NULL_ON_FAILURE
      * @return mixed
      */
-    public static function boolean($var, $default=null, $flags=0)
+    public static function boolean($var, $default = null, $flags=0)
     {
         $settings = [];
 
@@ -348,7 +350,7 @@ abstract class ValidatorList
      */
     public static function in($var, array $range)
     {
-        return in_array($var, $range) ? $var : false;
+        return in_array($var, $range, true) ? $var : false;
     }
 
     /**
@@ -361,15 +363,15 @@ abstract class ValidatorList
         return $var === $compareVar;
     }
 
-
 /////////////////////////////// extension validator ///////////////////////////////
 
+    /**
+     * @param $value
+     * @return bool
+     */
     public static function phone($value)
     {
-        return 1 === preg_match(
-            '/^(?:(?:1(?:3[4-9]|5[012789]|8[78])\d{8}|1(?:3[0-2]|5[56]|8[56])\d{8}|18[0-9]\d{8}|1[35]3\d{8})|14[57]\d{8}|170[059]\d{7}|17\d{9})$/',
-            $value
-        );
+        return 1 === preg_match('/^1[2-9]\d{9}$/', $value);
     }
 
     public static function telNumber($value)
@@ -385,7 +387,7 @@ abstract class ValidatorList
      */
     public static function postCode($postcode)
     {
-        return empty($postcode) || preg_match('/^[0-9]{6}$/', $postcode);
+        return empty($postcode) || preg_match('/^\d{6}$/', $postcode);
     }
 
     /**

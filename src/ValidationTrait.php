@@ -200,13 +200,14 @@ trait ValidationTrait
             foreach ($attrs as $attr) {
                 // 不在需要检查的列表内 ||  $skipOnEmpty is true && ValidatorList::isEmpty($data,$attr)
                 if (
-                    ($onlyChecked && !in_array($attr, $onlyChecked)) ||
+                    ($onlyChecked && !in_array($attr, $onlyChecked, true)) ||
                     ( $validator !== 'required' && $skipOnEmpty && call_user_func($isEmpty, $data, $attr))
                 ) {
                      continue;
+                }
 
                 // mark attribute is safe. not need validate. like. 'created_at'
-                } elseif ( $validator === 'safe' ) {
+                if ( $validator === 'safe' ) {
                     $this->_safeData[$attr] = $data[$attr];
                     continue;
                 }
@@ -292,7 +293,7 @@ trait ValidationTrait
                 throw new \InvalidArgumentException("validator [$validator] don't exists!");
             }
         } else {
-            throw new \InvalidArgumentException("validator format is error, must is String or Closure !");
+            throw new \InvalidArgumentException('Validator format is error, must is String or Closure !');
         }
 
         $result = call_user_func_array($callback, $args);
@@ -358,7 +359,7 @@ trait ValidationTrait
 
             // check validator
             if ( !is_string($rule[1]) && !($rule[1] instanceof \Closure) ) {
-                throw new \InvalidArgumentException("validator setting error!");
+                throw new \InvalidArgumentException('Validator rule setting error!');
             }
 
             if ( empty($rule['on']) ) {
@@ -367,7 +368,7 @@ trait ValidationTrait
                 $ruleScene = $rule['on'];
                 $ruleScene = is_string($ruleScene) ? array_map('trim',explode(',', $ruleScene)) : (array)$ruleScene;
 
-                if ( in_array($scene,$ruleScene) ) {
+                if (in_array($scene, $ruleScene, true)) {
                     unset($rule['on']);
                     $availableRules[] = $rule;
                 }
@@ -414,7 +415,6 @@ trait ValidationTrait
     /**
      * @param $attr
      * @param $msg
-     * @return mixed
      */
     public function addError($attr, $msg)
     {
@@ -433,7 +433,7 @@ trait ValidationTrait
      * @param bool $onlyMsg
      * @return array|string
      */
-    public function firstError($onlyMsg=true)
+    public function firstError($onlyMsg = true)
     {
         $e =  $this->_errors;
         $first = array_shift($e);
@@ -448,7 +448,7 @@ trait ValidationTrait
      * @param bool $onlyMsg
      * @return array|string
      */
-    public function lastError($onlyMsg=true)
+    public function lastError($onlyMsg = true)
     {
         $e =  $this->_errors;
         $last = array_pop($e);
@@ -469,18 +469,22 @@ trait ValidationTrait
         'url'    => '{attr} not is url address!',
         'email'  => '{attr} not is email address!',
         'ip'     => '{attr} not is ip address!',
-        'required' => '{attr} is not block!',
+        'required' => 'parameter {attr} is required!',
         'length' => '{attr} length must at rang {min} ~ {max}',
         'size'  => '{attr} must be an integer and at rang {min} ~ {max}',
         'min'   => '{attr} minimum boundary is {value}',
         'max'   => '{attr} maximum boundary is {value}',
         'in'    => '{attr} must in ({value})',
         'string' => '{attr} must be a string',
+        'compare' => '{attr} must be equals to {compare}',
         'isArray' => '{attr} must be an array',
         'callback' => 'The custom callback validation fails of the [{attr}]!',
         '_'      => '{attr} validation is not through!',
     ];
 
+    /**
+     * @return array
+     */
     public function getMessages()
     {
         return array_merge(self::$_defaultMessages, $this->messages());
@@ -496,7 +500,7 @@ trait ValidationTrait
      * @param  string $msg 提示消息
      * @return string
      */
-    public function getMessage($name, array $params, $rule = [], $msg=null)
+    public function getMessage($name, array $params, array $rule = [], $msg=null)
     {
         if ( !$msg ) {
             $msgList = $this->getMessages();

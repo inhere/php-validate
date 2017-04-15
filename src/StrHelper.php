@@ -68,11 +68,11 @@ class StrHelper
 
         if (function_exists('mb_strlen')){
             return mb_strlen($str,'utf-8');
-        } else {
-            preg_match_all("/./u", $str, $arr);
-
-            return count($arr[0]);
         }
+
+        preg_match_all('/./u', $str, $arr);
+
+        return count($arr[0]);
     }
 
     /**
@@ -90,12 +90,14 @@ class StrHelper
 
         if (function_exists('mb_strwidth')){
             return mb_strwidth($str,'utf-8');
-        } else if (function_exists('mb_strlen')){
-            return mb_strlen($str,'utf-8');
-        } else {
-            preg_match_all("/./u", $str, $ar);
-            return count($ar[0]);
         }
+
+        if (function_exists('mb_strlen')){
+            return mb_strlen($str,'utf-8');
+        }
+
+        preg_match_all('/./u', $str, $ar);
+        return count($ar[0]);
     }
 
     /**
@@ -117,24 +119,24 @@ class StrHelper
                 $end = func_get_arg(2);
 
                 return mb_substr($str,$start,$end,'utf-8');
-            } else {
-                mb_internal_encoding("UTF-8");
-
-                return mb_substr($str,$start);
             }
 
-        } else {
-            $null = "";
-            preg_match_all("/./u", $str, $ar);
+            mb_internal_encoding('UTF-8');
 
-            if (func_num_args() >= 3) {
-                $end = func_get_arg(2);
+            return mb_substr($str,$start);
 
-                return implode($null, array_slice($ar[0],$start,$end));
-            } else {
-                return implode($null, array_slice($ar[0],$start));
-            }
         }
+
+        $null = '';
+        preg_match_all('/./u', $str, $ar);
+
+        if (func_num_args() >= 3) {
+            $end = func_get_arg(2);
+
+            return implode($null, array_slice($ar[0],$start,$end));
+        }
+
+        return implode($null, array_slice($ar[0],$start));
     }
 
 
@@ -148,9 +150,9 @@ class StrHelper
      * @param bool $suffix 是否加尾缀
      * @return string
      */
-    public static function zh_substr($str, $start=0, $length, $charset="utf-8", $suffix=true)
+    public static function zh_substr($str, $start=0, $length, $charset = 'utf-8', $suffix=true)
     {
-        if (function_exists("mb_substr"))
+        if (function_exists('mb_substr'))
         {
             if (mb_strlen($str, $charset) <= $length) {
                 return $str;
@@ -168,10 +170,10 @@ class StrHelper
                 return $str;
             }
 
-            $slice = implode("",array_slice($match[0], $start, $length));
+            $slice = implode('',array_slice($match[0], $start, $length));
         }
 
-        return (bool)$suffix ? $slice."…" : $slice;
+        return (bool)$suffix ? $slice. '…' : $slice;
     }
 
     /**
@@ -192,16 +194,12 @@ class StrHelper
     }
 
     /**
-     * @param $str
+     * @param string $str
      * @param string $encoding
-     * @return bool|int
+     * @return int
      */
     public static function strlen($str, $encoding = 'UTF-8')
     {
-        if (is_array($str)) {
-            return false;
-        }
-
         $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
         if (function_exists('mb_strlen')) {
             return mb_strlen($str, $encoding);
