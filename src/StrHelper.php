@@ -42,30 +42,6 @@ class StrHelper
     }
 
     /**
-     * 计算字符长度
-     * @param  [type] $str
-     * @return int|string [type]
-     */
-    public static function length($str)
-    {
-        if (empty($str)){
-          return '0';
-        }
-
-        if ((string)$str === '0'){
-          return '1';
-        }
-
-        if (function_exists('mb_strlen')){
-            return mb_strlen($str,'utf-8');
-        }
-
-        preg_match_all('/./u', $str, $arr);
-
-        return count($arr[0]);
-    }
-
-    /**
      * @param $str
      * @return bool|string
      */
