@@ -9,19 +9,15 @@ namespace inhere\validate;
  * Class StrainerList
  * @package inhere\validate
  */
-abstract class StrainerList
+final class StrainerList
 {
 /////////////////////////////// php internal Strainer ///////////////////////////////
 
-    public static function multi($data, array $filters=[])
-    {
-        # code...
-    }
+//    public static function multi($data, array $filters=[])
+//    {}
 
-    public static function inputMulti($type, array $filters=[])
-    {
-        # code...
-    }
+//    public static function inputMulti($type, array $filters=[])
+//    {}
 
     /**
      * simple trim space
@@ -74,8 +70,7 @@ abstract class StrainerList
         }
 
         // $length    = Helper::strlen($string);
-
-        return StrHelper::substr($string, $start, $end);
+        return Helper::substr($string, $start, $end);
     }
 
     /**

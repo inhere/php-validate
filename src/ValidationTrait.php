@@ -26,8 +26,8 @@ trait ValidationTrait
     protected $scene = '';
 
     /**
-     * Whether there is error stop validation 是否出现错误即停止验证
-     * True  -- 出现一个错误即停止验证,并退出
+     * Whether there is error stop validation 是否出现验证失败就立即停止验证
+     * True  -- 出现一个验证失败即停止验证,并退出
      * False -- 全部验证并将错误信息保存到 {@see $_errors}
      * @var boolean
      */
@@ -146,7 +146,7 @@ trait ValidationTrait
     public function validate(array $onlyChecked = [], $stopOnError = null)
     {
         if (!property_exists($this, 'data')) {
-            throw new \InvalidArgumentException('Must be defined property \'data (array)\' in the class used.');
+            throw new \InvalidArgumentException('Must be defined property \'data (array)\' in the sub-class used.');
         }
 
         if ($this->validated) {
@@ -222,7 +222,7 @@ trait ValidationTrait
             $message = null;
 
             // There is an error an immediate end to verify
-            if ($this->hasError() && $this->_stopOnError) {
+            if ($this->_stopOnError && $this->hasError()) {
                 break;
             }
         }
@@ -265,7 +265,7 @@ trait ValidationTrait
         array_unshift($args, $data[$attr]);
 
         // if $validator is a closure
-        if (is_callable($validator) && $validator instanceof \Closure) {
+        if ($validator instanceof \Closure) {
             $callback = $validator;
             $validator = 'callback';
             $args[] = $data;
@@ -277,12 +277,12 @@ trait ValidationTrait
                 $callback = $this->_validators[$validator];
 
                 // if $validator is a custom method of the subclass.
-            } elseif (is_string($validator) && method_exists($this, $validator)) {
+            } elseif (method_exists($this, $validator)) {
 
                 $callback = [$this, $validator];
 
                 // $validator is a method of the class 'ValidatorList'
-            } elseif (is_string($validator) && is_callable([ValidatorList::class, $validator])) {
+            } elseif (is_callable([ValidatorList::class, $validator])) {
 
                 $callback = [ValidatorList::class, $validator];
             } else {
@@ -328,7 +328,7 @@ trait ValidationTrait
      * @param string $msg
      * @return $this
      */
-    public function addValidator($name, \Closure $callback, $msg = '')
+    public function addValidator(string $name, \Closure $callback, string $msg = '')
     {
         $this->_validators[$name] = $callback;
 
@@ -535,10 +535,13 @@ trait ValidationTrait
 
     /**
      * @param bool $stopOnError
+     * @return $this
      */
-    public function setStopOnError(bool $stopOnError)
+    public function setStopOnError(bool $stopOnError = true)
     {
         $this->_stopOnError = $stopOnError;
+
+        return $this;
     }
 
     /**
@@ -573,7 +576,7 @@ trait ValidationTrait
     {
         $trans = $this->getAttrTrans();
 
-        return $trans[$attr] ?? StrHelper::toUnderscoreCase($attr, ' ');
+        return $trans[$attr] ?? Helper::toUnderscoreCase($attr, ' ');
     }
 
     /**
@@ -651,6 +654,15 @@ trait ValidationTrait
     }
 
     /**
+     * @param string $scene
+     * @return static
+     */
+    public function useScene(string $scene)
+    {
+        return $this->setScene($scene);
+    }
+
+    /**
      * Get all items in collection
      *
      * @return array The collection's source data
@@ -689,13 +701,13 @@ trait ValidationTrait
      * @param mixed $default The default value to return if data key does not exist
      * @return mixed The key's value, or the default value
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         return $this->has($key) ? $this->data[$key] : $default;
     }
 
     /**
-     * get safe attribute
+     * get safe attribute value
      * @param string $key
      * @param mixed $default
      * @return mixed
@@ -705,6 +717,12 @@ trait ValidationTrait
         return $this->getValid($key, $default);
     }
 
+    /**
+     * get safe attribute value
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
     public function getValid(string $key, $default = null)
     {
         return array_key_exists($key, $this->_safeData) ? $this->_safeData[$key] : $default;

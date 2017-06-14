@@ -1,7 +1,7 @@
 <?php
 /**
  * @date 2015.08.04
- * 验证器
+ * 验证器列表
  * @note 验证数据; 成功则返回预期的类型， 失败返回 false
  * @description INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV  几个输入数据常量中的值在请求时即固定下来了，
  * 后期通过类似 $_GET['test']='help'; 将不会存在 输入数据常量中(INPUT_GET 没有test项)。
@@ -9,7 +9,11 @@
 
 namespace inhere\validate;
 
-abstract class ValidatorList
+/**
+ * Class ValidatorList
+ * @package inhere\validate
+ */
+final class ValidatorList
 {
 
 /////////////////////////////// validator list ///////////////////////////////
@@ -33,8 +37,7 @@ abstract class ValidatorList
      */
     public static function required($data, $attr)
     {
-        return isset($data[$attr]) && $data[$attr]!=='' &&
-                $data[$attr]!==null && $data[$attr] !== [];
+        return isset($data[$attr]) && $data[$attr]!=='' && $data[$attr] !== null && $data[$attr] !== [];
     }
 
     /**
@@ -119,14 +122,17 @@ abstract class ValidatorList
         if (is_numeric($var)) {
             $var = (int)$var;
         } elseif (is_string($var)) {
-            $var = StrHelper::strlen($var);
+            $var = Helper::strlen($var);
         } elseif (is_array($var)) {
             $var = count($var);
         } else {
             return false;
         }
 
-        if (is_numeric($min) && is_numeric($max)) {
+        $minIsNum = is_numeric($min);
+        $maxIsNum = is_numeric($max);
+
+        if ($minIsNum && $maxIsNum) {
             if ($max > $min) {
                 $options['min_range'] = (int)$min;
                 $options['max_range'] = (int)$max;
@@ -134,9 +140,9 @@ abstract class ValidatorList
                 $options['min_range'] = (int)$max;
                 $options['max_range'] = (int)$min;
             }
-        } elseif (is_numeric($min)) {
+        } elseif ($minIsNum) {
             $options['min_range'] = (int)$min;
-        } elseif (is_numeric($max)) {
+        } elseif ($maxIsNum) {
             $options['max_range'] = (int)$max;
         } else {
             return false;
@@ -181,7 +187,7 @@ abstract class ValidatorList
     public static function length($var, $minLength=0, $maxLength=null)
     {
         if (is_string($var) ) {
-            $length = StrHelper::strlen($var);
+            $length = Helper::strlen($var);
         }elseif (is_array($var)) {
             $length = count($var);
         } else {
@@ -510,11 +516,6 @@ abstract class ValidatorList
         return preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $color);
     }
 
-    public static function isUrl($url)
-    {
-
-    }
-
     /**
      * Check if URL is absolute
      * @param string $url URL to validate
@@ -568,12 +569,10 @@ abstract class ValidatorList
      */
     public static function input($type, $varName , $filter, array $options=[])
     {
-        # code...
     }
 
     public static function multi(array $data, array $filters=[])
     {
-        # code...
     }
 
     /**
@@ -599,7 +598,6 @@ abstract class ValidatorList
      */
     public static function inputMulti($type, $definition, $addEmpty=true)
     {
-        # code...
     }
 
     /**
@@ -609,7 +607,6 @@ abstract class ValidatorList
      */
     public static function inputHasVar($type, $varName)
     {
-        # code...
     }
 
 }

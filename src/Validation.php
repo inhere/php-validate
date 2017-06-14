@@ -46,14 +46,14 @@ class Validation
      * @param string $scene
      * @param bool $startValidate 立即开始验证
      */
-    public function __construct(array $data=[], array $rules = [], array $attrTrans = [], $scene = '', $startValidate = false)
+    public function __construct(array $data = [], array $rules = [], array $attrTrans = [], $scene = '', $startValidate = false)
     {
         $this->data = $data;
         $this->setRules($rules)
-             ->setScene($scene)
-             ->setAttrTrans($attrTrans);
+            ->setScene($scene)
+            ->setAttrTrans($attrTrans);
 
-        if ( $startValidate ) {
+        if ($startValidate) {
             $this->validate();
         }
     }
@@ -66,7 +66,7 @@ class Validation
      * @param bool $startValidate 立即开始验证
      * @return static
      */
-    public static function make(array $data, array $rules=[], array $attrTrans = [], $scene='', $startValidate=false)
+    public static function make(array $data, array $rules = [], array $attrTrans = [], $scene = '', $startValidate = false)
     {
         return new static($data, $rules, $attrTrans, $scene, $startValidate);
     }
@@ -76,7 +76,7 @@ class Validation
      * @param null $value
      * @return mixed
      */
-    public function get($key, $value=null)
+    public function get($key, $value = null)
     {
         return $this->traitGet($key, $value);
     }
