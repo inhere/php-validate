@@ -4,7 +4,7 @@
 
 > 规则设置参考自 yii 的。
 
-### 安装
+## 安装
 
 - 使用 composer
 
@@ -94,7 +94,8 @@ $valid = PageRequest::make($_POST)->validate();
 
 // 验证失败
 if ($valid->fail()) {
-    return $valid->getErrors();
+    var_dump($valid->getErrors());
+    var_dump($valid->firstError());
 }
 
 // 验证成功 ...
@@ -120,7 +121,8 @@ if ($valid->fail()) {
             ])->validate();
 
             if ($valid->fail()) {
-                return $valid->getErrors();
+                var_dump($valid->getErrors());
+                var_dump($valid->firstError());
             }
 
             //
@@ -151,7 +153,7 @@ $valid = Validation::make($_POST,[
 
 ```
 
-- 直接写闭包
+- 直接写闭包进行验证 e.g:
 
 ```php
     ['status', function($status) {
@@ -164,14 +166,14 @@ $valid = Validation::make($_POST,[
     }]
 ```
 
-## 关键词说明
+## 规则关键词说明
 
-### `on` -- 设置验证场景
+### `on` -- 设置规则使用场景
 
-> 如果需要让定义的规则在多个类似情形下使用。在验证时也表明要验证的场景
+> 如果需要让定义的规则在多个类似情形下重复使用，可以设置规则的使用场景。在验证时也表明要验证的场景
 
 ```php
-    // 在继承了 Validation 的子类中 ...
+    // 在继承了 Validation 的子类 ValidationClass 中 ...
     public function rules()
     {
          return [
@@ -183,9 +185,9 @@ $valid = Validation::make($_POST,[
     }
 ```
 
-如，在下面指定了验证场景时，将会使用上面的第 1,3,4 条规则. (第 1 条没有限制规则使用场景的，在所有场景都可用)
+使用:
 
-逻辑代码:
+如，在下面指定了验证场景时，将会使用上面的第 1,3,4 条规则. (第 1 条没有限制规则使用场景的，在所有场景都可用)
 
 ```php
     // ...
@@ -353,7 +355,7 @@ public function get(string $key, $default = null)
 public function getSafeData(): array
 ```
 
-获取所有 **验证通过** 的数据
+获取所有 **验证通过** 的安全数据
 
 > 注意： 当有验证失败出现时，安全数据 `safeData` 将会被重置为空。 即只有全部通过验证，才能获取到 `safeData`
 
