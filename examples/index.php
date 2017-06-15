@@ -16,16 +16,19 @@ spl_autoload_register(function($class)
 
 $data = [
     // 'userId' => 234,
-    'userId' => 'sdfdffffffffff',
+    'userId' => 'is not an integer',
     'tagId' => '234535',
-    // 'freeTime' => 'sdfdffffffffff',
-    'distanceRequire' => 'sdfdffffffffff',
+    // 'freeTime' => '1456767657', // filed not exists
     'note' => '',
     'name' => 'john',
+    'existsField' => 'test',
     'passwd' => 'password',
     'repasswd' => 'repassword',
     'insertTime' => '1456767657',
-    'lastReadTime' => '1456767657',
+    'goods' => [
+        'apple' => 34,
+        'pear' => 50,
+    ],
 ];
 
 $rules = [
@@ -33,8 +36,13 @@ $rules = [
     ['tagId,userId,freeTime', 'number'],
     ['note', 'email', 'skipOnEmpty' => false], // set skipOnEmpty is false.
     ['insertTime', 'email', 'scene' => 'otherScene' ],// set scene. will is not validate it on default.
-    ['tagId', 'size', 'max'=>567, 'min'=>4, ], // 4<= tagId <=567
+    ['tagId', 'size', 'max'=> 567, 'min'=> 4, ], // 4<= tagId <=567
     ['passwd', 'compare', 'repasswd'], //
+
+    ['goods.pear', 'max', 30], //
+
+    // ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
+    ['notExistsField1', 'requiredWithout', 'existsField'], //
 
     ['freeTime', 'size', 'min'=>4, 'max'=>567, 'when' => function($data, $valid) {
         echo "  use when pre-check\n";
@@ -45,36 +53,35 @@ $rules = [
     }], // 4<= tagId <=567
 
     ['userId', function($value, $data){
-        echo "  use custom validate\n";
+        echo "  use custom validate to check userId \n";
 
-        var_dump($value, $data);
-
-        echo __LINE__ . "\n";
+        // var_dump($value, $data);
+        // echo __LINE__ . "\n";
 
         return false;
-    }, 'msg' => 'userId check failure!'],
+    }, 'msg' => 'userId check failure by closure!'],
 ];
 
-echo "use ValidationTrait\n";
+echo "\n----------------------------\n raw data, waiting to validate\n----------------------------\n\n";
+
+print_r($data);
+
+echo "\n----------------------------\n use ValidationTrait\n----------------------------\n\n";
 
 //$model = new DataModel($_POST,$rules);
 $model = new DataModel;
 $model->setData($data)->setRules($rules);
 $model->validate();
 
-var_dump(
-    $model->all(),
-    $model->getErrors()
-);
+print_r($model->getErrors());
 
+echo "\n----------------------------\n use Validation\n----------------------------\n\n";
 
-echo "--------------\n";
-echo "use Validation\n";
+$valid = \inhere\validate\Validation::make($data, $rules)
+        ->setAttrTrans([
+            'goods.pear' => '梨子'
+        ])
+       ->validate([], false);
 
-$valid = \inhere\validate\Validation::make($data, $rules)->validate([], false);
-
-var_dump(
-    $valid->all(),
-    $valid->getErrors()
-);
+print_r($valid->getErrors());
 

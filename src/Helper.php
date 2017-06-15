@@ -166,6 +166,39 @@ class Helper
     }
 
     /**
+     * getValueOfArray 支持以 '.' 分割进行子级值获取 eg: 'goods.apple'
+     * @param  array  $data
+     * @param  array|string  $key
+     * @return mixed
+     */
+    public static function getValueOfArray(array $data, $key, $default = null)
+    {
+        if (!$key) {
+            return $data;
+        }
+
+        if (is_string($key)) {
+            $nodes = strpos(trim($key, '. '), '.') ? explode('.', $key) : [$key];
+        } else {
+            $nodes = (array)$key;
+        }
+
+        $temp = $data;
+
+        foreach ($nodes as $name) {
+            if (isset($temp[$name])) {
+                $temp = $temp[$name];
+            } else {
+                $temp = $default;
+                break;
+            }
+        }
+
+        unset($data);
+        return $temp;
+    }
+
+    /**
      * 使用正则验证数据
      * @access public
      * @param string $value  要验证的数据

@@ -14,10 +14,10 @@ final class StrainerList
 /////////////////////////////// php internal Strainer ///////////////////////////////
 
 //    public static function multi($data, array $filters=[])
-//    {}
+    //    {}
 
 //    public static function inputMulti($type, array $filters=[])
-//    {}
+    //    {}
 
     /**
      * simple trim space
@@ -26,10 +26,9 @@ final class StrainerList
      */
     public static function trim($var)
     {
-        return is_array($var) ? array_walk_recursive($var, function(&$val)
-        {
-            $val = trim((string)$val);
-        }) : trim((string)$var);
+        return is_array($var) ? array_walk_recursive($var, function (&$val) {
+            $val = trim((string) $val);
+        }) : trim((string) $var);
     }
 
     /**
@@ -40,7 +39,7 @@ final class StrainerList
      */
     public static function integer($int)
     {
-        return filter_var($int ,FILTER_SANITIZE_NUMBER_INT);
+        return filter_var($int, FILTER_SANITIZE_NUMBER_INT);
     }
     public static function int($int)
     {
@@ -53,7 +52,7 @@ final class StrainerList
      */
     public static function abs($var)
     {
-        return abs((int)$var);
+        return abs((int) $var);
     }
 
     /**
@@ -63,7 +62,7 @@ final class StrainerList
      * @param  int      $end   结束位置
      * @return mixed
      */
-    public static function lengthCute($string, $start=0, $end=null)
+    public static function lengthCute($string, $start = 0, $end = null)
     {
         if (!is_string($string)) {
             return '';
@@ -84,12 +83,12 @@ final class StrainerList
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
      * @return mixed
      */
-    public static function float($var, array $options=[], $flags=0)
+    public static function float($var, array $options = [], $flags = 0)
     {
         $settings = [];
 
-        if ( (int)$flags !== 0 ) {
-            $settings['flags'] = (int)$flags;
+        if ((int) $flags !== 0) {
+            $settings['flags'] = (int) $flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
@@ -106,15 +105,15 @@ final class StrainerList
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
      * @return mixed
      */
-    public static function encoded($var, $flags=0)
+    public static function encoded($var, $flags = 0)
     {
         $settings = [];
 
-        if ( (int)$flags !== 0 ) {
-            $settings['flags'] = (int)$flags;
+        if ((int) $flags !== 0) {
+            $settings['flags'] = (int) $flags;
         }
 
-        return filter_var($var ,FILTER_SANITIZE_ENCODED, $settings);
+        return filter_var($var, FILTER_SANITIZE_ENCODED, $settings);
     }
 
     /**
@@ -124,7 +123,7 @@ final class StrainerList
      */
     public static function quotes($var)
     {
-        return filter_var($var ,FILTER_SANITIZE_MAGIC_QUOTES);
+        return filter_var($var, FILTER_SANITIZE_MAGIC_QUOTES);
     }
 
     /**
@@ -136,15 +135,15 @@ final class StrainerList
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
      * @return string
      */
-    public static function specialChars($var, $flags=0)
+    public static function specialChars($var, $flags = 0)
     {
         $settings = [];
 
-        if ( (int)$flags !== 0 ) {
-            $settings['flags'] = (int)$flags;
+        if ((int) $flags !== 0) {
+            $settings['flags'] = (int) $flags;
         }
 
-        return filter_var($var ,FILTER_SANITIZE_SPECIAL_CHARS, $settings);
+        return filter_var($var, FILTER_SANITIZE_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -153,15 +152,15 @@ final class StrainerList
      * @param  int $flags 标志 FILTER_FLAG_NO_ENCODE_QUOTES
      * @return string
      */
-    public static function fullSpecialChars($var, $flags=0)
+    public static function fullSpecialChars($var, $flags = 0)
     {
         $settings = [];
 
-        if ( (int)$flags !== 0 ) {
-            $settings['flags'] = (int)$flags;
+        if ((int) $flags !== 0) {
+            $settings['flags'] = (int) $flags;
         }
 
-        return filter_var($var ,FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+        return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -176,17 +175,17 @@ final class StrainerList
      *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
      * @return string
      */
-    public static function string($var, $flags=0)
+    public static function string($var, $flags = 0)
     {
         $settings = [];
 
-        if ( (int)$flags !== 0 ) {
-            $settings['flags'] = (int)$flags;
+        if ((int) $flags !== 0) {
+            $settings['flags'] = (int) $flags;
         }
 
-        return filter_var($var ,FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+        return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
-    public static function stripped($var, $flags=0)
+    public static function stripped($var, $flags = 0)
     {
         return self::string($var, $flags);
     }
@@ -199,7 +198,7 @@ final class StrainerList
      */
     public static function url($var)
     {
-        return filter_var($var ,FILTER_SANITIZE_URL);
+        return filter_var($var, FILTER_SANITIZE_URL);
     }
 
     /**
@@ -209,7 +208,7 @@ final class StrainerList
      */
     public static function email($var)
     {
-        return filter_var($var ,FILTER_SANITIZE_EMAIL);
+        return filter_var($var, FILTER_SANITIZE_EMAIL);
     }
 
     /**
@@ -225,20 +224,25 @@ final class StrainerList
      *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
      * @return string
      */
-    public static function unsafeRaw($string, $flags=0)
+    public static function unsafeRaw($string, $flags = 0)
     {
         $settings = [];
 
-        if ( (int)$flags !== 0 ) {
-            $settings['flags'] = (int)$flags;
+        if ((int) $flags !== 0) {
+            $settings['flags'] = (int) $flags;
         }
 
-        return filter_var($string ,FILTER_UNSAFE_RAW, $settings);
+        return filter_var($string, FILTER_UNSAFE_RAW, $settings);
     }
 
-    public static function callback($var, $callback)
+    /**
+     * 自定义回调过滤
+     * @param  mixed   $val
+     * @param  callable $callback
+     * @return bool
+     */
+    public static function callback($val, $callback)
     {
-        return filter_var($var, FILTER_CALLBACK,['options' => $callback]);
+        return filter_var($val, FILTER_CALLBACK, ['options' => $callback]);
     }
-
 }

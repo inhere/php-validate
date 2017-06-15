@@ -4,6 +4,11 @@
 
 > 规则设置参考自 yii 的。
 
+## 项目地址
+
+- **git@osc** https://git.oschina.net/inhere/php-validate.git
+- **github** https://github.com/inhere/php-validate.git
+
 ## 安装
 
 - 使用 composer
@@ -43,7 +48,7 @@ git clone https://github.com/inhere/php-validate.git // github
             return [
                 ['tagId,title,userId,freeTime', 'required', 'msg' => '{attr} is required!'],
                 ['tagId', 'size', 'min'=>4, 'max'=>567], // 4<= tagId <=567
-                ['title', 'min', 'min' => 40],
+                ['title', 'min', 40],
                 ['freeTime', 'number'],
                 ['tagId', 'number', 'when' => function($data) {
                     return isset($data['status']) && $data['status'] > 2;
@@ -51,9 +56,7 @@ git clone https://github.com/inhere/php-validate.git // github
                 ['userId', 'number', 'on' => 'scene1' ],
                 ['username', 'string', 'on' => 'scene2' ],
                 ['title', 'customValidator', 'msg' => '{attr} error msg!' ],
-                ['status', function($status)
-                {
-
+                ['status', function($status) {
                     if ($status > 3) {
                         return true;
                     }
@@ -122,7 +125,7 @@ $db->save($safeData);
         {
             $valid = Validation::make($_POST,[
                 // add rule
-                ['title', 'min', 'min' => 40],
+                ['title', 'min', 40],
                 ['freeTime', 'number'],
             ])->validate();
 
@@ -201,7 +204,7 @@ $db->save($safeData);
         public function addAction()
         {
             $model = new UserModel;
-            $ret = $model->setData($_POST)->create();
+            $ret = $model->setData($_POST)->atScene('create')->create();
 
             if (!$ret) {
                 exit($model->firstError());
@@ -223,7 +226,7 @@ $db->save($safeData);
 
 $valid = Validation::make($_POST,[
         // add rule
-        ['title', 'min', 'min' => 40],
+        ['title', 'min', 40],
         ['freeTime', 'number'],
         ['title', 'checkTitle'],
     ])
@@ -331,12 +334,12 @@ $valid = Validation::make($_POST,[
 
 ### `isEmpty` -- 是否为空判断
 
-是否为空判断, 这个判断作为 `skipOnEmpty` 的依据. 默认使用 `empty($data[$attr])` 来判断.
+是否为空判断, 这个判断作为 `skipOnEmpty` 的依据. 默认使用 `ValidatorList::isEmpty` 来判断.
 
 你也可以自定义判断规则:
 
 ```php
-['name', 'string', 'isEmpty' => function($data, $attr) {
+['name', 'string', 'isEmpty' => function($value) {
     return true or false;
  }]
 ```
@@ -365,12 +368,11 @@ public function atScene(string $scene) // setScene 的别名方法
 ### 进行数据验证
 
 ```php
-public function validate(array $onlyChecked = [], $stopOnError = null)
+public function validate($stopOnError = null)
 ```
 
 进行数据验证。 返回验证器对象，然后就可以获取验证结果等信息。
 
-- `$onlyChecked` 可以设置此次需要验证的字段
 - `$stopOnError` 是否当出现一个验证失败就立即停止。 默认是 `true`
 
 ### 添加自定义的验证器
@@ -472,24 +474,32 @@ public function get(string $key, $default = null)
 验证器 | 说明 | 规则示例
 ----------|-------------|------------
 `int`   | 验证是否是 int | `['userId', 'int']`
-`number`    | 验证是否是 number | `['userId', 'number']`
+`number/num`    | 验证是否是 number | `['userId', 'number']`
 `bool`  | 验证是否是 bool | `['open', 'bool']`
 `float` | 验证是否是 float | `['price', 'float']`
 `string`    | 验证是否是 string. 支持长度检查 | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
-`isArray`   | 验证是否是数组 | ....
-`regexp`    | 使用正则进行验证 | ....
+`alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
+`alphaNum`   | 验证是否仅包含字母、数字 | `['field', 'alphaNum']`
+`alphaDash`   | 验证是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ） | `['field', 'alphaDash']`
+`isArray`   | 验证是否是json字符串 | `['goods', 'isArray']`
+`json`   | 验证是否是数组 | `['goods', 'json']`
 `url`   | 验证是否是 url | `['myUrl', 'url']`
 `email` | 验证是否是 email | `['userEmail', 'email']`
-`ip`    | 验证是否是 ip | `['ipAddr', 'ip']`
+`date` | 验证是否是 date | `['published_at', 'date']`
+`dateFormat` | 验证是否是 date, 并且是指定的格式 | `['published_at', 'dateFormat', 'Y-m-d']`
+`ip`    | 验证是否是 IP | `['ipAddr', 'ip']`
+`ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
+`ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
 `required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
 `size`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]` `['name', 'size', 'max' => 16]`
 `range`  | `size` 验证的别名 | 跟 `size` 一样
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | ....
-`min`   | 最小边界值验证 | `['title', 'min', 'value' => 40]`
-`max`   | 最大边界值验证 | `['title', 'max', 'value' => 40]`
-`in`    | 枚举验证 | `['id', 'in', 'value' => [1,2,3]`
-`compare` | 字段值比较 | `['passwd', 'compare', 'repasswd']`
-`callback`  | 自定义回调验证 | ....
+`min`   | 最小边界值验证 | `['title', 'min', 40]`
+`max`   | 最大边界值验证 | `['title', 'max', 40]`
+`in`    | 枚举验证 | `['status', 'in', [1,2,3]`
+`notIn`    | 枚举验证 | `['status', 'notIn', [1,2,3]`
+`compare/same` | 字段值比较 | `['passwd', 'compare', 'repasswd']`
+`regexp`    | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
 
 - 关于布尔值验证
     * 如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE

@@ -17,6 +17,11 @@ namespace inhere\validate;
  */
 trait ValidationTrait
 {
+    private static $fieldValidators = [
+        'required', 'requiredIf', 'requiredUnless',
+        'requiredWith', 'requiredWithAll', 'requiredWithout', 'requiredWithoutAll'
+    ];
+
     /**
      * current scenario name
      * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
@@ -156,7 +161,7 @@ trait ValidationTrait
      * 进行数据验证
      * @author inhere
      * @date   2015-08-11
-     * @param array $onlyChecked 只检查一部分属性
+     * @param  array $onlyChecked 可以设置此次需要验证的字段
      * @param  bool|null $stopOnError 是否出现错误即停止验证
      * @return static
      * @throws \RuntimeException
@@ -193,7 +198,7 @@ trait ValidationTrait
             // 为空时是否跳过(非 required 时). 参考自 yii2
             $skipOnEmpty = $rule['skipOnEmpty'] ?? true;
 
-            // 如何判断属性为空 默认使用 empty($data[$attr]). 也可自定义
+            // 如何判断属性为空 默认使用 ValidatorList::isEmpty(). 也可自定义
             $isEmpty = [ValidatorList::class, 'isEmpty'];
             if (isset($rule['isEmpty']) && $rule['isEmpty'] instanceof \Closure) {
                 $isEmpty = $rule['isEmpty'];
@@ -211,33 +216,53 @@ trait ValidationTrait
             // clear some fields
             unset($rule['msg'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when']);
 
-            // 验证设置, 有一些验证器需要设置参数。 e.g. size()
-            $copy = $rule;
+            // 验证设置, 有一些验证器需要参数。 e.g. size()
+            $args = $rule;
 
             // 循环检查属性
             foreach ($attrs as $attr) {
-                // 不在需要检查的列表内 || 值为空并且设定了为空跳过
-                if (
-                    ($onlyChecked && !in_array($attr, $onlyChecked, true)) ||
-                    ($validator !== 'required' && $skipOnEmpty && call_user_func($isEmpty, $data, $attr))
-                ) {
-                    continue;
-                }
+                $value = $this->getValue($attr);
 
                 // mark attribute is safe. not need validate. like. 'created_at'
                 if ($validator === 'safe') {
-                    $this->_safeData[$attr] = $data[$attr];
+                    $this->_safeData[$attr] = $value;
                     continue;
                 }
 
-                [$result, $validator] = $this->doValidate($data, $attr, $validator, $copy);
+                // 不在需要检查的列表内
+                if ($onlyChecked && !in_array($attr, $onlyChecked, true)) {
+                    continue;
+                }
 
-                if ($result === false) {
+                // required* 系列字段检查器
+                if (is_string($validator) && 0 === strpos($validator, 'required')) {
+                    if (!$this->requiredValidate($attr, $value, $validator, $args)) {
+                        $this->_errors[] = [
+                            $attr => $this->getMessage($validator, ['{attr}' => $attr], $args, $message)
+                        ];
+
+                        if ($this->_stopOnError) {
+                            break;
+                        }
+                    }
+
+                    continue;
+                }
+
+                // 设定了为空跳过 并且 值为空
+                if ($skipOnEmpty && call_user_func($isEmpty, $value)) {
+                    continue;
+                }
+
+                // 字段值检查 failed
+                if (!$this->doValidate($data, $attr, $value, $validator, $args)) {
                     $this->_errors[] = [
-                        $attr => $this->getMessage($validator, ['{attr}' => $attr], $rule, $message)
+                        $attr => $this->getMessage($validator, ['{attr}' => $attr], $args, $message)
                     ];
-                } else {
-                    $this->_safeData[$attr] = $data[$attr];
+
+                    if ($this->_stopOnError) {
+                        break;
+                    }
                 }
             }
 
@@ -259,37 +284,67 @@ trait ValidationTrait
         // fix : deny repeat validate
         $this->_validated = true;
 
+        unset($data);
         return $this;
     }
 
     /**
-     * do Validate
-     * @param array $data 待验证的数据列表
-     * @param string $attr 属性名称
+     * required Validate 字段名存在 检查
+     *
+     * @param string $attr      属性名称
+     * @param mixed  $value     属性值
+     * @param string $validator required* 验证器
+     * @param array  $args      验证需要的参数
+     *
+     * @return bool
+     */
+    protected function requiredValidate($attr, $value, $validator, $args)
+    {
+        // required 检查
+        if ($validator === 'required') {
+            $result = $this->required($attr);
+
+            // 其他 required* 方法
+        } else {
+            // 压入当前属性/字段名
+            array_unshift($args, $attr);
+
+            $result = call_user_func_array([$this, $validator], $args);
+        }
+
+        // failed
+        if (!$result) {
+            return false;
+        }
+
+        // validate success, save value to safeData
+        $this->collectSafeValue($attr, $value);
+
+        return true;
+    }
+
+    /**
+     * do Validate 字段值 检查
+     * @param array $data 原始数据列表
+     * @param string $attr  属性名称
+     * @param mixed $value 属性值
      * @param \Closure|string $validator 验证器
      * @param array $args 验证需要的参数
-     * @return array
+     * @return bool
      */
-    protected function doValidate($data, $attr, $validator, $args)
+    protected function doValidate($data, $attr, $value, $validator, $args)
     {
         // if attr don't exists.
-        if (!$this->has($attr)) {
-            return [false, $validator instanceof \Closure ? 'callback' : $validator];
+        if (null === $value) {
+            return false;
         }
 
-        if ($validator === 'required') {
-            $result = ValidatorList::required($data, $attr);
-
-            return [$result, $validator];
-        }
-
-        // 压入当前属性值 e.g. ValidatorList::range($data[$attr], $min , $max)
-        array_unshift($args, $data[$attr]);
+        // 压入当前属性值 e.g. ValidatorList::range($val, $min, $max)
+        array_unshift($args, $value);
 
         // if $validator is a closure
         if ($validator instanceof \Closure) {
             $callback = $validator;
-            $validator = 'callback';
             $args[] = $data;
 
         } elseif (is_string($validator)) {
@@ -304,7 +359,7 @@ trait ValidationTrait
                 $callback = [$this, $validator];
 
                 // $validator is a method of the class 'ValidatorList'
-            } elseif (is_callable([ValidatorList::class, $validator])) {
+            } elseif (method_exists(ValidatorList::class, $validator)) {
 
                 $callback = [ValidatorList::class, $validator];
             } else {
@@ -314,9 +369,15 @@ trait ValidationTrait
             throw new \InvalidArgumentException('Validator type is error, must is String or Closure!');
         }
 
-        $result = call_user_func_array($callback, $args);
+        unset($data);
+        if (!call_user_func_array($callback, $args)) {
+            return false;
+        }
 
-        return [(bool)$result, $validator];
+        // validate success, save value to safeData
+        $this->collectSafeValue($attr, $value);
+
+        return true;
     }
 
     /**
@@ -401,6 +462,166 @@ trait ValidationTrait
         // return $this->_availableRules;
     }
 
+    protected function collectSafeValue($attr, $value)
+    {
+        // 进行的是子级属性检查 eg: 'goods.apple'
+        if ($pos = strpos($attr, '.')) {
+            $firstLevelKey = substr($attr, 0, $pos);
+            $this->_safeData[$firstLevelKey] = $this->data[$firstLevelKey];
+        } else {
+            $this->_safeData[$attr] = $value;
+        }
+    }
+
+//////////////////////////////////// extra validate methods ////////////////////////////////////
+
+    /**
+     * 验证字段必须存在输入数据，且不为空。字段符合下方任一条件时即为「空」
+     * - 该值为 null.
+     * - 该值为空字符串。
+     * - 该值为空数组
+     *
+     * @param  string $field
+     * @return bool
+     */
+    public function required($field)
+    {
+        if (!isset($this->data[$field])) {
+            return false;
+        }
+
+        $val = $this->data[$field];
+
+        return $val !== '' && $val !== null && $val !== false && $val !== [];
+    }
+
+    /**
+     * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 必填
+     *
+     * @from laravel
+     * @param  string $field
+     * @param  string $anotherField
+     * @param  array|string  $values
+     * @return bool
+     */
+    public function requiredIf($field, $anotherField, $values)
+    {
+        if (!isset($this->data[$anotherField])) {
+            return false;
+        }
+
+        $val = $this->data[$anotherField];
+
+        if (in_array($val, (array)$values, true)) {
+            return $this->required($field);
+        }
+
+        return false;
+    }
+
+    /**
+     * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
+     *
+     * @from laravel
+     * @param  string $field
+     * @param  string $anotherField
+     * @param  array|string  $values
+     * @return bool
+     */
+    public function requiredUnless($field, $anotherField, $values)
+    {
+        if (!isset($this->data[$anotherField])) {
+            return false;
+        }
+
+        return in_array($this->data[$anotherField], (array)$values, true);
+    }
+
+    /**
+     * 如果指定的字段中的 任意一个 有值且不为空，则此字段为必填
+     *
+     * @from laravel
+     * @param  string $field
+     * @param  array|string  $fields
+     * @return bool
+     */
+    public function requiredWith($field, $fields)
+    {
+        foreach ((array)$fields as $name) {
+            if ($this->required($name)) {
+                return $this->required($field);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 如果指定的 所有字段 都有值，则此字段为必填。
+     *
+     * @from laravel
+     * @param  string $field
+     * @param  array|string  $fields
+     * @return bool
+     */
+    public function requiredWithAll($field, $fields)
+    {
+        $allHasValue = true;
+
+        foreach ((array)$fields as $name) {
+            if (!$this->required($name)) {
+                $allHasValue = false;
+                break;
+            }
+        }
+
+        return $allHasValue ? $this->required($field) : true;
+    }
+
+    /**
+     * 如果缺少 任意一个 指定的字段值，则此字段为必填。
+     *
+     * @from laravel
+     * @param  string $field
+     * @param  array|string  $fields
+     * @return bool
+     */
+    public function requiredWithout($field, $fields)
+    {
+        $allHasValue = true;
+
+        foreach ((array)$fields as $name) {
+            if (!$this->required($name)) {
+                $allHasValue = false;
+                break;
+            }
+        }
+
+        return $allHasValue ? true : $this->required($field);
+    }
+
+    /**
+     * 如果所有指定的字段 都没有 值，则此字段为必填。
+     *
+     * @from laravel
+     * @param  string $field
+     * @param  array|string  $fields
+     * @return bool
+     */
+    public function requiredWithoutAll($field, $fields)
+    {
+        $allNoValue = true;
+
+        foreach ((array)$fields as $name) {
+            if ($this->required($name)) {
+                $allNoValue = false;
+                break;
+            }
+        }
+
+        return $allNoValue ? $this->required($field) : true;
+    }
+
 //////////////////////////////////// error info ////////////////////////////////////
 
     /**
@@ -419,7 +640,7 @@ trait ValidationTrait
      */
     public function hasError(): bool
     {
-        return count($this->_errors) > 0;
+        return $this->isFail();
     }
 
     /**
@@ -427,7 +648,7 @@ trait ValidationTrait
      */
     public function isFail(): bool
     {
-        return $this->hasError();
+        return count($this->_errors) > 0;
     }
 
     /**
@@ -435,7 +656,15 @@ trait ValidationTrait
      */
     public function fail(): bool
     {
-        return $this->hasError();
+        return $this->isFail();
+    }
+
+    /**
+     * @return bool
+     */
+    public function passed(): bool
+    {
+        return !$this->isFail();
     }
 
     /**
@@ -492,18 +721,23 @@ trait ValidationTrait
         'number' => '{attr} must be an integer greater than 0!',
         'bool' => '{attr} must be is boolean!',
         'float' => '{attr} must be is float!',
-        'regexp' => '{attr} does not meet the conditions',
-        'url' => '{attr} not is url address!',
-        'email' => '{attr} not is email address!',
-        'ip' => '{attr} not is ip address!',
+        'regexp' => '{attr} does not meet the {value0} conditions',
+        'url' => '{attr} is not a url address!',
+        'email' => '{attr} is not a email address!',
+        'date' => '{attr} is not a date format!',
+        'dateFormat' => '{attr} is not in a {value0} date format !',
+        'ip' => '{attr} is not IP address!',
+        'ipv4' => '{attr} is not a IPv4 address!',
+        'ipv6' => '{attr} is not a IPv6 address!',
         'required' => 'parameter {attr} is required!',
         'length' => '{attr} length must at rang {min} ~ {max}',
         'size' => '{attr} must be an integer and at rang {min} ~ {max}',
-        'min' => '{attr} minimum boundary is {value}',
-        'max' => '{attr} maximum boundary is {value}',
-        'in' => '{attr} must in ({value})',
+        'min' => '{attr} minimum boundary is {value0}',
+        'max' => '{attr} maximum boundary is {value0}',
+        'in' => '{attr} must in ({value0})',
         'string' => '{attr} must be a string',
-        'compare' => '{attr} must be equals to {attr0}',
+        'compare' => '{attr} must be equals to {value0}',
+        'same' => '{attr} must be equals to {value0}',
         'isArray' => '{attr} must be an array',
         'callback' => '{attr} don\'t pass the test and verify!',
         '_' => '{attr} validation is not through!',
@@ -529,14 +763,16 @@ trait ValidationTrait
      * 各个验证器的提示消息
      * @author inhere
      * @date   2015-09-27
-     * @param  string $name 验证器名称
+     * @param  string|\Closure $validator 验证器
      * @param  array $params 待替换的参数
-     * @param  array $rule
+     * @param  array $args
      * @param  string $msg 自定义提示消息
      * @return string
      */
-    public function getMessage($name, array $params, array $rule = [], $msg = null)
+    public function getMessage($validator, array $params, array $args = [], $msg = null)
     {
+        $name = $validator instanceof \Closure ? 'callback' : $validator;
+
         if (!$msg) {
             $msgList = $this->getMessages();
             $msg = $msgList[$name] ?? $msgList['_'];
@@ -544,8 +780,8 @@ trait ValidationTrait
 
         $params['{attr}'] = $this->getAttrTran($params['{attr}']);
 
-        foreach ($rule as $key => $value) {
-            $key = is_int($key) ? "attr$key" : $key;
+        foreach ($args as $key => $value) {
+            $key = is_int($key) ? "value$key" : $key;
             $params['{' . $key . '}'] = is_array($value) ? implode(',', $value) : $value;
         }
 
@@ -710,15 +946,15 @@ trait ValidationTrait
      * @param mixed $value The data value
      * @return $this
      */
-//    public function set($key, $value)
-//    {
-//        $this->data[$key] = $value;
-//
-//        return $this;
-//    }
+    public function setValue($key, $value)
+    {
+        $this->data[$key] = $value;
+
+        return $this;
+    }
 
     /**
-     * Get data item for key
+     * Get data item by key
      * @param string $key The data key
      * @param mixed $default The default value to return if data key does not exist
      * @return mixed The key's value, or the default value
@@ -726,6 +962,18 @@ trait ValidationTrait
     public function get(string $key, $default = null)
     {
         return $this->has($key) ? $this->data[$key] : $default;
+    }
+
+    /**
+     * Get data item by key
+     *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
+     * @param string $key The data key
+     * @param mixed $default The default value
+     * @return mixed The key's value, or the default value
+     */
+    public function getValue(string $key, $default = null)
+    {
+        return Helper::getValueOfArray($this->data, $key, $default);
     }
 
     /**
