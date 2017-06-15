@@ -1,6 +1,6 @@
 # php-validate
 
-一个简单小巧的php验证库。仅有几个文件，无依赖。
+一个简洁小巧且功能完善的php验证库。仅有几个文件，无依赖。
 
 > 规则设置参考自 yii 的。
 
@@ -23,12 +23,14 @@ git clone https://git.oschina.net/inhere/php-validate.git // git@osc
 git clone https://github.com/inhere/php-validate.git // github
 ```
 
-## 使用
+## 如何使用
 
 <a name="how-to-use"></a>
-### 使用方式 1: 创建一个新的class
+### 方式 1: 创建一个新的class，并继承Validation
 
-创建一个新的class，并继承 `inhere\validate\Validation`。 此方式是最为完整的使用方式
+创建一个新的class，并继承 `inhere\validate\Validation`。用于一个（或一系列相关）请求的验证, 相当于 laravel 的 表单请求验证
+
+> 此方式是最为完整的使用方式
 
 ```php
 
@@ -57,6 +59,7 @@ git clone https://github.com/inhere/php-validate.git // github
                     }
                     return false;
                 }],
+                ['created_at, updated_at', 'safe'],
             ];
         }
         
@@ -99,10 +102,13 @@ if ($valid->fail()) {
 }
 
 // 验证成功 ...
+$safeData = $valid->getSafeData(); // 验证通过的安全数据
+// $postData = $valid->all(); // 原始数据
 
+$db->save($safeData);
 ```
 
-### 使用方式 2: 直接使用
+### 方式 2: 直接使用类 Validation
 
 需要快速简便的使用验证时，可直接使用 `inhere\validate\Validation`
 
@@ -125,11 +131,88 @@ if ($valid->fail()) {
                 var_dump($valid->firstError());
             }
 
-            //
-            // some logic ... ...
+            // $postData = $valid->all(); // 原始数据
+            $safeData = $valid->getSafeData(); // 验证通过的安全数据
+
+            $db->save($safeData);
         }
     }
 ```
+
+### 方式 1: 创建一个新的class，使用  ValidationTrait
+
+创建一个新的class，并使用 Trait `inhere\validate\ValidationTrait`。 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中
+
+如下， 嵌入到一个数据模型类中，添加数据库记录前自动进行验证
+
+```php
+    class DataModel
+    {
+        use \inhere\validate\ValidationTrait;
+
+        protected $data = [];
+
+        protected $db;
+
+        /**
+         * @param array $data
+         * @return $this
+         */
+        public function setData($data)
+        {
+            $this->data = $data;
+
+            return $this;
+        }
+
+        public function create()
+        {
+            if ($this->validate()->fail()) {
+                return false;
+            }
+
+            return $this->db->insert($this->getSafeData());
+        }
+    }
+```
+
+使用：
+
+```php
+    class UserModel extends DataModel
+    {
+        public function rules()
+        {
+            return [
+                ['username, passwd', 'required', 'on' => 'create' ],
+                ['passwd', 'compare', 'repasswd', 'on' => 'create']
+                ['username', 'string', 'min' => 2, 'max' => 20, 'on' => 'create' ],
+                ['id', 'number', 'on' => 'update' ],
+                ['created_at, updated_at', 'safe'],
+            ];
+        }
+    }
+    
+    // ...
+    class UserController 
+    {
+        // in action
+        // @api /user/add
+        public function addAction()
+        {
+            $model = new UserModel;
+            $ret = $model->setData($_POST)->create();
+
+            if (!$ret) {
+                exit($model->firstError());
+            }
+
+            echo "add success: userId = $ret";
+        }
+
+    }
+```
+
 
 ## 如何添加自定义验证器
 
@@ -191,7 +274,7 @@ $valid = Validation::make($_POST,[
 
 ```php
     // ...
-    $valid = ValidationClass::make($_POST)->useScene('update')->validate();
+    $valid = ValidationClass::make($_POST)->atScene('update')->validate();
     // ...
 
 ```
@@ -252,19 +335,32 @@ $valid = Validation::make($_POST,[
 
 你也可以自定义判断规则:
 
-```
+```php
 ['name', 'string', 'isEmpty' => function($data, $attr) {
     return true or false;
  }]
 ```
 
-## 一些关键方法说明
+### `safe` -- 标记属性/字段是安全的
+
+标记属性/字段是安全的，无需验证，直接加入到安全数据中。
+
+比如我们在写入数据库之前手动追加的字段: 创建时间，更新时间。
+
+```php
+['created_at, updated_at', 'safe']
+```
+
+## 一些关键方法使用说明
 
 ### 设置验证场景
 
 ```php
 public function setScene(string $scene)
+public function atScene(string $scene) // setScene 的别名方法
 ```
+
+设置当前验证的场景名称。将只会使用符合当前场景的规则对数据进行验证
 
 ### 进行数据验证
 
@@ -333,29 +429,16 @@ public function lastError($onlyMsg = true)
 
 - `$onlyMsg` 是否只返回消息字符串。当为 false，返回的则是数组 eg: `[ attr => 'error message']`
 
-### 获取所有数据
-
-```php
-public function all(): array
-```
-
-获取验证时传入的所有数据
-
-### 根据字段名获取值
-
-```php
-public function get(string $key, $default = null)
-```
-
-从验证时传入的数据中取出对应 key 的值
-
 ### 获取所有验证通过的数据
 
 ```php
 public function getSafeData(): array
 ```
 
-获取所有 **验证通过** 的安全数据
+获取所有 **验证通过** 的安全数据. 
+
+- 此数据数组只包含加入了规则验证的字段数据，不会含有额外的字段。(可直接省去后续的字段收集)
+- 推荐使用此数据进行后续操作，比如存入数据库等。
 
 > 注意： 当有验证失败出现时，安全数据 `safeData` 将会被重置为空。 即只有全部通过验证，才能获取到 `safeData`
 
@@ -367,6 +450,22 @@ public function getValid(string $key, $default = null) // getSafe() 的别名方
 ```
 
 从 **验证通过** 的数据中取出对应 key 的值
+
+### 获取所有原始数据
+
+```php
+public function all(): array
+```
+
+获取验证时传入的所有数据
+
+### 根据字段名获取原始数据的值
+
+```php
+public function get(string $key, $default = null)
+```
+
+从验证时传入的数据中取出对应 key 的值
 
 ## 内置的验证器
 
