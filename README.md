@@ -2,7 +2,7 @@
 
 一个简洁小巧且功能完善的php验证库。仅有几个文件，无依赖。
 
-> 规则设置参考自 yii 的。
+> 规则设置参考自 yii 的。部分规则参考自 laravel
 
 ## 项目地址
 
@@ -482,6 +482,13 @@ public function get(string $key, $default = null)
 `alphaNum`   | 验证是否仅包含字母、数字 | `['field', 'alphaNum']`
 `alphaDash`   | 验证是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ） | `['field', 'alphaDash']`
 `isArray`   | 验证是否是json字符串 | `['goods', 'isArray']`
+`required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
+`requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
+`requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
+`requiredWith` | 指定的字段中的 _任意一个_ 有值且不为空，则此字段为 **必填** | `['city', 'requiredWith', ['myCity'] ]`
+`requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填** | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
+`requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填** | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
+`requiredWithoutAll` | 如果所有指定的字段 都没有 值，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
 `json`   | 验证是否是数组 | `['goods', 'json']`
 `url`   | 验证是否是 url | `['myUrl', 'url']`
 `email` | 验证是否是 email | `['userEmail', 'email']`
@@ -490,8 +497,7 @@ public function get(string $key, $default = null)
 `ip`    | 验证是否是 IP | `['ipAddr', 'ip']`
 `ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
 `ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
-`required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
-`size`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]` `['name', 'size', 'max' => 16]`
+`size`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
 `range`  | `size` 验证的别名 | 跟 `size` 一样
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | ....
 `min`   | 最小边界值验证 | `['title', 'min', 40]`
@@ -505,6 +511,7 @@ public function get(string $key, $default = null)
     * 如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE
     * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE
 - 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度
+- `required*` 系列规则参考自 laravel
 
 ## 其他
 
