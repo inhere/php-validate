@@ -17,11 +17,6 @@ namespace inhere\validate;
  */
 trait ValidationTrait
 {
-    private static $fieldValidators = [
-        'required', 'requiredIf', 'requiredUnless',
-        'requiredWith', 'requiredWithAll', 'requiredWithout', 'requiredWithoutAll'
-    ];
-
     /**
      * current scenario name
      * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
@@ -369,7 +364,6 @@ trait ValidationTrait
             throw new \InvalidArgumentException('Validator type is error, must is String or Closure!');
         }
 
-        unset($data);
         if (!call_user_func_array($callback, $args)) {
             return false;
         }
@@ -534,7 +528,11 @@ trait ValidationTrait
             return false;
         }
 
-        return in_array($this->data[$anotherField], (array)$values, true);
+        if (in_array($this->data[$anotherField], (array)$values, true)) {
+            return true;
+        }
+
+        return $this->required($field);
     }
 
     /**
@@ -718,6 +716,8 @@ trait ValidationTrait
      */
     private static $_defaultMessages = [
         'int' => '{attr} must be an integer!',
+        'integer' => '{attr} must be an integer!',
+        'num' => '{attr} must be an integer greater than 0!',
         'number' => '{attr} must be an integer greater than 0!',
         'bool' => '{attr} must be is boolean!',
         'float' => '{attr} must be is float!',
@@ -735,10 +735,12 @@ trait ValidationTrait
         'min' => '{attr} minimum boundary is {value0}',
         'max' => '{attr} maximum boundary is {value0}',
         'in' => '{attr} must in ({value0})',
+        'notIn' => '{attr} cannot in ({value0})',
         'string' => '{attr} must be a string',
         'compare' => '{attr} must be equals to {value0}',
         'same' => '{attr} must be equals to {value0}',
         'isArray' => '{attr} must be an array',
+        'json' => '{attr} must be an json string',
         'callback' => '{attr} don\'t pass the test and verify!',
         '_' => '{attr} validation is not through!',
     ];

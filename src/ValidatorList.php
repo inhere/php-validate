@@ -15,29 +15,18 @@ namespace inhere\validate;
  */
 final class ValidatorList
 {
-
-/////////////////////////////// validator list ///////////////////////////////
-
     /**
-     * 属性是否为空判断
+     * 值是否为空判断
      * @param mixed $val
-     * @param $attr
      * @return bool
      */
     public static function isEmpty($val)
     {
-        return $val === '' && $val === null && $val === false && $val === [];
-    }
+        if (is_string($val)) {
+            $val = trim($val);
+        }
 
-    /**
-     * 数据中是否存在
-     * @param  array  $data
-     * @param  string $attr
-     * @return bool
-     */
-    public static function required(array $data, $attr)
-    {
-        return isset($data[$attr]) && $data[$attr] !== '' && $data[$attr] !== null && $data[$attr] !== [];
+        return $val === '' && $val === null && $val === false && $val === [];
     }
 
     /**
@@ -160,7 +149,7 @@ final class ValidatorList
         if (is_numeric($val)) {
             $val = (int) $val;
         } elseif (is_string($val)) {
-            $val = Helper::strlen($val);
+            $val = Helper::strlen(trim($val));
         } elseif (is_array($val)) {
             $val = count($val);
         } else {
@@ -224,15 +213,11 @@ final class ValidatorList
      */
     public static function length($val, $minLength = 0, $maxLength = null)
     {
-        if (is_string($val)) {
-            $length = Helper::strlen($val);
-        } elseif (is_array($val)) {
-            $length = count($val);
-        } else {
+        if (!is_string($val) && !is_array($val)) {
             return false;
         }
 
-        return self::size($length, $minLength, $maxLength);
+        return self::size($val, $minLength, $maxLength);
     }
 
     /**
@@ -296,13 +281,11 @@ final class ValidatorList
      * @param null $default
      * @return bool
      */
-    public static function regexp($val, $regexp = null, $default = null)
+    public static function regexp($val, $regexp, $default = null)
     {
-        $options = [];
-
-        if ($regexp) {
-            $options['regexp'] = $regexp;
-        }
+        $options = [
+            'regexp' => $regexp
+        ];
 
         if ($default !== null) {
             $options['default'] = $default;
@@ -310,9 +293,9 @@ final class ValidatorList
 
         return filter_var($val, FILTER_VALIDATE_REGEXP, ['options' => $options]);
     }
-    public static function regex($val, $regexp = null, $default = null)
+    public static function regex($val, $regexp, $default = null)
     {
-        return self::regexp($val, $regexp);
+        return self::regexp($val, $regexp, $default);
     }
 
     /**
@@ -414,13 +397,32 @@ final class ValidatorList
     }
 
     /**
+     * @param  array  $val
+     * @return bool
+     */
+    public static function isMap($val)
+    {
+        if (!is_array($val)) {
+            return false;
+        }
+
+        foreach ($val as $k => $v) {
+            if (is_numeric($k)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * 验证字段是否是一个有效的 JSON 字符串。
      * @param  string $val
      * @return bool
      */
     public static function json($val)
     {
-        if (!$val || (!is_string($val) && !method_exists($value, '__toString'))) {
+        if (!$val || (!is_string($val) && !method_exists($val, '__toString'))) {
             return false;
         }
 
@@ -473,7 +475,6 @@ final class ValidatorList
      * 校验字段值是否是日期格式
      *
      * @param string $date 日期
-     * @param string $formats 需要检验的格式数组
      * @return boolean
      */
     public static function date($date)
@@ -486,7 +487,7 @@ final class ValidatorList
      * 校验字段值是否是日期并且是否满足设定格式
      *
      * @param string $date 日期
-     * @param string $formats 需要检验的格式数组
+     * @param string $format 需要检验的格式数组
      * @return boolean
      */
     public static function dateFormat($date, $format = 'Y-m-d')

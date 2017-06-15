@@ -41,8 +41,8 @@ $rules = [
 
     ['goods.pear', 'max', 30], //
 
-    // ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
-    ['notExistsField1', 'requiredWithout', 'existsField'], //
+     ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
+//    ['notExistsField1', 'requiredWithout', 'existsField'], //
 
     ['freeTime', 'size', 'min'=>4, 'max'=>567, 'when' => function($data, $valid) {
         echo "  use when pre-check\n";

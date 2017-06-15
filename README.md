@@ -307,7 +307,7 @@ $valid = Validation::make($_POST,[
 
 当字段值为空时是否跳过验证,默认值是 `true`. (参考自 yii2)
 
-> 'required' 规则不在此限制内.
+> 'required*' 规则不在此限制内.
 
 如,有一条规则:
 
@@ -368,11 +368,12 @@ public function atScene(string $scene) // setScene 的别名方法
 ### 进行数据验证
 
 ```php
-public function validate($stopOnError = null)
+public function validate(array $onlyChecked = [], $stopOnError = null)
 ```
 
 进行数据验证。 返回验证器对象，然后就可以获取验证结果等信息。
 
+- `$onlyChecked` 可以设置此次需要验证的字段
 - `$stopOnError` 是否当出现一个验证失败就立即停止。 默认是 `true`
 
 ### 添加自定义的验证器
@@ -481,7 +482,7 @@ public function get(string $key, $default = null)
 `alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
 `alphaNum`   | 验证是否仅包含字母、数字 | `['field', 'alphaNum']`
 `alphaDash`   | 验证是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ） | `['field', 'alphaDash']`
-`isArray`   | 验证是否是json字符串 | `['goods', 'isArray']`
+`isArray`   | 验证是否是数组 | `['goods', 'isArray']`
 `required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
 `requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
 `requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
@@ -489,7 +490,7 @@ public function get(string $key, $default = null)
 `requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填** | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
 `requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填** | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
 `requiredWithoutAll` | 如果所有指定的字段 都没有 值，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
-`json`   | 验证是否是数组 | `['goods', 'json']`
+`json`   | 验证是否是json字符串 | `['goods', 'json']`
 `url`   | 验证是否是 url | `['myUrl', 'url']`
 `email` | 验证是否是 email | `['userEmail', 'email']`
 `date` | 验证是否是 date | `['published_at', 'date']`

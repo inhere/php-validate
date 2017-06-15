@@ -35,6 +35,7 @@ class Helper
     public static function strlen($str, $encoding = 'UTF-8')
     {
         $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
+
         if (function_exists('mb_strlen')) {
             return mb_strlen($str, $encoding);
         }
@@ -167,65 +168,29 @@ class Helper
 
     /**
      * getValueOfArray 支持以 '.' 分割进行子级值获取 eg: 'goods.apple'
-     * @param  array  $data
-     * @param  array|string  $key
+     * @param  array $array
+     * @param  array|string $key
+     * @param mixed $default
      * @return mixed
      */
-    public static function getValueOfArray(array $data, $key, $default = null)
+    public static function getValueOfArray(array $array, $key, $default = null)
     {
-        if (!$key) {
-            return $data;
+        if (null === $key) {
+            return $array;
         }
 
-        if (is_string($key)) {
-            $nodes = strpos(trim($key, '. '), '.') ? explode('.', $key) : [$key];
-        } else {
-            $nodes = (array)$key;
+        if (array_key_exists($key, $array)) {
+            return $array[$key];
         }
 
-        $temp = $data;
-
-        foreach ($nodes as $name) {
-            if (isset($temp[$name])) {
-                $temp = $temp[$name];
+        foreach (explode('.', $key) as $segment) {
+            if (is_array($array) && array_key_exists($segment, $array)) {
+                $array = $array[$segment];
             } else {
-                $temp = $default;
-                break;
+                return $default;
             }
         }
 
-        unset($data);
-        return $temp;
-    }
-
-    /**
-     * 使用正则验证数据
-     * @access public
-     * @param string $value  要验证的数据
-     * @param string $rule 验证规则 require email url currency number integer english
-     * @return boolean
-     */
-    public static function regexVerify($value,$rule)
-    {
-        $value    = trim($value);
-        $validate = array(
-            'require'   =>  '/\S+/',
-            'email'     =>  '/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/',
-            // 'url'       =>  '/^http(s?):\/\/(?:[A-za-z0-9-]+\.)+[A-za-z]{2,4}(?:[\/\?#][\/=\?%\-&~`@[\]\':+!\.#\w]*)?$/',
-            'url'       =>  '/^(http|https|ftp):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i',
-            'currency'  =>  '/^\d+(\.\d+)?$/', # 货币
-            'number'    =>  '/^\d+$/',
-            'zip'       =>  '/^\d{6}$/',
-            'integer'   =>  '/^[-\+]?\d+$/',
-            'double'    =>  '/^[-\+]?\d+(\.\d+)?$/',
-            'english'   =>  '/^[A-Za-z]+$/',
-        );
-
-        // 检查是否有内置的正则表达式
-        if (isset($validate[strtolower($rule)])){
-            $rule       =   $validate[strtolower($rule)];
-        }
-
-        return preg_match($rule,$value)===1;
+        return $array;
     }
 }
