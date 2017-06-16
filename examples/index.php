@@ -20,7 +20,7 @@ $data = [
     'tagId' => '234535',
     // 'freeTime' => '1456767657', // filed not exists
     'note' => '',
-    'name' => 'john',
+    'name' => 'Ajohn',
     'existsField' => 'test',
     'passwd' => 'password',
     'repasswd' => 'repassword',
@@ -38,6 +38,8 @@ $rules = [
     ['insertTime', 'email', 'scene' => 'otherScene' ],// set scene. will is not validate it on default.
     ['tagId', 'size', 'max'=> 567, 'min'=> 4, ], // 4<= tagId <=567
     ['passwd', 'compare', 'repasswd'], //
+
+    ['name', 'regexp' ,'/^[a-z]\w{2,12}$/'],
 
     ['goods.pear', 'max', 30], //
 

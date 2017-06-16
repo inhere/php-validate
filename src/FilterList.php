@@ -1,23 +1,17 @@
 <?php
 /**
  * @date 2015.08.05
- * 过滤器(strainer): 过滤数据，去除不合要求的数据，返回过滤后的数据(始终返回字符串, 全部不符合返回空字符串)
+ * 过滤器(strainer/filter): 过滤数据，去除不合要求的数据，返回过滤后的数据(始终返回字符串, 全部不符合返回空字符串)
  */
 namespace inhere\validate;
 
 /**
- * Class StrainerList
+ * Class FilterList
  * @package inhere\validate
  */
-final class StrainerList
+final class FilterList
 {
-/////////////////////////////// php internal Strainer ///////////////////////////////
-
-//    public static function multi($data, array $filters=[])
-    //    {}
-
-//    public static function inputMulti($type, array $filters=[])
-    //    {}
+/////////////////////////////// php internal Filter ///////////////////////////////
 
     /**
      * simple trim space

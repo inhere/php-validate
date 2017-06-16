@@ -18,13 +18,12 @@ namespace inhere\validate;
  *  ['tagId,userId,name,email,freeTime', 'required'],
  *  ['email', 'email'],
  *  ['userId', 'number'],
- *  ['name', function ($name) {
- *      return preg_match('/[a-z]\w{2,12}/', $name);
- *  }],
+ *  ['name', 'regexp' ,'/^[a-z]\w{2,12}$/'],
  * ])->validate();
  *
- * $vd->hasError();// bool
+ * $vd->fail();// bool
  * $vd->firstError(); // get first error message.
+ * $vd->passed();// bool
  *
  */
 class Validation
@@ -49,7 +48,9 @@ class Validation
     public function __construct(array $data = [], array $rules = [], array $attrTrans = [], $scene = '', $startValidate = false)
     {
         $this->data = $data;
-        $this->setRules($rules)
+
+        $this
+            ->setRules($rules)
             ->setScene($scene)
             ->setAttrTrans($attrTrans);
 

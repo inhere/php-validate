@@ -388,6 +388,7 @@ final class ValidatorList
     }
 
     /**
+     * 验证值是否是一个数组
      * @param  mixed  $val
      * @return bool
      */
@@ -397,6 +398,7 @@ final class ValidatorList
     }
 
     /**
+     * 验证值是否是一个非自然数组 map (key - value 形式的)
      * @param  array  $val
      * @return bool
      */
@@ -407,7 +409,55 @@ final class ValidatorList
         }
 
         foreach ($val as $k => $v) {
-            if (is_numeric($k)) {
+            if (is_string($k)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 验证值是否是一个自然数组 list (key是从0自然增长的)
+     * @param  array $val
+     * @return bool
+     */
+    public static function isList($val)
+    {
+        if (!is_array($val) || !isset($val[0])) {
+            return false;
+        }
+
+        $prevKey = 0;
+
+        foreach ($val as $k => $v) {
+            if (!is_int($k)) {
+                return false;
+            }
+
+            if ($k !== $prevKey) {
+                return false;
+            }
+
+            $prevKey++;
+        }
+
+        return true;
+    }
+
+    /**
+     * 验证字段值是否是一个 int list
+     * @param  array $val
+     * @return bool
+     */
+    public static function intList($val)
+    {
+        if (!is_array($val)) {
+            return false;
+        }
+
+        foreach ($val as $v) {
+            if (!is_numeric($v)) {
                 return false;
             }
         }
@@ -416,7 +466,27 @@ final class ValidatorList
     }
 
     /**
-     * 验证字段是否是一个有效的 JSON 字符串。
+     * 验证字段值是否是一个 string list
+     * @param  array $val
+     * @return bool
+     */
+    public static function strList($val)
+    {
+        if (!is_array($val)) {
+            return false;
+        }
+
+        foreach ($val as $v) {
+            if (is_string($v)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 验证字段值是否是一个有效的 JSON 字符串。
      * @param  string $val
      * @return bool
      */

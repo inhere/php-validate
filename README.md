@@ -55,6 +55,7 @@ git clone https://github.com/inhere/php-validate.git // github
                 }],
                 ['userId', 'number', 'on' => 'scene1' ],
                 ['username', 'string', 'on' => 'scene2' ],
+                ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
                 ['title', 'customValidator', 'msg' => '{attr} error msg!' ],
                 ['status', function($status) {
                     if ($status > 3) {
@@ -391,9 +392,13 @@ public function addValidator(string $name, \Closure $callback, string $msg = '')
 ### 获取验证是否通过
 
 ```
+// 验证失败
 public function hasError()
 public function isFail() // hasError() 的别名方法
 public function fail() // hasError() 的别名方法
+
+// 成功通过验证
+public function passed() 
 ```
 
 获取验证是否通过(是否有验证失败)。
@@ -474,8 +479,8 @@ public function get(string $key, $default = null)
 
 验证器 | 说明 | 规则示例
 ----------|-------------|------------
-`int`   | 验证是否是 int | `['userId', 'int']`
-`number/num`    | 验证是否是 number | `['userId', 'number']`
+`int/integer`   | 验证是否是 int | `['userId', 'int']`
+`num/number`    | 验证是否是 number | `['userId', 'number']`
 `bool`  | 验证是否是 bool | `['open', 'bool']`
 `float` | 验证是否是 float | `['price', 'float']`
 `string`    | 验证是否是 string. 支持长度检查 | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
@@ -483,6 +488,17 @@ public function get(string $key, $default = null)
 `alphaNum`   | 验证是否仅包含字母、数字 | `['field', 'alphaNum']`
 `alphaDash`   | 验证是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ） | `['field', 'alphaDash']`
 `isArray`   | 验证是否是数组 | `['goods', 'isArray']`
+`isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
+`isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
+`intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
+`strList`   | 验证字段值是否是一个 string list | `['tagIds', 'strList']`
+`size`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
+`range`  | `size` 验证的别名 | 跟 `size` 一样
+`length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | ....
+`min`   | 最小边界值验证 | `['title', 'min', 40]`
+`max`   | 最大边界值验证 | `['title', 'max', 40]`
+`in`    | 枚举验证 | `['status', 'in', [1,2,3]`
+`notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
 `required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
 `requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
 `requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
@@ -490,33 +506,46 @@ public function get(string $key, $default = null)
 `requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填** | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
 `requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填** | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
 `requiredWithoutAll` | 如果所有指定的字段 都没有 值，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
-`json`   | 验证是否是json字符串 | `['goods', 'json']`
 `url`   | 验证是否是 url | `['myUrl', 'url']`
 `email` | 验证是否是 email | `['userEmail', 'email']`
 `date` | 验证是否是 date | `['published_at', 'date']`
 `dateFormat` | 验证是否是 date, 并且是指定的格式 | `['published_at', 'dateFormat', 'Y-m-d']`
+`json`   | 验证是否是json字符串 | `['goods', 'json']`
 `ip`    | 验证是否是 IP | `['ipAddr', 'ip']`
 `ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
 `ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
-`size`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
-`range`  | `size` 验证的别名 | 跟 `size` 一样
-`length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | ....
-`min`   | 最小边界值验证 | `['title', 'min', 40]`
-`max`   | 最大边界值验证 | `['title', 'max', 40]`
-`in`    | 枚举验证 | `['status', 'in', [1,2,3]`
-`notIn`    | 枚举验证 | `['status', 'notIn', [1,2,3]`
 `compare/same` | 字段值比较 | `['passwd', 'compare', 'repasswd']`
 `regexp`    | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
 
+### 一些补充说明
+
+- 请将 `required*` 系列规则写在规则列表的最前面
 - 关于布尔值验证
     * 如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE
     * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE
+- 支持对数组的子级值验证 
+
+```php
+[
+    'goods' => [
+        'apple' => 34,
+        'pear' => 50,
+    ],
+]
+```
+
+规则：
+
+```php
+    ['goods.pear', 'max', 30], //goods 下的 pear 值最大不能超过 30
+```
+
 - 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度
 - `required*` 系列规则参考自 laravel
 
 ## 其他
 
-可运行示例请看 `example` 
+可运行示例请看 `examples` 
 
 ## License
 

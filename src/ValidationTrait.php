@@ -124,7 +124,7 @@ trait ValidationTrait
     }
 
     /**
-     * 自定义验证器的错误消息格式
+     * 自定义验证器的默认错误消息格式
      * custom validator's message, to override default message.
      * @return array
      */
@@ -721,7 +721,6 @@ trait ValidationTrait
         'number' => '{attr} must be an integer greater than 0!',
         'bool' => '{attr} must be is boolean!',
         'float' => '{attr} must be is float!',
-        'regexp' => '{attr} does not meet the {value0} conditions',
         'url' => '{attr} is not a url address!',
         'email' => '{attr} is not a email address!',
         'date' => '{attr} is not a date format!',
@@ -732,11 +731,13 @@ trait ValidationTrait
         'required' => 'parameter {attr} is required!',
         'length' => '{attr} length must at rang {min} ~ {max}',
         'size' => '{attr} must be an integer and at rang {min} ~ {max}',
+        'range' => '{attr} must be an integer and at rang {min} ~ {max}',
         'min' => '{attr} minimum boundary is {value0}',
         'max' => '{attr} maximum boundary is {value0}',
         'in' => '{attr} must in ({value0})',
         'notIn' => '{attr} cannot in ({value0})',
         'string' => '{attr} must be a string',
+        'regexp' => '{attr} does not match the {value0} conditions',
         'compare' => '{attr} must be equals to {value0}',
         'same' => '{attr} must be equals to {value0}',
         'isArray' => '{attr} must be an array',
