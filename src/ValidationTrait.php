@@ -96,19 +96,9 @@ trait ValidationTrait
      */
     public function rules()
     {
-        return [];
-        /* e.g:
-            return [
-                // not set 'scene', enable this rule at all scene.
-                [ 'tagId,userId', 'required', 'msg' => '{attr} is required!'],
-
-                // set scene is add -- when `$this->scene == 'add'` enable this rule.
-                [ 'tagId', 'size', 'min'=>4, 'max'=>567, 'on' => 'add' ],
-
-                // use callback and custom error message
-                [ 'userId', function($value){ return $value > 1;}, 'msg' => '{attr} is must gt 1!'],
-            ];
-       */
+        return [
+        // ['fields', 'validator', 'arg1', 'arg2' ...]
+        ];
     }
 
     /**
@@ -138,6 +128,11 @@ trait ValidationTrait
 
 //////////////////////////////////// Validate ////////////////////////////////////
 
+    /**
+     * before validate handler
+     * @param  \Closure $cb
+     * @return static
+     */
     public function before(\Closure $cb)
     {
         $this->_beforeHandler = $cb;
@@ -145,6 +140,11 @@ trait ValidationTrait
         return $this;
     }
 
+    /**
+     * after validate handler
+     * @param  \Closure $cb
+     * @return static
+     */
     public function after(\Closure $cb)
     {
         $this->_afterHandler = $cb;
@@ -272,7 +272,7 @@ trait ValidationTrait
             $this->_safeData = [];
         }
 
-        if ($cb = $this->_beforeHandler) {
+        if ($cb = $this->_afterHandler) {
             $cb($this);
         }
 

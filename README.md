@@ -491,7 +491,7 @@ public function get(string $key, $default = null)
 `isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
 `isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
-`strList`   | 验证字段值是否是一个 string list | `['tagIds', 'strList']`
+`strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
 `size`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
 `range`  | `size` 验证的别名 | 跟 `size` 一样
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | ....
