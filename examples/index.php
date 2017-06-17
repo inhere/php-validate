@@ -43,6 +43,8 @@ $rules = [
 
     ['goods.pear', 'max', 30], //
 
+    ['goods', 'isList'], //
+
      ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
 //    ['notExistsField1', 'requiredWithout', 'existsField'], //
 

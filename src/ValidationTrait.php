@@ -218,14 +218,14 @@ trait ValidationTrait
             foreach ($attrs as $attr) {
                 $value = $this->getValue($attr);
 
-                // mark attribute is safe. not need validate. like. 'created_at'
-                if ($validator === 'safe') {
-                    $this->_safeData[$attr] = $value;
+                // 不在需要检查的列表内
+                if ($onlyChecked && !in_array($attr, $onlyChecked, true)) {
                     continue;
                 }
 
-                // 不在需要检查的列表内
-                if ($onlyChecked && !in_array($attr, $onlyChecked, true)) {
+                // mark attribute is safe. not need validate. like. 'created_at'
+                if ($validator === 'safe') {
+                    $this->_safeData[$attr] = $value;
                     continue;
                 }
 
@@ -300,22 +300,23 @@ trait ValidationTrait
             $result = $this->required($attr);
 
             // 其他 required* 方法
-        } else {
+        } elseif (method_exists($this, $validator)) {
             // 压入当前属性/字段名
             array_unshift($args, $attr);
 
             $result = call_user_func_array([$this, $validator], $args);
-        }
-
-        // failed
-        if (!$result) {
-            return false;
+        } else {
+            throw new \InvalidArgumentException("The validator [$validator] is not exists!");
         }
 
         // validate success, save value to safeData
-        $this->collectSafeValue($attr, $value);
+        if ($result) {
+            $this->collectSafeValue($attr, $value);
 
-        return true;
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -364,14 +365,14 @@ trait ValidationTrait
             throw new \InvalidArgumentException('Validator type is error, must is String or Closure!');
         }
 
-        if (!call_user_func_array($callback, $args)) {
-            return false;
+        // validate success, save value to safeData
+        if (call_user_func_array($callback, $args)) {
+            $this->collectSafeValue($attr, $value);
+
+            return true;
         }
 
-        // validate success, save value to safeData
-        $this->collectSafeValue($attr, $value);
-
-        return true;
+        return false;
     }
 
     /**
@@ -456,6 +457,11 @@ trait ValidationTrait
         // return $this->_availableRules;
     }
 
+    /**
+     * collect Safe Value
+     * @param string $attr
+     * @param mixed $value
+     */
     protected function collectSafeValue($attr, $value)
     {
         // 进行的是子级属性检查 eg: 'goods.apple'
@@ -720,6 +726,7 @@ trait ValidationTrait
         'num' => '{attr} must be an integer greater than 0!',
         'number' => '{attr} must be an integer greater than 0!',
         'bool' => '{attr} must be is boolean!',
+        'boolean' => '{attr} must be is boolean!',
         'float' => '{attr} must be is float!',
         'url' => '{attr} is not a url address!',
         'email' => '{attr} is not a email address!',
@@ -741,6 +748,10 @@ trait ValidationTrait
         'compare' => '{attr} must be equals to {value0}',
         'same' => '{attr} must be equals to {value0}',
         'isArray' => '{attr} must be an array',
+        'isMap' => '{attr} must be an array and is key-value format',
+        'isList' => '{attr} must be an array of nature',
+        'intList' => '{attr} must be an array and value is all integers',
+        'strList' => '{attr} must be an array and value is all strings',
         'json' => '{attr} must be an json string',
         'callback' => '{attr} don\'t pass the test and verify!',
         '_' => '{attr} validation is not through!',

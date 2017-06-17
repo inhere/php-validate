@@ -481,7 +481,7 @@ public function get(string $key, $default = null)
 ----------|-------------|------------
 `int/integer`   | 验证是否是 int | `['userId', 'int']`
 `num/number`    | 验证是否是 number | `['userId', 'number']`
-`bool`  | 验证是否是 bool | `['open', 'bool']`
+`bool/boolean`  | 验证是否是 bool | `['open', 'bool']`
 `float` | 验证是否是 float | `['price', 'float']`
 `string`    | 验证是否是 string. 支持长度检查 | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
 `alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
@@ -492,8 +492,7 @@ public function get(string $key, $default = null)
 `isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
 `strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
-`size`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
-`range`  | `size` 验证的别名 | 跟 `size` 一样
+`size/range`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | ....
 `min`   | 最小边界值验证 | `['title', 'min', 40]`
 `max`   | 最大边界值验证 | `['title', 'max', 40]`
