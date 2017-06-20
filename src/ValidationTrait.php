@@ -191,7 +191,7 @@ trait ValidationTrait
             $validator = array_shift($rule);
 
             // 为空时是否跳过(非 required 时). 参考自 yii2
-            $skipOnEmpty = $rule['skipOnEmpty'] ?? true;
+            $skipOnEmpty = isset($rule['skipOnEmpty']) ? $rule['skipOnEmpty'] : true;
 
             // 如何判断属性为空 默认使用 ValidatorList::isEmpty(). 也可自定义
             $isEmpty = [ValidatorList::class, 'isEmpty'];
@@ -200,10 +200,10 @@ trait ValidationTrait
             }
 
             // 自定义当前验证的错误提示消息
-            $message = $rule['msg'] ?? null;
+            $message = isset($rule['msg']) ? $rule['msg'] : null;
 
             // 验证的前置条件 -- 不满足条件,跳过此条规则
-            $when = $rule['when'] ?? null;
+            $when = isset($rule['when']) ? $rule['when'] : null;
             if ($when && $when instanceof \Closure && $when($data, $this) !== true) {
                 continue;
             }
@@ -406,7 +406,7 @@ trait ValidationTrait
      * @param string $msg
      * @return $this
      */
-    public function addValidator(string $name, \Closure $callback, string $msg = '')
+    public function addValidator($name, \Closure $callback, $msg = '')
     {
         $this->_validators[$name] = $callback;
 
@@ -642,7 +642,7 @@ trait ValidationTrait
      * 是否有错误
      * @return boolean
      */
-    public function hasError(): bool
+    public function hasError()
     {
         return $this->isFail();
     }
@@ -650,7 +650,7 @@ trait ValidationTrait
     /**
      * @return bool
      */
-    public function isFail(): bool
+    public function isFail()
     {
         return count($this->_errors) > 0;
     }
@@ -658,7 +658,7 @@ trait ValidationTrait
     /**
      * @return bool
      */
-    public function fail(): bool
+    public function fail()
     {
         return $this->isFail();
     }
@@ -666,7 +666,7 @@ trait ValidationTrait
     /**
      * @return bool
      */
-    public function passed(): bool
+    public function passed()
     {
         return !$this->isFail();
     }
@@ -675,7 +675,7 @@ trait ValidationTrait
      * @param string $attr
      * @param string $msg
      */
-    public function addError(string $attr, string $msg)
+    public function addError($attr, $msg)
     {
         $this->_errors[] = [$attr => $msg];
     }
@@ -683,7 +683,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getErrors(): array
+    public function getErrors()
     {
         return $this->_errors;
     }
@@ -760,7 +760,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public static function getDefaultMessages(): array
+    public static function getDefaultMessages()
     {
         return self::$_defaultMessages;
     }
@@ -768,7 +768,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getMessages(): array
+    public function getMessages()
     {
         return array_merge(self::$_defaultMessages, $this->messages());
     }
@@ -789,7 +789,7 @@ trait ValidationTrait
 
         if (!$msg) {
             $msgList = $this->getMessages();
-            $msg = $msgList[$name] ?? $msgList['_'];
+            $msg = isset($msgList[$name]) ? $msgList[$name] : $msgList['_'];
         }
 
         $params['{attr}'] = $this->getAttrTran($params['{attr}']);
@@ -808,7 +808,7 @@ trait ValidationTrait
      * @param bool $stopOnError
      * @return $this
      */
-    public function setStopOnError(bool $stopOnError = true)
+    public function setStopOnError($stopOnError = true)
     {
         $this->_stopOnError = $stopOnError;
 
@@ -818,7 +818,7 @@ trait ValidationTrait
     /**
      * @return bool
      */
-    public function isStopOnError(): bool
+    public function isStopOnError()
     {
         return $this->_stopOnError;
     }
@@ -826,7 +826,7 @@ trait ValidationTrait
     /**
      * @return bool
      */
-    public function isValidated(): bool
+    public function isValidated()
     {
         return $this->_validated;
     }
@@ -834,7 +834,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getValidators(): array
+    public function getValidators()
     {
         return $this->_validators;
     }
@@ -843,17 +843,17 @@ trait ValidationTrait
      * @param string $attr
      * @return string
      */
-    public function getAttrTran(string $attr): string
+    public function getAttrTran($attr)
     {
         $trans = $this->getAttrTrans();
 
-        return $trans[$attr] ?? Helper::toUnderscoreCase($attr, ' ');
+        return isset($trans[$attr]) ? $trans[$attr] : Helper::toUnderscoreCase($attr, ' ');
     }
 
     /**
      * @return array
      */
-    public function getAttrTrans(): array
+    public function getAttrTrans()
     {
         return array_merge($this->attrTrans(), $this->_attrTrans);
     }
@@ -873,7 +873,7 @@ trait ValidationTrait
     /**
      * @return bool
      */
-    public function hasRule(): bool
+    public function hasRule()
     {
         return $this->getRules() ? true : false;
     }
@@ -881,7 +881,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getRules(): array
+    public function getRules()
     {
         return array_merge($this->rules(), $this->_rules);
     }
@@ -900,7 +900,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getAvailableRules(): array
+    public function getAvailableRules()
     {
         return $this->_availableRules;
     }
@@ -908,7 +908,7 @@ trait ValidationTrait
     /**
      * @return string
      */
-    public function getScene(): string
+    public function getScene()
     {
         return $this->scene;
     }
@@ -917,7 +917,7 @@ trait ValidationTrait
      * @param string $scene
      * @return static
      */
-    public function setScene(string $scene)
+    public function setScene($scene)
     {
         $this->scene = $scene;
 
@@ -929,7 +929,7 @@ trait ValidationTrait
      * @param string $scene
      * @return static
      */
-    public function atScene(string $scene)
+    public function atScene($scene)
     {
         return $this->setScene($scene);
     }
@@ -939,7 +939,7 @@ trait ValidationTrait
      *
      * @return array The collection's source data
      */
-    public function all(): array
+    public function all()
     {
         return $this->data;
     }
@@ -949,7 +949,7 @@ trait ValidationTrait
      * @param string $key The data key
      * @return bool
      */
-    public function has(string $key): bool
+    public function has($key)
     {
         return array_key_exists($key, $this->data);
     }
@@ -973,7 +973,7 @@ trait ValidationTrait
      * @param mixed $default The default value to return if data key does not exist
      * @return mixed The key's value, or the default value
      */
-    public function get(string $key, $default = null)
+    public function get($key, $default = null)
     {
         return $this->has($key) ? $this->data[$key] : $default;
     }
@@ -985,7 +985,7 @@ trait ValidationTrait
      * @param mixed $default The default value
      * @return mixed The key's value, or the default value
      */
-    public function getValue(string $key, $default = null)
+    public function getValue($key, $default = null)
     {
         return Helper::getValueOfArray($this->data, $key, $default);
     }
@@ -996,7 +996,7 @@ trait ValidationTrait
      * @param mixed $default
      * @return mixed
      */
-    public function getSafe(string $key, $default = null)
+    public function getSafe($key, $default = null)
     {
         return $this->getValid($key, $default);
     }
@@ -1007,7 +1007,7 @@ trait ValidationTrait
      * @param mixed $default
      * @return mixed
      */
-    public function getValid(string $key, $default = null)
+    public function getValid($key, $default = null)
     {
         return array_key_exists($key, $this->_safeData) ? $this->_safeData[$key] : $default;
     }
@@ -1015,7 +1015,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getSafeData(): array
+    public function getSafeData()
     {
         return $this->_safeData;
     }
@@ -1023,7 +1023,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getSafeKeys(): array
+    public function getSafeKeys()
     {
         return array_keys($this->_safeData);
     }
