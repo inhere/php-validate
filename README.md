@@ -9,6 +9,11 @@
 - **git@osc** https://git.oschina.net/inhere/php-validate.git
 - **github** https://github.com/inhere/php-validate.git
 
+**注意：**
+
+- master 分支是要求 `php >= 7` 的(推荐使用)。
+- php5 分支是支持 php 5 的代码分支
+
 ## 安装
 
 - 使用 composer
@@ -17,6 +22,7 @@
 
 ```
 "inhere/php-validate": "dev-master",
+// "inhere/php-validate": "dev-php5", // for php5
 ```
 
 然后执行: `composer update`
