@@ -304,7 +304,7 @@ trait ValidationTrait
             // 压入当前属性/字段名
             array_unshift($args, $attr);
 
-            $result = call_user_func_array([$this, $validator], $args);
+            $result = $this->$validator(...$args);
         } else {
             throw new \InvalidArgumentException("The validator [$validator] is not exists!");
         }
@@ -340,24 +340,24 @@ trait ValidationTrait
 
         // if $validator is a closure
         if ($validator instanceof \Closure) {
-            $callback = $validator;
             $args[] = $data;
+            $passed = $validator(...$args);
 
         } elseif (is_string($validator)) {
 
             // if $validator is a custom add callback in the property {@see $_validators}.
             if (isset($this->_validators[$validator])) {
                 $callback = $this->_validators[$validator];
+                $passed = $callback(...$args);
 
                 // if $validator is a custom method of the subclass.
             } elseif (method_exists($this, $validator)) {
-
-                $callback = [$this, $validator];
+                $passed = $this->$validator(...$args);
 
                 // $validator is a method of the class 'ValidatorList'
             } elseif (method_exists(ValidatorList::class, $validator)) {
 
-                $callback = [ValidatorList::class, $validator];
+                $passed = call_user_func_array([ValidatorList::class, $validator], $args);
             } else {
                 throw new \InvalidArgumentException("The validator [$validator] don't exists!");
             }
@@ -366,7 +366,7 @@ trait ValidationTrait
         }
 
         // validate success, save value to safeData
-        if (call_user_func_array($callback, $args)) {
+        if ($passed) {
             $this->collectSafeValue($attr, $value);
 
             return true;

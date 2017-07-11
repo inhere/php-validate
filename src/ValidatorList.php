@@ -26,7 +26,7 @@ final class ValidatorList
             $val = trim($val);
         }
 
-        return $val === '' && $val === null && $val === false && $val === [];
+        return $val === '' || $val === null || $val === false || $val === [];
     }
 
     /**
