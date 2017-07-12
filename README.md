@@ -547,6 +547,7 @@ public function get(string $key, $default = null)
 
 - 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度
 - `required*` 系列规则参考自 laravel
+- `size/range` `length` 可以只定义 min 最小值。 但是当定义了max 值时，必须同时定义最小值
 
 ## 其他
 

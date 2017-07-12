@@ -736,14 +736,30 @@ trait ValidationTrait
         'ipv4' => '{attr} is not a IPv4 address!',
         'ipv6' => '{attr} is not a IPv6 address!',
         'required' => 'parameter {attr} is required!',
-        'length' => '{attr} length must at rang {min} ~ {max}',
-        'size' => '{attr} must be an integer and at rang {min} ~ {max}',
-        'range' => '{attr} must be an integer and at rang {min} ~ {max}',
+        'length' =>  [
+            'nothing ...',
+            '{attr} must be an string/array and minimum length is {min}',
+            '{attr} must be an string/array and length range {min} ~ {max}',
+        ],
+        'size' => [
+            'nothing ...',
+            '{attr} must be an integer/string/array and minimum value/length is {min}',
+            '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
+        ],
+        'range' =>  [
+            'nothing ...',
+            '{attr} must be an integer/string/array and minimum value/length is {min}',
+            '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
+        ],
         'min' => '{attr} minimum boundary is {value0}',
         'max' => '{attr} maximum boundary is {value0}',
         'in' => '{attr} must in ({value0})',
         'notIn' => '{attr} cannot in ({value0})',
-        'string' => '{attr} must be a string',
+        'string' => [
+            '{attr} must be a string',
+            '{attr} must be a string and minimum length be {min}',
+            '{attr} must be a string and length range must be {min} ~ {max}',
+        ],
         'regexp' => '{attr} does not match the {value0} conditions',
         'compare' => '{attr} must be equals to {value0}',
         'same' => '{attr} must be equals to {value0}',
@@ -797,6 +813,12 @@ trait ValidationTrait
         foreach ($args as $key => $value) {
             $key = is_int($key) ? "value$key" : $key;
             $params['{' . $key . '}'] = is_array($value) ? implode(',', $value) : $value;
+        }
+
+        if (is_array($msg)) {
+            $paramNum = count($params);
+            $msgKey = $paramNum - 1;
+            $msg = $msg[$msgKey] ?? $msg[0];
         }
 
         return strtr($msg, $params);
