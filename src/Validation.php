@@ -41,18 +41,18 @@ class Validation
     /**
      * @param array $data
      * @param array $rules
-     * @param array $attrTrans
+     * @param array $translates
      * @param string $scene
      * @param bool $startValidate 立即开始验证
      */
-    public function __construct(array $data = [], array $rules = [], array $attrTrans = [], $scene = '', $startValidate = false)
+    public function __construct(array $data = [], array $rules = [], array $translates = [], $scene = '', $startValidate = false)
     {
         $this->data = $data;
 
         $this
             ->setRules($rules)
             ->setScene($scene)
-            ->setAttrTrans($attrTrans);
+            ->setAttrTrans($translates);
 
         if ($startValidate) {
             $this->validate();
@@ -62,14 +62,14 @@ class Validation
     /**
      * @param array $data
      * @param array $rules
-     * @param array $attrTrans
+     * @param array $translates
      * @param string $scene
      * @param bool $startValidate 立即开始验证
      * @return static
      */
-    public static function make(array $data, array $rules = [], array $attrTrans = [], $scene = '', $startValidate = false)
+    public static function make(array $data, array $rules = [], array $translates = [], $scene = '', $startValidate = false)
     {
-        return new static($data, $rules, $attrTrans, $scene, $startValidate);
+        return new static($data, $rules, $translates, $scene, $startValidate);
     }
 
     /**

@@ -82,7 +82,7 @@ git clone https://github.com/inhere/php-validate.git // github
         }
 
         // 定义字段翻译
-        public function attrTrans()
+        public function translates()
         {
             return [
               'userId' => '用户Id',

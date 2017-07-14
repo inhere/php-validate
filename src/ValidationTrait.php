@@ -18,6 +18,12 @@ namespace inhere\validate;
 trait ValidationTrait
 {
     /**
+     * custom add's validator by addValidator()
+     * @var array
+     */
+    private static $_validators = [];
+
+    /**
      * current scenario name
      * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
      * (e.g: 在MVC框架中，通常可以根据 controller 的 action name 来区分。 e.g. add, edit, register)
@@ -68,16 +74,10 @@ trait ValidationTrait
     private $_availableRules = [];
 
     /**
-     * custom append's validator by addValidator()
-     * @var array
-     */
-    private $_validators = [];
-
-    /**
      * attribute field translate list
      * @var array
      */
-    private $_attrTrans = [];
+    private $_translates = [];
 
     /**
      * before validate handler
@@ -105,7 +105,7 @@ trait ValidationTrait
      * define attribute field translate list
      * @return array
      */
-    public function attrTrans()
+    public function translates()
     {
         return [
             // 'field' => 'translate',
@@ -124,6 +124,16 @@ trait ValidationTrait
             // validator name => message string
             // 'required' => '{attr} 是必填项。',
         ];
+    }
+
+    /**
+     * define attribute field translate list
+     * @deprecated please use translates() instead.
+     * @return array
+     */
+    public function attrTrans()
+    {
+        return $this->translates();
     }
 
 //////////////////////////////////// Validate ////////////////////////////////////
@@ -164,22 +174,21 @@ trait ValidationTrait
     public function validate(array $onlyChecked = [], $stopOnError = null)
     {
         if (!property_exists($this, 'data')) {
-            throw new \InvalidArgumentException('Must be defined property \'data (array)\' in the sub-class used.');
+            throw new \InvalidArgumentException('Must be defined property "data (array)" in the sub-class used.');
         }
 
         if ($this->_validated) {
             return $this;
         }
 
-        $this->resetRuntimeData(true);
+        $this->resetProperties(true);
 
         if ($cb = $this->_beforeHandler) {
             $cb($this);
         }
 
-        $stopOnError !== null && $this->setStopOnError((bool)$stopOnError);
-
         $data = $this->data;
+        $stopOnError !== null && $this->setStopOnError((bool)$stopOnError);
 
         // 循环规则
         foreach ($this->collectRules() as $rule) {
@@ -201,6 +210,8 @@ trait ValidationTrait
 
             // 自定义当前验证的错误提示消息
             $message = $rule['msg'] ?? null;
+            // 允许默认值
+            $defValue = $rule['default'] ?? null;
 
             // 验证的前置条件 -- 不满足条件,跳过此条规则
             $when = $rule['when'] ?? null;
@@ -209,14 +220,14 @@ trait ValidationTrait
             }
 
             // clear some fields
-            unset($rule['msg'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when']);
+            unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when']);
 
             // 验证设置, 有一些验证器需要参数。 e.g. size()
             $args = $rule;
 
             // 循环检查属性
             foreach ($attrs as $attr) {
-                $value = $this->getValue($attr);
+                $value = $this->getValue($attr, $defValue);
 
                 // 不在需要检查的列表内
                 if ($onlyChecked && !in_array($attr, $onlyChecked, true)) {
@@ -231,7 +242,7 @@ trait ValidationTrait
 
                 // required* 系列字段检查器
                 if (is_string($validator) && 0 === strpos($validator, 'required')) {
-                    if (!$this->requiredValidate($attr, $value, $validator, $args)) {
+                    if (!$this->fieldValidate($attr, $value, $validator, $args)) {
                         $this->_errors[] = [
                             $attr => $this->getMessage($validator, ['{attr}' => $attr], $args, $message)
                         ];
@@ -250,7 +261,7 @@ trait ValidationTrait
                 }
 
                 // 字段值检查 failed
-                if (!$this->doValidate($data, $attr, $value, $validator, $args)) {
+                if (!$this->valueValidate($data, $attr, $value, $validator, $args)) {
                     $this->_errors[] = [
                         $attr => $this->getMessage($validator, ['{attr}' => $attr], $args, $message)
                     ];
@@ -284,7 +295,7 @@ trait ValidationTrait
     }
 
     /**
-     * required Validate 字段名存在 检查
+     * field required Validate 字段名存在 检查
      *
      * @param string $attr      属性名称
      * @param mixed  $value     属性值
@@ -293,7 +304,7 @@ trait ValidationTrait
      *
      * @return bool
      */
-    protected function requiredValidate($attr, $value, $validator, $args)
+    protected function fieldValidate($attr, $value, $validator, $args)
     {
         // required 检查
         if ($validator === 'required') {
@@ -303,6 +314,7 @@ trait ValidationTrait
         } elseif (method_exists($this, $validator)) {
             // 压入当前属性/字段名
             array_unshift($args, $attr);
+            $args = array_values($args);
 
             $result = $this->$validator(...$args);
         } else {
@@ -328,7 +340,7 @@ trait ValidationTrait
      * @param array $args 验证需要的参数
      * @return bool
      */
-    protected function doValidate($data, $attr, $value, $validator, $args)
+    protected function valueValidate($data, $attr, $value, $validator, $args)
     {
         // if attr don't exists.
         if (null === $value) {
@@ -337,17 +349,17 @@ trait ValidationTrait
 
         // 压入当前属性值 e.g. ValidatorList::range($val, $min, $max)
         array_unshift($args, $value);
+        $args = array_values($args);
 
         // if $validator is a closure
         if ($validator instanceof \Closure) {
             $args[] = $data;
             $passed = $validator(...$args);
-
         } elseif (is_string($validator)) {
 
             // if $validator is a custom add callback in the property {@see $_validators}.
-            if (isset($this->_validators[$validator])) {
-                $callback = $this->_validators[$validator];
+            if (isset(self::$_validators[$validator])) {
+                $callback = self::$_validators[$validator];
                 $passed = $callback(...$args);
 
                 // if $validator is a custom method of the subclass.
@@ -356,8 +368,7 @@ trait ValidationTrait
 
                 // $validator is a method of the class 'ValidatorList'
             } elseif (method_exists(ValidatorList::class, $validator)) {
-
-                $passed = call_user_func_array([ValidatorList::class, $validator], $args);
+                $passed = ValidatorList::$validator(...$args);
             } else {
                 throw new \InvalidArgumentException("The validator [$validator] don't exists!");
             }
@@ -379,39 +390,12 @@ trait ValidationTrait
      * @param bool|false $clearErrors
      * @return $this
      */
-    protected function resetRuntimeData($clearErrors = false)
+    protected function resetProperties($clearErrors = false)
     {
         $this->_safeData = $this->_availableRules = [];
 
         if ($clearErrors) {
             $this->clearErrors();
-        }
-
-        return $this;
-    }
-
-    /**
-     * add a custom validator
-     *
-     * ```
-     * $valid = ValidatorClass::make($_POST)
-     *          ->addValidator('name',function($var [, $arg1, $arg2 ... ]){
-     *              return $var === 23;
-     *          });
-     * $valid->validate();
-     * ```
-     *
-     * @param string $name
-     * @param \Closure $callback
-     * @param string $msg
-     * @return $this
-     */
-    public function addValidator(string $name, \Closure $callback, string $msg = '')
-    {
-        $this->_validators[$name] = $callback;
-
-        if ($msg) {
-            self::$_defaultMessages[$name] = $msg;
         }
 
         return $this;
@@ -473,7 +457,7 @@ trait ValidationTrait
         }
     }
 
-//////////////////////////////////// extra validate methods ////////////////////////////////////
+//////////////////////////////////// extra field validate methods ////////////////////////////////////
 
     /**
      * 验证字段必须存在输入数据，且不为空。字段符合下方任一条件时即为「空」
@@ -717,68 +701,22 @@ trait ValidationTrait
     }
 
     /**
-     * (过滤器)默认的错误提示信息
-     * @var array
-     */
-    private static $_defaultMessages = [
-        'int' => '{attr} must be an integer!',
-        'integer' => '{attr} must be an integer!',
-        'num' => '{attr} must be an integer greater than 0!',
-        'number' => '{attr} must be an integer greater than 0!',
-        'bool' => '{attr} must be is boolean!',
-        'boolean' => '{attr} must be is boolean!',
-        'float' => '{attr} must be is float!',
-        'url' => '{attr} is not a url address!',
-        'email' => '{attr} is not a email address!',
-        'date' => '{attr} is not a date format!',
-        'dateFormat' => '{attr} is not in a {value0} date format !',
-        'ip' => '{attr} is not IP address!',
-        'ipv4' => '{attr} is not a IPv4 address!',
-        'ipv6' => '{attr} is not a IPv6 address!',
-        'required' => 'parameter {attr} is required!',
-        'length' =>  [
-            'nothing ...',
-            '{attr} must be an string/array and minimum length is {min}',
-            '{attr} must be an string/array and length range {min} ~ {max}',
-        ],
-        'size' => [
-            'nothing ...',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
-            '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
-        ],
-        'range' =>  [
-            'nothing ...',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
-            '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
-        ],
-        'min' => '{attr} minimum boundary is {value0}',
-        'max' => '{attr} maximum boundary is {value0}',
-        'in' => '{attr} must in ({value0})',
-        'notIn' => '{attr} cannot in ({value0})',
-        'string' => [
-            '{attr} must be a string',
-            '{attr} must be a string and minimum length be {min}',
-            '{attr} must be a string and length range must be {min} ~ {max}',
-        ],
-        'regexp' => '{attr} does not match the {value0} conditions',
-        'compare' => '{attr} must be equals to {value0}',
-        'same' => '{attr} must be equals to {value0}',
-        'isArray' => '{attr} must be an array',
-        'isMap' => '{attr} must be an array and is key-value format',
-        'isList' => '{attr} must be an array of nature',
-        'intList' => '{attr} must be an array and value is all integers',
-        'strList' => '{attr} must be an array and value is all strings',
-        'json' => '{attr} must be an json string',
-        'callback' => '{attr} don\'t pass the test and verify!',
-        '_' => '{attr} validation is not through!',
-    ];
-
-    /**
      * @return array
      */
     public static function getDefaultMessages(): array
     {
-        return self::$_defaultMessages;
+        return ErrorMessage::$messages;
+    }
+
+    /**
+     * @param string $name
+     * @param string $msg
+     */
+    public static function setDefaultMessage($name, $msg)
+    {
+        if ($name && $msg) {
+            ErrorMessage::$messages[$name] = $msg;
+        }
     }
 
     /**
@@ -786,7 +724,7 @@ trait ValidationTrait
      */
     public function getMessages(): array
     {
-        return array_merge(self::$_defaultMessages, $this->messages());
+        return array_merge(self::getDefaultMessages(), $this->messages());
     }
 
     /**
@@ -796,7 +734,7 @@ trait ValidationTrait
      * @param  string|\Closure $validator 验证器
      * @param  array $params 待替换的参数
      * @param  array $args
-     * @param  string $msg 自定义提示消息
+     * @param  string|array $msg 自定义提示消息
      * @return string
      */
     public function getMessage($validator, array $params, array $args = [], $msg = null)
@@ -808,7 +746,7 @@ trait ValidationTrait
             $msg = $msgList[$name] ?? $msgList['_'];
         }
 
-        $params['{attr}'] = $this->getAttrTran($params['{attr}']);
+        $params['{attr}'] = $this->getTranslate($params['{attr}']);
 
         foreach ($args as $key => $value) {
             $key = is_int($key) ? "value$key" : $key;
@@ -822,6 +760,89 @@ trait ValidationTrait
         }
 
         return strtr($msg, $params);
+    }
+
+//////////////////////////////////// custom validators ////////////////////////////////////
+
+    /**
+     * add a custom validator
+     *
+     * ```
+     * $valid = ValidatorClass::make($_POST)
+     *          ->addValidator('name',function($val [, $arg1, $arg2 ... ]){
+     *              return $val === 23;
+     *          });
+     * $valid->validate();
+     * ```
+     *
+     * @param string $name
+     * @param \Closure $callback
+     * @param string $msg
+     * @return $this
+     */
+    public function addValidator(string $name, \Closure $callback, string $msg = '')
+    {
+        self::setValidator($name, $callback, $msg);
+
+        return $this;
+    }
+
+    /**
+     * add a custom validator
+     *
+     * @param string $name
+     * @param \Closure $callback
+     * @param string $msg
+     */
+    public static function setValidator(string $name, \Closure $callback, string $msg = '')
+    {
+        self::$_validators[$name] = $callback;
+        self::setDefaultMessage($name, $msg);
+    }
+
+    /**
+     * @param string $name
+     * @return null|\Closure
+     */
+    public static function getValidator($name)
+    {
+        if (isset(self::$_validators[$name])) {
+            return self::$_validators[$name];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool|\Closure
+     */
+    public static function delValidator($name)
+    {
+        $cb = false;
+
+        if (isset(self::$_validators[$name])) {
+            $cb = self::$_validators[$name];
+            unset(self::$_validators[$name]);
+        }
+
+        return $cb;
+    }
+
+    /**
+     * @param array $validators
+     */
+    public static function setValidators(array $validators)
+    {
+        self::$_validators = array_merge(self::$_validators, $validators);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getValidators(): array
+    {
+        return self::$_validators;
     }
 
 //////////////////////////////////// getter/setter ////////////////////////////////////
@@ -854,14 +875,44 @@ trait ValidationTrait
     }
 
     /**
-     * @return array
+     * set the attrs translation data
+     * @param array $attrTrans
+     * @return $this
      */
-    public function getValidators(): array
+    public function setTranslates(array $attrTrans)
     {
-        return $this->_validators;
+        $this->_translates = $attrTrans;
+
+        return $this;
     }
 
     /**
+     * @return array
+     */
+    public function getTranslates(): array
+    {
+        static $translates;
+
+        if (!$translates) {
+            $translates = array_merge($this->translates(), $this->_translates);
+        }
+
+        return $translates;
+    }
+
+    /**
+     * @param string $attr
+     * @return string
+     */
+    public function getTranslate(string $attr): string
+    {
+        $trans = $this->getTranslates();
+
+        return $trans[$attr] ?? Helper::toUnderscoreCase($attr, ' ');
+    }
+
+    /**
+     * @deprecated please use getTranslate() instead.
      * @param string $attr
      * @return string
      */
@@ -873,21 +924,23 @@ trait ValidationTrait
     }
 
     /**
+     * @deprecated please use getTranslates() instead.
      * @return array
      */
     public function getAttrTrans(): array
     {
-        return array_merge($this->attrTrans(), $this->_attrTrans);
+        return array_merge($this->attrTrans(), $this->_translates);
     }
 
     /**
      * set the attrs translation data
+     * @deprecated please use setTranslates() instead.
      * @param array $attrTrans
      * @return $this
      */
     public function setAttrTrans(array $attrTrans)
     {
-        $this->_attrTrans = $attrTrans;
+        $this->_translates = $attrTrans;
 
         return $this;
     }
