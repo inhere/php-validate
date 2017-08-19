@@ -432,6 +432,8 @@ trait ValidationTrait
                 if (in_array($scene, $sceneList, true)) {
                     unset($rule['on']);
                     $this->_availableRules[] = $rule;
+                } else {
+                    continue;
                 }
             }
 
