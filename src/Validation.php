@@ -6,11 +6,11 @@
  * Time: 23:19
  */
 
-namespace inhere\validate;
+namespace Inhere\Validate;
 
 /**
  * Class Validation
- * @package inhere\validate
+ * @package Inhere\Validate
  *
  * usage:
  *
@@ -52,7 +52,7 @@ class Validation
         $this
             ->setRules($rules)
             ->setScene($scene)
-            ->setAttrTrans($translates);
+            ->setTranslates($translates);
 
         if ($startValidate) {
             $this->validate();

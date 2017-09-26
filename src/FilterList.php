@@ -3,16 +3,14 @@
  * @date 2015.08.05
  * 过滤器(strainer/filter): 过滤数据，去除不合要求的数据，返回过滤后的数据(始终返回字符串, 全部不符合返回空字符串)
  */
-namespace inhere\validate;
+namespace Inhere\Validate;
 
 /**
  * Class FilterList
- * @package inhere\validate
+ * @package Inhere\Validate
  */
 final class FilterList
 {
-/////////////////////////////// php internal Filter ///////////////////////////////
-
     /**
      * simple trim space
      * @param $var

@@ -7,11 +7,11 @@
  * 后期通过类似 $_GET['test']='help'; 将不会存在 输入数据常量中(INPUT_GET 没有test项)。
  */
 
-namespace inhere\validate;
+namespace Inhere\Validate;
 
 /**
  * Class ValidatorList
- * @package inhere\validate
+ * @package Inhere\Validate
  */
 final class ValidatorList
 {

@@ -7,11 +7,11 @@
  * Used: 主要功能是 hi
  */
 
-namespace inhere\validate;
+namespace Inhere\Validate;
 
 /**
  * Trait ValidationTrait
- * @package inhere\validate
+ * @package Inhere\Validate
  *
  * @property array $data To verify the data list. please define it on main class. 待验证的数据列表
  */
@@ -256,7 +256,7 @@ trait ValidationTrait
                 }
 
                 // 设定了为空跳过 并且 值为空
-                if ($skipOnEmpty && call_user_func($isEmpty, $value)) {
+                if ($skipOnEmpty && Helper::call($isEmpty, $value)) {
                     continue;
                 }
 
@@ -796,10 +796,13 @@ trait ValidationTrait
      * @param \Closure $callback
      * @param string $msg
      */
-    public static function setValidator(string $name, \Closure $callback, string $msg = '')
+    public static function setValidator(string $name, \Closure $callback, string $msg = null)
     {
         self::$_validators[$name] = $callback;
-        self::setDefaultMessage($name, $msg);
+
+        if ($msg) {
+            self::setDefaultMessage($name, $msg);
+        }
     }
 
     /**

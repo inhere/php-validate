@@ -2,7 +2,7 @@
   "name": "inhere/php-validate",
   "type": "library",
   "description": "a simple validate library of the php",
-  "keywords": ["library","validate"],
+  "keywords": ["library", "validate"],
   "homepage": "http://github.com/inhere/php-validate",
   "license": "MIT",
   "authors": [
@@ -17,7 +17,7 @@
   },
   "autoload": {
     "psr-4": {
-      "inhere\\validate\\" : "src/"
+      "Inhere\\Validate\\" : "src/"
     }
   },
   "suggest": {

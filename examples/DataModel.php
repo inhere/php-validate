@@ -7,7 +7,7 @@
  */
 class DataModel
 {
-    use \inhere\validate\ValidationTrait;
+    use \Inhere\Validate\ValidationTrait;
 
     protected $data = [];
 

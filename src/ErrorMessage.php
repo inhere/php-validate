@@ -6,11 +6,11 @@
  * Time: 11:26
  */
 
-namespace inhere\validate;
+namespace Inhere\Validate;
 
 /**
  * Class ErrorMessage
- * @package inhere\validate
+ * @package Inhere\Validate
  *
  */
 class ErrorMessage

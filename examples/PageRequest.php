@@ -9,7 +9,7 @@
 /**
  * Class PageRequest
  */
-class PageRequest extends \inhere\validate\Validation
+class PageRequest extends \Inhere\Validate\Validation
 {
     public function rules()
     {

@@ -2,7 +2,7 @@
 
 spl_autoload_register(function($class)
 {
-    // e.g. "inhere\validate\ValidationTrait"
+    // e.g. "Inhere\Validate\ValidationTrait"
     if (strpos($class,'\\')) {
         $file = dirname(__DIR__) . '/src/' . trim(strrchr($class,'\\'),'\\'). '.php';
     } else {
@@ -81,8 +81,8 @@ print_r($model->getErrors());
 
 echo "\n----------------------------\n use Validation\n----------------------------\n\n";
 
-$valid = \inhere\validate\Validation::make($data, $rules)
-        ->setAttrTrans([
+$valid = \Inhere\Validate\Validation::make($data, $rules)
+        ->setTranslates([
             'goods.pear' => '梨子'
         ])
        ->validate([], false);

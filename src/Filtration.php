@@ -6,11 +6,11 @@
  * Time: 23:19
  */
 
-namespace inhere\validate;
+namespace Inhere\Validate;
 
 /**
  * Class Filtration
- * @package inhere\validate
+ * @package Inhere\Validate
  *
  * usage:
  *
