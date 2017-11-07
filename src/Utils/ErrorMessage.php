@@ -6,12 +6,11 @@
  * Time: 11:26
  */
 
-namespace Inhere\Validate;
+namespace Inhere\Validate\Utils;
 
 /**
  * Class ErrorMessage
- * @package Inhere\Validate
- *
+ * @package Inhere\Validate\Utils
  */
 class ErrorMessage
 {
@@ -35,7 +34,7 @@ class ErrorMessage
         'ipv4' => '{attr} is not a IPv4 address!',
         'ipv6' => '{attr} is not a IPv6 address!',
         'required' => 'parameter {attr} is required!',
-        'length' =>  [
+        'length' => [
             'nothing ...',
             '{attr} must be an string/array and minimum length is {min}',
             '{attr} must be an string/array and length range {min} ~ {max}',
@@ -45,7 +44,7 @@ class ErrorMessage
             '{attr} must be an integer/string/array and minimum value/length is {min}',
             '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
         ],
-        'range' =>  [
+        'range' => [
             'nothing ...',
             '{attr} must be an integer/string/array and minimum value/length is {min}',
             '{attr} must be an integer/string/array and value/length range {min} ~ {max}',

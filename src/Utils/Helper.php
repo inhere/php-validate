@@ -2,11 +2,12 @@
 /**
  *
  */
-namespace Inhere\Validate;
+
+namespace Inhere\Validate\Utils;
 
 /**
  * Class StrHelper
- * @package Inhere\Validate
+ * @package Inhere\Validate\Utils
  */
 class Helper
 {
@@ -118,7 +119,7 @@ class Helper
      */
     public static function ucfirst($str)
     {
-        return self::strtoupper(self::substr($str, 0, 1)).self::substr($str, 1);
+        return self::strtoupper(self::substr($str, 0, 1)) . self::substr($str, 1);
     }
 
     /**
@@ -149,17 +150,18 @@ class Helper
             $str = self::ucfirst($str);
         }
 
-        return preg_replace_callback('/_+([a-z])/', function($c){ return strtoupper($c[1]);}, $str);
+        return preg_replace_callback('/_+([a-z])/', function ($c) {
+            return strtoupper($c[1]);
+        }, $str);
     }
 
     /**
      * Transform a CamelCase string to underscore_case string
-     *
      * @param string $string
      * @param string $sep
      * @return string
      */
-    public static function toUnderscoreCase($string, $sep='_')
+    public static function toUnderscoreCase($string, $sep = '_')
     {
         // 'CMSCategories' => 'cms_categories'
         // 'RangePrice' => 'range_price'

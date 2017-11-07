@@ -1,0 +1,25 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: inhere
+ * Date: 2017-11-07
+ * Time: 10:04
+ */
+
+namespace Inhere\Validate;
+
+/**
+ * Class RuleValidation
+ * - one rule to many fields. like Yii 1/2 framework
+ * ```php
+ * [
+ *  ['field1, field2, ... ', 'rule1', ...],
+ *  ['field1, field3, ... ', 'rule2', ...]
+ * ]
+ * ```
+ * @package Inhere\Validate
+ */
+class RuleValidation
+{
+
+}

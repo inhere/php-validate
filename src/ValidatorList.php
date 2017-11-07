@@ -9,6 +9,8 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Utils\Helper;
+
 /**
  * Class ValidatorList
  * @package Inhere\Validate
@@ -62,6 +64,7 @@ final class ValidatorList
 
         return filter_var($val, FILTER_VALIDATE_INT, $settings);
     }
+
     public static function int($val, array $options = [], $flags = 0)
     {
         return self::integer($val, $options, $flags);
@@ -78,6 +81,7 @@ final class ValidatorList
     {
         return self::integer($val, $options, $flags) && self::size($val, 1);
     }
+
     public static function num($val, array $options = [], $flags = 0)
     {
         return self::number($val, $options, $flags);
@@ -136,10 +140,9 @@ final class ValidatorList
     /**
      * 范围检查
      * $min $max 即使传错位置也会自动调整
-     *
      * @param  int|string|array $val 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
-     * @param  null|integer     $min 最小值
-     * @param  null|int         $max 最大值
+     * @param  null|integer $min 最小值
+     * @param  null|int $max 最大值
      * @return mixed
      */
     public static function size($val, $min = null, $max = null)
@@ -147,7 +150,7 @@ final class ValidatorList
         $options = [];
 
         if (is_numeric($val)) {
-            $val = (int) $val;
+            $val = (int)$val;
         } elseif (is_string($val)) {
             $val = Helper::strlen(trim($val));
         } elseif (is_array($val)) {
@@ -161,22 +164,23 @@ final class ValidatorList
 
         if ($minIsNum && $maxIsNum) {
             if ($max > $min) {
-                $options['min_range'] = (int) $min;
-                $options['max_range'] = (int) $max;
+                $options['min_range'] = (int)$min;
+                $options['max_range'] = (int)$max;
             } else {
-                $options['min_range'] = (int) $max;
-                $options['max_range'] = (int) $min;
+                $options['min_range'] = (int)$max;
+                $options['max_range'] = (int)$min;
             }
         } elseif ($minIsNum) {
-            $options['min_range'] = (int) $min;
+            $options['min_range'] = (int)$min;
         } elseif ($maxIsNum) {
-            $options['max_range'] = (int) $max;
+            $options['max_range'] = (int)$max;
         } else {
             return false;
         }
 
         return self::integer($val, $options);
     }
+
     public static function range($val, $min = null, $max = null)
     {
         return self::size($val, $min, $max);
@@ -184,31 +188,31 @@ final class ValidatorList
 
     /**
      * 最小值检查
-     * @param  int  $val
+     * @param  int $val
      * @param  integer $minRange
      * @return mixed
      */
     public static function min($val, $minRange)
     {
-        return self::size($val, (int) $minRange);
+        return self::size($val, (int)$minRange);
     }
 
     /**
      * 最大值检查
-     * @param  int  $val
-     * @param  int  $maxRange
+     * @param  int $val
+     * @param  int $maxRange
      * @return mixed
      */
     public static function max($val, $maxRange)
     {
-        return self::size($val, null, (int) $maxRange);
+        return self::size($val, null, (int)$maxRange);
     }
 
     /**
      * 字符串/数组长度检查
-     * @param  string|array   $val         字符串/数组
-     * @param  integer        $minLength   最小长度
-     * @param  int            $maxLength   最大长度
+     * @param  string|array $val 字符串/数组
+     * @param  integer $minLength 最小长度
+     * @param  int $maxLength 最大长度
      * @return mixed
      */
     public static function length($val, $minLength = 0, $maxLength = null)
@@ -244,6 +248,7 @@ final class ValidatorList
 
         return filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
     }
+
     public static function bool($val, $default = null, $flags = 0)
     {
         return self::boolean($val, $default, $flags);
@@ -293,6 +298,7 @@ final class ValidatorList
 
         return filter_var($val, FILTER_VALIDATE_REGEXP, ['options' => $options]);
     }
+
     public static function regex($val, $regexp, $default = null)
     {
         return self::regexp($val, $regexp, $default);
@@ -389,7 +395,7 @@ final class ValidatorList
 
     /**
      * 验证值是否是一个数组
-     * @param  mixed  $val
+     * @param  mixed $val
      * @return bool
      */
     public static function isArray($val)
@@ -399,7 +405,7 @@ final class ValidatorList
 
     /**
      * 验证值是否是一个非自然数组 map (key - value 形式的)
-     * @param  array  $val
+     * @param  array $val
      * @return bool
      */
     public static function isMap($val)
@@ -543,7 +549,6 @@ final class ValidatorList
 
     /**
      * 校验字段值是否是日期格式
-     *
      * @param string $date 日期
      * @return boolean
      */
@@ -555,7 +560,6 @@ final class ValidatorList
 
     /**
      * 校验字段值是否是日期并且是否满足设定格式
-     *
      * @param string $date 日期
      * @param string $format 需要检验的格式数组
      * @return boolean
@@ -589,7 +593,6 @@ final class ValidatorList
 
     /**
      * Check for postal code validity
-     *
      * @param string $val Postal code to validate
      * @return bool Validity is ok or not
      */
@@ -625,7 +628,7 @@ final class ValidatorList
      */
     public static function isDateFormat($date)
     {
-        return (bool) preg_match('/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date);
+        return (bool)preg_match('/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date);
     }
 
     /**
@@ -639,7 +642,7 @@ final class ValidatorList
             return false;
         }
 
-        return checkdate((int) $matches[2], (int) $matches[3], (int) $matches[1]);
+        return checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1]);
     }
 
     /**
@@ -654,7 +657,7 @@ final class ValidatorList
 
     public static function isUnsignedFloat($float)
     {
-        return (string) ((float) $float) === (string) $float && $float >= 0;
+        return (string)((float)$float) === (string)$float && $float >= 0;
     }
 
     /**
@@ -674,7 +677,7 @@ final class ValidatorList
      */
     public static function isUnsignedInt($value)
     {
-        return ((string) (int) $value === (string) $value && $value < 4294967296 && $value >= 0);
+        return ((string)(int)$value === (string)$value && $value < 4294967296 && $value >= 0);
     }
 
     /**
@@ -723,7 +726,6 @@ final class ValidatorList
 
     /**
      * Check for standard name file validity
-     *
      * @param string $name Name to validate
      * @return bool Validity is ok or not
      */
@@ -734,13 +736,12 @@ final class ValidatorList
 
     /**
      * Check for standard name directory validity
-     *
      * @param string $dir Directory to validate
      * @return bool Validity is ok or not
      */
     public static function dirName($dir)
     {
-        return (bool) preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
+        return (bool)preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
     }
 
     ///////////////////////////////////////////
@@ -771,7 +772,7 @@ final class ValidatorList
      * 检查(验证/过滤)输入数据中的多个变量名 like filter_input_array()
      * 当需要获取很多变量却不想重复调用 filter_input()时很有用。
      * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
-     * @param  mixed  $definition 一个定义参数的数组。
+     * @param  mixed $definition 一个定义参数的数组。
      *                            一个有效的键必须是一个包含变量名的string，
      *                            一个有效的值要么是一个filter type，或者是一个array 指明了过滤器、标示和选项。
      *                            如果值是一个数组，那么它的有效的键可以是 :
@@ -779,7 +780,7 @@ final class ValidatorList
      *                                flags 用于指明任何想要用于过滤器的标示，
      *                                options 用于指明任何想要用于过滤器的选项。
      *                            参考下面的例子来更好的理解这段说明。
-     * @param  bool  $addEmpty 在返回值中添加 NULL 作为不存在的键。
+     * @param  bool $addEmpty 在返回值中添加 NULL 作为不存在的键。
      * 如果成功的话返回一个所请求的变量的数组，
      * 如果失败的话返回 FALSE 。
      * 对于数组的值，

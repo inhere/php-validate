@@ -3,7 +3,10 @@
  * @date 2015.08.05
  * 过滤器(strainer/filter): 过滤数据，去除不合要求的数据，返回过滤后的数据(始终返回字符串, 全部不符合返回空字符串)
  */
+
 namespace Inhere\Validate;
+
+use Inhere\Validate\Utils\Helper;
 
 /**
  * Class FilterList
@@ -19,8 +22,8 @@ final class FilterList
     public static function trim($var)
     {
         return is_array($var) ? array_walk_recursive($var, function (&$val) {
-            $val = trim((string) $val);
-        }) : trim((string) $var);
+            $val = trim((string)$val);
+        }) : trim((string)$var);
     }
 
     /**
@@ -33,6 +36,7 @@ final class FilterList
     {
         return filter_var($int, FILTER_SANITIZE_NUMBER_INT);
     }
+
     public static function int($int)
     {
         return self::integer($int);
@@ -44,14 +48,14 @@ final class FilterList
      */
     public static function abs($var)
     {
-        return abs((int) $var);
+        return abs((int)$var);
     }
 
     /**
      * 字符串长度过滤截取
-     * @param  string   $string      字符串
-     * @param  integer  $start   起始长度
-     * @param  int      $end   结束位置
+     * @param  string $string 字符串
+     * @param  integer $start 起始长度
+     * @param  int $end 结束位置
      * @return mixed
      */
     public static function lengthCute($string, $start = 0, $end = null)
@@ -79,8 +83,8 @@ final class FilterList
     {
         $settings = [];
 
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
@@ -101,8 +105,8 @@ final class FilterList
     {
         $settings = [];
 
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_ENCODED, $settings);
@@ -131,8 +135,8 @@ final class FilterList
     {
         $settings = [];
 
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_SPECIAL_CHARS, $settings);
@@ -148,8 +152,8 @@ final class FilterList
     {
         $settings = [];
 
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
@@ -171,12 +175,13 @@ final class FilterList
     {
         $settings = [];
 
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
+
     public static function stripped($var, $flags = 0)
     {
         return self::string($var, $flags);
@@ -220,8 +225,8 @@ final class FilterList
     {
         $settings = [];
 
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($string, FILTER_UNSAFE_RAW, $settings);
@@ -229,7 +234,7 @@ final class FilterList
 
     /**
      * 自定义回调过滤
-     * @param  mixed   $val
+     * @param  mixed $val
      * @param  callable $callback
      * @return bool
      */

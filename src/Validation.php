@@ -11,22 +11,18 @@ namespace Inhere\Validate;
 /**
  * Class Validation
  * @package Inhere\Validate
- *
  * usage:
- *
  * $vd = Validation::make($_POST, [
  *  ['tagId,userId,name,email,freeTime', 'required'],
  *  ['email', 'email'],
  *  ['userId', 'number'],
  *  ['name', 'regexp' ,'/^[a-z]\w{2,12}$/'],
  * ])->validate();
- *
  * $vd->fail();// bool
  * $vd->firstError(); // get first error message.
  * $vd->passed();// bool
- *
  */
-class Validation
+class Validation implements ValidationInterface
 {
     use ValidationTrait {
         //set as traitSet;

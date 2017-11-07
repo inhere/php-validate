@@ -9,10 +9,12 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Utils\ErrorMessage;
+use Inhere\Validate\Utils\Helper;
+
 /**
  * Trait ValidationTrait
  * @package Inhere\Validate
- *
  * @property array $data To verify the data list. please define it on main class. 待验证的数据列表
  */
 trait ValidationTrait
@@ -97,7 +99,7 @@ trait ValidationTrait
     public function rules()
     {
         return [
-        // ['fields', 'validator', 'arg1', 'arg2' ...]
+            // ['fields', 'validator', 'arg1', 'arg2' ...]
         ];
     }
 
@@ -291,17 +293,16 @@ trait ValidationTrait
         $this->_validated = true;
 
         unset($data);
+
         return $this;
     }
 
     /**
      * field required Validate 字段名存在 检查
-     *
-     * @param string $attr      属性名称
-     * @param mixed  $value     属性值
+     * @param string $attr 属性名称
+     * @param mixed $value 属性值
      * @param string $validator required* 验证器
-     * @param array  $args      验证需要的参数
-     *
+     * @param array $args 验证需要的参数
      * @return bool
      */
     protected function fieldValidate($attr, $value, $validator, $args)
@@ -334,7 +335,7 @@ trait ValidationTrait
     /**
      * do Validate 字段值 检查
      * @param array $data 原始数据列表
-     * @param string $attr  属性名称
+     * @param string $attr 属性名称
      * @param mixed $value 属性值
      * @param \Closure|string $validator 验证器
      * @param array $args 验证需要的参数
@@ -466,7 +467,6 @@ trait ValidationTrait
      * - 该值为 null.
      * - 该值为空字符串。
      * - 该值为空数组
-     *
      * @param  string $field
      * @return bool
      */
@@ -483,11 +483,10 @@ trait ValidationTrait
 
     /**
      * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 必填
-     *
      * @from laravel
      * @param  string $field
      * @param  string $anotherField
-     * @param  array|string  $values
+     * @param  array|string $values
      * @return bool
      */
     public function requiredIf($field, $anotherField, $values)
@@ -507,11 +506,10 @@ trait ValidationTrait
 
     /**
      * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
-     *
      * @from laravel
      * @param  string $field
      * @param  string $anotherField
-     * @param  array|string  $values
+     * @param  array|string $values
      * @return bool
      */
     public function requiredUnless($field, $anotherField, $values)
@@ -529,10 +527,9 @@ trait ValidationTrait
 
     /**
      * 如果指定的字段中的 任意一个 有值且不为空，则此字段为必填
-     *
      * @from laravel
      * @param  string $field
-     * @param  array|string  $fields
+     * @param  array|string $fields
      * @return bool
      */
     public function requiredWith($field, $fields)
@@ -548,10 +545,9 @@ trait ValidationTrait
 
     /**
      * 如果指定的 所有字段 都有值，则此字段为必填。
-     *
      * @from laravel
      * @param  string $field
-     * @param  array|string  $fields
+     * @param  array|string $fields
      * @return bool
      */
     public function requiredWithAll($field, $fields)
@@ -570,10 +566,9 @@ trait ValidationTrait
 
     /**
      * 如果缺少 任意一个 指定的字段值，则此字段为必填。
-     *
      * @from laravel
      * @param  string $field
-     * @param  array|string  $fields
+     * @param  array|string $fields
      * @return bool
      */
     public function requiredWithout($field, $fields)
@@ -592,10 +587,9 @@ trait ValidationTrait
 
     /**
      * 如果所有指定的字段 都没有 值，则此字段为必填。
-     *
      * @from laravel
      * @param  string $field
-     * @param  array|string  $fields
+     * @param  array|string $fields
      * @return bool
      */
     public function requiredWithoutAll($field, $fields)
@@ -768,7 +762,6 @@ trait ValidationTrait
 
     /**
      * add a custom validator
-     *
      * ```
      * $valid = ValidatorClass::make($_POST)
      *          ->addValidator('name',function($val [, $arg1, $arg2 ... ]){
@@ -776,7 +769,6 @@ trait ValidationTrait
      *          });
      * $valid->validate();
      * ```
-     *
      * @param string $name
      * @param \Closure $callback
      * @param string $msg
@@ -791,7 +783,6 @@ trait ValidationTrait
 
     /**
      * add a custom validator
-     *
      * @param string $name
      * @param \Closure $callback
      * @param string $msg
@@ -1016,7 +1007,6 @@ trait ValidationTrait
 
     /**
      * Get all items in collection
-     *
      * @return array The collection's source data
      */
     public function all(): array
