@@ -568,6 +568,12 @@ public function get(string $key, $default = null)
 
 可运行示例请看 `examples` 
 
+## 测试
+
+```sh
+./tests/test.sh
+```
+
 ## License
 
 MIT

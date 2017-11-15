@@ -38,7 +38,7 @@ final class ValidatorList
      * @param  int $flags 标志
      *                    FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
      *                    FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
-     * @return mixed $int|false
+     * @return bool false
      * @example
      * $options = [
      *    'min_range' => 0,
@@ -62,7 +62,7 @@ final class ValidatorList
             $settings['flags'] = $flags;
         }
 
-        return filter_var($val, FILTER_VALIDATE_INT, $settings);
+        return filter_var($val, FILTER_VALIDATE_INT, $settings) !== false;
     }
 
     public static function int($val, array $options = [], $flags = 0)
@@ -75,7 +75,7 @@ final class ValidatorList
      * @param $val
      * @param array $options
      * @param int $flags
-     * @return mixed
+     * @return bool
      */
     public static function number($val, array $options = [], $flags = 0)
     {
@@ -92,7 +92,7 @@ final class ValidatorList
      * @param mixed $val
      * @param int $minLength
      * @param null|int $maxLength
-     * @return mixed
+     * @return bool
      */
     public static function string($val, $minLength = 0, $maxLength = null)
     {
