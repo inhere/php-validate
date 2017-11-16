@@ -10,6 +10,7 @@
 namespace Inhere\Validate;
 
 use Inhere\Validate\Utils\Helper;
+use Inhere\Validate\Filter\FilterList;
 
 /**
  * Class ValidatorList
@@ -17,6 +18,35 @@ use Inhere\Validate\Utils\Helper;
  */
 final class ValidatorList
 {
+
+    /*******************************************************************************
+     * Filters
+     ******************************************************************************/
+
+    /**
+     * trim filter
+     * @param string $val
+     * @return string
+     */
+    public static function trim($val)
+    {
+        return is_string($val) ? trim($val) : $val;
+    }
+
+    /**
+     * trim filter
+     * @param string $val
+     * @return string
+     */
+    public static function toInt($val)
+    {
+        return FilterList::int($val);
+    }
+
+    /*******************************************************************************
+     * Validators
+     ******************************************************************************/
+
     /**
      * 值是否为空判断
      * @param mixed $val
@@ -181,16 +211,32 @@ final class ValidatorList
         return self::integer($val, $options);
     }
 
+    public static function between($val, $min = null, $max = null)
+    {
+        return self::size($val, $min, $max);
+    }
+
     public static function range($val, $min = null, $max = null)
     {
         return self::size($val, $min, $max);
     }
 
     /**
+     * 必须是等于给定值
+     * @param  mixed $val
+     * @param  mixed $excepted
+     * @return bool
+     */
+    public static function mustBe($val, $excepted)
+    {
+        return $val === $excepted;
+    }
+
+    /**
      * 最小值检查
      * @param  int $val
      * @param  integer $minRange
-     * @return mixed
+     * @return bool
      */
     public static function min($val, $minRange)
     {
@@ -201,7 +247,7 @@ final class ValidatorList
      * 最大值检查
      * @param  int $val
      * @param  int $maxRange
-     * @return mixed
+     * @return bool
      */
     public static function max($val, $maxRange)
     {
@@ -213,7 +259,7 @@ final class ValidatorList
      * @param  string|array $val 字符串/数组
      * @param  integer $minLength 最小长度
      * @param  int $maxLength 最大长度
-     * @return mixed
+     * @return bool
      */
     public static function length($val, $minLength = 0, $maxLength = null)
     {
@@ -541,16 +587,6 @@ final class ValidatorList
      * @return bool
      */
     public static function compare($val, $compareVal)
-    {
-        return $val === $compareVal;
-    }
-
-    /**
-     * @param mixed $val
-     * @param mixed $compareVal
-     * @return bool
-     */
-    public static function same($val, $compareVal)
     {
         return $val === $compareVal;
     }

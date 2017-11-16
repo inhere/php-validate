@@ -49,6 +49,11 @@ class ErrorMessage
             '{attr} must be an integer/string/array and minimum value/length is {min}',
             '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
         ],
+        'between' => [
+            '{attr} between validation is not through!',
+            '{attr} must be an integer/string/array and minimum value/length is {min}',
+            '{attr} must be an integer/string/array and value/length between {min} ~ {max}',
+        ],
         'min' => '{attr} minimum boundary is {value0}',
         'max' => '{attr} maximum boundary is {value0}',
         'in' => '{attr} must in ({value0})',
@@ -59,13 +64,17 @@ class ErrorMessage
             '{attr} must be a string and length range must be {min} ~ {max}',
         ],
         'regexp' => '{attr} does not match the {value0} conditions',
+
         'compare' => '{attr} must be equals to {value0}',
         'same' => '{attr} must be equals to {value0}',
+        'equal' => '{attr} must be equals to {value0}',
+
         'isArray' => '{attr} must be an array',
         'isMap' => '{attr} must be an array and is key-value format',
         'isList' => '{attr} must be an array of nature',
         'intList' => '{attr} must be an array and value is all integers',
         'strList' => '{attr} must be an array and value is all strings',
+
         'json' => '{attr} must be an json string',
         'callback' => '{attr} don\'t pass the test and verify!',
         '_' => '{attr} validation is not through!',

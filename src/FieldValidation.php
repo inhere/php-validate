@@ -12,17 +12,26 @@ namespace Inhere\Validate;
  * Class FieldValidation
  * - one field to many rules. like Laravel framework
  * ```php
- * [
- *  ['field', 'required|string:5,10|...', ...],
- *  ['field0', ['required', 'string:5,10'], ...],
- *  ['field1', 'rule1|rule2|...', ...],
- *  ['field2', 'rule1|rule3|...', ...],
- * ]
+ * $vd = FieldValidation::make($data, $rules, ...);
+ * $vd->validate();
  * ```
  * @package Inhere\Validate
  */
 class FieldValidation extends AbstractValidation
 {
+    /**
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            // ['field', 'required|string:5,10|...', ...],
+            // ['field0', ['required', 'string:5,10'], ...],
+            // ['field1', 'rule1|rule2|...', ...],
+            // ['field2', 'rule1|rule3|...', ...],
+        ];
+    }
+
     protected function collectRules()
     {
         $scene = $this->scene;
@@ -39,14 +48,11 @@ class FieldValidation extends AbstractValidation
                 throw new \InvalidArgumentException('The field validators must be is a validator name(s) string! position: rule[1].');
             }
 
-            // global rule.
-            if (empty($rule['on'])) {
-                // $this->_availableRules[] = $rule;
-                // only use to special scene.
-            } else {
+            // an rule for special sence.
+            if (!empty($rule['on'])) {
                 $sceneList = is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
 
-                if (!in_array($scene, $sceneList, true)) {
+                if ($scene && !in_array($scene, $sceneList, true)) {
                     continue;
                 }
 

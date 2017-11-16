@@ -28,6 +28,8 @@ trait ValidationTrait
      */
     private static $_validators = [];
 
+    private $_filters = [];
+
     /**
      * current scenario name
      * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
@@ -101,9 +103,7 @@ trait ValidationTrait
      */
     public function rules()
     {
-        return [
-            // ['fields', 'validator', 'arg1', 'arg2' ...]
-        ];
+        return [];
     }
 
     /**
@@ -427,7 +427,7 @@ trait ValidationTrait
             } else {
                 $sceneList = is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
 
-                if (!in_array($scene, $sceneList, true)) {
+                if ($scene && !in_array($scene, $sceneList, true)) {
                     continue;
                 }
 
@@ -460,7 +460,31 @@ trait ValidationTrait
         }
     }
 
-//////////////////////////////////// error info ////////////////////////////////////
+    /*******************************************************************************
+     * Filters
+     ******************************************************************************/
+
+    /**
+     * @param mixed $val
+     * @param mixed $compareVal
+     * @return bool
+     */
+    public function compare($val, $compareField)
+    {
+        return $compareField && ($val === $this->get($compareField));
+    }
+    public function same($val, $compareField)
+    {
+        return $this->compare($val, $compareField);
+    }
+    public function equal($val, $compareField)
+    {
+        return $this->compare($val, $compareField);
+    }
+
+    /*******************************************************************************
+     * Errors
+     ******************************************************************************/
 
     /**
      * @return $this

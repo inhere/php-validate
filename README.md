@@ -514,9 +514,10 @@ public function get(string $key, $default = null)
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
 `strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
 `size/range`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
-`length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | ....
+`length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
 `min`   | 最小边界值验证 | `['title', 'min', 40]`
 `max`   | 最大边界值验证 | `['title', 'max', 40]`
+`mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 0]`
 `in`    | 枚举验证 | `['status', 'in', [1,2,3]`
 `notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
 `required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
