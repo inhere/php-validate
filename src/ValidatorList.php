@@ -509,22 +509,30 @@ final class ValidatorList
 
     /**
      * @param  mixed $val
-     * @param array $array
+     * @param array|string $dict
      * @return bool
      */
-    public static function in($val, array $array)
+    public static function in($val, $dict)
     {
-        return in_array($val, $array, true);
+        if (is_string($dict) && strpos($dict, ',')) {
+            $dict = array_map('trim', explode(',', $dict));
+        }
+
+        return in_array($val, (array)$dict, true);
     }
 
     /**
      * @param  mixed $val
-     * @param array $array
+     * @param array|string $dict
      * @return bool
      */
-    public static function notIn($val, array $array)
+    public static function notIn($val, $dict)
     {
-        return !in_array($val, $array, true);
+        if (is_string($dict) && strpos($dict, ',')) {
+            $dict = array_map('trim', explode(',', $dict));
+        }
+
+        return !in_array($val, (array)$dict, true);
     }
 
     /**

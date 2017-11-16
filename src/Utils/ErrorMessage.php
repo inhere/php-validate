@@ -35,17 +35,17 @@ class ErrorMessage
         'ipv6' => '{attr} is not a IPv6 address!',
         'required' => 'parameter {attr} is required!',
         'length' => [
-            'nothing ...',
+            '{attr} length validation is not through!',
             '{attr} must be an string/array and minimum length is {min}',
             '{attr} must be an string/array and length range {min} ~ {max}',
         ],
         'size' => [
-            'nothing ...',
+            '{attr} size validation is not through!',
             '{attr} must be an integer/string/array and minimum value/length is {min}',
             '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
         ],
         'range' => [
-            'nothing ...',
+            '{attr} range validation is not through!',
             '{attr} must be an integer/string/array and minimum value/length is {min}',
             '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
         ],

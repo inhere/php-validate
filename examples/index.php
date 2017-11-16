@@ -20,7 +20,7 @@ $data = [
 ];
 
 $rules = [
-    ['tagId,userId,freeTime', 'required', 'msg' => '{attr} is required!'],// set message
+    ['tagId,userId,freeTime', 'required'],// set message
     ['tagId,userId,freeTime', 'number'],
     ['note', 'email', 'skipOnEmpty' => false], // set skipOnEmpty is false.
     ['insertTime', 'email', 'scene' => 'otherScene' ],// set scene. will is not validate it on default.
@@ -63,6 +63,9 @@ echo "\n----------------------------\n use ValidationTrait\n--------------------
 //$model = new DataModel($_POST,$rules);
 $model = new DataModel;
 $model->setData($data)->setRules($rules);
+$model->setMessages([
+    'freeTime.required' => 'freeTime is required!!!!'
+]);
 $model->validate();
 
 print_r($model->getErrors());
@@ -72,6 +75,9 @@ echo "\n----------------------------\n use Validation\n-------------------------
 $valid = \Inhere\Validate\Validation::make($data, $rules)
         ->setTranslates([
             'goods.pear' => '梨子'
+        ])
+        ->setMessages([
+            'freeTime.required' => 'freeTime is required!!!!'
         ])
        ->validate([], false);
 

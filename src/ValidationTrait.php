@@ -128,6 +128,7 @@ trait ValidationTrait
         return [
             // validator name => message string
             // 'required' => '{attr} 是必填项。',
+            // 'required.username' => '用户名 是必填项。',
         ];
     }
 
@@ -196,11 +197,7 @@ trait ValidationTrait
         $stopOnError !== null && $this->setStopOnError((bool)$stopOnError);
 
         // 循环规则
-        foreach ($this->collectRules() as $rule) {
-            // 要检查的属性(字段)名称集
-            $attrs = array_shift($rule);
-            $attrs = is_string($attrs) ? array_map('trim', explode(',', $attrs)) : (array)$attrs;
-
+        foreach ($this->collectRules() as $attrs => $rule) {
             // 要使用的验证器(a string or a Closure)
             $validator = array_shift($rule);
 
@@ -249,7 +246,7 @@ trait ValidationTrait
                 if (is_string($validator) && 0 === strpos($validator, 'required')) {
                     if (!$this->fieldValidate($attr, $value, $validator, $args)) {
                         $this->_errors[] = [
-                            $attr => $this->getMessage($validator, ['{attr}' => $attr], $args, $message)
+                            $attr => $this->getMessage($validator, $attr, $args, $message)
                         ];
 
                         if ($this->_stopOnError) {
@@ -268,7 +265,7 @@ trait ValidationTrait
                 // 字段值检查 failed
                 if (!$this->valueValidate($data, $attr, $value, $validator, $args)) {
                     $this->_errors[] = [
-                        $attr => $this->getMessage($validator, ['{attr}' => $attr], $args, $message)
+                        $attr => $this->getMessage($validator, $attr, $args, $message)
                     ];
 
                     if ($this->_stopOnError) {
@@ -354,7 +351,6 @@ trait ValidationTrait
             $args[] = $data;
             $passed = $validator($value, ...$args);
         } elseif (is_string($validator)) {
-
             // if $validator is a custom add callback in the property {@see $_validators}.
             if (isset(self::$_validators[$validator])) {
                 $callback = self::$_validators[$validator];
@@ -412,16 +408,15 @@ trait ValidationTrait
     {
         $scene = $this->scene;
 
-        // 循环规则, 搜集当前场景可用的规则
         foreach ($this->getRules() as $rule) {
-            // check attrs
-            if (!isset($rule[0]) && !$rule[0]) {
+            // check fields
+            if (!isset($rule[0]) || !$rule[0]) {
                 throw new \InvalidArgumentException('Please setting the attrs(string|array) to wait validate! position: rule[0].');
             }
 
             // check validator
-            if (!is_string($rule[1]) && !($rule[1] instanceof \Closure)) {
-                throw new \InvalidArgumentException('The rule validator rule must be is a validator name or a Closure! position: rule[1].');
+            if (!isset($rule[1]) || !$rule[1]) {
+                throw new \InvalidArgumentException('The rule validator is must be setting! position: rule[1].');
             }
 
             // global rule.
@@ -432,15 +427,18 @@ trait ValidationTrait
             } else {
                 $sceneList = is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
 
-                if (in_array($scene, $sceneList, true)) {
-                    unset($rule['on']);
-                    $this->_availableRules[] = $rule;
-                } else {
+                if (!in_array($scene, $sceneList, true)) {
                     continue;
                 }
+
+                unset($rule['on']);
+                $this->_availableRules[] = $rule;
             }
 
-            yield $rule;
+            $attrs = array_shift($rule);
+            $attrs = is_string($attrs) ? array_map('trim', explode(',', $attrs)) : (array)$attrs;
+
+            yield $attrs => $rule;
         }
 
         // return $this->_availableRules;
@@ -561,13 +559,13 @@ trait ValidationTrait
     }
 
     /**
-     * @param string $name
+     * @param string $key
      * @param string $msg
      */
-    public static function setDefaultMessage($name, $msg)
+    public static function setDefaultMessage($key, $msg)
     {
-        if ($name && $msg) {
-            ErrorMessage::$messages[$name] = $msg;
+        if ($key && $msg) {
+            ErrorMessage::$messages[$key] = $msg;
         }
     }
 
@@ -580,38 +578,61 @@ trait ValidationTrait
     }
 
     /**
+     * @param array $messages
+     * @return $this
+     */
+    public function setMessages(array $messages)
+    {
+        foreach ($messages as $key => $value) {
+            self::setDefaultMessage($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
      * 各个验证器的提示消息
      * @author inhere
      * @date   2015-09-27
      * @param  string|\Closure $validator 验证器
-     * @param  array $params 待替换的参数
+     * @param  string $field
      * @param  array $args
-     * @param  string|array $msg 自定义提示消息
+     * @param  string|array $message 自定义提示消息
      * @return string
      */
-    public function getMessage($validator, array $params, array $args = [], $msg = null)
+    public function getMessage($validator, $field, array $args = [], $message = null)
     {
-        $name = $validator instanceof \Closure ? 'callback' : $validator;
+        $validator = is_string($validator) ? $validator : 'callback';
 
-        if (!$msg) {
-            $msgList = $this->getMessages();
-            $msg = $msgList[$name] ?? $msgList['_'];
+        // get message from default dict.
+        if (!$message) {
+            // allow define a message for a validator. eg: 'username.required' => 'some message ...'
+            $key = $field . '.' . $validator;
+            $messages = $this->getMessages();
+
+            if (isset($messages[$key])) {
+                $message = $messages[$key];
+            } else {
+                $message = $messages[$validator] ?? $messages['_'];
+            }
         }
 
-        $params['{attr}'] = $this->getTranslate($params['{attr}']);
+        $params = [
+            '{attr}' => $this->getTranslate($field)
+        ];
 
         foreach ($args as $key => $value) {
-            $key = is_int($key) ? "value$key" : $key;
+            $key = is_int($key) ? "value{$key}" : $key;
             $params['{' . $key . '}'] = is_array($value) ? implode(',', $value) : $value;
         }
 
-        if (is_array($msg)) {
-            $paramNum = count($params);
-            $msgKey = $paramNum - 1;
-            $msg = $msg[$msgKey] ?? $msg[0];
+        // @see ErrorMessage::$messages['size']
+        if (is_array($message)) {
+            $msgKey = count($params) - 1;
+            $message = $message[$msgKey] ?? $message[0];
         }
 
-        return strtr($msg, $params);
+        return strtr($message, $params);
     }
 
 //////////////////////////////////// custom validators ////////////////////////////////////
