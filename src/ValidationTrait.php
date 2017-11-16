@@ -11,6 +11,7 @@ namespace Inhere\Validate;
 
 use Inhere\Validate\Utils\ErrorMessage;
 use Inhere\Validate\Utils\Helper;
+use Inhere\Validate\Utils\RequiredValidatorsTrait;
 
 /**
  * Trait ValidationTrait
@@ -19,6 +20,8 @@ use Inhere\Validate\Utils\Helper;
  */
 trait ValidationTrait
 {
+    use RequiredValidatorsTrait;
+
     /**
      * custom add's validator by addValidator()
      * @var array
@@ -183,7 +186,7 @@ trait ValidationTrait
             return $this;
         }
 
-        $this->resetProperties(true);
+        $this->resetValidation(true);
 
         if ($cb = $this->_beforeHandler) {
             $cb($this);
@@ -293,7 +296,6 @@ trait ValidationTrait
         $this->_validated = true;
 
         unset($data);
-
         return $this;
     }
 
@@ -309,21 +311,18 @@ trait ValidationTrait
     {
         // required 检查
         if ($validator === 'required') {
-            $result = $this->required($attr);
+            $passed = $this->required($attr);
 
             // 其他 required* 方法
         } elseif (method_exists($this, $validator)) {
-            // 压入当前属性/字段名
-            array_unshift($args, $attr);
             $args = array_values($args);
-
-            $result = $this->$validator(...$args);
+            $passed = $this->$validator($attr, ...$args);
         } else {
             throw new \InvalidArgumentException("The validator [$validator] is not exists!");
         }
 
         // validate success, save value to safeData
-        if ($result) {
+        if ($passed) {
             $this->collectSafeValue($attr, $value);
 
             return true;
@@ -348,28 +347,30 @@ trait ValidationTrait
             return false;
         }
 
-        // 压入当前属性值 e.g. ValidatorList::range($val, $min, $max)
-        array_unshift($args, $value);
         $args = array_values($args);
 
         // if $validator is a closure
-        if ($validator instanceof \Closure) {
+        if (is_object($validator) && method_exists($validator, '__invoke')) {
             $args[] = $data;
-            $passed = $validator(...$args);
+            $passed = $validator($value, ...$args);
         } elseif (is_string($validator)) {
 
             // if $validator is a custom add callback in the property {@see $_validators}.
             if (isset(self::$_validators[$validator])) {
                 $callback = self::$_validators[$validator];
-                $passed = $callback(...$args);
+                $passed = $callback($value, ...$args);
 
                 // if $validator is a custom method of the subclass.
             } elseif (method_exists($this, $validator)) {
-                $passed = $this->$validator(...$args);
+                $passed = $this->$validator($value, ...$args);
 
                 // $validator is a method of the class 'ValidatorList'
             } elseif (method_exists(ValidatorList::class, $validator)) {
-                $passed = ValidatorList::$validator(...$args);
+                $passed = ValidatorList::$validator($value, ...$args);
+
+                // it is function name
+            } elseif (function_exists($validator)) {
+                $passed = $validator($value, ...$args);
             } else {
                 throw new \InvalidArgumentException("The validator [$validator] don't exists!");
             }
@@ -391,8 +392,9 @@ trait ValidationTrait
      * @param bool|false $clearErrors
      * @return $this
      */
-    protected function resetProperties($clearErrors = false)
+    protected function resetValidation($clearErrors = false)
     {
+        $this->_validated = false;
         $this->_safeData = $this->_availableRules = [];
 
         if ($clearErrors) {
@@ -458,152 +460,6 @@ trait ValidationTrait
         } else {
             $this->_safeData[$attr] = $value;
         }
-    }
-
-//////////////////////////////////// extra field validate methods ////////////////////////////////////
-
-    /**
-     * 验证字段必须存在输入数据，且不为空。字段符合下方任一条件时即为「空」
-     * - 该值为 null.
-     * - 该值为空字符串。
-     * - 该值为空数组
-     * @param  string $field
-     * @return bool
-     */
-    public function required($field)
-    {
-        if (!isset($this->data[$field])) {
-            return false;
-        }
-
-        $val = $this->data[$field];
-
-        return $val !== '' && $val !== null && $val !== false && $val !== [];
-    }
-
-    /**
-     * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 必填
-     * @from laravel
-     * @param  string $field
-     * @param  string $anotherField
-     * @param  array|string $values
-     * @return bool
-     */
-    public function requiredIf($field, $anotherField, $values)
-    {
-        if (!isset($this->data[$anotherField])) {
-            return false;
-        }
-
-        $val = $this->data[$anotherField];
-
-        if (in_array($val, (array)$values, true)) {
-            return $this->required($field);
-        }
-
-        return false;
-    }
-
-    /**
-     * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
-     * @from laravel
-     * @param  string $field
-     * @param  string $anotherField
-     * @param  array|string $values
-     * @return bool
-     */
-    public function requiredUnless($field, $anotherField, $values)
-    {
-        if (!isset($this->data[$anotherField])) {
-            return false;
-        }
-
-        if (in_array($this->data[$anotherField], (array)$values, true)) {
-            return true;
-        }
-
-        return $this->required($field);
-    }
-
-    /**
-     * 如果指定的字段中的 任意一个 有值且不为空，则此字段为必填
-     * @from laravel
-     * @param  string $field
-     * @param  array|string $fields
-     * @return bool
-     */
-    public function requiredWith($field, $fields)
-    {
-        foreach ((array)$fields as $name) {
-            if ($this->required($name)) {
-                return $this->required($field);
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * 如果指定的 所有字段 都有值，则此字段为必填。
-     * @from laravel
-     * @param  string $field
-     * @param  array|string $fields
-     * @return bool
-     */
-    public function requiredWithAll($field, $fields)
-    {
-        $allHasValue = true;
-
-        foreach ((array)$fields as $name) {
-            if (!$this->required($name)) {
-                $allHasValue = false;
-                break;
-            }
-        }
-
-        return $allHasValue ? $this->required($field) : true;
-    }
-
-    /**
-     * 如果缺少 任意一个 指定的字段值，则此字段为必填。
-     * @from laravel
-     * @param  string $field
-     * @param  array|string $fields
-     * @return bool
-     */
-    public function requiredWithout($field, $fields)
-    {
-        $allHasValue = true;
-
-        foreach ((array)$fields as $name) {
-            if (!$this->required($name)) {
-                $allHasValue = false;
-                break;
-            }
-        }
-
-        return $allHasValue ? true : $this->required($field);
-    }
-
-    /**
-     * 如果所有指定的字段 都没有 值，则此字段为必填。
-     * @from laravel
-     * @param  string $field
-     * @param  array|string $fields
-     * @return bool
-     */
-    public function requiredWithoutAll($field, $fields)
-    {
-        $allNoValue = true;
-
-        foreach ((array)$fields as $name) {
-            if ($this->required($name)) {
-                $allNoValue = false;
-                break;
-            }
-        }
-
-        return $allNoValue ? $this->required($field) : true;
     }
 
 //////////////////////////////////// error info ////////////////////////////////////

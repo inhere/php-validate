@@ -18,7 +18,8 @@ final class Factory
     const RULE_TO_FIELDS = 2;
 
     public static function make(
-        array $data = [], array $rules = [], array $translates = [], $type = self::RULE_TO_FIELDS, $startValidate = false
+        array $data = [], array $rules = [], array $translates = [],
+        $type = self::RULE_TO_FIELDS, $startValidate = false
     )
     {
 

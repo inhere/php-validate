@@ -19,7 +19,39 @@ namespace Inhere\Validate;
  * ```
  * @package Inhere\Validate
  */
-class FieldValidation
+class FieldValidation implements ValidationInterface
 {
+    use ValidationTrait {
+        //set as traitSet;
+        get as traitGet;// Methods to define an alias, can be used in the current class.
+    }
 
+    /**
+     * @var array
+     */
+    protected $data = [];
+
+    /**
+     * @param array $data
+     * @param array $rules
+     * @param array $translates
+     * @param string $scene
+     * @param bool $startValidate 立即开始验证
+     */
+    public function __construct(
+        array $data = [], array $rules = [], array $translates = [],
+        $scene = '', $startValidate = false
+    )
+    {
+        $this->data = $data;
+
+        $this
+            ->setRules($rules)
+            ->setScene($scene)
+            ->setTranslates($translates);
+
+        if ($startValidate) {
+            $this->validate();
+        }
+    }
 }

@@ -6,17 +6,20 @@
  * Time: 23:19
  */
 
-namespace Inhere\Validate;
+namespace Inhere\Validate\Filter;
 
 /**
  * Class Filtration
- * @package Inhere\Validate
+ * @package Inhere\Validate\Filter
  * usage:
  * $ft = Filtration::make($_POST, [
  *   ['tagId,userId,name,email,freeTime', 'int'],
- * ])->filter();
+ * ])->filtering();
  */
 class Filtration
 {
-
+    public function FunctionName($value='')
+    {
+        # code...
+    }
 }

@@ -54,4 +54,68 @@ class ValidatorListTest extends TestCase
         $this->assertTrue(ValidatorList::string(''));
         $this->assertTrue(ValidatorList::string('test', 2, 5));
     }
+
+    public function testAlpha()
+    {
+        $this->assertFalse(ValidatorList::alpha(5));
+        $this->assertFalse(ValidatorList::alpha('5'));
+        $this->assertTrue(ValidatorList::alpha('test'));
+    }
+
+
+    public function testAlphaNum()
+    {
+        $this->assertFalse(ValidatorList::alphaNum('='));
+        $this->assertTrue(ValidatorList::alphaNum(5));
+        $this->assertTrue(ValidatorList::alphaNum('5'));
+        $this->assertTrue(ValidatorList::alphaNum('6787test'));
+        $this->assertTrue(ValidatorList::alphaNum('test'));
+    }
+
+    public function testAlphaDash()
+    {
+        $this->assertFalse(ValidatorList::alphaDash('test='));
+
+        $this->assertTrue(ValidatorList::alphaDash('sdf56-_'));
+    }
+
+    public function testSize()
+    {
+        $this->assertFalse(ValidatorList::size('test', 5));
+        $this->assertFalse(ValidatorList::size(56, 20, 50));
+
+        $this->assertTrue(ValidatorList::size(56, 20, 100));
+        $this->assertTrue(ValidatorList::size('test', 2, 4));
+        $this->assertTrue(ValidatorList::size([3, 'test', 'hi'], 1, 4));
+    }
+
+    public function testMin()
+    {
+        $this->assertFalse(ValidatorList::min('test', 5));
+        $this->assertFalse(ValidatorList::min(56, 60));
+
+        $this->assertTrue(ValidatorList::min(56, 20));
+        $this->assertTrue(ValidatorList::min('test', 2));
+        $this->assertTrue(ValidatorList::min([3, 'test', 'hi'], 2));
+    }
+
+    public function testMax()
+    {
+        $this->assertFalse(ValidatorList::max('test', 3));
+        $this->assertFalse(ValidatorList::max(56, 50));
+
+        $this->assertTrue(ValidatorList::max(56, 60));
+        $this->assertTrue(ValidatorList::max('test', 5));
+        $this->assertTrue(ValidatorList::max([3, 'test', 'hi'], 5));
+    }
+
+    public function testLength()
+    {
+        $this->assertFalse(ValidatorList::length('test', 5));
+        $this->assertFalse(ValidatorList::length('test', 0, 3));
+        $this->assertFalse(ValidatorList::length(56, 60));
+
+        $this->assertTrue(ValidatorList::length('test', 3, 5));
+        $this->assertTrue(ValidatorList::length([3, 'test', 'hi'], 2, 5));
+    }
 }

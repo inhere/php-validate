@@ -1,29 +1,29 @@
 <?php
 /**
- * @date 2015.08.05
+ * @date 2015.08.05 sanitize
  * 过滤器(strainer/filter): 过滤数据，去除不合要求的数据，返回过滤后的数据(始终返回字符串, 全部不符合返回空字符串)
  */
 
-namespace Inhere\Validate;
+namespace Inhere\Validate\Filter;
 
 use Inhere\Validate\Utils\Helper;
 
 /**
  * Class FilterList
- * @package Inhere\Validate
+ * @package Inhere\Validate\Filter
  */
 final class FilterList
 {
     /**
      * simple trim space
-     * @param $var
-     * @return string
+     * @param string|array $var
+     * @return string|array
      */
     public static function trim($var)
     {
-        return is_array($var) ? array_walk_recursive($var, function (&$val) {
-            $val = trim((string)$val);
-        }) : trim((string)$var);
+        return is_array($var) ? array_map(function ($val) {
+            return is_string($val) ? trim($val) : $val;
+        }, $var) : trim((string)$var);
     }
 
     /**
@@ -58,7 +58,7 @@ final class FilterList
      * @param  int $end 结束位置
      * @return mixed
      */
-    public static function lengthCute($string, $start = 0, $end = null)
+    public static function stringCute($string, $start = 0, $end = null)
     {
         if (!is_string($string)) {
             return '';

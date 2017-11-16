@@ -10,6 +10,7 @@ namespace Inhere\Validate;
 
 /**
  * Class RuleValidation
+ * - alias of the Validation
  * - one rule to many fields. like Yii 1/2 framework
  * ```php
  * [
@@ -19,7 +20,7 @@ namespace Inhere\Validate;
  * ```
  * @package Inhere\Validate
  */
-class RuleValidation
+class RuleValidation extends Validation
 {
 
 }
