@@ -11,7 +11,7 @@
 - 支持自定义每个验证的错误消息，字段翻译，消息翻译，支持默认值
 - 支持基本的数组检查，数组的子级值检查
 - 方便的获取错误信息，验证后的安全数据获取
-- 已经内置了20多个常用的验证器
+- 已经内置了30多个常用的验证器
 
 ## 项目地址
 
@@ -54,75 +54,77 @@ git clone https://github.com/inhere/php-validate.git // github
 
 ```php
 
-    use Inhere\Validate\Validation;
+use Inhere\Validate\Validation;
 
-    class PageRequest extends Validation
+class PageRequest extends Validation
+{
+    public function rules()
     {
-        public function rules()
-        {
-            return [
-                ['tagId,title,userId,freeTime', 'required', 'msg' => '{attr} is required!'],
-                ['tagId', 'size', 'min'=>4, 'max'=>567], // 4<= tagId <=567
-                ['title', 'min', 40],
-                ['freeTime', 'number'],
-                ['tagId', 'number', 'when' => function($data) {
-                    return isset($data['status']) && $data['status'] > 2;
-                }],
-                ['userId', 'number', 'on' => 'scene1' ],
-                ['username', 'string', 'on' => 'scene2' ],
-                ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
-                ['title', 'customValidator', 'msg' => '{attr} error msg!' ],
-                ['status', function($status) {
-                    if ($status > 3) {
-                        return true;
-                    }
-                    return false;
-                }],
-                ['created_at, updated_at', 'safe'],
-            ];
-        }
-        
-        // 添加一个验证器。必须返回一个布尔值标明验证失败或成功
-        protected function customValidator($title)
-        {
-            // some logic ...
-
-            return true; // Or false;
-        }
-
-        // 定义字段翻译
-        public function translates()
-        {
-            return [
-              'userId' => '用户Id',
-            ];
-        }
-
-        // 自定义验证器的提示消息, 更多请看 {@see ValidationTrait::_defaultMessages}
-        public function messages()
-        {
-            return [
-              'required' => '{attr} 是必填项。',
-            ];
-        }
+        return [
+            ['tagId,title,userId,freeTime', 'required'],
+            ['tagId', 'size', 'min'=>4, 'max'=>567], // 4<= tagId <=567
+            ['title', 'min', 40],
+            ['freeTime', 'number'],
+            ['tagId', 'number', 'when' => function($data) {
+                return isset($data['status']) && $data['status'] > 2;
+            }],
+            ['userId', 'number', 'on' => 'scene1' ],
+            ['username', 'string', 'on' => 'scene2' ],
+            ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
+            ['title', 'customValidator', 'msg' => '{attr} error msg!' ], // 指定当前规则的消息
+            ['status', function($status) {
+                if (is_int($status) && $status > 3) {
+                    return true;
+                }
+                return false;
+            }],
+            ['createdAt, updatedAt', 'safe'], // 标记字段是安全可靠的。
+        ];
     }
+    
+    // 添加一个验证器。必须返回一个布尔值标明验证失败或成功
+    protected function customValidator($title)
+    {
+        // some logic ...
+
+        return true; // Or false;
+    }
+
+    // 定义字段翻译
+    public function translates()
+    {
+        return [
+          'userId' => '用户Id',
+        ];
+    }
+
+    // 自定义验证器的提示消息, 更多请看 {@see ValidationTrait::$messages}
+    public function messages()
+    {
+        return [
+          'required' => '{attr} 是必填项。',
+          // 可以直接针对字段的某个规则进行消息定义
+          'title.required' => 'O, 标题是必填项。',
+        ];
+    }
+}
 ```
 
 使用
 
 ```php
 // 验证 POST 数据
-$valid = PageRequest::make($_POST)->validate();
+$v = PageRequest::make($_POST)->validate();
 
 // 验证失败
-if ($valid->fail()) {
-    var_dump($valid->getErrors());
-    var_dump($valid->firstError());
+if ($v->fail()) {
+    var_dump($v->getErrors());
+    var_dump($v->firstError());
 }
 
 // 验证成功 ...
-$safeData = $valid->getSafeData(); // 验证通过的安全数据
-// $postData = $valid->all(); // 原始数据
+$safeData = $v->getSafeData(); // 验证通过的安全数据
+// $postData = $v->all(); // 原始数据
 
 $db->save($safeData);
 ```
@@ -132,104 +134,104 @@ $db->save($safeData);
 需要快速简便的使用验证时，可直接使用 `Inhere\Validate\Validation`
 
 ```php
+use Inhere\Validate\Validation;
 
-    use Inhere\Validate\Validation;
-
-    class SomeController
+class SomeController
+{
+    public function demoAction()
     {
-        public function demoAction()
-        {
-            $valid = Validation::make($_POST,[
-                // add rule
-                ['title', 'min', 40],
-                ['freeTime', 'number'],
-            ])->validate();
+        $v = Validation::make($_POST,[
+            // add rule
+            ['title', 'min', 40],
+            ['freeTime', 'number'],
+        ])->validate();
 
-            if ($valid->fail()) {
-                var_dump($valid->getErrors());
-                var_dump($valid->firstError());
-            }
-
-            // $postData = $valid->all(); // 原始数据
-            $safeData = $valid->getSafeData(); // 验证通过的安全数据
-
-            $db->save($safeData);
+        if ($v->fail()) {
+            var_dump($v->getErrors());
+            var_dump($v->firstError());
         }
+
+        // $postData = $v->all(); // 原始数据
+        $safeData = $v->getSafeData(); // 验证通过的安全数据
+
+        $db->save($safeData);
     }
+}
 ```
 
 ### 方式 1: 创建一个新的class，使用  ValidationTrait
 
 创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中
 
-如下， 嵌入到一个数据模型类中，添加数据库记录前自动进行验证
+如下， 嵌入到一个数据模型类中, 实现一个简单的模型基类，添加数据库记录前自动进行验证
 
 ```php
-    class DataModel
+class DataModel
+{
+    use \Inhere\Validate\ValidationTrait;
+
+    protected $data = [];
+
+    protected $db;
+
+    /**
+     * @param array $data
+     * @return $this
+     */
+    public function setData($data)
     {
-        use \Inhere\Validate\ValidationTrait;
+        $this->data = $data;
 
-        protected $data = [];
-
-        protected $db;
-
-        /**
-         * @param array $data
-         * @return $this
-         */
-        public function setData($data)
-        {
-            $this->data = $data;
-
-            return $this;
-        }
-
-        public function create()
-        {
-            if ($this->validate()->fail()) {
-                return false;
-            }
-
-            return $this->db->insert($this->getSafeData());
-        }
+        return $this;
     }
+
+    public function create()
+    {
+        if ($this->validate()->fail()) {
+            return false;
+        }
+
+        return $this->db->insert($this->getSafeData());
+    }
+}
 ```
 
 使用：
 
 ```php
-    class UserModel extends DataModel
+// on model class
+class UserModel extends DataModel
+{
+    public function rules()
     {
-        public function rules()
-        {
-            return [
-                ['username, passwd', 'required', 'on' => 'create' ],
-                ['passwd', 'compare', 'repasswd', 'on' => 'create']
-                ['username', 'string', 'min' => 2, 'max' => 20, 'on' => 'create' ],
-                ['id', 'number', 'on' => 'update' ],
-                ['created_at, updated_at', 'safe'],
-            ];
-        }
+        return [
+            ['username, passwd', 'required', 'on' => 'create' ],
+            ['passwd', 'compare', 'repasswd', 'on' => 'create']
+            ['username', 'string', 'min' => 2, 'max' => 20, 'on' => 'create' ],
+            ['id', 'number', 'on' => 'update' ],
+            ['createdAt, updatedAt', 'safe'],
+        ];
     }
-    
-    // ...
-    class UserController 
+}
+
+// on controller ...
+class UserController 
+{
+    // in action
+    // @api /user/add
+    public function addAction()
     {
-        // in action
-        // @api /user/add
-        public function addAction()
-        {
-            $model = new UserModel;
-            $ret = $model->setData($_POST)->atScene('create')->create();
+        $model = new UserModel;
+        $ret = $model->setData($_POST)->atScene('create')->create();
 
-            if (!$ret) {
-                exit($model->firstError());
-            }
-
-            echo "add success: userId = $ret";
+        if (!$ret) {
+            exit($model->firstError());
         }
 
+        echo "add success: userId = $ret";
     }
+
+}
 ```
 
 
@@ -240,7 +242,7 @@ $db->save($safeData);
 
 ```php
 
-$valid = Validation::make($_POST,[
+$v = Validation::make($_POST,[
         // add rule
         ['title', 'min', 40],
         ['freeTime', 'number'],
@@ -252,14 +254,12 @@ $valid = Validation::make($_POST,[
         return true; // 成功返回 True。 如果验证失败,返回 False.
     }, '{attr} default message!')
     ->validate();
-
 ```
 
 - 直接写闭包进行验证 e.g:
 
 ```php
     ['status', function($status) {
-
         if ($status > 3) {
             return true;
         }
@@ -373,7 +373,7 @@ $valid = Validation::make($_POST,[
 比如我们在写入数据库之前手动追加的字段: 创建时间，更新时间。
 
 ```php
-['created_at, updated_at', 'safe']
+['createdAt, updatedAt', 'safe']
 ```
 
 ## 一些关键方法使用说明
@@ -410,7 +410,7 @@ public function addValidator(string $name, \Closure $callback, string $msg = '')
 - `$callback` 自定义验证器。处理验证，为了简洁只允许闭包。
 - `$msg` 可选的。 当前验证器的错误消息
 
-### 获取验证是否通过
+### 判断验证是否通过
 
 ```
 // 验证失败
@@ -420,6 +420,7 @@ public function fail() // hasError() 的别名方法
 
 // 成功通过验证
 public function passed() 
+public function isPassed() // passed() 的别名方法
 ```
 
 获取验证是否通过(是否有验证失败)。
@@ -505,21 +506,24 @@ public function get(string $key, $default = null)
 `bool/boolean`  | 验证是否是 bool | `['open', 'bool']`
 `float` | 验证是否是 float | `['price', 'float']`
 `string`    | 验证是否是 string. 支持长度检查 | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
+`url`   | 验证是否是 url | `['myUrl', 'url']`
+`email` | 验证是否是 email | `['userEmail', 'email']`
 `alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
 `alphaNum`   | 验证是否仅包含字母、数字 | `['field', 'alphaNum']`
 `alphaDash`   | 验证是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ） | `['field', 'alphaDash']`
-`isArray`   | 验证是否是数组 | `['goods', 'isArray']`
 `isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
 `isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
+`isArray`   | 验证是否是数组 | `['goods', 'isArray']`
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
 `strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
-`size/range`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
-`length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
 `min`   | 最小边界值验证 | `['title', 'min', 40]`
 `max`   | 最大边界值验证 | `['title', 'max', 40]`
-`mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 0]`
+`size/range/between`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
+`length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
 `in`    | 枚举验证 | `['status', 'in', [1,2,3]`
 `notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
+`mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 0]`
+`compare/same/equal` | 字段值比较 | `['passwd', 'compare', 'repasswd']`
 `required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
 `requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
 `requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
@@ -527,15 +531,12 @@ public function get(string $key, $default = null)
 `requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填** | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
 `requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填** | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
 `requiredWithoutAll` | 如果所有指定的字段 都没有 值，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
-`url`   | 验证是否是 url | `['myUrl', 'url']`
-`email` | 验证是否是 email | `['userEmail', 'email']`
-`date` | 验证是否是 date | `['published_at', 'date']`
-`dateFormat` | 验证是否是 date, 并且是指定的格式 | `['published_at', 'dateFormat', 'Y-m-d']`
+`date` | 验证是否是 date | `['publishedAt', 'date']`
+`dateFormat` | 验证是否是 date, 并且是指定的格式 | `['publishedAt', 'dateFormat', 'Y-m-d']`
 `json`   | 验证是否是json字符串 | `['goods', 'json']`
 `ip`    | 验证是否是 IP | `['ipAddr', 'ip']`
 `ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
 `ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
-`compare/same` | 字段值比较 | `['passwd', 'compare', 'repasswd']`
 `regexp`    | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
 
 ### 一些补充说明
