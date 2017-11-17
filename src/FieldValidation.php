@@ -88,6 +88,7 @@ class FieldValidation extends AbstractValidation
         }
 
         list($name, $args) = explode(':', $rule, 2);
+        $args = trim($args, ', ');
         $row[0] = $name;
 
         switch ($name) {
@@ -96,8 +97,19 @@ class FieldValidation extends AbstractValidation
                 $row[] = array_map('trim', explode(',', $args));
                 break;
 
+            case 'size':
+            case 'range':
+            case 'string':
+            case 'between':
+                if (strpos($args, ',')) {
+                    list($row['min'], $row['max']) = array_map('trim', explode(',', $args, 2));
+                } else {
+                    $row['min'] = $args;
+                }
+                break;
             default:
-                $row[] = $args;
+                $args = strpos($args, ',') ? array_map('trim', explode(',', $args)) : [$args];
+                $row = array_merge($row, $args);
                 break;
         }
 

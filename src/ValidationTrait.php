@@ -4,13 +4,13 @@
  * Auth: Inhere
  * Date: 14-9-28
  * Time: 10:35
- * Used: 主要功能是 hi
  */
 
 namespace Inhere\Validate;
 
-use Inhere\Validate\Utils\ErrorMessage;
 use Inhere\Validate\Utils\Helper;
+use Inhere\Validate\Utils\ErrorMessageTrait;
+use Inhere\Validate\Utils\ErrorInformationTrait;
 use Inhere\Validate\Utils\RequiredValidatorsTrait;
 
 /**
@@ -20,7 +20,7 @@ use Inhere\Validate\Utils\RequiredValidatorsTrait;
  */
 trait ValidationTrait
 {
-    use RequiredValidatorsTrait;
+    use ErrorInformationTrait, ErrorMessageTrait, RequiredValidatorsTrait;
 
     /**
      * custom add's validator by addValidator()
@@ -39,14 +39,6 @@ trait ValidationTrait
     protected $scene = '';
 
     /**
-     * Whether there is error stop validation 是否出现验证失败就立即停止验证
-     * True  -- 出现一个验证失败即停止验证,并退出
-     * False -- 全部验证并将错误信息保存到 {@see $_errors}
-     * @var boolean
-     */
-    private $_stopOnError = true;
-
-    /**
      * @var bool
      */
     private $_validated = false;
@@ -56,17 +48,6 @@ trait ValidationTrait
      * @var array
      */
     private $_safeData = [];
-
-    /**
-     * 保存所有的验证错误信息
-     * @var array[]
-     * [
-     *     [ field => errorMessage1 ],
-     *     [ field => errorMessage2 ],
-     *     [ field2 => errorMessage3 ]
-     * ]
-     */
-    private $_errors = [];
 
     /**
      * the rules is by setRules()
@@ -79,12 +60,6 @@ trait ValidationTrait
      * @var array
      */
     private $_availableRules = [];
-
-    /**
-     * attribute field translate list
-     * @var array
-     */
-    private $_translates = [];
 
     /**
      * before validate handler
@@ -149,7 +124,7 @@ trait ValidationTrait
      * @param  \Closure $cb
      * @return static
      */
-    public function before(\Closure $cb)
+    public function beforeValidate(\Closure $cb)
     {
         $this->_beforeHandler = $cb;
 
@@ -161,7 +136,7 @@ trait ValidationTrait
      * @param  \Closure $cb
      * @return static
      */
-    public function after(\Closure $cb)
+    public function afterValidate(\Closure $cb)
     {
         $this->_afterHandler = $cb;
 
@@ -180,7 +155,7 @@ trait ValidationTrait
     public function validate(array $onlyChecked = [], $stopOnError = null)
     {
         if (!property_exists($this, 'data')) {
-            throw new \InvalidArgumentException('Must be defined property "data (array)" in the sub-class used.');
+            throw new \InvalidArgumentException('Must be defined property "data"(array) in the sub-class used.');
         }
 
         if ($this->_validated) {
@@ -188,13 +163,13 @@ trait ValidationTrait
         }
 
         $this->resetValidation(true);
+        $this->setStopOnError($stopOnError);
 
         if ($cb = $this->_beforeHandler) {
             $cb($this);
         }
 
         $data = $this->data;
-        $stopOnError !== null && $this->setStopOnError((bool)$stopOnError);
 
         // 循环规则
         foreach ($this->collectRules() as $attrs => $rule) {
@@ -245,11 +220,9 @@ trait ValidationTrait
                 // required* 系列字段检查器
                 if (is_string($validator) && 0 === strpos($validator, 'required')) {
                     if (!$this->fieldValidate($attr, $value, $validator, $args)) {
-                        $this->_errors[] = [
-                            $attr => $this->getMessage($validator, $attr, $args, $message)
-                        ];
+                        $this->addError($attr, $this->getMessage($validator, $attr, $args, $message));
 
-                        if ($this->_stopOnError) {
+                        if ($this->isStopOnError()) {
                             break;
                         }
                     }
@@ -264,18 +237,16 @@ trait ValidationTrait
 
                 // 字段值检查 failed
                 if (!$this->valueValidate($data, $attr, $value, $validator, $args)) {
-                    $this->_errors[] = [
-                        $attr => $this->getMessage($validator, $attr, $args, $message)
-                    ];
+                    $this->addError($attr, $this->getMessage($validator, $attr, $args, $message));
 
-                    if ($this->_stopOnError) {
+                    if ($this->isStopOnError()) {
                         break;
                     }
                 }
             }
 
             // There is an error an immediate end to verify
-            if ($this->_stopOnError && $this->hasError()) {
+            if ($this->isStopOnError() && $this->hasError()) {
                 break;
             }
         }
@@ -482,193 +453,16 @@ trait ValidationTrait
         return $this->compare($val, $compareField);
     }
 
-    /*******************************************************************************
-     * Errors
-     ******************************************************************************/
-
-    /**
-     * @return $this
-     */
-    public function clearErrors()
-    {
-        $this->_errors = [];
-
-        return $this;
-    }
-
-    /**
-     * 是否有错误
-     * @return boolean
-     */
-    public function hasError(): bool
-    {
-        return $this->isFail();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isFail(): bool
-    {
-        return count($this->_errors) > 0;
-    }
-
-    /**
-     * @return bool
-     */
-    public function fail(): bool
-    {
-        return $this->isFail();
-    }
-
-    /**
-     * @return bool
-     */
-    public function passed(): bool
-    {
-        return !$this->isFail();
-    }
-
-    /**
-     * @param string $attr
-     * @param string $msg
-     */
-    public function addError(string $attr, string $msg)
-    {
-        $this->_errors[] = [$attr => $msg];
-    }
-
-    /**
-     * @return array
-     */
-    public function getErrors(): array
-    {
-        return $this->_errors;
-    }
-
-    /**
-     * 得到第一个错误信息
-     * @author inhere
-     * @param bool $onlyMsg
-     * @return array|string
-     */
-    public function firstError($onlyMsg = true)
-    {
-        $e = $this->_errors;
-        $first = array_shift($e);
-
-        return $onlyMsg ? array_values($first)[0] : $first;
-    }
-
-    /**
-     * 得到最后一个错误信息
-     * @author inhere
-     * @param bool $onlyMsg
-     * @return array|string
-     */
-    public function lastError($onlyMsg = true)
-    {
-        $e = $this->_errors;
-        $last = array_pop($e);
-
-        return $onlyMsg ? array_values($last)[0] : $last;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getDefaultMessages(): array
-    {
-        return ErrorMessage::$messages;
-    }
-
-    /**
-     * @param string $key
-     * @param string $msg
-     */
-    public static function setDefaultMessage($key, $msg)
-    {
-        if ($key && $msg) {
-            ErrorMessage::$messages[$key] = $msg;
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getMessages(): array
-    {
-        return array_merge(self::getDefaultMessages(), $this->messages());
-    }
-
-    /**
-     * @param array $messages
-     * @return $this
-     */
-    public function setMessages(array $messages)
-    {
-        foreach ($messages as $key => $value) {
-            self::setDefaultMessage($key, $value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * 各个验证器的提示消息
-     * @author inhere
-     * @date   2015-09-27
-     * @param  string|\Closure $validator 验证器
-     * @param  string $field
-     * @param  array $args
-     * @param  string|array $message 自定义提示消息
-     * @return string
-     */
-    public function getMessage($validator, $field, array $args = [], $message = null)
-    {
-        $validator = is_string($validator) ? $validator : 'callback';
-
-        // get message from default dict.
-        if (!$message) {
-            // allow define a message for a validator. eg: 'username.required' => 'some message ...'
-            $key = $field . '.' . $validator;
-            $messages = $this->getMessages();
-
-            if (isset($messages[$key])) {
-                $message = $messages[$key];
-            } else {
-                $message = $messages[$validator] ?? $messages['_'];
-            }
-        }
-
-        $params = [
-            '{attr}' => $this->getTranslate($field)
-        ];
-
-        foreach ($args as $key => $value) {
-            $key = is_int($key) ? "value{$key}" : $key;
-            $params['{' . $key . '}'] = is_array($value) ? implode(',', $value) : $value;
-        }
-
-        // @see ErrorMessage::$messages['size']
-        if (is_array($message)) {
-            $msgKey = count($params) - 1;
-            $message = $message[$msgKey] ?? $message[0];
-        }
-
-        return strtr($message, $params);
-    }
-
 //////////////////////////////////// custom validators ////////////////////////////////////
 
     /**
      * add a custom validator
      * ```
-     * $valid = ValidatorClass::make($_POST)
-     *          ->addValidator('name',function($val [, $arg1, $arg2 ... ]){
-     *              return $val === 23;
-     *          });
-     * $valid->validate();
+     * $vd = ValidatorClass::make($_POST)
+     *     ->addValidator('name',function($val [, $arg1, $arg2 ... ]){
+     *           return $val === 23;
+     *     });
+     * $vd->validate();
      * ```
      * @param string $name
      * @param \Closure $callback
@@ -745,101 +539,11 @@ trait ValidationTrait
 //////////////////////////////////// getter/setter ////////////////////////////////////
 
     /**
-     * @param bool $stopOnError
-     * @return $this
-     */
-    public function setStopOnError(bool $stopOnError = true)
-    {
-        $this->_stopOnError = $stopOnError;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isStopOnError(): bool
-    {
-        return $this->_stopOnError;
-    }
-
-    /**
      * @return bool
      */
     public function isValidated(): bool
     {
         return $this->_validated;
-    }
-
-    /**
-     * set the attrs translation data
-     * @param array $attrTrans
-     * @return $this
-     */
-    public function setTranslates(array $attrTrans)
-    {
-        $this->_translates = $attrTrans;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTranslates(): array
-    {
-        static $translates;
-
-        if (!$translates) {
-            $translates = array_merge($this->translates(), $this->_translates);
-        }
-
-        return $translates;
-    }
-
-    /**
-     * @param string $attr
-     * @return string
-     */
-    public function getTranslate(string $attr): string
-    {
-        $trans = $this->getTranslates();
-
-        return $trans[$attr] ?? Helper::toUnderscoreCase($attr, ' ');
-    }
-
-    /**
-     * @deprecated please use getTranslate() instead.
-     * @param string $attr
-     * @return string
-     */
-    public function getAttrTran(string $attr): string
-    {
-        $trans = $this->getAttrTrans();
-
-        return $trans[$attr] ?? Helper::toUnderscoreCase($attr, ' ');
-    }
-
-    /**
-     * @deprecated please use getTranslates() instead.
-     * @return array
-     */
-    public function getAttrTrans(): array
-    {
-        return array_merge($this->attrTrans(), $this->_translates);
-    }
-
-    /**
-     * set the attrs translation data
-     * @deprecated please use setTranslates() instead.
-     * @param array $attrTrans
-     * @return $this
-     */
-    public function setAttrTrans(array $attrTrans)
-    {
-        $this->_translates = $attrTrans;
-
-        return $this;
     }
 
     /**
