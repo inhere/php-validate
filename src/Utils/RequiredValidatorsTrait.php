@@ -49,7 +49,7 @@ trait RequiredValidatorsTrait
 
         $val = $this->data[$anotherField];
 
-        if (in_array($val, (array)$values, true)) {
+        if (\in_array($val, (array)$values, true)) {
             return $this->required($field);
         }
 

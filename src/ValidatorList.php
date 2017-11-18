@@ -30,7 +30,7 @@ final class ValidatorList
      */
     public static function trim($val)
     {
-        return is_string($val) ? trim($val) : $val;
+        return \is_string($val) ? trim($val) : $val;
     }
 
     /**
@@ -54,7 +54,7 @@ final class ValidatorList
      */
     public static function isEmpty($val)
     {
-        if (is_string($val)) {
+        if (\is_string($val)) {
             $val = trim($val);
         }
 
@@ -126,7 +126,7 @@ final class ValidatorList
      */
     public static function string($val, $minLength = 0, $maxLength = null)
     {
-        return !is_string($val) ? false : self::length($val, $minLength, $maxLength);
+        return !\is_string($val) ? false : self::length($val, $minLength, $maxLength);
     }
 
     /**
@@ -136,7 +136,7 @@ final class ValidatorList
      */
     public static function alpha($val)
     {
-        return is_string($val) && preg_match('/^[a-zA-Z]+$/', $val);
+        return \is_string($val) && preg_match('/^[a-zA-Z]+$/', $val);
     }
 
     /**
@@ -146,7 +146,7 @@ final class ValidatorList
      */
     public static function alphaNum($val)
     {
-        if (!is_string($val) && !is_numeric($val)) {
+        if (!\is_string($val) && !is_numeric($val)) {
             return false;
         }
 
@@ -160,7 +160,7 @@ final class ValidatorList
      */
     public static function alphaDash($val)
     {
-        if (!is_string($val) && !is_numeric($val)) {
+        if (!\is_string($val) && !is_numeric($val)) {
             return false;
         }
 
@@ -181,10 +181,10 @@ final class ValidatorList
 
         if (is_numeric($val)) {
             $val = (int)$val;
-        } elseif (is_string($val)) {
+        } elseif (\is_string($val)) {
             $val = Helper::strlen(trim($val));
-        } elseif (is_array($val)) {
-            $val = count($val);
+        } elseif (\is_array($val)) {
+            $val = \count($val);
         } else {
             return false;
         }
@@ -263,7 +263,7 @@ final class ValidatorList
      */
     public static function length($val, $minLength = 0, $maxLength = null)
     {
-        if (!is_string($val) && !is_array($val)) {
+        if (!\is_string($val) && !\is_array($val)) {
             return false;
         }
 
@@ -446,7 +446,7 @@ final class ValidatorList
      */
     public static function isArray($val)
     {
-        return is_array($val);
+        return \is_array($val);
     }
 
     /**
@@ -456,12 +456,12 @@ final class ValidatorList
      */
     public static function isMap($val)
     {
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             return false;
         }
 
         foreach ($val as $k => $v) {
-            if (is_string($k)) {
+            if (\is_string($k)) {
                 return true;
             }
         }
@@ -476,14 +476,14 @@ final class ValidatorList
      */
     public static function isList($val)
     {
-        if (!is_array($val) || !isset($val[0])) {
+        if (!\is_array($val) || !isset($val[0])) {
             return false;
         }
 
         $prevKey = 0;
 
         foreach ($val as $k => $v) {
-            if (!is_int($k)) {
+            if (!\is_int($k)) {
                 return false;
             }
 
@@ -504,7 +504,7 @@ final class ValidatorList
      */
     public static function intList($val)
     {
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             return false;
         }
 
@@ -524,12 +524,12 @@ final class ValidatorList
      */
     public static function strList($val)
     {
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             return false;
         }
 
         foreach ($val as $v) {
-            if (is_string($v)) {
+            if (\is_string($v)) {
                 return true;
             }
         }
@@ -544,7 +544,7 @@ final class ValidatorList
      */
     public static function json($val)
     {
-        if (!$val || (!is_string($val) && !method_exists($val, '__toString'))) {
+        if (!$val || (!\is_string($val) && !method_exists($val, '__toString'))) {
             return false;
         }
 
@@ -560,11 +560,11 @@ final class ValidatorList
      */
     public static function in($val, $dict)
     {
-        if (is_string($dict) && strpos($dict, ',')) {
+        if (\is_string($dict) && strpos($dict, ',')) {
             $dict = array_map('trim', explode(',', $dict));
         }
 
-        return in_array($val, (array)$dict, true);
+        return \in_array($val, (array)$dict, true);
     }
 
     /**
@@ -574,11 +574,11 @@ final class ValidatorList
      */
     public static function notIn($val, $dict)
     {
-        if (is_string($dict) && strpos($dict, ',')) {
+        if (\is_string($dict) && strpos($dict, ',')) {
             $dict = array_map('trim', explode(',', $dict));
         }
 
-        return !in_array($val, (array)$dict, true);
+        return !\in_array($val, (array)$dict, true);
     }
 
     /**

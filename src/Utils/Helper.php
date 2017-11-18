@@ -17,11 +17,11 @@ class Helper
      */
     public static function strtolower($str)
     {
-        if (is_array($str)) {
+        if (\is_array($str)) {
             return false;
         }
 
-        if (function_exists('mb_strtolower')) {
+        if (\function_exists('mb_strtolower')) {
             return mb_strtolower($str, 'utf-8');
         }
 
@@ -37,11 +37,11 @@ class Helper
     {
         $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
 
-        if (function_exists('mb_strlen')) {
+        if (\function_exists('mb_strlen')) {
             return mb_strlen($str, $encoding);
         }
 
-        return strlen($str);
+        return \strlen($str);
     }
 
     /**
@@ -50,11 +50,11 @@ class Helper
      */
     public static function strtoupper($str)
     {
-        if (is_array($str)) {
+        if (\is_array($str)) {
             return false;
         }
 
-        if (function_exists('mb_strtoupper')) {
+        if (\function_exists('mb_strtoupper')) {
             return mb_strtoupper($str, 'utf-8');
         }
 
@@ -70,11 +70,11 @@ class Helper
      */
     public static function substr($str, $start, $length = false, $encoding = 'utf-8')
     {
-        if (is_array($str)) {
+        if (\is_array($str)) {
             return false;
         }
 
-        if (function_exists('mb_substr')) {
+        if (\function_exists('mb_substr')) {
             return mb_substr($str, (int)$start, ($length === false ? self::strlen($str) : (int)$length), $encoding);
         }
 
@@ -90,7 +90,7 @@ class Helper
      */
     public static function strpos($str, $find, $offset = 0, $encoding = 'UTF-8')
     {
-        if (function_exists('mb_strpos')) {
+        if (\function_exists('mb_strpos')) {
             return mb_strpos($str, $find, $offset, $encoding);
         }
 
@@ -106,7 +106,7 @@ class Helper
      */
     public static function strrpos($str, $find, $offset = 0, $encoding = 'utf-8')
     {
-        if (function_exists('mb_strrpos')) {
+        if (\function_exists('mb_strrpos')) {
             return mb_strrpos($str, $find, $offset, $encoding);
         }
 
@@ -128,7 +128,7 @@ class Helper
      */
     public static function ucwords($str)
     {
-        if (function_exists('mb_convert_case')) {
+        if (\function_exists('mb_convert_case')) {
             return mb_convert_case($str, MB_CASE_TITLE);
         }
 
@@ -186,7 +186,7 @@ class Helper
         }
 
         foreach (explode('.', $key) as $segment) {
-            if (is_array($array) && array_key_exists($segment, $array)) {
+            if (\is_array($array) && array_key_exists($segment, $array)) {
                 $array = $array[$segment];
             } else {
                 return $default;
@@ -200,10 +200,11 @@ class Helper
      * @param $cb
      * @param array $args
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public static function call($cb, ...$args)
     {
-        if (is_string($cb)) {
+        if (\is_string($cb)) {
             // function
             if (strpos($cb, '::') === false) {
                 return $cb(...$args);
@@ -211,14 +212,14 @@ class Helper
 
             // ClassName/Service::method
             $cb = explode('::', $cb, 2);
-        } elseif (is_object($cb) && method_exists($cb, '__invoke')) {
+        } elseif (\is_object($cb) && method_exists($cb, '__invoke')) {
             return $cb(...$args);
         }
 
-        if (is_array($cb)) {
+        if (\is_array($cb)) {
             list($obj, $mhd) = $cb;
 
-            return is_object($obj) ? $obj->$mhd(...$args) : $obj::$mhd(...$args);
+            return \is_object($obj) ? $obj->$mhd(...$args) : $obj::$mhd(...$args);
         }
 
         throw new \InvalidArgumentException('The parameter is not a callable');

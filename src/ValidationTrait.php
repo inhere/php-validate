@@ -150,6 +150,7 @@ trait ValidationTrait
      * @param  array $onlyChecked 可以设置此次需要验证的字段
      * @param  bool|null $stopOnError 是否出现错误即停止验证
      * @return static
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
     public function validate(array $onlyChecked = [], $stopOnError = null)
@@ -173,6 +174,7 @@ trait ValidationTrait
 
         // 循环规则
         foreach ($this->collectRules() as $attrs => $rule) {
+            $attrs = \is_string($attrs) ? array_map('trim', explode(',', $attrs)) : (array)$attrs;
             // 要使用的验证器(a string or a Closure)
             $validator = array_shift($rule);
 
@@ -207,7 +209,7 @@ trait ValidationTrait
                 $value = $this->getValue($attr, $defValue);
 
                 // 不在需要检查的列表内
-                if ($onlyChecked && !in_array($attr, $onlyChecked, true)) {
+                if ($onlyChecked && !\in_array($attr, $onlyChecked, true)) {
                     continue;
                 }
 
@@ -218,7 +220,7 @@ trait ValidationTrait
                 }
 
                 // required* 系列字段检查器
-                if (is_string($validator) && 0 === strpos($validator, 'required')) {
+                if (\is_string($validator) && 0 === strpos($validator, 'required')) {
                     if (!$this->fieldValidate($attr, $value, $validator, $args)) {
                         $this->addError($attr, $this->getMessage($validator, $attr, $args, $message));
 
@@ -274,6 +276,7 @@ trait ValidationTrait
      * @param string $validator required* 验证器
      * @param array $args 验证需要的参数
      * @return bool
+     * @throws \InvalidArgumentException
      */
     protected function fieldValidate($attr, $value, $validator, $args)
     {
@@ -307,6 +310,7 @@ trait ValidationTrait
      * @param \Closure|string $validator 验证器
      * @param array $args 验证需要的参数
      * @return bool
+     * @throws \InvalidArgumentException
      */
     protected function valueValidate($data, $attr, $value, $validator, $args)
     {
@@ -318,10 +322,10 @@ trait ValidationTrait
         $args = array_values($args);
 
         // if $validator is a closure
-        if (is_object($validator) && method_exists($validator, '__invoke')) {
+        if (\is_object($validator) && method_exists($validator, '__invoke')) {
             $args[] = $data;
             $passed = $validator($value, ...$args);
-        } elseif (is_string($validator)) {
+        } elseif (\is_string($validator)) {
             // if $validator is a custom add callback in the property {@see $_validators}.
             if (isset(self::$_validators[$validator])) {
                 $callback = self::$_validators[$validator];
@@ -336,7 +340,7 @@ trait ValidationTrait
                 $passed = ValidatorList::$validator($value, ...$args);
 
                 // it is function name
-            } elseif (function_exists($validator)) {
+            } elseif (\function_exists($validator)) {
                 $passed = $validator($value, ...$args);
             } else {
                 throw new \InvalidArgumentException("The validator [$validator] don't exists!");
@@ -374,6 +378,7 @@ trait ValidationTrait
     /**
      * 收集当前场景可用的规则列表
      * Collect the current scenario of the available rules list
+     * @throws \InvalidArgumentException
      */
     protected function collectRules()
     {
@@ -396,9 +401,9 @@ trait ValidationTrait
 
                 // only use to special scene.
             } else {
-                $sceneList = is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
+                $sceneList = \is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
 
-                if ($scene && !in_array($scene, $sceneList, true)) {
+                if ($scene && !\in_array($scene, $sceneList, true)) {
                     continue;
                 }
 
@@ -407,7 +412,6 @@ trait ValidationTrait
             }
 
             $attrs = array_shift($rule);
-            $attrs = is_string($attrs) ? array_map('trim', explode(',', $attrs)) : (array)$attrs;
 
             yield $attrs => $rule;
         }
@@ -437,7 +441,7 @@ trait ValidationTrait
 
     /**
      * @param mixed $val
-     * @param mixed $compareVal
+     * @param string $compareField
      * @return bool
      */
     public function compare($val, $compareField)

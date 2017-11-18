@@ -19,9 +19,13 @@ final class Factory
 
     public static function make(
         array $data = [], array $rules = [], array $translates = [],
-        $type = self::FIELDS, $startValidate = false
+        $type = self::RULES, $scene = '', $startValidate = false
     )
     {
+        if ($type === self::FIELDS) {
+            return FieldValidation::make($data, $rules, $translates, $scene, $startValidate);
+        }
 
+        return Validation::make($data, $rules, $translates, $scene, $startValidate);
     }
 }

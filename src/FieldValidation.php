@@ -32,6 +32,10 @@ class FieldValidation extends AbstractValidation
         ];
     }
 
+    /**
+     * @return \Generator
+     * @throws \InvalidArgumentException
+     */
     protected function collectRules()
     {
         $scene = $this->scene;
@@ -50,9 +54,9 @@ class FieldValidation extends AbstractValidation
 
             // an rule for special sence.
             if (!empty($rule['on'])) {
-                $sceneList = is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
+                $sceneList = \is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
 
-                if ($scene && !in_array($scene, $sceneList, true)) {
+                if ($scene && !\in_array($scene, $sceneList, true)) {
                     continue;
                 }
 
@@ -62,22 +66,27 @@ class FieldValidation extends AbstractValidation
 
             $field = trim(array_shift($rule));
 
-            if (is_object($rule[0])) {
-                yield [$field] => $rule;
+            if (\is_object($rule[0])) {
+                yield $field => $rule;
             } else {
                 // 'required|string:5,10;' OR 'required|in:5,10'
-                $rules = is_array($rule[0]) ? $rule[0] : array_map('trim', explode('|', $rule[0]));
+                $rules = \is_array($rule[0]) ? $rule[0] : array_map('trim', explode('|', $rule[0]));
 
                 foreach ($rules as $aRule) {
                     $rule = $this->parseRule($aRule, $rule);
 
-                    yield [$field] => $rule;
+                    yield $field => $rule;
                 }
             }
 
         }
     }
 
+    /**
+     * @param string $rule
+     * @param array $row
+     * @return array
+     */
     protected function parseRule($rule, $row)
     {
         $rule = trim($rule, ': ');

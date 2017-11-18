@@ -61,7 +61,7 @@ trait ErrorInformationTrait
      */
     public function isFail(): bool
     {
-        return count($this->_errors) > 0;
+        return \count($this->_errors) > 0;
     }
 
     /**

@@ -138,7 +138,7 @@ trait ErrorMessageTrait
      */
     public function getMessage($validator, $field, array $args = [], $message = null)
     {
-        $validator = is_string($validator) ? $validator : 'callback';
+        $validator = \is_string($validator) ? $validator : 'callback';
 
         // get message from default dict.
         if (!$message) {
@@ -158,13 +158,13 @@ trait ErrorMessageTrait
         ];
 
         foreach ($args as $key => $value) {
-            $key = is_int($key) ? "value{$key}" : $key;
-            $params['{' . $key . '}'] = is_array($value) ? implode(',', $value) : $value;
+            $key = \is_int($key) ? "value{$key}" : $key;
+            $params['{' . $key . '}'] = \is_array($value) ? implode(',', $value) : $value;
         }
 
         // @see self::$messages['size']
-        if (is_array($message)) {
-            $msgKey = count($params) - 1;
+        if (\is_array($message)) {
+            $msgKey = \count($params) - 1;
             $message = $message[$msgKey] ?? $message[0];
         }
 
