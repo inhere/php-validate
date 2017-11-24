@@ -72,7 +72,7 @@ print_r($model->getErrors());
 
 echo "\n----------------------------\n use Validation\n----------------------------\n\n";
 
-$valid = \Inhere\Validate\Validation::make($data, $rules)
+$v = \Inhere\Validate\Validation::make($data, $rules)
         ->setTranslates([
             'goods.pear' => '梨子'
         ])
@@ -81,5 +81,5 @@ $valid = \Inhere\Validate\Validation::make($data, $rules)
         ])
        ->validate([], false);
 
-print_r($valid->getErrors());
+print_r($v->getErrors());
 

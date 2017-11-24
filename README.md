@@ -1,17 +1,22 @@
-# php-validate
+# php validate
 
 一个简洁小巧且功能完善的php验证库。仅有几个文件，无依赖。
 
-功能：
-
 - 简单方便，支持添加自定义验证器
-- 规则设置参考自 yii 的。部分规则参考自 laravel
 - 支持前置验证检查, 自定义如何判断非空
-- 支持将规则按场景进行分组设置
+- 支持将规则按场景进行分组设置。或者部分验证
+- 支持在进行验证前对值使用过滤器进行净化过滤[内置过滤器](#built-in-filters)
 - 支持自定义每个验证的错误消息，字段翻译，消息翻译，支持默认值
 - 支持基本的数组检查，数组的子级值检查
 - 方便的获取错误信息，验证后的安全数据获取
-- 已经内置了30多个常用的验证器
+- 已经内置了30多个常用的验证器[内置验证器](#built-in-validators)
+- 规则设置参考自 yii 的。部分规则参考自 laravel
+- `RuleValidation` 规则配置类似于Yii: 每条规则中，允许多个字段，但只能有一个验证器。
+  - e.g `['tagId,userId,name,email,freeTime', 'required', ...]`(下面的示例都是这种)
+- `FieldValidation` 规则配置类似于Laravel: 每条规则中，只能有一个字段，但允许多个验证器。
+  - e.g `['field', 'required|string:5,10|...', ...]`
+
+> 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration`. 只用于数据过滤。
 
 ## 项目地址
 
@@ -21,7 +26,7 @@
 **注意：**
 
 - master 分支是要求 `php >= 7` 的(推荐使用)。
-- php5 分支是支持 php 5 的代码分支
+- php5 分支是支持 php 5 的代码分支(不再维护)
 
 ## 安装
 
@@ -104,7 +109,7 @@ class PageRequest extends Validation
         return [
           'required' => '{attr} 是必填项。',
           // 可以直接针对字段的某个规则进行消息定义
-          'title.required' => 'O, 标题是必填项。',
+          'title.required' => 'O, 标题是必填项。are you known?',
         ];
     }
 }
@@ -268,13 +273,33 @@ $v = Validation::make($_POST,[
     }]
 ```
 
-## 规则关键词说明
+## 规则关键词
+
+除了可以添加字段的验证之外，还有一些特殊关键词可以设置使用，以适应各种需求。
 
 ### `default` -- 设置字段的默认值
 
 给一个或多个字段设置一个默认值。
 
+```php
+['page', 'number', 'default' => 1],
+['pageSize', 'number', 'default' => 15],
+```
+
 > NOTICE: 默认值也会被验证器验证
+
+### `msg` -- 设置错误提示消息
+
+设置当前规则的错误提示消息, 设置了后就不会在使用默认的提示消息。
+
+```php
+['title', 'customValidator', 'msg' => '{attr} error msg!' ], // 指定当前规则的消息
+// o, 可以是数组哦 :)
+['tagId,title,userId,freeTime', 'required', 'msg' => [
+  'tagId' => 'message ...',
+  'userId' => 'message 1 ...',
+]],
+```
 
 ### `on` -- 设置规则使用场景
 
@@ -338,8 +363,7 @@ $v = Validation::make($_POST,[
 ```
 
 提交的数据中 没有 `name` 字段或者 `$data['name']` 等于空都不会进行 `string` 验证;
-只有当 `$data['name']` 有值且不为空时才会验证是否是string
-
+只有当 `$data['name']` **有值且不为空** 时才会验证是否是 `string`
 
 如果要想为空时也检查, 请将此字段同时加入 `required` 规则中. 
 
@@ -366,14 +390,38 @@ $v = Validation::make($_POST,[
  }]
 ```
 
-### `safe` -- 标记属性/字段是安全的
+### `filter` -- 使用过滤器
 
-标记属性/字段是安全的，无需验证，直接加入到安全数据中。
+支持在进行验证前对值使用过滤器进行净化过滤[内置过滤器](#built-in-filters)
 
-比如我们在写入数据库之前手动追加的字段: 创建时间，更新时间。
+> 允许同时使用多个过滤器。字符串使用 `|` 分隔，或者配置为数组。
 
 ```php
-['createdAt, updatedAt', 'safe']
+['tagId,userId,freeTime', 'number', 'filter' => 'int'],
+['field', 'validator', 'filter' => 'filter0|filter1...'],
+```
+
+> 过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
+
+### 一个完整的规则示例
+
+一个完整的规则示例, 包含了所有可添加的项。
+
+```php
+// a full rule: 
+[
+ // validate setting
+ 'field0,field1,...', 'validator', 'arg0', 'arg1', ..., 
+
+ // some extended option settings
+ 'skipOnEmpty' => 'bool', 
+ 'msg' => 'string|array', 
+ 'default' => 'mixed', 
+ 'on' => 'string|array' 
+ 'isEmpty' => 'callback(string|closure)', 
+ 'when' => 'callback(string|closure)', 
+ 'filter' => 'callback(string|array|closure)'
+]
 ```
 
 ## 一些关键方法使用说明
@@ -497,6 +545,23 @@ public function get(string $key, $default = null)
 
 从验证时传入的数据中取出对应 key 的值
 
+<a name="built-in-filters"></a>
+## 内置的过滤器
+
+过滤器 | 说明 | 示例
+-------|-------------|------------
+`int/integer` | 过滤非法字符并转换为`int`类型 | `['userId', 'number', 'filter' => 'int'],`
+`float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
+`string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
+`trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'string|trim'],`
+`abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
+`url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
+`email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
+`encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
+`specialChars` | 相当于使用 `htmlspecialchars()` 转义数据 | `['content', 'string', 'filter' => 'specialChars'],`
+`quotes` | 应用 `addslashes()` 转义数据 | `['content', 'string', 'filter' => 'quotes'],`
+
+<a name="built-in-validators"></a>
 ## 内置的验证器
 
 > `/` 分隔的验证器，表明功能是一样的，只是有不同的别名
@@ -540,6 +605,17 @@ public function get(string $key, $default = null)
 `ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
 `ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
 `regexp`    | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
+`safe`    | 用于标记字段是安全的，无需验证 | `['createdAt, updatedAt', 'safe']`
+
+### `safe` 验证器,标记属性/字段是安全的
+
+特殊验证器 用于标记字段是安全的，无需验证，直接加入到安全数据中。
+
+比如我们在写入数据库之前手动追加的字段: 创建时间，更新时间。
+
+```php
+['createdAt, updatedAt', 'safe']
+```
 
 ### 一些补充说明
 
@@ -568,11 +644,11 @@ public function get(string $key, $default = null)
 - `required*` 系列规则参考自 laravel
 - `size/range` `length` 可以只定义 min 最小值。 但是当定义了max 值时，必须同时定义最小值
 
-## 其他
+## 代码示例
 
 可运行示例请看 `examples` 
 
-## 测试
+## 单元测试
 
 ```sh
 ./tests/test.sh

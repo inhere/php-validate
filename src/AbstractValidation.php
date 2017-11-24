@@ -42,7 +42,6 @@ abstract class AbstractValidation implements ValidationInterface
     public function __construct(array $data = [], array $rules = [], array $translates = [], $scene = '', $startValidate = false)
     {
         $this->data = $data;
-
         $this
             ->setRules($rules)
             ->setScene($scene)

@@ -14,8 +14,8 @@ namespace Inhere\Validate;
  * - one rule to many fields. like Yii 1/2 framework
  * ```php
  * [
- *  ['field1, field2, ... ', 'rule1', ...],
- *  ['field1, field3, ... ', 'rule2', ...]
+ *  ['field1, field2, ... ', 'validator', ...],
+ *  ['field1, field3, ... ', 'validator', ...]
  * ]
  * ```
  * @package Inhere\Validate

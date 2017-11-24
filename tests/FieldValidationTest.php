@@ -33,6 +33,7 @@ class FieldValidationTest extends TestCase
             ['userId', 'required|int'],
             ['tagId', 'size:0,50'],
             ['status', 'enum:1,2'],
+            ['goods.pear', 'max:30'],
         ];
 
         $v = FieldValidation::make($this->data, $rules)
@@ -46,7 +47,7 @@ class FieldValidationTest extends TestCase
 
         $errors = $v->getErrors();
         $this->assertNotEmpty($errors);
-        $this->assertEquals(count($errors), 3);
+        $this->assertEquals(count($errors), 4);
 
         // var_dump($errors);
     }

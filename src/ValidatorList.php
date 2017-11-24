@@ -18,31 +18,6 @@ use Inhere\Validate\Filter\FilterList;
  */
 final class ValidatorList
 {
-
-    /*******************************************************************************
-     * Filters
-     ******************************************************************************/
-
-    /**
-     * trim filter
-     * @param string $val
-     * @return string
-     */
-    public static function trim($val)
-    {
-        return \is_string($val) ? trim($val) : $val;
-    }
-
-    /**
-     * trim filter
-     * @param string $val
-     * @return string
-     */
-    public static function toInt($val)
-    {
-        return FilterList::int($val);
-    }
-
     /*******************************************************************************
      * Validators
      ******************************************************************************/

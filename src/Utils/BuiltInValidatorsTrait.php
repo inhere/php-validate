@@ -9,11 +9,15 @@
 namespace Inhere\Validate\Utils;
 
 /**
- * trait RequiredValidatorsTrait
+ * trait BuiltInValidatorsTrait
  * @package Inhere\Validate\Utils
  */
-trait RequiredValidatorsTrait
+trait BuiltInValidatorsTrait
 {
+    /*******************************************************************************
+     * required* validators
+     ******************************************************************************/
+
     /**
      * 验证字段必须存在输入数据，且不为空。字段符合下方任一条件时即为「空」
      * - 该值为 null.
@@ -156,5 +160,27 @@ trait RequiredValidatorsTrait
         }
 
         return $allNoValue ? $this->required($field) : true;
+    }
+
+    /*******************************************************************************
+     * Special validators
+     ******************************************************************************/
+
+    /**
+     * @param mixed $val
+     * @param string $compareField
+     * @return bool
+     */
+    public function compare($val, $compareField)
+    {
+        return $compareField && ($val === $this->get($compareField));
+    }
+    public function same($val, $compareField)
+    {
+        return $this->compare($val, $compareField);
+    }
+    public function equal($val, $compareField)
+    {
+        return $this->compare($val, $compareField);
     }
 }

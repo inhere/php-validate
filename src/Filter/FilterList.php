@@ -29,43 +29,26 @@ final class FilterList
     /**
      * 过滤器删除数字中所有非法的字符。
      * @note 该过滤器允许所有数字以及 . + -
-     * @param  mixed $int 要过滤的变量
+     * @param  mixed $var 要过滤的变量
      * @return mixed $string
      */
-    public static function integer($int)
+    public static function integer($var)
     {
-        return filter_var($int, FILTER_SANITIZE_NUMBER_INT);
+        return (int)filter_var($var, FILTER_SANITIZE_NUMBER_INT);
     }
 
-    public static function int($int)
+    public static function int($var)
     {
-        return self::integer($int);
+        return self::integer($var);
     }
 
     /**
-     * @param $var
+     * @param mixed $var
      * @return number
      */
     public static function abs($var)
     {
         return abs((int)$var);
-    }
-
-    /**
-     * 字符串长度过滤截取
-     * @param  string $string 字符串
-     * @param  integer $start 起始长度
-     * @param  int $end 结束位置
-     * @return mixed
-     */
-    public static function stringCute($string, $start = 0, $end = null)
-    {
-        if (!is_string($string)) {
-            return '';
-        }
-
-        // $length    = Helper::strlen($string);
-        return Helper::substr($string, $start, $end);
     }
 
     /**
@@ -185,6 +168,23 @@ final class FilterList
     public static function stripped($var, $flags = 0)
     {
         return self::string($var, $flags);
+    }
+
+    /**
+     * 字符串长度过滤截取
+     * @param  string $string 字符串
+     * @param  integer $start 起始长度
+     * @param  int $end 结束位置
+     * @return mixed
+     */
+    public static function stringCute($string, $start = 0, $end = null)
+    {
+        if (!is_string($string)) {
+            return '';
+        }
+
+        // $length    = Helper::strlen($string);
+        return Helper::substr($string, $start, $end);
     }
 
     /**

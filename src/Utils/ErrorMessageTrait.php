@@ -293,18 +293,30 @@ trait ErrorMessageTrait
     public function getMessage($validator, $field, array $args = [], $message = null)
     {
         $validator = \is_string($validator) ? $validator : 'callback';
+        // allow define a message for a validator. eg: 'username.required' => 'some message ...'
+        $fullKey = $field . '.' . $validator;
 
         // get message from default dict.
         if (!$message) {
-            // allow define a message for a validator. eg: 'username.required' => 'some message ...'
-            $key = $field . '.' . $validator;
             $messages = $this->getMessages();
 
-            if (isset($messages[$key])) {
-                $message = $messages[$key];
+            if (isset($messages[$fullKey])) {
+                $message = $messages[$fullKey];
             } else {
                 $message = $messages[$validator] ?? $messages['_'];
             }
+
+            // is array. It's defined multi error messages
+        } elseif (is_array($message)) {
+            if (isset($message[$fullKey])) {
+                $message = $message[$fullKey];
+            } elseif(isset($message[$validator])) {
+                $message = $message[$validator];
+            }
+        }
+
+        if (\is_string($message) && false === strpos($message, '{')) {
+            return $message;
         }
 
         $params = [
