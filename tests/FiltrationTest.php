@@ -21,9 +21,11 @@ class FiltrationTest extends TestCase
             'status' => ' 23 ',
         ];
         $rules = [
-            'name',
+            ['name', 'string|trim'],
         ];
 
-        $cleand = Filtration::make($data, $rules)->filtering();
+        $cleaned = Filtration::make($data, $rules)->filtering();
+
+        $this->assertSame($cleaned['name'], 'tom');
     }
 }

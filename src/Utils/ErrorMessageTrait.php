@@ -372,7 +372,7 @@ trait ErrorMessageTrait
     {
         $trans = $this->getTranslates();
 
-        return $trans[$attr] ?? Helper::toUnderscoreCase($attr, ' ');
+        return $trans[$attr] ?? Helper::toSnakeCase($attr, ' ');
     }
 
     /**
@@ -384,7 +384,7 @@ trait ErrorMessageTrait
     {
         $trans = $this->getAttrTrans();
 
-        return $trans[$attr] ?? Helper::toUnderscoreCase($attr, ' ');
+        return $trans[$attr] ?? Helper::toSnakeCase($attr, ' ');
     }
 
     /**

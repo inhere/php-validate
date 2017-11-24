@@ -15,18 +15,6 @@ use Inhere\Validate\Utils\Helper;
 final class FilterList
 {
     /**
-     * simple trim space
-     * @param string|array $var
-     * @return string|array
-     */
-    public static function trim($var)
-    {
-        return is_array($var) ? array_map(function ($val) {
-            return is_string($val) ? trim($val) : $val;
-        }, $var) : trim((string)$var);
-    }
-
-    /**
      * 过滤器删除数字中所有非法的字符。
      * @note 该过滤器允许所有数字以及 . + -
      * @param  mixed $var 要过滤的变量
@@ -37,6 +25,10 @@ final class FilterList
         return (int)filter_var($var, FILTER_SANITIZE_NUMBER_INT);
     }
 
+    /**
+     * @see FilterList::integer()
+     * {@inheritdoc}
+     */
     public static function int($var)
     {
         return self::integer($var);
@@ -55,14 +47,13 @@ final class FilterList
      * 过滤器删除浮点数中所有非法的字符。
      * @note 该过滤器默认允许所有数字以及 + -
      * @param  mixed $var 要过滤的变量
-     * @param array $options
      * @param  int $flags 标志
      *                    FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
      *                    FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
      * @return mixed
      */
-    public static function float($var, array $options = [], $flags = 0)
+    public static function float($var, $flags = 0)
     {
         $settings = [];
 
@@ -71,6 +62,78 @@ final class FilterList
         }
 
         return filter_var($var, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
+    }
+
+    /**
+     * 去除标签，去除或编码特殊字符。
+     * @param  string $var
+     * @param  int $flags 标志
+     *                    FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
+     *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
+     *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 127 以上的字符
+     *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
+     *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 127 以上的字符
+     *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
+     * @return string
+     */
+    public static function string($var, $flags = 0)
+    {
+        $settings = [];
+
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
+        }
+
+        return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+    }
+
+    /**
+     * @see FilterList::string()
+     * {@inheritdoc}
+     */
+    public static function stripped($var, $flags = 0)
+    {
+        return self::string($var, $flags);
+    }
+
+    /**
+     * simple trim space
+     * @param string|array $var
+     * @return string|array
+     */
+    public static function trim($var)
+    {
+        return \is_array($var) ? array_map(function ($val) {
+            return \is_string($val) ? trim($val) : $val;
+        }, $var) : trim((string)$var);
+    }
+
+    /**
+     * string to lowercase
+     * @param string $var
+     * @return string
+     */
+    public static function lowercase($var)
+    {
+        if (!\is_string($var)) {
+            return \is_numeric($var) ? $var : '';
+        }
+
+        return Helper::strToLower($var);
+    }
+
+    /**
+     * string to uppercase
+     * @param string $var
+     * @return string
+     */
+    public static function uppercase($var)
+    {
+        if (!\is_string($var)) {
+            return \is_numeric($var) ? $var : '';
+        }
+
+        return Helper::strToUpper($var);
     }
 
     /**
@@ -96,7 +159,7 @@ final class FilterList
     }
 
     /**
-     *  应用 addslashes(), 转义数据
+     *  应用 addslashes() 转义数据
      * @param  string $var
      * @return string
      */
@@ -143,34 +206,6 @@ final class FilterList
     }
 
     /**
-     *  去除标签，去除或编码特殊字符。
-     * @param  string $var
-     * @param  int $flags 标志
-     *                    FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
-     *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 127 以上的字符
-     *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 127 以上的字符
-     *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
-     * @return string
-     */
-    public static function string($var, $flags = 0)
-    {
-        $settings = [];
-
-        if ((int)$flags !== 0) {
-            $settings['flags'] = (int)$flags;
-        }
-
-        return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
-    }
-
-    public static function stripped($var, $flags = 0)
-    {
-        return self::string($var, $flags);
-    }
-
-    /**
      * 字符串长度过滤截取
      * @param  string $string 字符串
      * @param  integer $start 起始长度
@@ -179,12 +214,12 @@ final class FilterList
      */
     public static function stringCute($string, $start = 0, $end = null)
     {
-        if (!is_string($string)) {
+        if (!\is_string($string)) {
             return '';
         }
 
         // $length    = Helper::strlen($string);
-        return Helper::substr($string, $start, $end);
+        return Helper::subStr($string, $start, $end);
     }
 
     /**

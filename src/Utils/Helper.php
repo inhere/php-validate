@@ -12,23 +12,6 @@ namespace Inhere\Validate\Utils;
 class Helper
 {
     /**
-     * @param $str
-     * @return bool|string
-     */
-    public static function strtolower($str)
-    {
-        if (\is_array($str)) {
-            return false;
-        }
-
-        if (\function_exists('mb_strtolower')) {
-            return mb_strtolower($str, 'utf-8');
-        }
-
-        return strtolower($str);
-    }
-
-    /**
      * @param string $str
      * @param string $encoding
      * @return int
@@ -48,7 +31,24 @@ class Helper
      * @param $str
      * @return bool|string
      */
-    public static function strtoupper($str)
+    public static function strToLower($str)
+    {
+        if (\is_array($str)) {
+            return false;
+        }
+
+        if (\function_exists('mb_strtolower')) {
+            return mb_strtolower($str, 'utf-8');
+        }
+
+        return strtolower($str);
+    }
+
+    /**
+     * @param $str
+     * @return bool|string
+     */
+    public static function strToUpper($str)
     {
         if (\is_array($str)) {
             return false;
@@ -68,7 +68,7 @@ class Helper
      * @param string $encoding
      * @return bool|string
      */
-    public static function substr($str, $start, $length = false, $encoding = 'utf-8')
+    public static function subStr($str, $start, $length = false, $encoding = 'utf-8')
     {
         if (\is_array($str)) {
             return false;
@@ -88,7 +88,7 @@ class Helper
      * @param string $encoding
      * @return bool|int
      */
-    public static function strpos($str, $find, $offset = 0, $encoding = 'UTF-8')
+    public static function strPos($str, $find, $offset = 0, $encoding = 'UTF-8')
     {
         if (\function_exists('mb_strpos')) {
             return mb_strpos($str, $find, $offset, $encoding);
@@ -119,7 +119,7 @@ class Helper
      */
     public static function ucfirst($str)
     {
-        return self::strtoupper(self::substr($str, 0, 1)) . self::substr($str, 1);
+        return self::strToUpper(self::subStr($str, 0, 1)) . self::subStr($str, 1);
     }
 
     /**
@@ -132,7 +132,7 @@ class Helper
             return mb_convert_case($str, MB_CASE_TITLE);
         }
 
-        return ucwords(self::strtolower($str));
+        return ucwords(self::strToLower($str));
     }
 
     /**
@@ -144,7 +144,7 @@ class Helper
      */
     public static function toCamelCase($str, $upper_case_first_char = false)
     {
-        $str = self::strtolower($str);
+        $str = self::strToLower($str);
 
         if ($upper_case_first_char) {
             $str = self::ucfirst($str);
@@ -161,11 +161,11 @@ class Helper
      * @param string $sep
      * @return string
      */
-    public static function toUnderscoreCase($string, $sep = '_')
+    public static function toSnakeCase($string, $sep = '_')
     {
         // 'CMSCategories' => 'cms_categories'
         // 'RangePrice' => 'range_price'
-        return self::strtolower(trim(preg_replace('/([A-Z][a-z])/', $sep . '$1', $string), $sep));
+        return self::strToLower(trim(preg_replace('/([A-Z][a-z])/', $sep . '$1', $string), $sep));
     }
 
     /**

@@ -10,7 +10,6 @@
 namespace Inhere\Validate;
 
 use Inhere\Validate\Utils\Helper;
-use Inhere\Validate\Filter\FilterList;
 
 /**
  * Class ValidatorList
@@ -70,6 +69,10 @@ final class ValidatorList
         return filter_var($val, FILTER_VALIDATE_INT, $settings) !== false;
     }
 
+    /**
+     * @see ValidatorList::integer()
+     * {@inheritdoc}
+     */
     public static function int($val, array $options = [], $flags = 0)
     {
         return self::integer($val, $options, $flags);
@@ -87,6 +90,10 @@ final class ValidatorList
         return self::integer($val, $options, $flags) && self::size($val, 1);
     }
 
+    /**
+     * @see ValidatorList::number()
+     * {@inheritdoc}
+     */
     public static function num($val, array $options = [], $flags = 0)
     {
         return self::number($val, $options, $flags);
@@ -186,11 +193,19 @@ final class ValidatorList
         return self::integer($val, $options);
     }
 
+    /**
+     * @see ValidatorList::size()
+     * {@inheritdoc}
+     */
     public static function between($val, $min = null, $max = null)
     {
         return self::size($val, $min, $max);
     }
 
+    /**
+     * @see ValidatorList::size()
+     * {@inheritdoc}
+     */
     public static function range($val, $min = null, $max = null)
     {
         return self::size($val, $min, $max);
@@ -607,7 +622,10 @@ final class ValidatorList
 
         return false;
     }
-/////////////////////////////// extension validator ///////////////////////////////
+
+    /*******************************************************************************
+     * extension validators
+     ******************************************************************************/
 
     /**
      * @param $val

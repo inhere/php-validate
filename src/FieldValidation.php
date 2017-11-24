@@ -52,7 +52,7 @@ class FieldValidation extends AbstractValidation
                 throw new \InvalidArgumentException('The field validators must be is a validator name(s) string! position: rule[1].');
             }
 
-            // an rule for special sence.
+            // an rule for special scene.
             if (!empty($rule['on'])) {
                 $sceneList = \is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
 
@@ -61,10 +61,10 @@ class FieldValidation extends AbstractValidation
                 }
 
                 unset($rule['on']);
-                // $this->_availableRules[] = $rule;
+                $this->_usedRules[] = $rule;
             }
 
-            $field = trim(array_shift($rule));
+            $field = array_shift($rule);
 
             if (\is_object($rule[0])) {
                 yield $field => $rule;

@@ -15,7 +15,7 @@ class RuleValidationTest extends TestCase
         // 'freeTime' => '1456767657', // filed not exists
         'note' => '',
         'status' => 2,
-        'name' => 'Ajohn',
+        'name' => 'john',
         'existsField' => 'test',
         'passwd' => 'password',
         'repasswd' => 'repassword',
@@ -50,8 +50,8 @@ class RuleValidationTest extends TestCase
         $this->assertFalse($v->failed());
         $this->assertEmpty($v->getErrors());
 
-        $this->assertTrue($v->getSafe('userId') === 456);
-        $this->assertTrue($v->getSafe('tagId') === 35);
+        $this->assertSame($v->getSafe('userId'), 456);
+        $this->assertSame($v->getSafe('tagId'), 35);
     }
 
     public function testValidateFailed()
@@ -94,7 +94,7 @@ class RuleValidationTest extends TestCase
              ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
         //    ['notExistsField1', 'requiredWithout', 'existsField'], //
 
-            ['freeTime', 'size', 'min'=>4, 'max'=>567, 'when' => function($data, $valid) {
+            ['freeTime', 'size', 'min'=>4, 'max'=>567, 'when' => function() {
                 echo "  use when pre-check\n";
 
                 // $valid is current validation instance.
@@ -102,7 +102,7 @@ class RuleValidationTest extends TestCase
                 return true;
             }], // 4<= tagId <=567
 
-            ['userId', function($value, $data){
+            ['userId', function(){
                 echo "  use custom validate to check userId \n";
 
                 // var_dump($value, $data);

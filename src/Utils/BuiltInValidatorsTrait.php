@@ -14,6 +14,18 @@ namespace Inhere\Validate\Utils;
  */
 trait BuiltInValidatorsTrait
 {
+    /**
+     * custom add's validator by addValidator()
+     * @var array
+     */
+    protected static $_validators = [];
+
+    /**
+     * custom add's filter by addFilter()
+     * @var array
+     */
+    protected static $_filters = [];
+
     /*******************************************************************************
      * required* validators
      ******************************************************************************/
@@ -74,7 +86,7 @@ trait BuiltInValidatorsTrait
             return false;
         }
 
-        if (in_array($this->data[$anotherField], (array)$values, true)) {
+        if (\in_array($this->data[$anotherField], (array)$values, true)) {
             return true;
         }
 
@@ -182,5 +194,143 @@ trait BuiltInValidatorsTrait
     public function equal($val, $compareField)
     {
         return $this->compare($val, $compareField);
+    }
+
+    /*******************************************************************************
+     * custom filters
+     ******************************************************************************/
+
+    /**
+     * @param string $name
+     * @param callable $filter
+     * @return $this
+     */
+    public function addFilter(string $name, callable $filter)
+    {
+        self::$_filters[$name] = $filter;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param callable $filter
+     */
+    public static function setFilter(string $name, callable $filter)
+    {
+        self::$_filters[$name] = $filter;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function delFilter(string $name)
+    {
+        if (isset(self::$_filters[$name])) {
+            unset(self::$_filters[$name]);
+        }
+
+        return $this;
+    }
+    /**
+     * @return array
+     */
+    public static function getFilters(): array
+    {
+        return self::$_filters;
+    }
+
+    /**
+     * @param array $filters
+     */
+    public static function setFilters(array $filters)
+    {
+        self::$_filters = $filters;
+    }
+
+    /*******************************************************************************
+     * custom validators
+     ******************************************************************************/
+
+    /**
+     * add a custom validator
+     * ```
+     * $vd = ValidatorClass::make($_POST)
+     *     ->addValidator('name',function($val [, $arg1, $arg2 ... ]){
+     *           return $val === 23;
+     *     });
+     * $vd->validate();
+     * ```
+     * @param string $name
+     * @param callable $callback
+     * @param string $msg
+     * @return $this
+     */
+    public function addValidator(string $name, callable $callback, string $msg = '')
+    {
+        self::setValidator($name, $callback, $msg);
+
+        return $this;
+    }
+
+    /**
+     * add a custom validator
+     * @param string $name
+     * @param callable $callback
+     * @param string $msg
+     */
+    public static function setValidator(string $name, callable $callback, string $msg = null)
+    {
+        self::$_validators[$name] = $callback;
+
+        if ($msg) {
+            self::setDefaultMessage($name, $msg);
+        }
+    }
+
+    /**
+     * @param string $name
+     * @return null|\Closure
+     */
+    public static function getValidator($name)
+    {
+        if (isset(self::$_validators[$name])) {
+            return self::$_validators[$name];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool|\Closure
+     */
+    public static function delValidator($name)
+    {
+        $cb = false;
+
+        if (isset(self::$_validators[$name])) {
+            $cb = self::$_validators[$name];
+            unset(self::$_validators[$name]);
+        }
+
+        return $cb;
+    }
+
+    /**
+     * @param array $validators
+     */
+    public static function setValidators(array $validators)
+    {
+        self::$_validators = array_merge(self::$_validators, $validators);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getValidators(): array
+    {
+        return self::$_validators;
     }
 }

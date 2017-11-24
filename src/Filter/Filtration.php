@@ -13,7 +13,7 @@ use Inhere\Validate\Utils\Helper;
  * Class Filtration
  * @package Inhere\Validate\Filter
  * usage:
- * 
+ *
  * $data = Filtration::make($_POST, [
  *   ['tagId,userId,freeTime', 'int'],
  *   ['name', 'string|trim', 'default' => 'tom'],
@@ -27,7 +27,7 @@ class Filtration
      * @var array
      */
     private static $_filters = [];
-    
+
     /**
      * @var array
      */
@@ -67,7 +67,7 @@ class Filtration
     public function load(array $data)
     {
         $this->_data = $data;
-        
+
         return $this;
     }
 
@@ -121,6 +121,7 @@ class Filtration
      * @param  mixed $value
      * @param  string|array $filters
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function sanitize($value, $filters)
     {
@@ -163,19 +164,20 @@ class Filtration
      * @param string|array $filters
      * @param mixed $default
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function get($field, $filters = null, $default = null)
     {
         if (!isset($this->_data[$field])) {
             return $default;
         }
-        
+
         $value = $this->_data[$field];
-        
+
         if (!$filters) {
             return $value;
         }
-        
+
         return $this->sanitize($value, $filters);
     }
 
@@ -186,7 +188,7 @@ class Filtration
      */
     public function addFilter(string $name, callable $filter)
     {
-        $this->_data[$name] = $filter;
+        self::$_filters[$name] = $filter;
 
         return $this;
     }
@@ -197,8 +199,8 @@ class Filtration
      */
     public function delFilter(string $name)
     {
-        if (isset($this->_data[$name])) {
-            unset($this->_data[$name]);
+        if (isset(self::$_filters[$name])) {
+            unset(self::$_filters[$name]);
         }
 
         return $this;
@@ -215,7 +217,7 @@ class Filtration
         if ($clearFilters) {
             self::$_filters = [];
         }
-        
+
         return $this;
     }
 
