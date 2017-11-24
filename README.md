@@ -1,6 +1,6 @@
 # php validate
 
-一个简洁小巧且功能完善的php验证库。仅有几个文件，无依赖。
+一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无依赖。
 
 - 简单方便，支持添加自定义验证器
 - 支持前置验证检查, 自定义如何判断非空
@@ -16,7 +16,7 @@
 - `FieldValidation` 规则配置类似于Laravel: 每条规则中，只能有一个字段，但允许多个验证器。
   - e.g `['field', 'required|string:5,10|...', ...]`
 
-> 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration`. 只用于数据过滤。
+> 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration` 用于数据过滤
 
 ## 项目地址
 
@@ -48,7 +48,7 @@ git clone https://git.oschina.net/inhere/php-validate.git // git@osc
 git clone https://github.com/inhere/php-validate.git // github
 ```
 
-## 如何使用
+## 使用
 
 <a name="how-to-use"></a>
 ### 方式 1: 创建一个新的class，并继承Validation
@@ -240,7 +240,7 @@ class UserController
 ```
 
 
-## 如何添加自定义验证器
+## 添加自定义验证器
 
 - 在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 **使用方式1**
 - 通过 `Validation::addValidator()` 添加自定义验证器. e.g:
