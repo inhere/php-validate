@@ -499,6 +499,8 @@ public function get(string $key, $default = null)
 
 ## 内置的验证器
 
+> `/` 分隔的验证器，表明功能是一样的，只是有不同的别名
+
 验证器 | 说明 | 规则示例
 ----------|-------------|------------
 `int/integer`   | 验证是否是 int | `['userId', 'int']`
@@ -520,7 +522,7 @@ public function get(string $key, $default = null)
 `max`   | 最大边界值验证 | `['title', 'max', 40]`
 `size/range/between`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
-`in`    | 枚举验证 | `['status', 'in', [1,2,3]`
+`in/enum`    | 枚举验证 | `['status', 'in', [1,2,3]`
 `notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
 `mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 0]`
 `compare/same/equal` | 字段值比较 | `['passwd', 'compare', 'repasswd']`

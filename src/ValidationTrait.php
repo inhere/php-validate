@@ -10,7 +10,6 @@ namespace Inhere\Validate;
 
 use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\ErrorMessageTrait;
-use Inhere\Validate\Utils\ErrorInformationTrait;
 use Inhere\Validate\Utils\RequiredValidatorsTrait;
 
 /**
@@ -20,7 +19,7 @@ use Inhere\Validate\Utils\RequiredValidatorsTrait;
  */
 trait ValidationTrait
 {
-    use ErrorInformationTrait, ErrorMessageTrait, RequiredValidatorsTrait;
+    use ErrorMessageTrait, RequiredValidatorsTrait;
 
     /**
      * custom add's validator by addValidator()

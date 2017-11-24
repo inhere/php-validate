@@ -15,6 +15,7 @@ class FieldValidationTest extends TestCase
         // 'freeTime' => '1456767657', // filed not exists
         'note' => '',
         'name' => 'Ajohn',
+        'status' => 2,
         'existsField' => 'test',
         'passwd' => 'password',
         'repasswd' => 'repassword',
@@ -28,7 +29,25 @@ class FieldValidationTest extends TestCase
     public function testValidate()
     {
         $rules = [
-            ''
+            ['freeTime', 'required'],
+            ['userId', 'required|int'],
+            ['tagId', 'size:0,50'],
+            ['status', 'enum:1,2'],
         ];
+
+        $v = FieldValidation::make($this->data, $rules)
+            ->setMessages([
+                'freeTime.required' => 'freeTime is required!!!!'
+            ])
+           ->validate([], false);
+
+        $this->assertFalse($v->passed());
+        $this->assertTrue($v->failed());
+
+        $errors = $v->getErrors();
+        $this->assertNotEmpty($errors);
+        $this->assertEquals(count($errors), 3);
+
+        // var_dump($errors);
     }
 }

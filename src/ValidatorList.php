@@ -561,10 +561,21 @@ final class ValidatorList
     public static function in($val, $dict)
     {
         if (\is_string($dict) && strpos($dict, ',')) {
+            $val = (string)$val;// fixed: data type
             $dict = array_map('trim', explode(',', $dict));
         }
 
-        return \in_array($val, (array)$dict, true);
+        return \in_array($val, (array)$dict, false);
+    }
+
+    /**
+     * @param  mixed $val
+     * @param array|string $dict
+     * @return bool
+     */
+    public static function enum($val, $dict)
+    {
+        return self::in($val, $dict);
     }
 
     /**

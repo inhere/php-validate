@@ -78,7 +78,6 @@ class FieldValidation extends AbstractValidation
                     yield $field => $rule;
                 }
             }
-
         }
     }
 
@@ -102,6 +101,7 @@ class FieldValidation extends AbstractValidation
 
         switch ($name) {
             case 'in':
+            case 'enum':
             case 'ontIn':
                 $row[] = array_map('trim', explode(',', $args));
                 break;
