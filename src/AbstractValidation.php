@@ -37,6 +37,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @param array $translates
      * @param string $scene
      * @param bool $startValidate 立即开始验证
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
     public function __construct(array $data = [], array $rules = [], array $translates = [], $scene = '', $startValidate = false)
@@ -59,6 +60,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @param string $scene
      * @param bool $startValidate 立即开始验证
      * @return static
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
     public static function make(array $data, array $rules = [], array $translates = [], $scene = '', $startValidate = false)

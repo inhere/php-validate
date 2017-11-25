@@ -9,6 +9,7 @@
 namespace Inhere\Validate;
 
 use Inhere\Validate\Filter\FilterList;
+use Inhere\Validate\Utils\DataFiltersTrait;
 use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\ErrorMessageTrait;
 use Inhere\Validate\Utils\BuiltInValidatorsTrait;
@@ -20,7 +21,7 @@ use Inhere\Validate\Utils\BuiltInValidatorsTrait;
  */
 trait ValidationTrait
 {
-    use ErrorMessageTrait, BuiltInValidatorsTrait;
+    use DataFiltersTrait, ErrorMessageTrait, BuiltInValidatorsTrait;
 
     /**
      * current scenario name
@@ -299,48 +300,6 @@ trait ValidationTrait
         }
 
         return false;
-    }
-
-    /**
-     * value Filtering 字段值过滤
-     * @param  mixed $value
-     * @param  string|array $filters
-     * @return mixed
-     * @throws \InvalidArgumentException
-     */
-    protected function valueFiltering($value, $filters)
-    {
-        $filters = \is_string($filters) ? array_map('trim', explode('|', $filters)) : $filters;
-
-        foreach ($filters as $filter) {
-            if (\is_object($filter) && method_exists($filter, '__invoke')) {
-                $value = $filter($value);
-            } elseif (\is_string($filter)) {
-                // if $filter is a custom add callback in the property {@see $_filters}.
-                if (isset(self::$_filters[$filter])) {
-                    $callback = self::$_filters[$filter];
-                    $value = $callback($value);
-
-                    // if $filter is a custom method of the subclass.
-                } elseif (method_exists($this, $filter)) {
-                    $value = $this->$filter($value);
-
-                    // $filter is a method of the class 'FilterList'
-                } elseif (method_exists(FilterList::class, $filter)) {
-                    $value = FilterList::$filter($value);
-
-                    // it is function name
-                } elseif (\function_exists($filter)) {
-                    $value = $filter($value);
-                } else {
-                    throw new \InvalidArgumentException("The filter [$filter] don't exists!");
-                }
-            } else {
-                $value = Helper::call($filter, $value);
-            }
-        }
-
-        return $value;
     }
 
     /**

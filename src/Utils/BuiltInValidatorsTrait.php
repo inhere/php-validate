@@ -20,12 +20,6 @@ trait BuiltInValidatorsTrait
      */
     protected static $_validators = [];
 
-    /**
-     * custom add's filter by addFilter()
-     * @var array
-     */
-    protected static $_filters = [];
-
     /*******************************************************************************
      * required* validators
      ******************************************************************************/
@@ -197,59 +191,6 @@ trait BuiltInValidatorsTrait
     }
 
     /*******************************************************************************
-     * custom filters
-     ******************************************************************************/
-
-    /**
-     * @param string $name
-     * @param callable $filter
-     * @return $this
-     */
-    public function addFilter(string $name, callable $filter)
-    {
-        self::$_filters[$name] = $filter;
-
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @param callable $filter
-     */
-    public static function setFilter(string $name, callable $filter)
-    {
-        self::$_filters[$name] = $filter;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     */
-    public function delFilter(string $name)
-    {
-        if (isset(self::$_filters[$name])) {
-            unset(self::$_filters[$name]);
-        }
-
-        return $this;
-    }
-    /**
-     * @return array
-     */
-    public static function getFilters(): array
-    {
-        return self::$_filters;
-    }
-
-    /**
-     * @param array $filters
-     */
-    public static function setFilters(array $filters)
-    {
-        self::$_filters = $filters;
-    }
-
-    /*******************************************************************************
      * custom validators
      ******************************************************************************/
 
@@ -291,7 +232,7 @@ trait BuiltInValidatorsTrait
 
     /**
      * @param string $name
-     * @return null|\Closure
+     * @return null|callable
      */
     public static function getValidator($name)
     {
@@ -304,7 +245,7 @@ trait BuiltInValidatorsTrait
 
     /**
      * @param string $name
-     * @return bool|\Closure
+     * @return bool|callable
      */
     public static function delValidator($name)
     {
@@ -317,6 +258,15 @@ trait BuiltInValidatorsTrait
 
         return $cb;
     }
+
+    /**
+     * clear Filters
+     */
+    public static function clearValidators()
+    {
+        self::$_validators = [];
+    }
+
 
     /**
      * @param array $validators

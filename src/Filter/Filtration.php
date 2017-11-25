@@ -7,7 +7,8 @@
  */
 
 namespace Inhere\Validate\Filter;
-use Inhere\Validate\Utils\Helper;
+
+use Inhere\Validate\Utils\DataFiltersTrait;
 
 /**
  * Class Filtration
@@ -22,11 +23,7 @@ use Inhere\Validate\Utils\Helper;
  */
 class Filtration
 {
-    /**
-     * custom add's filter by addFilter()
-     * @var array
-     */
-    private static $_filters = [];
+    use DataFiltersTrait;
 
     /**
      * @var array
@@ -74,6 +71,7 @@ class Filtration
     /**
      * @param array $rules
      * @return array
+     * @throws \InvalidArgumentException
      */
     public function filtering(array $rules = [])
     {
@@ -85,6 +83,7 @@ class Filtration
      * @param array $rules
      * @param array $data
      * @return array 返回过滤后的数据
+     * @throws \InvalidArgumentException
      */
     public function applyRules(array $rules = [], array $data = [])
     {
@@ -107,7 +106,7 @@ class Filtration
                 if (!isset($data[$field])) {
                     $filtered[$field] = $rule['default'] ?? null;
                 } else {
-                    $filtered[$field] = $this->sanitize($data[$field], $rule[1]);
+                    $filtered[$field] = $this->valueFiltering($data[$field], $rule[1]);
                 }
             }
 
@@ -125,37 +124,7 @@ class Filtration
      */
     public function sanitize($value, $filters)
     {
-        $filters = \is_string($filters) ? array_map('trim', explode('|', $filters)) : $filters;
-
-        foreach ($filters as $filter) {
-            if (\is_object($filter) && method_exists($filter, '__invoke')) {
-                $value = $filter($value);
-            } elseif (\is_string($filter)) {
-                // if $filter is a custom add callback in the property {@see $_filters}.
-                if (isset(self::$_filters[$filter])) {
-                    $callback = self::$_filters[$filter];
-                    $value = $callback($value);
-
-                    // if $filter is a custom method of the subclass.
-                } elseif (method_exists($this, $filter)) {
-                    $value = $this->$filter($value);
-
-                    // $filter is a method of the class 'FilterList'
-                } elseif (method_exists(FilterList::class, $filter)) {
-                    $value = FilterList::$filter($value);
-
-                    // it is function name
-                } elseif (\function_exists($filter)) {
-                    $value = $filter($value);
-                } else {
-                    throw new \InvalidArgumentException("The filter [$filter] don't exists!");
-                }
-            } else {
-                $value = Helper::call($filter, $value);
-            }
-        }
-
-        return $value;
+        return $this->valueFiltering($value, $filters);
     }
 
     /**
@@ -178,32 +147,7 @@ class Filtration
             return $value;
         }
 
-        return $this->sanitize($value, $filters);
-    }
-
-    /**
-     * @param string $name
-     * @param callable $filter
-     * @return $this
-     */
-    public function addFilter(string $name, callable $filter)
-    {
-        self::$_filters[$name] = $filter;
-
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     */
-    public function delFilter(string $name)
-    {
-        if (isset(self::$_filters[$name])) {
-            unset(self::$_filters[$name]);
-        }
-
-        return $this;
+        return $this->valueFiltering($value, $filters);
     }
 
     /**
@@ -215,26 +159,10 @@ class Filtration
         $this->_data = $this->_rules = [];
 
         if ($clearFilters) {
-            self::$_filters = [];
+            self::clearFilters();
         }
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getFilters(): array
-    {
-        return self::$_filters;
-    }
-
-    /**
-     * @param array $filters
-     */
-    public static function setFilters(array $filters)
-    {
-        self::$_filters = $filters;
     }
 
     /**

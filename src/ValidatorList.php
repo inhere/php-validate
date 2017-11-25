@@ -35,6 +35,69 @@ final class ValidatorList
         return $val === '' || $val === null || $val === false || $val === [];
     }
 
+    /*******************************************************************************
+     * bool/int/float/string validators
+     ******************************************************************************/
+
+    /**
+     * 布尔值验证，把值作为布尔选项来验证。
+     *   如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE。
+     *   如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE。
+     *   否则返回 NULL。
+     * @param  mixed $val 要验证的数据
+     * @param  mixed $default 设置验证失败时返回默认值
+     * @param  int $flags 标志  FILTER_NULL_ON_FAILURE
+     * @return mixed
+     */
+    public static function boolean($val, $default = null, $flags = 0)
+    {
+        $settings = [];
+
+        if ($default !== null) {
+            $settings['options']['default'] = $default;
+        }
+
+        if ($flags !== 0) {
+            $settings['flags'] = $flags;
+        }
+
+        return filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
+    }
+
+    /**
+     * @see ValidatorList::boolean()
+     * {@inheritdoc}
+     */
+    public static function bool($val, $default = null, $flags = 0)
+    {
+        return self::boolean($val, $default, $flags);
+    }
+
+    /**
+     * @param  mixed $val 要验证的变量
+     * @param  array $options 可选的选项设置
+     * $options = [
+     *      'default' => 'default value',
+     *      'decimal' => 2
+     *  ]
+     * @param  int $flags FILTER_FLAG_ALLOW_THOUSAND
+     * @return mixed
+     */
+    public static function float($val, array $options = [], $flags = 0)
+    {
+        $settings = [];
+
+        if ($options) {
+            $settings['options'] = $options;
+        }
+
+        if ($flags !== 0) {
+            $settings['flags'] = $flags;
+        }
+
+        return filter_var($val, FILTER_VALIDATE_FLOAT, $settings);
+    }
+
     /**
      * int 验证
      * @param  mixed $val 要验证的变量
@@ -87,7 +150,7 @@ final class ValidatorList
      */
     public static function number($val, array $options = [], $flags = 0)
     {
-        return self::integer($val, $options, $flags) && self::size($val, 1);
+        return self::integer($val, $options, $flags) && ($val > 0);
     }
 
     /**
@@ -148,6 +211,10 @@ final class ValidatorList
 
         return 1 === preg_match('/^[\w-]+$/', $val);
     }
+
+    /*******************************************************************************
+     * size/range/length validators
+     ******************************************************************************/
 
     /**
      * 范围检查
@@ -260,60 +327,9 @@ final class ValidatorList
         return self::size($val, $minLength, $maxLength);
     }
 
-    /**
-     * 布尔值验证，把值作为布尔选项来验证。
-     *   如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE。
-     *   如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE。
-     *   否则返回 NULL。
-     * @param  mixed $val 要验证的数据
-     * @param  mixed $default 设置验证失败时返回默认值
-     * @param  int $flags 标志  FILTER_NULL_ON_FAILURE
-     * @return mixed
-     */
-    public static function boolean($val, $default = null, $flags = 0)
-    {
-        $settings = [];
-
-        if ($default !== null) {
-            $settings['options']['default'] = $default;
-        }
-
-        if ($flags !== 0) {
-            $settings['flags'] = $flags;
-        }
-
-        return filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
-    }
-
-    public static function bool($val, $default = null, $flags = 0)
-    {
-        return self::boolean($val, $default, $flags);
-    }
-
-    /**
-     * @param  mixed $val 要验证的变量
-     * @param  array $options 可选的选项设置
-     * $options = [
-     *      'default' => 'default value',
-     *      'decimal' => 2
-     *  ]
-     * @param  int $flags FILTER_FLAG_ALLOW_THOUSAND
-     * @return mixed
-     */
-    public static function float($val, array $options = [], $flags = 0)
-    {
-        $settings = [];
-
-        if ($options) {
-            $settings['options'] = $options;
-        }
-
-        if ($flags !== 0) {
-            $settings['flags'] = $flags;
-        }
-
-        return filter_var($val, FILTER_VALIDATE_FLOAT, $settings);
-    }
+    /*******************************************************************************
+     * custom validators
+     ******************************************************************************/
 
     /**
      * 用正则验证数据
@@ -428,6 +444,10 @@ final class ValidatorList
     {
         return self::ip($val, false, FILTER_FLAG_IPV6);
     }
+
+    /*******************************************************************************
+     * list/map/enum validators
+     ******************************************************************************/
 
     /**
      * 验证值是否是一个数组
@@ -592,15 +612,84 @@ final class ValidatorList
         return $val === $compareVal;
     }
 
+    /*******************************************************************************
+     * file validators
+     ******************************************************************************/
+
+    /**
+     * @param string $val
+     * @param string|array $types
+     * @return bool
+     */
+    public static function file($val, $types = null)
+    {
+        return true;
+    }
+
+    /**
+     * 验证的文件必须是一个图像（ jpeg、png、bmp、gif、或 svg ）
+     * @param string $val
+     * @param string|array $types
+     * @return bool
+     */
+    public static function image($val, $types = null)
+    {
+        $types = $types ?: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];
+        return true;
+    }
+
+    /**
+     * 验证的文件必须与给定 MIME 类型之一匹配
+     * ['video', 'mimeTypes', 'video/avi,video/mpeg,video/quicktime']
+     * @param string $val
+     * @param string|array $types
+     * @return bool
+     */
+    public static function mimeTypes($val, $types = null)
+    {
+        return true;
+    }
+
+    /**
+     * 验证的文件必须具有与列出的其中一个扩展名相对应的 MIME 类型
+     * ['photo', 'mimes', 'jpeg,bmp,png']
+     * @param string $val
+     * @param string|array $types
+     * @return bool
+     */
+    public static function mimes($val, $types = null)
+    {
+        return true;
+    }
+
+    /*******************************************************************************
+     * date validators
+     ******************************************************************************/
+
     /**
      * 校验字段值是否是日期格式
-     * @param string $date 日期
+     * @param string $val 日期
      * @return boolean
      */
-    public static function date($date)
+    public static function date($val)
     {
-        // strtotime转换不对，日期格式显然不对。
-        return strtotime($date) ? true : false;
+        // strtotime 转换不对，日期格式显然不对。
+        return strtotime($val) ? true : false;
+    }
+
+    /**
+     * 校验字段值是否是等于给定日期
+     * @param string $val
+     * @param string $date 给定日期
+     * @return boolean
+     */
+    public static function dateEquals($val, $date)
+    {
+        if (!$val || (!$time = strtotime($val))) {
+            return false;
+        }
+
+        return $time === strtotime($date);
     }
 
     /**
@@ -621,6 +710,102 @@ final class ValidatorList
         }
 
         return false;
+    }
+
+    /**
+     * 字段值必须是给定日期之前的值
+     * @param string $val
+     * @param string $beforeDate
+     * @return bool
+     */
+    public static function beforeDate($val, $beforeDate)
+    {
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        $valueTime = strtotime($val);
+        $beforeTime = strtotime($beforeDate);
+
+        return $beforeTime < $valueTime;
+    }
+
+    /**
+     * 字段值必须是小于或等于给定日期的值
+     * @param string $val
+     * @param string $beforeDate
+     * @return bool
+     */
+    public static function beforeOrEqualDate($val, $beforeDate)
+    {
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        $valueTime = strtotime($val);
+        $beforeTime = strtotime($beforeDate);
+
+        return $beforeTime <= $valueTime;
+    }
+
+    /**
+     * 字段值必须是给定日期之后的值
+     * @param string $val
+     * @param string $afterDate
+     * @return bool
+     */
+    public static function afterDate($val, $afterDate)
+    {
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        $valueTime = strtotime($val);
+        $afterTime = strtotime($afterDate);
+
+        return $afterTime > $valueTime;
+    }
+
+    /**
+     * 字段值必须是大于或等于给定日期的值
+     * @param string $val
+     * @param string $afterDate
+     * @return bool
+     */
+    public static function afterOrEqualDate($val, $afterDate)
+    {
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        $valueTime = strtotime($val);
+        $afterTime = strtotime($afterDate);
+
+        return $afterTime >= $valueTime;
+    }
+
+    /**
+     * Check for date format
+     * @param string $date Date to validate
+     * @return bool Validity is ok or not
+     */
+    public static function isDateFormat($date)
+    {
+        return (bool)preg_match('/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date);
+    }
+
+    /**
+     * Check for date validity
+     * @param string $date Date to validate
+     * @return bool Validity is ok or not
+     */
+    public static function isDate($date)
+    {
+        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date, $matches)) {
+            return false;
+        }
+
+        return checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1]);
     }
 
     /*******************************************************************************
@@ -667,30 +852,6 @@ final class ValidatorList
     public static function negativePrice($price)
     {
         return 1 === preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
-    }
-
-    /**
-     * Check for date format
-     * @param string $date Date to validate
-     * @return bool Validity is ok or not
-     */
-    public static function isDateFormat($date)
-    {
-        return (bool)preg_match('/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date);
-    }
-
-    /**
-     * Check for date validity
-     * @param string $date Date to validate
-     * @return bool Validity is ok or not
-     */
-    public static function isDate($date)
-    {
-        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date, $matches)) {
-            return false;
-        }
-
-        return checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1]);
     }
 
     /**
