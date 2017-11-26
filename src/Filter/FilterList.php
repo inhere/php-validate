@@ -53,7 +53,7 @@ final class FilterList
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
      * @return mixed
      */
-    public static function float($var, $flags = 0)
+    public static function float($var, $flags = FILTER_FLAG_ALLOW_FRACTION)
     {
         $settings = [];
 
@@ -61,7 +61,9 @@ final class FilterList
             $settings['flags'] = (int)$flags;
         }
 
-        return filter_var($var, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
+        $ret = filter_var($var, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
+
+        return strpos($ret, '.') ? (float)$ret : $ret;
     }
 
     /**
@@ -115,7 +117,7 @@ final class FilterList
      */
     public static function lowercase($var)
     {
-        if (!\is_string($var)) {
+        if (!$var || !\is_string($var)) {
             return \is_numeric($var) ? $var : '';
         }
 
@@ -129,11 +131,25 @@ final class FilterList
      */
     public static function uppercase($var)
     {
-        if (!\is_string($var)) {
+        if (!$var || !\is_string($var)) {
             return \is_numeric($var) ? $var : '';
         }
 
         return Helper::strToUpper($var);
+    }
+
+    /**
+     * string to time
+     * @param string $var
+     * @return int
+     */
+    public static function strToTime($var)
+    {
+        if (!$var || !\is_string($var)) {
+            return 0;
+        }
+
+        return (int)strtotime($var);
     }
 
     /**

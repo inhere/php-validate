@@ -613,56 +613,6 @@ final class ValidatorList
     }
 
     /*******************************************************************************
-     * file validators
-     ******************************************************************************/
-
-    /**
-     * @param string $val
-     * @param string|array $types
-     * @return bool
-     */
-    public static function file($val, $types = null)
-    {
-        return true;
-    }
-
-    /**
-     * 验证的文件必须是一个图像（ jpeg、png、bmp、gif、或 svg ）
-     * @param string $val
-     * @param string|array $types
-     * @return bool
-     */
-    public static function image($val, $types = null)
-    {
-        $types = $types ?: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];
-        return true;
-    }
-
-    /**
-     * 验证的文件必须与给定 MIME 类型之一匹配
-     * ['video', 'mimeTypes', 'video/avi,video/mpeg,video/quicktime']
-     * @param string $val
-     * @param string|array $types
-     * @return bool
-     */
-    public static function mimeTypes($val, $types = null)
-    {
-        return true;
-    }
-
-    /**
-     * 验证的文件必须具有与列出的其中一个扩展名相对应的 MIME 类型
-     * ['photo', 'mimes', 'jpeg,bmp,png']
-     * @param string $val
-     * @param string|array $types
-     * @return bool
-     */
-    public static function mimes($val, $types = null)
-    {
-        return true;
-    }
-
-    /*******************************************************************************
      * date validators
      ******************************************************************************/
 
@@ -689,23 +639,27 @@ final class ValidatorList
             return false;
         }
 
+        if (!$date) {
+            return false;
+        }
+
         return $time === strtotime($date);
     }
 
     /**
      * 校验字段值是否是日期并且是否满足设定格式
-     * @param string $date 日期
+     * @param string $val 日期
      * @param string $format 需要检验的格式数组
      * @return boolean
      */
-    public static function dateFormat($date, $format = 'Y-m-d')
+    public static function dateFormat($val, $format = 'Y-m-d')
     {
-        if (!$unixTime = strtotime($date)) {
+        if (!$val || !($unixTime = strtotime($val))) {
             return false;
         }
 
         // 校验日期的格式有效性
-        if (date($format, $unixTime) === $date) {
+        if (date($format, $unixTime) === $val) {
             return true;
         }
 
@@ -715,19 +669,27 @@ final class ValidatorList
     /**
      * 字段值必须是给定日期之前的值
      * @param string $val
-     * @param string $beforeDate
+     * @param string $beforeDate 若为空，将使用当前时间
+     * @param string $symbol allow '<' '<='
      * @return bool
      */
-    public static function beforeDate($val, $beforeDate)
+    public static function beforeDate($val, $beforeDate, $symbol = '<')
     {
         if (!$val || !\is_string($val)) {
             return false;
         }
 
-        $valueTime = strtotime($val);
-        $beforeTime = strtotime($beforeDate);
+        if (!$valueTime = strtotime($val)) {
+            return false;
+        }
 
-        return $beforeTime < $valueTime;
+        $beforeTime = $beforeDate ? strtotime($beforeDate) : time();
+
+        if ($symbol === '>') {
+            return $beforeTime < $valueTime;
+        }
+
+        return $beforeTime <= $valueTime;
     }
 
     /**
@@ -738,32 +700,33 @@ final class ValidatorList
      */
     public static function beforeOrEqualDate($val, $beforeDate)
     {
-        if (!$val || !\is_string($val)) {
-            return false;
-        }
-
-        $valueTime = strtotime($val);
-        $beforeTime = strtotime($beforeDate);
-
-        return $beforeTime <= $valueTime;
+        return self::beforeDate($val, $beforeDate, '<=');
     }
 
     /**
      * 字段值必须是给定日期之后的值
      * @param string $val
      * @param string $afterDate
+     * @param string $symbol allow: '>' '>='
      * @return bool
      */
-    public static function afterDate($val, $afterDate)
+    public static function afterDate($val, $afterDate, $symbol = '>')
     {
         if (!$val || !\is_string($val)) {
             return false;
         }
 
-        $valueTime = strtotime($val);
-        $afterTime = strtotime($afterDate);
+        if (!$valueTime = strtotime($val)) {
+            return false;
+        }
 
-        return $afterTime > $valueTime;
+        $afterTime = $afterDate ? strtotime($afterDate) : time();
+
+        if ($symbol === '>') {
+            return $afterTime > $valueTime;
+        }
+
+        return $afterTime >= $valueTime;
     }
 
     /**
@@ -774,14 +737,7 @@ final class ValidatorList
      */
     public static function afterOrEqualDate($val, $afterDate)
     {
-        if (!$val || !\is_string($val)) {
-            return false;
-        }
-
-        $valueTime = strtotime($val);
-        $afterTime = strtotime($afterDate);
-
-        return $afterTime >= $valueTime;
+        return self::afterDate($val, $afterDate, '>=');
     }
 
     /**
@@ -891,32 +847,44 @@ final class ValidatorList
 
     /**
      * Check for MD5 string validity
-     * @param string $md5 MD5 string to validate
+     * @param string $val MD5 string to validate
      * @return bool Validity is ok or not
      */
-    public static function md5($md5)
+    public static function md5($val)
     {
-        return preg_match('/^[a-f0-9A-F]{32}$/', $md5);
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        return preg_match('/^[a-f0-9A-F]{32}$/', $val);
     }
 
     /**
      * Check for SHA1 string validity
-     * @param string $sha1 SHA1 string to validate
+     * @param string $val SHA1 string to validate
      * @return bool Validity is ok or not
      */
-    public static function sha1($sha1)
+    public static function sha1($val)
     {
-        return preg_match('/^[a-fA-F0-9]{40}$/', $sha1);
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        return preg_match('/^[a-fA-F0-9]{40}$/', $val);
     }
 
     /**
      * Check object validity
-     * @param $color
+     * @param string $val e.g '#dedede'
      * @return bool Validity is ok or not
      */
-    public static function color($color)
+    public static function color($val)
     {
-        return preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $color);
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        return preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $val);
     }
 
     /**
@@ -930,7 +898,7 @@ final class ValidatorList
             return preg_match('/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/', $url);
         }
 
-        return true;
+        return false;
     }
 
     /**

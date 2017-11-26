@@ -554,8 +554,9 @@ public function get(string $key, $default = null)
 `float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
 `string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
 `trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'trim'],`
-`lowercase` | 字符转换为小写 | `['description', 'min', 4, 'filter' => 'lowercase'],`
-`uppercase` | 字符转换为大写 | `['title', 'min', 4, 'filter' => 'uppercase'],`
+`lowercase` | 字符串转换为小写 | `['description', 'min', 4, 'filter' => 'lowercase'],`
+`uppercase` | 字符串转换为大写 | `['title', 'min', 4, 'filter' => 'uppercase'],`
+`strToTime` | 字符串日期转换时间戳 | `['pulishedAt', 'number', 'filter' => 'strToTime'],`
 `abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
 `url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
 `email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
@@ -602,10 +603,20 @@ public function get(string $key, $default = null)
 `requiredWithoutAll` | 如果所有指定的字段 都没有 值，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
 `date` | 验证是否是 date | `['publishedAt', 'date']`
 `dateFormat` | 验证是否是 date, 并且是指定的格式 | `['publishedAt', 'dateFormat', 'Y-m-d']`
+`dateEquals` | 验证是否是 date, 并且是否是等于给定日期 | `['publishedAt', 'dateEquals', '2017-05-12']`
+`beforeDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'beforeDate', '2017-05-12']`
+`beforeOrEqualDate` | 字段值必须是小于或等于给定日期的值 | `['publishedAt', 'beforeOrEqualDate', '2017-05-12']`
+`afterOrEqualDate` | 字段值必须是大于或等于给定日期的值 | `['publishedAt', 'afterOrEqualDate', '2017-05-12']`
+`afterDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'afterDate', '2017-05-12']`
 `json`   | 验证是否是json字符串 | `['goods', 'json']`
+`file`   | 验证是否是上传的文件 | `['upFile', 'file']`
+`image`   | 验证是否是上传的图片文件 | `['avatar', 'image']`, 限定后缀名 `['avatar', 'image', 'jpg,png']`
 `ip`    | 验证是否是 IP | `['ipAddr', 'ip']`
 `ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
 `ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
+`md5`    | 验证是否是 md5 格式的字符串 | `['passwd', 'md5']`
+`sha1`    | 验证是否是 sha1 格式的字符串 | `['passwd', 'sha1']`
+`color`    | 验证是否是html color | `['backgroundColor', 'color']`
 `regexp`    | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
 `safe`    | 用于标记字段是安全的，无需验证 | `['createdAt, updatedAt', 'safe']`
 
@@ -617,6 +628,21 @@ public function get(string $key, $default = null)
 
 ```php
 ['createdAt, updatedAt', 'safe']
+```
+
+### 关于文件验证
+
+文件验证时注意要设置文件信息源数据
+
+```php
+$v = Validation::make($_POST, [
+    // [...], 
+    // some rules ...
+])
+->setUploadedFiles($_FILES)
+->validate();
+
+// ...
 ```
 
 ### 一些补充说明

@@ -8,11 +8,10 @@
 
 namespace Inhere\Validate;
 
-use Inhere\Validate\Filter\FilterList;
 use Inhere\Validate\Utils\DataFiltersTrait;
 use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\ErrorMessageTrait;
-use Inhere\Validate\Utils\BuiltInValidatorsTrait;
+use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
 
 /**
  * Trait ValidationTrait
@@ -21,12 +20,16 @@ use Inhere\Validate\Utils\BuiltInValidatorsTrait;
  */
 trait ValidationTrait
 {
-    use DataFiltersTrait, ErrorMessageTrait, BuiltInValidatorsTrait;
+    use DataFiltersTrait, ErrorMessageTrait, UserAndContextValidatorsTrait;
 
     /**
      * current scenario name
      * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
-     * (e.g: 在MVC框架中，通常可以根据 controller 的 action name 来区分。 e.g. add, edit, register)
+     * (
+     * e.g: 在MVC框架中，
+     * - 通常可以根据控制器的 action name(add, edit, register) 来区分。
+     * - 或者根据模型的场景(create, update, delete) 来区分。
+     * )
      * @var string
      */
     protected $scene = '';
@@ -90,16 +93,6 @@ trait ValidationTrait
             // 'required' => '{attr} 是必填项。',
             // 'required.username' => '用户名 是必填项。',
         ];
-    }
-
-    /**
-     * define attribute field translate list
-     * @deprecated please use translates() instead.
-     * @return array
-     */
-    public function attrTrans()
-    {
-        return $this->translates();
     }
 
     /**
@@ -170,8 +163,8 @@ trait ValidationTrait
 
         $data = $this->data;
 
-        foreach ($this->collectRules() as $attrs => $rule) {
-            $attrs = \is_string($attrs) ? array_map('trim', explode(',', $attrs)) : (array)$attrs;
+        foreach ($this->collectRules() as $fields => $rule) {
+            $fields = \is_string($fields) ? array_map('trim', explode(',', $fields)) : (array)$fields;
             $validator = array_shift($rule);
 
             // 为空时是否跳过(非 required 时). 参考自 yii2
@@ -199,23 +192,23 @@ trait ValidationTrait
             $args = $rule;
 
             // 循环检查属性
-            foreach ($attrs as $attr) {
-                if (!$attr || ($onlyChecked && !\in_array($attr, $onlyChecked, true))) {
+            foreach ($fields as $field) {
+                if (!$field || ($onlyChecked && !\in_array($field, $onlyChecked, true))) {
                     continue;
                 }
 
-                $value = $this->getValue($attr, $defValue);
+                $value = $this->getValue($field, $defValue);
 
-                // mark attribute is safe. not need validate. like. 'created_at'
+                // mark field is safe. not need validate. like. 'created_at'
                 if ($validator === 'safe') {
-                    $this->_safeData[$attr] = $value;
+                    $this->_safeData[$field] = $value;
                     continue;
                 }
 
                 // required* 系列字段检查器
                 if (\is_string($validator) && 0 === strpos($validator, 'required')) {
-                    if (!$this->fieldValidate($attr, $value, $validator, $args)) {
-                        $this->addError($attr, $this->getMessage($validator, $attr, $args, $defMsg));
+                    if (!$this->fieldValidate($field, $value, $validator, $args)) {
+                        $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
 
                         if ($this->isStopOnError()) {
                             break;
@@ -236,8 +229,8 @@ trait ValidationTrait
                 }
 
                 // 字段值验证检查
-                if (!$this->valueValidate($data, $attr, $value, $validator, $args)) {
-                    $this->addError($attr, $this->getMessage($validator, $attr, $args, $defMsg));
+                if (!$this->valueValidate($data, $field, $value, $validator, $args)) {
+                    $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
 
                     if ($this->isStopOnError()) {
                         break;
@@ -271,30 +264,30 @@ trait ValidationTrait
 
     /**
      * field required Validate 字段存在检查
-     * @param string $attr 属性名称
+     * @param string $field 属性名称
      * @param mixed $value 属性值
      * @param string $validator required* 验证器
      * @param array $args 验证需要的参数
      * @return bool
      * @throws \InvalidArgumentException
      */
-    protected function fieldValidate($attr, $value, $validator, $args)
+    protected function fieldValidate($field, $value, $validator, $args)
     {
         // required 检查
         if ($validator === 'required') {
-            $passed = $this->required($attr);
+            $passed = $this->required($field);
 
             // 其他 required* 方法
         } elseif (method_exists($this, $validator)) {
             $args = array_values($args);
-            $passed = $this->$validator($attr, ...$args);
+            $passed = $this->$validator($field, ...$args);
         } else {
             throw new \InvalidArgumentException("The validator [$validator] is not exists!");
         }
 
         // validate success, save value to safeData
         if ($passed) {
-            $this->collectSafeValue($attr, $value);
+            $this->collectSafeValue($field, $value);
 
             return true;
         }
@@ -305,16 +298,16 @@ trait ValidationTrait
     /**
      * value Validate 字段值验证
      * @param array $data 原始数据列表
-     * @param string $attr 属性名称
+     * @param string $field 属性名称
      * @param mixed $value 属性值
      * @param \Closure|string $validator 验证器
      * @param array $args 验证需要的参数
      * @return bool
      * @throws \InvalidArgumentException
      */
-    protected function valueValidate($data, $attr, $value, $validator, $args)
+    protected function valueValidate($data, $field, $value, $validator, $args)
     {
-        // if attr don't exists.
+        // if field don't exists.
         if (null === $value) {
             return false;
         }
@@ -352,7 +345,7 @@ trait ValidationTrait
 
         // validate success, save value to safeData
         if ($passed) {
-            $this->collectSafeValue($attr, $value);
+            $this->collectSafeValue($field, $value);
 
             return true;
         }
@@ -388,7 +381,7 @@ trait ValidationTrait
         foreach ($this->getRules() as $rule) {
             // check fields
             if (!isset($rule[0]) || !$rule[0]) {
-                throw new \InvalidArgumentException('Please setting the attrs(string|array) to wait validate! position: rule[0].');
+                throw new \InvalidArgumentException('Please setting the fields(string|array) to wait validate! position: rule[0].');
             }
 
             // check validator
@@ -412,9 +405,9 @@ trait ValidationTrait
                 $this->_usedRules[] = $rule;
             }
 
-            $attrs = array_shift($rule);
+            $fields = array_shift($rule);
 
-            yield $attrs => $rule;
+            yield $fields => $rule;
         }
 
         //
@@ -422,17 +415,17 @@ trait ValidationTrait
 
     /**
      * collect Safe Value
-     * @param string $attr
+     * @param string $field
      * @param mixed $value
      */
-    protected function collectSafeValue($attr, $value)
+    protected function collectSafeValue($field, $value)
     {
         // 进行的是子级属性检查 eg: 'goods.apple'
-        if ($pos = strpos($attr, '.')) {
-            $firstLevelKey = substr($attr, 0, $pos);
+        if ($pos = strpos($field, '.')) {
+            $firstLevelKey = substr($field, 0, $pos);
             $this->_safeData[$firstLevelKey] = $this->data[$firstLevelKey];
         } else {
-            $this->_safeData[$attr] = $value;
+            $this->_safeData[$field] = $value;
         }
     }
 
@@ -568,7 +561,7 @@ trait ValidationTrait
     }
 
     /**
-     * get safe attribute value
+     * get safe field value
      * @param string $key
      * @param mixed $default
      * @return mixed
@@ -579,7 +572,7 @@ trait ValidationTrait
     }
 
     /**
-     * get safe attribute value
+     * get safe field value
      * @param string $key
      * @param mixed $default
      * @return mixed

@@ -29,7 +29,7 @@ trait ErrorMessageTrait
         'url' => '{attr} is not a url address!',
         'email' => '{attr} is not a email address!',
         'date' => '{attr} is not a date format!',
-        'dateFormat' => '{attr} is not in a {value0} date format !',
+        'dateFormat' => '{attr} is not in a {value0} date format!',
         'ip' => '{attr} is not IP address!',
         'ipv4' => '{attr} is not a IPv4 address!',
         'ipv6' => '{attr} is not a IPv6 address!',
@@ -78,6 +78,10 @@ trait ErrorMessageTrait
         'strList' => '{attr} must be an array and value is all strings',
 
         'json' => '{attr} must be an json string',
+
+        'file' => '{attr} must be an uploaded file',
+        'image' => '{attr} must be an uploaded image file',
+
         'callback' => '{attr} don\'t pass the test and verify!',
         '_' => '{attr} validation is not through!',
     ];
@@ -369,27 +373,6 @@ trait ErrorMessageTrait
         $trans = $this->getTranslates();
 
         return $trans[$attr] ?? Helper::toSnakeCase($attr, ' ');
-    }
-
-    /**
-     * @deprecated please use getTranslate() instead.
-     * @param string $attr
-     * @return string
-     */
-    public function getAttrTran(string $attr): string
-    {
-        $trans = $this->getAttrTrans();
-
-        return $trans[$attr] ?? Helper::toSnakeCase($attr, ' ');
-    }
-
-    /**
-     * @deprecated please use getTranslates() instead.
-     * @return array
-     */
-    public function getAttrTrans(): array
-    {
-        return array_merge($this->attrTrans(), $this->_translates);
     }
 
     /**
