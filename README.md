@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/packagist/l/inhere/php-validate.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=5.6.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/php-validate)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/php-validate.svg)](https://packagist.org/packages/inhere/php-validate)
+![git branch](https://img.shields.io/badge/branch-php5-yellow.svg)
 
 一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无依赖。
 
@@ -30,11 +31,6 @@
 **注意：**
 
 - master 分支是要求 `php >= 7` 的(推荐使用)。
-- php5 分支是支持 php 5 的代码分支
-
-**注意：**
-
-- master 分支是要求 `php >= 7` 的(推荐使用)。
 - php5 分支是支持 php 5 的代码分支 
 
 ## 安装
@@ -42,7 +38,7 @@
 - 使用 composer 命令
 
 ```bash
-composer require inhere/php-validate
+composer require inhere/php-validate 
 ```
 
 - 使用 composer.json
