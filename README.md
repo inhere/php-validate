@@ -598,7 +598,7 @@ public function get(string $key, $default = null)
 `in/enum`    | 枚举验证 | `['status', 'in', [1,2,3]`
 `notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
 `mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
-`mustBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
+`notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
 `compare/same/equal` | 字段值相同比较 | `['passwd', 'compare', 'repasswd']`
 `notEqual` | 字段值不能相同比较 | `['passwd', 'notEqual', 'repasswd']`
 `required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
