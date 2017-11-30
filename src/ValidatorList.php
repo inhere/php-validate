@@ -217,7 +217,7 @@ final class ValidatorList
     public static function size($val, $min = null, $max = null)
     {
         $options = [];
-        if (is_numeric($val)) {
+        if (\is_int($val)) {
             $val = (int)$val;
         } elseif (\is_string($val)) {
             $val = Helper::strlen(trim($val));
