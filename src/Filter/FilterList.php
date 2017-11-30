@@ -139,6 +139,36 @@ final class FilterList
     }
 
     /**
+     * string to snakeCase
+     * @param string $var
+     * @param string $sep
+     * @return string
+     */
+    public static function snakeCase($var, $sep = '_')
+    {
+        if (!$var || !\is_string($var)) {
+            return '';
+        }
+
+        return Helper::toSnakeCase($var, $sep);
+    }
+
+    /**
+     * string to camelcase
+     * @param string $var
+     * @param bool $ucFirst
+     * @return string
+     */
+    public static function camelCase($var, $ucFirst = false)
+    {
+        if (!$var || !\is_string($var)) {
+            return '';
+        }
+
+        return Helper::toCamelCase($var, $ucFirst);
+    }
+
+    /**
      * string to time
      * @param string $var
      * @return int

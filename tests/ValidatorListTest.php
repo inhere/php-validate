@@ -118,4 +118,103 @@ class ValidatorListTest extends TestCase
         $this->assertTrue(ValidatorList::length('test', 3, 5));
         $this->assertTrue(ValidatorList::length([3, 'test', 'hi'], 2, 5));
     }
+
+    public function testRegexp()
+    {
+        $this->assertFalse(ValidatorList::regexp('test', '/^\d+$/'));
+        $this->assertFalse(ValidatorList::regexp('test-dd', '/^\w+$/'));
+
+        $this->assertTrue(ValidatorList::regexp('test56', '/^\w+$/'));
+    }
+
+    public function testUrl()
+    {
+        $this->assertFalse(ValidatorList::url('test'));
+        $this->assertFalse(ValidatorList::url('/test56'));
+
+        $this->assertTrue(ValidatorList::url('http://a.com/test56'));
+    }
+
+    public function testEmail()
+    {
+        $this->assertFalse(ValidatorList::email('test'));
+        $this->assertFalse(ValidatorList::email('/test56'));
+
+        $this->assertTrue(ValidatorList::email('abc@gmail.com'));
+    }
+
+    public function testIp()
+    {
+        $this->assertFalse(ValidatorList::ip('test'));
+        $this->assertFalse(ValidatorList::ip('/test56'));
+
+        $this->assertTrue(ValidatorList::ip('0.0.0.0'));
+        $this->assertTrue(ValidatorList::ip('127.0.0.1'));
+    }
+
+    public function testIsArray()
+    {
+        $this->assertFalse(ValidatorList::isArray('test'));
+        $this->assertFalse(ValidatorList::isArray(345));
+
+        $this->assertTrue(ValidatorList::isArray([]));
+        $this->assertTrue(ValidatorList::isArray(['a']));
+    }
+
+    public function testIsMap()
+    {
+        $this->assertFalse(ValidatorList::isMap('test'));
+        $this->assertFalse(ValidatorList::isMap([]));
+        $this->assertFalse(ValidatorList::isMap(['abc']));
+
+        $this->assertTrue(ValidatorList::isMap(['a' => 'v']));
+        $this->assertTrue(ValidatorList::isMap(['value', 'a' => 'v']));
+    }
+
+    public function testIsList()
+    {
+        $this->assertFalse(ValidatorList::isList('test'));
+        $this->assertFalse(ValidatorList::isList([]));
+        $this->assertFalse(ValidatorList::isList(['a' => 'v']));
+        $this->assertFalse(ValidatorList::isList(['value', 'a' => 'v']));
+
+        $this->assertTrue(ValidatorList::isList(['abc']));
+        $this->assertTrue(ValidatorList::isList(['abc', 565, null]));
+    }
+
+    public function testIntList()
+    {
+        $this->assertFalse(ValidatorList::intList('test'));
+        $this->assertFalse(ValidatorList::intList([]));
+        $this->assertFalse(ValidatorList::intList(['a', 'v']));
+        $this->assertFalse(ValidatorList::intList(['a' => 'v']));
+        $this->assertFalse(ValidatorList::intList(['value', 'a' => 'v']));
+
+        $this->assertTrue(ValidatorList::intList(['343', 45]));
+        $this->assertTrue(ValidatorList::intList([565, 3234, -56]));
+    }
+
+    public function testNumList()
+    {
+        $this->assertFalse(ValidatorList::numList('test'));
+        $this->assertFalse(ValidatorList::numList([]));
+        $this->assertFalse(ValidatorList::numList(['a', 'v']));
+        $this->assertFalse(ValidatorList::numList(['a' => 'v']));
+        $this->assertFalse(ValidatorList::numList(['value', 'a' => 'v']));
+        $this->assertFalse(ValidatorList::numList([565, 3234, -56]));
+
+        $this->assertTrue(ValidatorList::numList(['343', 45]));
+        $this->assertTrue(ValidatorList::numList([56, 45]));
+    }
+
+    public function testStrList()
+    {
+        $this->assertFalse(ValidatorList::strList('test'));
+        $this->assertFalse(ValidatorList::strList([]));
+        $this->assertFalse(ValidatorList::strList(['a' => 'v']));
+
+        $this->assertTrue(ValidatorList::strList(['value', 'a' => 'v']));
+        $this->assertTrue(ValidatorList::strList(['abc']));
+        $this->assertTrue(ValidatorList::strList(['abc', 565, null]));
+    }
 }

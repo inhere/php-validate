@@ -1,7 +1,7 @@
 {
   "name": "inhere/php-validate",
   "type": "library",
-  "description": "a simple validate library of the php",
+  "description": "a simple validate, filter library of the php",
   "keywords": ["library", "validate"],
   "homepage": "http://github.com/inhere/php-validate",
   "license": "MIT",

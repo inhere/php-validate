@@ -214,14 +214,14 @@ class Helper
      * Translates a string with underscores into camel case (e.g. first_name -> firstName)
      * @prototype string public static function toCamelCase(string $str[, bool $capitalise_first_char = false])
      * @param $str
-     * @param bool $upper_case_first_char
+     * @param bool $upperCaseFirstChar
      * @return mixed
      */
-    public static function toCamelCase($str, $upper_case_first_char = false)
+    public static function toCamelCase($str, $upperCaseFirstChar = false)
     {
         $str = self::strToLower($str);
 
-        if ($upper_case_first_char) {
+        if ($upperCaseFirstChar) {
             $str = self::ucfirst($str);
         }
 
@@ -241,6 +241,17 @@ class Helper
         // 'CMSCategories' => 'cms_categories'
         // 'RangePrice' => 'range_price'
         return self::strToLower(trim(preg_replace('/([A-Z][a-z])/', $sep . '$1', $string), $sep));
+    }
+
+    /**
+     * @param string $field
+     * @return mixed|string
+     */
+    public static function beautifyFieldName($field)
+    {
+        $str = self::toSnakeCase($field, ' ');
+
+        return strpos($str, '_') ? str_replace('_', ' ', $str) : $str;
     }
 
     /**
@@ -272,7 +283,7 @@ class Helper
     }
 
     /**
-     * @param $cb
+     * @param callable $cb
      * @param array $args
      * @return mixed
      * @throws \InvalidArgumentException

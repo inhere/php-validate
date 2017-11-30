@@ -226,18 +226,17 @@ final class ValidatorList
      */
     public static function size($val, $min = null, $max = null)
     {
-        $options = [];
-
-        if (\is_int($val)) {
-            $val = (int)$val;
-        } elseif (\is_string($val)) {
-            $val = Helper::strlen(trim($val));
-        } elseif (\is_array($val)) {
-            $val = \count($val);
-        } else {
-            return false;
+        if (!\is_int($val)) {
+            if (\is_string($val)) {
+                $val = Helper::strlen(trim($val));
+            } elseif (\is_array($val)) {
+                $val = \count($val);
+            } else {
+                return false;
+            }
         }
 
+        $options = [];
         $minIsNum = is_numeric($min);
         $maxIsNum = is_numeric($max);
 
@@ -302,7 +301,7 @@ final class ValidatorList
 
     /**
      * 最小值检查
-     * @param  int $val
+     * @param  int|string|array $val
      * @param  integer $minRange
      * @return bool
      */
@@ -313,7 +312,7 @@ final class ValidatorList
 
     /**
      * 最大值检查
-     * @param  int $val
+     * @param  int|string|array $val
      * @param  int $maxRange
      * @return bool
      */
@@ -359,7 +358,7 @@ final class ValidatorList
             $options['default'] = $default;
         }
 
-        return filter_var($val, FILTER_VALIDATE_REGEXP, ['options' => $options]);
+        return (bool)filter_var($val, FILTER_VALIDATE_REGEXP, ['options' => $options]);
     }
 
     public static function regex($val, $regexp, $default = null)
@@ -376,7 +375,7 @@ final class ValidatorList
      *                    FILTER_FLAG_HOST_REQUIRED - 要求 URL 包含主机名（比如 http://www.example.com）
      *                    FILTER_FLAG_PATH_REQUIRED - 要求 URL 在域名后存在路径（比如 www.example.com/example1/test2/）
      *                    FILTER_FLAG_QUERY_REQUIRED - 要求 URL 存在查询字符串（比如 "example.php?name=Peter&age=37"）
-     * @return mixed
+     * @return bool
      */
     public static function url($val, $default = null, $flags = 0)
     {
@@ -390,14 +389,14 @@ final class ValidatorList
             $settings['flags'] = $flags;
         }
 
-        return filter_var($val, FILTER_VALIDATE_URL, $settings);
+        return (bool)filter_var($val, FILTER_VALIDATE_URL, $settings);
     }
 
     /**
      * email 地址验证
      * @param  string $val 要验证的数据
      * @param  mixed $default 设置验证失败时返回默认值
-     * @return mixed
+     * @return bool
      */
     public static function email($val, $default = null)
     {
@@ -407,7 +406,7 @@ final class ValidatorList
             $options['default'] = $default;
         }
 
-        return filter_var($val, FILTER_VALIDATE_EMAIL, ['options' => $options]);
+        return (bool)filter_var($val, FILTER_VALIDATE_EMAIL, ['options' => $options]);
     }
 
     /**
@@ -419,7 +418,7 @@ final class ValidatorList
      *                    FILTER_FLAG_IPV6 - 要求值是合法的 IPv6 IP（比如 2001:0db8:85a3:08d3:1319:8a2e:0370:7334）
      *                    FILTER_FLAG_NO_PRIV_RANGE - 要求值不在 RFC 指定的私有范围 IP 内（比如 192.168.0.1）
      *                    FILTER_FLAG_NO_RES_RANGE - 要求值不在保留的 IP 范围内。该标志接受 IPV4 和 IPV6 值
-     * @return mixed
+     * @return bool
      */
     public static function ip($val, $default = null, $flags = 0)
     {
@@ -433,7 +432,7 @@ final class ValidatorList
             $settings['flags'] = $flags;
         }
 
-        return filter_var($val, FILTER_VALIDATE_IP, $settings);
+        return (bool)filter_var($val, FILTER_VALIDATE_IP, $settings);
     }
 
     /**
@@ -472,7 +471,7 @@ final class ValidatorList
 
     /**
      * 验证值是否是一个非自然数组 map (key - value 形式的)
-     * @param  array $val
+     * @param  mixed $val
      * @return bool
      */
     public static function isMap($val)
@@ -481,6 +480,7 @@ final class ValidatorList
             return false;
         }
 
+        /** @var array $val */
         foreach ($val as $k => $v) {
             if (\is_string($k)) {
                 return true;
@@ -492,7 +492,7 @@ final class ValidatorList
 
     /**
      * 验证值是否是一个自然数组 list (key是从0自然增长的)
-     * @param  array $val
+     * @param  array|mixed $val
      * @return bool
      */
     public static function isList($val)
@@ -503,6 +503,7 @@ final class ValidatorList
 
         $prevKey = 0;
 
+        /** @var array $val */
         foreach ($val as $k => $v) {
             if (!\is_int($k)) {
                 return false;
@@ -520,16 +521,21 @@ final class ValidatorList
 
     /**
      * 验证字段值是否是一个 int list
-     * @param  array $val
+     * @param  array|mixed $val
      * @return bool
      */
     public static function intList($val)
     {
-        if (!\is_array($val)) {
+        if (!$val || !\is_array($val)) {
             return false;
         }
 
-        foreach ($val as $v) {
+        /** @var array $val */
+        foreach ($val as $k => $v) {
+            if (!\is_int($k)) {
+                return false;
+            }
+
             if (!is_numeric($v)) {
                 return false;
             }
@@ -539,17 +545,47 @@ final class ValidatorList
     }
 
     /**
+     * 验证字段值是否是一个 number list
+     * @param  array|mixed $val
+     * @return bool
+     */
+    public static function numList($val)
+    {
+        if (!$val || !\is_array($val)) {
+            return false;
+        }
+
+        /** @var array $val */
+        foreach ($val as $k =>  $v) {
+            if (!\is_int($k)) {
+                return false;
+            }
+
+            if (!is_numeric($v) || $v <= 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * 验证字段值是否是一个 string list
-     * @param  array $val
+     * @param  array|mixed $val
      * @return bool
      */
     public static function strList($val)
     {
-        if (!\is_array($val)) {
+        if (!$val || !\is_array($val)) {
             return false;
         }
 
-        foreach ($val as $v) {
+        /** @var array $val */
+        foreach ($val as $k => $v) {
+            if (!\is_int($k)) {
+                return false;
+            }
+
             if (\is_string($v)) {
                 return true;
             }
@@ -758,7 +794,8 @@ final class ValidatorList
      */
     public static function isDateFormat($date)
     {
-        return (bool)preg_match('/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date);
+        return (bool)preg_match('/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
+            $date);
     }
 
     /**
@@ -768,7 +805,8 @@ final class ValidatorList
      */
     public static function isDate($date)
     {
-        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date, $matches)) {
+        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
+            $date, $matches)) {
             return false;
         }
 

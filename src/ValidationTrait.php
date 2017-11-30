@@ -16,7 +16,7 @@ use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
 /**
  * Trait ValidationTrait
  * @package Inhere\Validate
- * @property array $data To verify the data list. please define it on main class. 待验证的数据列表
+ * property array $data To verify the data list. please define it on main class. 待验证的数据列表
  */
 trait ValidationTrait
 {
@@ -34,11 +34,8 @@ trait ValidationTrait
      */
     protected $scene = '';
 
-    /**
-     * Through the validation of the data
-     * @var array
-     */
-    private $_safeData = [];
+    /** @var array used rules at current scene */
+    protected $_usedRules = [];
 
     /**
      * the rules is by setRules()
@@ -47,10 +44,10 @@ trait ValidationTrait
     private $_rules = [];
 
     /**
-     * used rules at current scene
+     * Through the validation of the data
      * @var array
      */
-    protected $_usedRules = [];
+    private $_safeData = [];
 
     /** @var bool */
     private $_validated = false;
@@ -185,7 +182,7 @@ trait ValidationTrait
                 continue;
             }
 
-            // clear all options
+            // clear all keywords options
             unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
 
             // 验证设置, 有一些验证器需要参数。 e.g. size()

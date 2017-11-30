@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/packagist/l/inhere/php-validate.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/php-validate)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/php-validate.svg)](https://packagist.org/packages/inhere/php-validate)
-[![git branch](https://img.shields.io/badge/branch-php5-yellow.svg)](https://github.com/inhere/php-validate)
+[![git branch](https://img.shields.io/badge/branch-master-yellow.svg)](https://github.com/inhere/php-validate)
 
 一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无依赖。
 
@@ -16,7 +16,7 @@
 - 方便的获取错误信息，验证后的安全数据获取
 - 已经内置了40多个常用的验证器[内置验证器](#built-in-validators)
 - 规则设置参考自 yii 的。部分规则参考自 laravel
-- `RuleValidation` 规则配置类似于Yii: 每条规则中，允许多个字段，但只能有一个验证器。
+- `Validation/RuleValidation` 规则配置类似于Yii: 每条规则中，允许多个字段，但只能有一个验证器。
   - e.g `['tagId,userId,name,email,freeTime', 'required', ...]`(下面的示例都是这种)
 - `FieldValidation` 规则配置类似于Laravel: 每条规则中，只能有一个字段，但允许多个验证器。
   - e.g `['field', 'required|string:5,10|...', ...]`
@@ -25,8 +25,8 @@
 
 ## 项目地址
 
-- **git@osc** https://gitee.com/inhere/php-validate.git
 - **github** https://github.com/inhere/php-validate.git
+- **git@osc** https://gitee.com/inhere/php-validate.git
 
 **注意：**
 
@@ -35,7 +35,14 @@
 
 ## 安装
 
-- 使用 composer
+- 使用 composer 命令
+
+```php
+composer require inhere/php-validate
+// composer require inhere/php-validate ^2.2
+```
+
+- 使用 composer.json
 
 编辑 `composer.json`，在 `require` 添加
 
@@ -49,8 +56,8 @@
 - 直接拉取
 
 ```
-git clone https://git.oschina.net/inhere/php-validate.git // git@osc
 git clone https://github.com/inhere/php-validate.git // github
+git clone https://gitee.com/inhere/php-validate.git // git@osc
 ```
 
 ## 使用
@@ -63,7 +70,6 @@ git clone https://github.com/inhere/php-validate.git // github
 > 此方式是最为完整的使用方式
 
 ```php
-
 use Inhere\Validate\Validation;
 
 class PageRequest extends Validation
@@ -82,7 +88,7 @@ class PageRequest extends Validation
             ['username', 'string', 'on' => 'scene2' ],
             ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
             ['title', 'customValidator', 'msg' => '{attr} error msg!' ], // 指定当前规则的消息
-            ['status', function($status) {
+            ['status', function($status) { // 直接使用闭包验证
                 if (is_int($status) && $status > 3) {
                     return true;
                 }
@@ -108,7 +114,7 @@ class PageRequest extends Validation
         ];
     }
 
-    // 自定义验证器的提示消息, 更多请看 {@see ValidationTrait::$messages}
+    // 自定义验证器的提示消息, 默认消息请看 {@see ErrorMessageTrait::$messages}
     public function messages()
     {
         return [
@@ -169,7 +175,7 @@ class SomeController
 }
 ```
 
-### 方式 1: 创建一个新的class，使用  ValidationTrait
+### 方式 3: 创建一个新的class，使用  ValidationTrait
 
 创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中
 
@@ -243,7 +249,6 @@ class UserController
 
 }
 ```
-
 
 ## 添加自定义验证器
 
@@ -559,8 +564,10 @@ public function get(string $key, $default = null)
 `float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
 `string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
 `trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'trim'],`
-`lowercase` | 字符串转换为小写 | `['description', 'min', 4, 'filter' => 'lowercase'],`
-`uppercase` | 字符串转换为大写 | `['title', 'min', 4, 'filter' => 'uppercase'],`
+`lowercase` | 字符串转换为小写 | `['description', 'string', 'filter' => 'lowercase'],`
+`uppercase` | 字符串转换为大写 | `['title', 'string', 'filter' => 'uppercase'],`
+`snakeCase` | 字符串转换为蛇形风格 | `['title', 'string', 'filter' => 'snakeCase'],`
+`camelCase` | 字符串转换为驼峰风格 | `['title', 'string', 'filter' => 'camelCase'],`
 `timestamp/strToTime` | 字符串日期转换时间戳 | `['pulishedAt', 'number', 'filter' => 'strToTime'],`
 `abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
 `url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
@@ -590,6 +597,7 @@ public function get(string $key, $default = null)
 `isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
 `isArray`   | 验证是否是数组 | `['goods', 'isArray']`
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
+`numList`   | 验证字段值是否是一个 number list | `['tagIds', 'numList']`
 `strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
 `min`   | 最小边界值验证 | `['title', 'min', 40]`
 `max`   | 最大边界值验证 | `['title', 'max', 40]`
@@ -624,7 +632,7 @@ public function get(string $key, $default = null)
 `md5`    | 验证是否是 md5 格式的字符串 | `['passwd', 'md5']`
 `sha1`    | 验证是否是 sha1 格式的字符串 | `['passwd', 'sha1']`
 `color`    | 验证是否是html color | `['backgroundColor', 'color']`
-`regexp`    | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
+`regex/regexp` | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
 `safe`    | 用于标记字段是安全的，无需验证 | `['createdAt, updatedAt', 'safe']`
 
 ### `safe` 验证器,标记属性/字段是安全的
@@ -658,6 +666,7 @@ $v = Validation::make($_POST, [
 - 关于布尔值验证
     * 如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE
     * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE
+- `size/range` `length` 可以只定义 `min` 最小值。 但是 **当定义了 `max` 值时，必须同时定义最小值**
 - 支持对数组的子级值验证 
 
 ```php
@@ -676,9 +685,7 @@ $v = Validation::make($_POST, [
 ```
 
 - `required*` 系列规则参考自 laravel
-- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度
-- `size/range` `length` 可以只定义 `min` 最小值。 但是 **当定义了 `max` 值时，必须同时定义最小值**
-- 验证大小范围 是包含边界值的 
+- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
 
 ## 代码示例
 
@@ -687,9 +694,23 @@ $v = Validation::make($_POST, [
 ## 单元测试
 
 ```sh
-./tests/test.sh
+phpunit
 ```
 
 ## License
 
 MIT
+
+## 我的其他项目
+
+### `inhere/console` [github](https://github.com/inhere/php-console) [git@osc](https://git.oschina.net/inhere/php-console)
+
+轻量且功能丰富的命令行应用，工具库, 控制台交互.
+
+### `inhere/sroute` [github](https://github.com/inhere/php-srouter)  [git@osc](https://git.oschina.net/inhere/php-srouter)
+ 
+轻量且快速的路由库
+
+### `inhere/http` [github](https://github.com/inhere/php-http) [git@osc](https://git.oschina.net/inhere/php-http)
+
+http message 工具库(PSR 7 实现)
