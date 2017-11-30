@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -46,23 +47,23 @@ interface ValidationInterface
     /**
      * @return bool
      */
-    public function fail(): bool;
+    public function fail();
 
     /**
      * alias of the fail()
      * @return bool
      */
-    public function isFail(): bool;
+    public function isFail();
 
     /**
      * @return bool
      */
-    public function passed(): bool;
+    public function passed();
 
     /**
      * @return array
      */
-    public function getErrors(): array;
+    public function getErrors();
 
     /**
      * 得到第一个错误信息
@@ -83,10 +84,10 @@ interface ValidationInterface
     /**
      * @return array
      */
-    public function getMessages(): array;
+    public function getMessages();
 
     /**
      * @return array
      */
-    public function getSafeData(): array;
+    public function getSafeData();
 }

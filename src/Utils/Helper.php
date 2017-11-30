@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  */
@@ -15,21 +16,8 @@ class Helper
      * known image mime types
      * @link https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
      */
-    const IMG_MIME_TYPES = [
-        'bmp' => 'image/bmp',
-        'gif' => 'image/gif',
-        'ief' => 'image/ief',
-        'jpeg' => 'image/jpeg',
-        'jpg' => 'image/jpeg',
-        'jpe' => 'image/jpeg',
-        'png' => 'image/png',
-        'svg' => 'image/svg+xml',
-        'ico' => 'image/x-icon',
-    ];
-
-    const IMG_MIME_CONSTANTS = [
-        IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP, IMAGETYPE_WBMP, IMAGETYPE_ICO
-    ];
+    const IMG_MIME_TYPES = ['bmp' => 'image/bmp', 'gif' => 'image/gif', 'ief' => 'image/ief', 'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg', 'jpe' => 'image/jpeg', 'png' => 'image/png', 'svg' => 'image/svg+xml', 'ico' => 'image/x-icon'];
+    const IMG_MIME_CONSTANTS = [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP, IMAGETYPE_WBMP, IMAGETYPE_ICO];
 
     /**
      * @param string $ext
@@ -37,7 +25,7 @@ class Helper
      */
     public static function getImageMime($ext)
     {
-        return self::IMG_MIME_TYPES[$ext] ?? null;
+        return isset(self::IMG_MIME_TYPES[$ext]) ? self::IMG_MIME_TYPES[$ext] : null;
     }
 
     /**
@@ -70,11 +58,9 @@ class Helper
     public static function explode($string, $delimiter = ',', $filterEmpty = true)
     {
         $string = trim($string, $delimiter);
-
         if (!strpos($string, $delimiter)) {
             return [$string];
         }
-
         $list = array_map('trim', explode($delimiter, $string));
 
         return $filterEmpty ? array_filter($list) : $list;
@@ -88,7 +74,6 @@ class Helper
     public static function strlen($str, $encoding = 'UTF-8')
     {
         $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
-
         if (\function_exists('mb_strlen')) {
             return mb_strlen($str, $encoding);
         }
@@ -105,7 +90,6 @@ class Helper
         if (\is_array($str)) {
             return false;
         }
-
         if (\function_exists('mb_strtolower')) {
             return mb_strtolower($str, 'utf-8');
         }
@@ -122,7 +106,6 @@ class Helper
         if (\is_array($str)) {
             return false;
         }
-
         if (\function_exists('mb_strtoupper')) {
             return mb_strtoupper($str, 'utf-8');
         }
@@ -142,12 +125,11 @@ class Helper
         if (\is_array($str)) {
             return false;
         }
-
         if (\function_exists('mb_substr')) {
-            return mb_substr($str, (int)$start, ($length === false ? self::strlen($str) : (int)$length), $encoding);
+            return mb_substr($str, (int)$start, $length === false ? self::strlen($str) : (int)$length, $encoding);
         }
 
-        return substr($str, $start, ($length === false ? self::strlen($str) : (int)$length));
+        return substr($str, $start, $length === false ? self::strlen($str) : (int)$length);
     }
 
     /**
@@ -214,7 +196,6 @@ class Helper
     public static function toCamelCase($str, $upper_case_first_char = false)
     {
         $str = self::strToLower($str);
-
         if ($upper_case_first_char) {
             $str = self::ucfirst($str);
         }
@@ -249,11 +230,9 @@ class Helper
         if (null === $key) {
             return $array;
         }
-
         if (array_key_exists($key, $array)) {
             return $array[$key];
         }
-
         foreach (explode('.', $key) as $segment) {
             if (\is_array($array) && array_key_exists($segment, $array)) {
                 $array = $array[$segment];
@@ -278,19 +257,16 @@ class Helper
             if (strpos($cb, '::') === false) {
                 return $cb(...$args);
             }
-
             // ClassName/Service::method
             $cb = explode('::', $cb, 2);
         } elseif (\is_object($cb) && method_exists($cb, '__invoke')) {
             return $cb(...$args);
         }
-
         if (\is_array($cb)) {
             list($obj, $mhd) = $cb;
 
-            return \is_object($obj) ? $obj->$mhd(...$args) : $obj::$mhd(...$args);
+            return \is_object($obj) ? $obj->{$mhd}(...$args) : $obj::$mhd(...$args);
         }
-
         throw new \InvalidArgumentException('The parameter is not a callable');
     }
 }

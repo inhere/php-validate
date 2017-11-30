@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -21,17 +22,14 @@ trait UserAndContextValidatorsTrait
      * @var array
      */
     protected static $_validators = [];
-
     /**
      * @see $_FILES
      * @var array
      */
     private $uploadedFiles = [];
-
     /*******************************************************************************
      * custom validators
      ******************************************************************************/
-
     /**
      * add a custom validator
      * ```
@@ -46,7 +44,7 @@ trait UserAndContextValidatorsTrait
      * @param string $msg
      * @return $this
      */
-    public function addValidator(string $name, callable $callback, string $msg = '')
+    public function addValidator($name, callable $callback, $msg = '')
     {
         self::setValidator($name, $callback, $msg);
 
@@ -59,10 +57,9 @@ trait UserAndContextValidatorsTrait
      * @param callable $callback
      * @param string $msg
      */
-    public static function setValidator(string $name, callable $callback, string $msg = null)
+    public static function setValidator($name, callable $callback, $msg = null)
     {
         self::$_validators[$name] = $callback;
-
         if ($msg) {
             self::setDefaultMessage($name, $msg);
         }
@@ -88,7 +85,6 @@ trait UserAndContextValidatorsTrait
     public static function delValidator($name)
     {
         $cb = false;
-
         if (isset(self::$_validators[$name])) {
             $cb = self::$_validators[$name];
             unset(self::$_validators[$name]);
@@ -105,7 +101,6 @@ trait UserAndContextValidatorsTrait
         self::$_validators = [];
     }
 
-
     /**
      * @param array $validators
      */
@@ -117,15 +112,13 @@ trait UserAndContextValidatorsTrait
     /**
      * @return array
      */
-    public static function getValidators(): array
+    public static function getValidators()
     {
         return self::$_validators;
     }
-
     /*******************************************************************************
      * fields(required*, file) validators
      ******************************************************************************/
-
     /**
      * 验证字段必须存在输入数据，且不为空。字段符合下方任一条件时即为「空」
      * - 该值为 null.
@@ -139,7 +132,6 @@ trait UserAndContextValidatorsTrait
         if (!isset($this->data[$field])) {
             return false;
         }
-
         $val = $this->data[$field];
 
         return $val !== '' && $val !== null && $val !== false && $val !== [];
@@ -158,9 +150,7 @@ trait UserAndContextValidatorsTrait
         if (!isset($this->data[$anotherField])) {
             return false;
         }
-
         $val = $this->data[$anotherField];
-
         if (\in_array($val, (array)$values, true)) {
             return $this->required($field);
         }
@@ -181,7 +171,6 @@ trait UserAndContextValidatorsTrait
         if (!isset($this->data[$anotherField])) {
             return false;
         }
-
         if (\in_array($this->data[$anotherField], (array)$values, true)) {
             return true;
         }
@@ -217,7 +206,6 @@ trait UserAndContextValidatorsTrait
     public function requiredWithAll($field, $fields)
     {
         $allHasValue = true;
-
         foreach ((array)$fields as $name) {
             if (!$this->required($name)) {
                 $allHasValue = false;
@@ -238,7 +226,6 @@ trait UserAndContextValidatorsTrait
     public function requiredWithout($field, $fields)
     {
         $allHasValue = true;
-
         foreach ((array)$fields as $name) {
             if (!$this->required($name)) {
                 $allHasValue = false;
@@ -259,7 +246,6 @@ trait UserAndContextValidatorsTrait
     public function requiredWithoutAll($field, $fields)
     {
         $allNoValue = true;
-
         foreach ((array)$fields as $name) {
             if ($this->required($name)) {
                 $allNoValue = false;
@@ -278,24 +264,19 @@ trait UserAndContextValidatorsTrait
      */
     public function file($field, $suffixes = null)
     {
-        if (!$file = $this->uploadedFiles[$field] ?? null) {
+        if (!($file = isset($this->uploadedFiles[$field]) ? $this->uploadedFiles[$field] : null)) {
             return false;
         }
-
-        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
             return false;
         }
-
         if (!$suffixes) {
             return true;
         }
-
         $suffix = trim(strrchr($file['name'], '.'), '.');
-
         if (!$suffix) {
             return false;
         }
-
         $suffix = strtolower($suffix);
         $suffixes = \is_string($suffixes) ? Helper::explode($suffixes) : (array)$suffixes;
 
@@ -310,35 +291,29 @@ trait UserAndContextValidatorsTrait
      */
     public function image($field, $suffixes = null)
     {
-        if (!$file = $this->uploadedFiles[$field] ?? null) {
+        if (!($file = isset($this->uploadedFiles[$field]) ? $this->uploadedFiles[$field] : null)) {
             return false;
         }
-
-        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
             return false;
         }
-
-        if (!$tmpFile = $file['tmp_name'] ?? null) {
+        if (!($tmpFile = isset($file['tmp_name']) ? $file['tmp_name'] : null)) {
             return false;
         }
-
         // getimagesize() 判定某个文件是否为图片的有效手段, 常用在文件上传验证
         // Note: 本函数不需要 GD 图像库
         // list($width, $height, $type, $attr) = getimagesize("img/flag.jpg");
         $imgInfo = @getimagesize($tmpFile);
-
         if ($imgInfo && $imgInfo[2]) {
-            $mime = strtolower($imgInfo['mime']); // 支持不标准扩展名
-
+            $mime = strtolower($imgInfo['mime']);
+            // 支持不标准扩展名
             // 是否是图片
             if (!\in_array($mime, Helper::IMG_MIME_TYPES, true)) {
                 return false;
             }
-
             if (!$suffixes) {
                 return true;
             }
-
             $suffix = Helper::getImageExtByMime($mime);
             $suffixes = \is_string($suffixes) ? Helper::explode($suffixes) : (array)$suffixes;
 
@@ -357,18 +332,15 @@ trait UserAndContextValidatorsTrait
      */
     public function mimeTypes($field, $types)
     {
-        if (!$file = $this->uploadedFiles[$field] ?? null) {
+        if (!($file = isset($this->uploadedFiles[$field]) ? $this->uploadedFiles[$field] : null)) {
             return false;
         }
-
-        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
             return false;
         }
-
-        if (!$tmpFile = $file['tmp_name'] ?? null) {
+        if (!($tmpFile = isset($file['tmp_name']) ? $file['tmp_name'] : null)) {
             return false;
         }
-
         $mime = Helper::getMimeType($tmpFile);
         $types = \is_string($types) ? Helper::explode($types) : (array)$types;
 
@@ -385,11 +357,9 @@ trait UserAndContextValidatorsTrait
     public function mimes($field, $types = null)
     {
     }
-
     /*******************************************************************************
      * Special validators(require context data)
      ******************************************************************************/
-
     /**
      * 字段值比较：当前字段值是否与给定的字段值相同
      * @param mixed $val
@@ -398,7 +368,7 @@ trait UserAndContextValidatorsTrait
      */
     public function compare($val, $compareField)
     {
-        return $compareField && ($val === $this->get($compareField));
+        return $compareField && $val === $this->get($compareField);
     }
 
     public function same($val, $compareField)
@@ -410,15 +380,13 @@ trait UserAndContextValidatorsTrait
     {
         return $this->compare($val, $compareField);
     }
-
     /*******************************************************************************
      * getter/setter
      ******************************************************************************/
-
     /**
      * @return array
      */
-    public function getUploadedFiles(): array
+    public function getUploadedFiles()
     {
         return $this->uploadedFiles;
     }
@@ -433,5 +401,4 @@ trait UserAndContextValidatorsTrait
 
         return $this;
     }
-
 }

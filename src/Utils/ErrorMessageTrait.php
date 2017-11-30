@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -18,80 +19,17 @@ trait ErrorMessageTrait
      * 默认的错误提示信息
      * @var array
      */
-    public static $messages = [
-        'int' => '{attr} must be an integer!',
-        'integer' => '{attr} must be an integer!',
-        'num' => '{attr} must be an integer greater than 0!',
-        'number' => '{attr} must be an integer greater than 0!',
-        'bool' => '{attr} must be is boolean!',
-        'boolean' => '{attr} must be is boolean!',
-        'float' => '{attr} must be is float!',
-        'url' => '{attr} is not a url address!',
-        'email' => '{attr} is not a email address!',
-        'date' => '{attr} is not a date format!',
-        'dateFormat' => '{attr} is not in a {value0} date format!',
-        'ip' => '{attr} is not IP address!',
-        'ipv4' => '{attr} is not a IPv4 address!',
-        'ipv6' => '{attr} is not a IPv6 address!',
-        'required' => 'parameter {attr} is required!',
-        'length' => [
-            '{attr} length validation is not through!',
-            '{attr} must be an string/array and minimum length is {min}',
-            '{attr} must be an string/array and length range {min} ~ {max}',
-        ],
-        'size' => [
-            '{attr} size validation is not through!',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
-            // '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
-            '{attr} must be in the range {min} ~ {max}',
-        ],
-        'range' => [
-            '{attr} range validation is not through!',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
-            '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
-        ],
-        'between' => [
-            '{attr} between validation is not through!',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
-            '{attr} must be an integer/string/array and value/length between {min} ~ {max}',
-        ],
-        'min' => '{attr} minimum boundary is {value0}',
-        'max' => '{attr} maximum boundary is {value0}',
-        'in' => '{attr} must in ({value0})',
-        'enum' => '{attr} must in ({value0})',
-        'notIn' => '{attr} cannot in ({value0})',
-        'string' => [
-            '{attr} must be a string',
-            '{attr} must be a string and minimum length be {min}',
-            '{attr} must be a string and length range must be {min} ~ {max}',
-        ],
-        'regexp' => '{attr} does not match the {value0} conditions',
-
-        'compare' => '{attr} must be equals to {value0}',
-        'same' => '{attr} must be equals to {value0}',
-        'equal' => '{attr} must be equals to {value0}',
-
-        'isArray' => '{attr} must be an array',
-        'isMap' => '{attr} must be an array and is key-value format',
-        'isList' => '{attr} must be an array of nature',
-        'intList' => '{attr} must be an array and value is all integers',
-        'strList' => '{attr} must be an array and value is all strings',
-
-        'json' => '{attr} must be an json string',
-
-        'file' => '{attr} must be an uploaded file',
-        'image' => '{attr} must be an uploaded image file',
-
-        'callback' => '{attr} don\'t pass the test and verify!',
-        '_' => '{attr} validation is not through!',
-    ];
-
+    public static $messages = ['int' => '{attr} must be an integer!', 'integer' => '{attr} must be an integer!', 'num' => '{attr} must be an integer greater than 0!', 'number' => '{attr} must be an integer greater than 0!', 'bool' => '{attr} must be is boolean!', 'boolean' => '{attr} must be is boolean!', 'float' => '{attr} must be is float!', 'url' => '{attr} is not a url address!', 'email' => '{attr} is not a email address!', 'date' => '{attr} is not a date format!', 'dateFormat' => '{attr} is not in a {value0} date format!', 'ip' => '{attr} is not IP address!', 'ipv4' => '{attr} is not a IPv4 address!', 'ipv6' => '{attr} is not a IPv6 address!', 'required' => 'parameter {attr} is required!', 'length' => ['{attr} length validation is not through!', '{attr} must be an string/array and minimum length is {min}', '{attr} must be an string/array and length range {min} ~ {max}'], 'size' => [
+        '{attr} size validation is not through!',
+        '{attr} must be an integer/string/array and minimum value/length is {min}',
+        // '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
+        '{attr} must be in the range {min} ~ {max}',
+    ], 'range' => ['{attr} range validation is not through!', '{attr} must be an integer/string/array and minimum value/length is {min}', '{attr} must be an integer/string/array and value/length range {min} ~ {max}'], 'between' => ['{attr} between validation is not through!', '{attr} must be an integer/string/array and minimum value/length is {min}', '{attr} must be an integer/string/array and value/length between {min} ~ {max}'], 'min' => '{attr} minimum boundary is {value0}', 'max' => '{attr} maximum boundary is {value0}', 'in' => '{attr} must in ({value0})', 'enum' => '{attr} must in ({value0})', 'notIn' => '{attr} cannot in ({value0})', 'string' => ['{attr} must be a string', '{attr} must be a string and minimum length be {min}', '{attr} must be a string and length range must be {min} ~ {max}'], 'regexp' => '{attr} does not match the {value0} conditions', 'compare' => '{attr} must be equals to {value0}', 'same' => '{attr} must be equals to {value0}', 'equal' => '{attr} must be equals to {value0}', 'isArray' => '{attr} must be an array', 'isMap' => '{attr} must be an array and is key-value format', 'isList' => '{attr} must be an array of nature', 'intList' => '{attr} must be an array and value is all integers', 'strList' => '{attr} must be an array and value is all strings', 'json' => '{attr} must be an json string', 'file' => '{attr} must be an uploaded file', 'image' => '{attr} must be an uploaded image file', 'callback' => '{attr} don\'t pass the test and verify!', '_' => '{attr} validation is not through!'];
     /**
      * attribute field translate list
      * @var array
      */
     private $_translates = [];
-
     /**
      * 保存所有的验证错误信息
      * @var array[]
@@ -102,7 +40,6 @@ trait ErrorMessageTrait
      * ]
      */
     private $_errors = [];
-
     /**
      * Whether there is error stop validation 是否出现验证失败就立即停止验证
      * True  -- 出现一个验证失败即停止验证,并退出
@@ -110,11 +47,9 @@ trait ErrorMessageTrait
      * @var boolean
      */
     private $_stopOnError = true;
-
     /*******************************************************************************
      * Errors Information
      ******************************************************************************/
-
     /**
      * @return $this
      */
@@ -129,7 +64,7 @@ trait ErrorMessageTrait
      * 是否有错误
      * @return boolean
      */
-    public function hasError(): bool
+    public function hasError()
     {
         return $this->isFail();
     }
@@ -137,7 +72,7 @@ trait ErrorMessageTrait
     /**
      * @return bool
      */
-    public function isFail(): bool
+    public function isFail()
     {
         return \count($this->_errors) > 0;
     }
@@ -145,7 +80,7 @@ trait ErrorMessageTrait
     /**
      * @return bool
      */
-    public function fail(): bool
+    public function fail()
     {
         return $this->isFail();
     }
@@ -153,7 +88,7 @@ trait ErrorMessageTrait
     /**
      * @return bool
      */
-    public function failed(): bool
+    public function failed()
     {
         return $this->isFail();
     }
@@ -161,7 +96,7 @@ trait ErrorMessageTrait
     /**
      * @return bool
      */
-    public function passed(): bool
+    public function passed()
     {
         return !$this->isFail();
     }
@@ -169,7 +104,7 @@ trait ErrorMessageTrait
     /**
      * @return bool
      */
-    public function isPassed(): bool
+    public function isPassed()
     {
         return !$this->isFail();
     }
@@ -178,7 +113,7 @@ trait ErrorMessageTrait
      * @param string $attr
      * @param string $msg
      */
-    public function addError(string $attr, string $msg)
+    public function addError($attr, $msg)
     {
         $this->_errors[] = [$attr => $msg];
     }
@@ -186,7 +121,7 @@ trait ErrorMessageTrait
     /**
      * @return array
      */
-    public function getErrors(): array
+    public function getErrors()
     {
         return $this->_errors;
     }
@@ -235,19 +170,17 @@ trait ErrorMessageTrait
     /**
      * @return bool
      */
-    public function isStopOnError(): bool
+    public function isStopOnError()
     {
         return $this->_stopOnError;
     }
-
     /*******************************************************************************
      * Error Messages
      ******************************************************************************/
-
     /**
      * @return array
      */
-    public static function getDefaultMessages(): array
+    public static function getDefaultMessages()
     {
         return self::$messages;
     }
@@ -256,7 +189,7 @@ trait ErrorMessageTrait
      * @param string $key
      * @param string $msg
      */
-    public static function setDefaultMessage(string $key, $msg)
+    public static function setDefaultMessage($key, $msg)
     {
         if ($key && $msg) {
             self::$messages[$key] = $msg;
@@ -266,7 +199,7 @@ trait ErrorMessageTrait
     /**
      * @return array
      */
-    public function getMessages(): array
+    public function getMessages()
     {
         return array_merge(self::getDefaultMessages(), $this->messages());
     }
@@ -297,46 +230,36 @@ trait ErrorMessageTrait
     public function getMessage($validator, $field, array $args = [], $message = null)
     {
         $validator = \is_string($validator) ? $validator : 'callback';
-
         // get message from default dict.
         if (!$message) {
             // allow define a message for a validator. eg: 'username.required' => 'some message ...'
             $fullKey = $field . '.' . $validator;
             $messages = $this->getMessages();
-
             if (isset($messages[$fullKey])) {
                 $message = $messages[$fullKey];
             } else {
-                $message = $messages[$validator] ?? $messages['_'];
+                $message = isset($messages[$validator]) ? $messages[$validator] : $messages['_'];
             }
-
             // is array. It's defined multi error messages
         } elseif (\is_array($message) && isset($message[$validator])) {
             $message = $message[$validator];
         }
-
         if (\is_string($message) && false === strpos($message, '{')) {
             return $message;
         }
-
-        $params = [
-            '{attr}' => $this->getTranslate($field)
-        ];
-
+        $params = ['{attr}' => $this->getTranslate($field)];
         foreach ($args as $key => $value) {
             $key = \is_int($key) ? "value{$key}" : $key;
             $params['{' . $key . '}'] = \is_array($value) ? implode(',', $value) : $value;
         }
-
         // @see self::$messages['size']
         if (\is_array($message)) {
             $msgKey = \count($params) - 1;
-            $message = $message[$msgKey] ?? $message[0];
+            $message = isset($message[$msgKey]) ? $message[$msgKey] : $message[0];
         }
 
         return strtr($message, $params);
     }
-
 
     /**
      * set the attrs translation data
@@ -353,10 +276,9 @@ trait ErrorMessageTrait
     /**
      * @return array
      */
-    public function getTranslates(): array
+    public function getTranslates()
     {
         static $translates;
-
         if (!$translates) {
             $translates = array_merge($this->translates(), $this->_translates);
         }
@@ -368,11 +290,11 @@ trait ErrorMessageTrait
      * @param string $attr
      * @return string
      */
-    public function getTranslate(string $attr): string
+    public function getTranslate($attr)
     {
         $trans = $this->getTranslates();
 
-        return $trans[$attr] ?? Helper::toSnakeCase($attr, ' ');
+        return isset($trans[$attr]) ? $trans[$attr] : Helper::toSnakeCase($attr, ' ');
     }
 
     /**
@@ -387,5 +309,4 @@ trait ErrorMessageTrait
 
         return $this;
     }
-
 }

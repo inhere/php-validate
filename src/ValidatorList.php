@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @date 2015.08.04
  * 验证器列表
@@ -20,7 +21,6 @@ final class ValidatorList
     /*******************************************************************************
      * Validators
      ******************************************************************************/
-
     /**
      * 值是否为空判断
      * @param mixed $val
@@ -34,11 +34,9 @@ final class ValidatorList
 
         return $val === '' || $val === null || $val === false || $val === [];
     }
-
     /*******************************************************************************
      * bool/int/float/string validators
      ******************************************************************************/
-
     /**
      * 布尔值验证，把值作为布尔选项来验证。
      *   如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE。
@@ -52,11 +50,9 @@ final class ValidatorList
     public static function boolean($val, $default = null, $flags = 0)
     {
         $settings = [];
-
         if ($default !== null) {
             $settings['options']['default'] = $default;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
@@ -86,11 +82,9 @@ final class ValidatorList
     public static function float($val, array $options = [], $flags = 0)
     {
         $settings = [];
-
         if ($options) {
             $settings['options'] = $options;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
@@ -118,13 +112,10 @@ final class ValidatorList
         if (!is_numeric($val)) {
             return false;
         }
-
         $settings = [];
-
         if ($options) {
             $settings['options'] = $options;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
@@ -150,7 +141,7 @@ final class ValidatorList
      */
     public static function number($val, array $options = [], $flags = 0)
     {
-        return self::integer($val, $options, $flags) && ($val > 0);
+        return self::integer($val, $options, $flags) && $val > 0;
     }
 
     /**
@@ -209,13 +200,11 @@ final class ValidatorList
             return false;
         }
 
-        return 1 === preg_match('/^[\w-]+$/', $val);
+        return 1 === preg_match('/^[\\w-]+$/', $val);
     }
-
     /*******************************************************************************
      * size/range/length validators
      ******************************************************************************/
-
     /**
      * 范围检查
      * $min $max 即使传错位置也会自动调整
@@ -227,7 +216,6 @@ final class ValidatorList
     public static function size($val, $min = null, $max = null)
     {
         $options = [];
-
         if (is_numeric($val)) {
             $val = (int)$val;
         } elseif (\is_string($val)) {
@@ -237,10 +225,8 @@ final class ValidatorList
         } else {
             return false;
         }
-
         $minIsNum = is_numeric($min);
         $maxIsNum = is_numeric($max);
-
         if ($minIsNum && $maxIsNum) {
             if ($max > $min) {
                 $options['min_range'] = (int)$min;
@@ -326,11 +312,9 @@ final class ValidatorList
 
         return self::size($val, $minLength, $maxLength);
     }
-
     /*******************************************************************************
      * custom validators
      ******************************************************************************/
-
     /**
      * 用正则验证数据
      * @param  string $val 要验证的数据
@@ -340,10 +324,7 @@ final class ValidatorList
      */
     public static function regexp($val, $regexp, $default = null)
     {
-        $options = [
-            'regexp' => $regexp
-        ];
-
+        $options = ['regexp' => $regexp];
         if ($default !== null) {
             $options['default'] = $default;
         }
@@ -370,11 +351,9 @@ final class ValidatorList
     public static function url($val, $default = null, $flags = 0)
     {
         $settings = [];
-
         if ($default !== null) {
             $settings['options']['default'] = $default;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
@@ -391,7 +370,6 @@ final class ValidatorList
     public static function email($val, $default = null)
     {
         $options = [];
-
         if ($default !== null) {
             $options['default'] = $default;
         }
@@ -413,11 +391,9 @@ final class ValidatorList
     public static function ip($val, $default = null, $flags = 0)
     {
         $settings = [];
-
         if ($default !== null) {
             $settings['options']['default'] = $default;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
@@ -444,11 +420,9 @@ final class ValidatorList
     {
         return self::ip($val, false, FILTER_FLAG_IPV6);
     }
-
     /*******************************************************************************
      * list/map/enum validators
      ******************************************************************************/
-
     /**
      * 验证值是否是一个数组
      * @param  mixed $val
@@ -469,7 +443,6 @@ final class ValidatorList
         if (!\is_array($val)) {
             return false;
         }
-
         foreach ($val as $k => $v) {
             if (\is_string($k)) {
                 return true;
@@ -489,18 +462,14 @@ final class ValidatorList
         if (!\is_array($val) || !isset($val[0])) {
             return false;
         }
-
         $prevKey = 0;
-
         foreach ($val as $k => $v) {
             if (!\is_int($k)) {
                 return false;
             }
-
             if ($k !== $prevKey) {
                 return false;
             }
-
             $prevKey++;
         }
 
@@ -517,7 +486,6 @@ final class ValidatorList
         if (!\is_array($val)) {
             return false;
         }
-
         foreach ($val as $v) {
             if (!is_numeric($v)) {
                 return false;
@@ -537,7 +505,6 @@ final class ValidatorList
         if (!\is_array($val)) {
             return false;
         }
-
         foreach ($val as $v) {
             if (\is_string($v)) {
                 return true;
@@ -557,7 +524,6 @@ final class ValidatorList
         if (!$val || (!\is_string($val) && !method_exists($val, '__toString'))) {
             return false;
         }
-
         json_decode($val);
 
         return json_last_error() === JSON_ERROR_NONE;
@@ -571,7 +537,8 @@ final class ValidatorList
     public static function in($val, $dict)
     {
         if (\is_string($dict) && strpos($dict, ',')) {
-            $val = (string)$val;// fixed: data type
+            $val = (string)$val;
+            // fixed: data type
             $dict = array_map('trim', explode(',', $dict));
         }
 
@@ -611,11 +578,9 @@ final class ValidatorList
     {
         return $val === $compareVal;
     }
-
     /*******************************************************************************
      * date validators
      ******************************************************************************/
-
     /**
      * 校验字段值是否是日期格式
      * @param string $val 日期
@@ -635,10 +600,9 @@ final class ValidatorList
      */
     public static function dateEquals($val, $date)
     {
-        if (!$val || (!$time = strtotime($val))) {
+        if (!$val || !($time = strtotime($val))) {
             return false;
         }
-
         if (!$date) {
             return false;
         }
@@ -657,7 +621,6 @@ final class ValidatorList
         if (!$val || !($unixTime = strtotime($val))) {
             return false;
         }
-
         // 校验日期的格式有效性
         if (date($format, $unixTime) === $val) {
             return true;
@@ -678,13 +641,10 @@ final class ValidatorList
         if (!$val || !\is_string($val)) {
             return false;
         }
-
-        if (!$valueTime = strtotime($val)) {
+        if (!($valueTime = strtotime($val))) {
             return false;
         }
-
         $beforeTime = $beforeDate ? strtotime($beforeDate) : time();
-
         if ($symbol === '>') {
             return $beforeTime < $valueTime;
         }
@@ -715,13 +675,10 @@ final class ValidatorList
         if (!$val || !\is_string($val)) {
             return false;
         }
-
-        if (!$valueTime = strtotime($val)) {
+        if (!($valueTime = strtotime($val))) {
             return false;
         }
-
         $afterTime = $afterDate ? strtotime($afterDate) : time();
-
         if ($symbol === '>') {
             return $afterTime > $valueTime;
         }
@@ -747,7 +704,7 @@ final class ValidatorList
      */
     public static function isDateFormat($date)
     {
-        return (bool)preg_match('/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date);
+        return (bool)preg_match('/^([\\d]{4})-((0?[\\d])|(1[0-2]))-((0?[\\d])|([1-2][\\d])|(3[01]))( [\\d]{2}:[\\d]{2}:[\\d]{2})?$/', $date);
     }
 
     /**
@@ -757,29 +714,25 @@ final class ValidatorList
      */
     public static function isDate($date)
     {
-        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date, $matches)) {
+        if (!preg_match('/^([\\d]{4})-((?:0?[\\d])|(?:1[0-2]))-((?:0?[\\d])|(?:[1-2][\\d])|(?:3[01]))( [\\d]{2}:[\\d]{2}:[\\d]{2})?$/', $date, $matches)) {
             return false;
         }
 
         return checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1]);
     }
-
     /*******************************************************************************
      * extension validators
      ******************************************************************************/
-
     /**
      * @param $val
      * @return bool
      */
     public static function phone($val)
     {
-        return 1 === preg_match('/^1[2-9]\d{9}$/', $val);
+        return 1 === preg_match('/^1[2-9]\\d{9}$/', $val);
     }
-
     // public static function telNumber($val)
     // {}
-
     /**
      * Check for postal code validity
      * @param string $val Postal code to validate
@@ -787,7 +740,7 @@ final class ValidatorList
      */
     public static function postCode($val)
     {
-        return empty($val) || preg_match('/^\d{6}$/', $val);
+        return empty($val) || preg_match('/^\\d{6}$/', $val);
     }
 
     /**
@@ -797,7 +750,7 @@ final class ValidatorList
      */
     public static function price($price)
     {
-        return 1 === preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === preg_match('/^[\\d]{1,10}(\\.[\\d]{1,9})?$/', $price);
     }
 
     /**
@@ -807,7 +760,7 @@ final class ValidatorList
      */
     public static function negativePrice($price)
     {
-        return 1 === preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === preg_match('/^[-]?[\\d]{1,10}(\\.[\\d]{1,9})?$/', $price);
     }
 
     /**
@@ -817,12 +770,12 @@ final class ValidatorList
      */
     public static function isFloat($float)
     {
-        return (string)((float)$float) === (string)$float;
+        return (string)(double)$float === (string)$float;
     }
 
     public static function isUnsignedFloat($float)
     {
-        return (string)((float)$float) === (string)$float && $float >= 0;
+        return (string)(double)$float === (string)$float && $float >= 0;
     }
 
     /**
@@ -832,7 +785,7 @@ final class ValidatorList
      */
     public static function isInt($value)
     {
-        return ((string)(int)$value === (string)$value || $value === false);
+        return (string)(int)$value === (string)$value || $value === false;
     }
 
     /**
@@ -842,7 +795,7 @@ final class ValidatorList
      */
     public static function isUnsignedInt($value)
     {
-        return ((string)(int)$value === (string)$value && $value < 4294967296 && $value >= 0);
+        return (string)(int)$value === (string)$value && $value < 4294967296 && $value >= 0;
     }
 
     /**
@@ -895,7 +848,7 @@ final class ValidatorList
     public static function absoluteUrl($url)
     {
         if (!empty($url)) {
-            return preg_match('/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/', $url);
+            return preg_match('/^(https?:)?\\/\\/[$~:;#,%&_=\\(\\)\\[\\]\\.\\? \\+\\-@\\/a-zA-Z0-9]+$/', $url);
         }
 
         return false;
@@ -920,7 +873,6 @@ final class ValidatorList
     {
         return (bool)preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
     }
-
     ///////////////////////////////////////////
 
     /**
@@ -977,5 +929,4 @@ final class ValidatorList
     public static function inputHasVar($type, $varName)
     {
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -23,9 +24,8 @@ abstract class AbstractValidation implements ValidationInterface
 {
     use ValidationTrait {
         //set as traitSet;
-        get as traitGet;// Methods to define an alias, can be used in the current class.
+        get as traitGet;
     }
-
     /**
      * @var array
      */
@@ -43,11 +43,7 @@ abstract class AbstractValidation implements ValidationInterface
     public function __construct(array $data = [], array $rules = [], array $translates = [], $scene = '', $startValidate = false)
     {
         $this->data = $data;
-        $this
-            ->setRules($rules)
-            ->setScene($scene)
-            ->setTranslates($translates);
-
+        $this->setRules($rules)->setScene($scene)->setTranslates($translates);
         if ($startValidate) {
             $this->validate();
         }
@@ -67,5 +63,4 @@ abstract class AbstractValidation implements ValidationInterface
     {
         return new static($data, $rules, $translates, $scene, $startValidate);
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by sublime 3.
  * Auth: Inhere
@@ -9,8 +10,8 @@
 namespace Inhere\Validate;
 
 use Inhere\Validate\Utils\DataFiltersTrait;
-use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\ErrorMessageTrait;
+use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
 
 /**
@@ -21,7 +22,6 @@ use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
 trait ValidationTrait
 {
     use DataFiltersTrait, ErrorMessageTrait, UserAndContextValidatorsTrait;
-
     /**
      * current scenario name
      * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
@@ -33,31 +33,25 @@ trait ValidationTrait
      * @var string
      */
     protected $scene = '';
-
     /**
      * Through the validation of the data
      * @var array
      */
     private $_safeData = [];
-
     /**
      * the rules is by setRules()
      * @var array
      */
     private $_rules = [];
-
     /**
      * used rules at current scene
      * @var array
      */
     protected $_usedRules = [];
-
     /** @var bool */
     private $_validated = false;
-
     /** @var \Closure before validate handler */
     private $_beforeHandler;
-
     /** @var \Closure after validate handler */
     private $_afterHandler;
 
@@ -75,10 +69,7 @@ trait ValidationTrait
      */
     public function translates()
     {
-        return [
-            // 'field' => 'translate',
-            // e.g. 'name'=>'名称',
-        ];
+        return [];
     }
 
     /**
@@ -88,11 +79,7 @@ trait ValidationTrait
      */
     public function messages()
     {
-        return [
-            // validator name => message string
-            // 'required' => '{attr} 是必填项。',
-            // 'required.username' => '用户名 是必填项。',
-        ];
+        return [];
     }
 
     /**
@@ -128,11 +115,9 @@ trait ValidationTrait
     {
         // do something ...
     }
-
     /*******************************************************************************
      * Validate
      ******************************************************************************/
-
     /**
      * 进行数据验证
      * @author inhere
@@ -148,117 +133,95 @@ trait ValidationTrait
         if (!property_exists($this, 'data')) {
             throw new \InvalidArgumentException('Must be defined property "data"(array) in the sub-class used.');
         }
-
         if ($this->_validated) {
             return $this;
         }
-
         $this->resetValidation(true);
         $this->setStopOnError($stopOnError);
         $this->beforeValidate();
-
         if ($cb = $this->_beforeHandler) {
             $cb($this);
         }
-
         $data = $this->data;
-
         foreach ($this->collectRules() as $fields => $rule) {
             $fields = \is_string($fields) ? array_map('trim', explode(',', $fields)) : (array)$fields;
             $validator = array_shift($rule);
-
             // 为空时是否跳过(非 required 时). 参考自 yii2
-            $skipOnEmpty = $rule['skipOnEmpty'] ?? true;
-            $filters = $rule['filter'] ?? null;  // 使用过滤器
-            $defMsg = $rule['msg'] ?? null; // 自定义错误消息
-            $defValue = $rule['default'] ?? null;// 允许默认值
-
+            $skipOnEmpty = isset($rule['skipOnEmpty']) ? $rule['skipOnEmpty'] : true;
+            $filters = isset($rule['filter']) ? $rule['filter'] : null;
+            // 使用过滤器
+            $defMsg = isset($rule['msg']) ? $rule['msg'] : null;
+            // 自定义错误消息
+            $defValue = isset($rule['default']) ? $rule['default'] : null;
+            // 允许默认值
             // 如何判断属性为空 默认使用 ValidatorList::isEmpty(). 也可自定义
             $isEmpty = [ValidatorList::class, 'isEmpty'];
             if (!empty($rule['isEmpty']) && (\is_string($rule['isEmpty']) || $rule['isEmpty'] instanceof \Closure)) {
                 $isEmpty = $rule['isEmpty'];
             }
-
             // 验证的前置条件 -- 不满足条件,跳过此条规则
-            $when = $rule['when'] ?? null;
+            $when = isset($rule['when']) ? $rule['when'] : null;
             if ($when && $when instanceof \Closure && $when($data, $this) !== true) {
                 continue;
             }
-
             // clear all options
             unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
-
             // 验证设置, 有一些验证器需要参数。 e.g. size()
             $args = $rule;
-
             // 循环检查属性
             foreach ($fields as $field) {
                 if (!$field || ($onlyChecked && !\in_array($field, $onlyChecked, true))) {
                     continue;
                 }
-
                 $value = $this->getValue($field, $defValue);
-
                 // mark field is safe. not need validate. like. 'created_at'
                 if ($validator === 'safe') {
                     $this->_safeData[$field] = $value;
                     continue;
                 }
-
                 // required* 系列字段检查器
                 if (\is_string($validator) && 0 === strpos($validator, 'required')) {
                     if (!$this->fieldValidate($field, $value, $validator, $args)) {
                         $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
-
                         if ($this->isStopOnError()) {
                             break;
                         }
                     }
-
                     continue;
                 }
-
                 // 设定了为空跳过 并且 值为空
                 if ($skipOnEmpty && Helper::call($isEmpty, $value)) {
                     continue;
                 }
-
                 // 字段值过滤
                 if ($filters) {
                     $value = $this->valueFiltering($value, $filters);
                 }
-
                 // 字段值验证检查
                 if (!$this->valueValidate($data, $field, $value, $validator, $args)) {
                     $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
-
                     if ($this->isStopOnError()) {
                         break;
                     }
                 }
             }
-
             // There is an error an immediate end to verify
             if ($this->isStopOnError() && $this->hasError()) {
                 break;
             }
         }
-
         // fix: has error, clear safe data.
         if ($this->hasError()) {
             $this->_safeData = [];
         }
-
         $this->afterValidate();
-
         if ($cb = $this->_afterHandler) {
             $cb($this);
         }
-
         // fix : deny repeat validate
         $this->_validated = true;
-
         unset($data);
+
         return $this;
     }
 
@@ -276,15 +239,13 @@ trait ValidationTrait
         // required 检查
         if ($validator === 'required') {
             $passed = $this->required($field);
-
             // 其他 required* 方法
         } elseif (method_exists($this, $validator)) {
             $args = array_values($args);
-            $passed = $this->$validator($field, ...$args);
+            $passed = $this->{$validator}($field, ...$args);
         } else {
-            throw new \InvalidArgumentException("The validator [$validator] is not exists!");
+            throw new \InvalidArgumentException("The validator [{$validator}] is not exists!");
         }
-
         // validate success, save value to safeData
         if ($passed) {
             $this->collectSafeValue($field, $value);
@@ -311,9 +272,7 @@ trait ValidationTrait
         if (null === $value) {
             return false;
         }
-
         $args = array_values($args);
-
         // if $validator is a closure OR a object has method '__invoke'
         if (\is_object($validator) && method_exists($validator, '__invoke')) {
             $args[] = $data;
@@ -323,26 +282,22 @@ trait ValidationTrait
             if (isset(self::$_validators[$validator])) {
                 $callback = self::$_validators[$validator];
                 $passed = $callback($value, ...$args);
-
                 // if $validator is a custom method of the subclass.
             } elseif (method_exists($this, $validator)) {
-                $passed = $this->$validator($value, ...$args);
-
+                $passed = $this->{$validator}($value, ...$args);
                 // $validator is a method of the class 'ValidatorList'
             } elseif (method_exists(ValidatorList::class, $validator)) {
                 $passed = ValidatorList::$validator($value, ...$args);
-
                 // it is function name
             } elseif (\function_exists($validator)) {
                 $passed = $validator($value, ...$args);
             } else {
-                throw new \InvalidArgumentException("The validator [$validator] don't exists!");
+                throw new \InvalidArgumentException("The validator [{$validator}] don't exists!");
             }
         } else {
             $passed = Helper::call($validator, $value, ...$args);
             // throw new \InvalidArgumentException('Validator type is error, must is String or Closure!');
         }
-
         // validate success, save value to safeData
         if ($passed) {
             $this->collectSafeValue($field, $value);
@@ -361,7 +316,6 @@ trait ValidationTrait
     {
         $this->_validated = false;
         $this->_safeData = $this->_usedRules = [];
-
         if ($clearErrors) {
             $this->clearErrors();
         }
@@ -377,40 +331,33 @@ trait ValidationTrait
     protected function collectRules()
     {
         $scene = $this->scene;
-
         foreach ($this->getRules() as $rule) {
             // check fields
             if (!isset($rule[0]) || !$rule[0]) {
                 throw new \InvalidArgumentException('Please setting the fields(string|array) to wait validate! position: rule[0].');
             }
-
             // check validator
             if (!isset($rule[1]) || !$rule[1]) {
                 throw new \InvalidArgumentException('The rule validator is must be setting! position: rule[1].');
             }
-
             // global rule.
             if (empty($rule['on'])) {
                 $this->_usedRules[] = $rule;
-
                 // only use to special scene.
             } else {
                 $sceneList = \is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
-
                 if ($scene && !\in_array($scene, $sceneList, true)) {
                     continue;
                 }
-
                 unset($rule['on']);
                 $this->_usedRules[] = $rule;
             }
-
             $fields = array_shift($rule);
 
-            yield $fields => $rule;
+            (yield $fields => $rule);
         }
 
-        //
+        yield [];
     }
 
     /**
@@ -428,15 +375,13 @@ trait ValidationTrait
             $this->_safeData[$field] = $value;
         }
     }
-
     /*******************************************************************************
      * getter/setter
      ******************************************************************************/
-
     /**
      * @return bool
      */
-    public function isValidated(): bool
+    public function isValidated()
     {
         return $this->_validated;
     }
@@ -444,7 +389,7 @@ trait ValidationTrait
     /**
      * @return bool
      */
-    public function hasRule(): bool
+    public function hasRule()
     {
         return $this->getRules() ? true : false;
     }
@@ -452,7 +397,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getRules(): array
+    public function getRules()
     {
         return array_merge($this->rules(), $this->_rules);
     }
@@ -471,7 +416,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getUsedRules(): array
+    public function getUsedRules()
     {
         return $this->_usedRules;
     }
@@ -479,7 +424,7 @@ trait ValidationTrait
     /**
      * @return string
      */
-    public function getScene(): string
+    public function getScene()
     {
         return $this->scene;
     }
@@ -488,7 +433,7 @@ trait ValidationTrait
      * @param string $scene
      * @return static
      */
-    public function setScene(string $scene)
+    public function setScene($scene)
     {
         $this->scene = $scene;
 
@@ -500,7 +445,7 @@ trait ValidationTrait
      * @param string $scene
      * @return static
      */
-    public function atScene(string $scene)
+    public function atScene($scene)
     {
         return $this->setScene($scene);
     }
@@ -509,7 +454,7 @@ trait ValidationTrait
      * Get all items in collection
      * @return array The collection's source data
      */
-    public function all(): array
+    public function all()
     {
         return $this->data;
     }
@@ -519,7 +464,7 @@ trait ValidationTrait
      * @param string $key The data key
      * @return bool
      */
-    public function has(string $key): bool
+    public function has($key)
     {
         return array_key_exists($key, $this->data);
     }
@@ -543,7 +488,7 @@ trait ValidationTrait
      * @param mixed $default The default value to return if data key does not exist
      * @return mixed The key's value, or the default value
      */
-    public function get(string $key, $default = null)
+    public function get($key, $default = null)
     {
         return $this->has($key) ? $this->data[$key] : $default;
     }
@@ -555,7 +500,7 @@ trait ValidationTrait
      * @param mixed $default The default value
      * @return mixed The key's value, or the default value
      */
-    public function getValue(string $key, $default = null)
+    public function getValue($key, $default = null)
     {
         return Helper::getValueOfArray($this->data, $key, $default);
     }
@@ -566,7 +511,7 @@ trait ValidationTrait
      * @param mixed $default
      * @return mixed
      */
-    public function getSafe(string $key, $default = null)
+    public function getSafe($key, $default = null)
     {
         return $this->getValid($key, $default);
     }
@@ -577,7 +522,7 @@ trait ValidationTrait
      * @param mixed $default
      * @return mixed
      */
-    public function getValid(string $key, $default = null)
+    public function getValid($key, $default = null)
     {
         return array_key_exists($key, $this->_safeData) ? $this->_safeData[$key] : $default;
     }
@@ -585,7 +530,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getSafeData(): array
+    public function getSafeData()
     {
         return $this->_safeData;
     }
@@ -593,7 +538,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function getSafeFields(): array
+    public function getSafeFields()
     {
         return array_keys($this->_safeData);
     }

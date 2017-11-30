@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @date 2015.08.05 sanitize
  * 过滤器(strainer/filter): 过滤数据，去除不合要求的数据，返回过滤后的数据(始终返回字符串, 全部不符合返回空字符串)
@@ -56,14 +57,12 @@ final class FilterList
     public static function float($var, $flags = FILTER_FLAG_ALLOW_FRACTION)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
-
         $ret = filter_var($var, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
 
-        return strpos($ret, '.') ? (float)$ret : $ret;
+        return strpos($ret, '.') ? (double)$ret : $ret;
     }
 
     /**
@@ -81,7 +80,6 @@ final class FilterList
     public static function string($var, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
@@ -176,7 +174,6 @@ final class FilterList
     public static function encoded($var, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
@@ -206,7 +203,6 @@ final class FilterList
     public static function specialChars($var, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
@@ -223,7 +219,6 @@ final class FilterList
     public static function fullSpecialChars($var, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
@@ -285,7 +280,6 @@ final class FilterList
     public static function unsafeRaw($string, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }

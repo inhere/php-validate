@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -32,7 +33,6 @@ trait DataFiltersTrait
     protected function valueFiltering($value, $filters)
     {
         $filters = \is_string($filters) ? array_map('trim', explode('|', $filters)) : $filters;
-
         foreach ($filters as $filter) {
             if (\is_object($filter) && method_exists($filter, '__invoke')) {
                 $value = $filter($value);
@@ -41,20 +41,17 @@ trait DataFiltersTrait
                 if (isset(self::$_filters[$filter])) {
                     $callback = self::$_filters[$filter];
                     $value = $callback($value);
-
                     // if $filter is a custom method of the subclass.
                 } elseif (method_exists($this, $filter)) {
-                    $value = $this->$filter($value);
-
+                    $value = $this->{$filter}($value);
                     // $filter is a method of the class 'FilterList'
                 } elseif (method_exists(FilterList::class, $filter)) {
                     $value = FilterList::$filter($value);
-
                     // it is function name
                 } elseif (\function_exists($filter)) {
                     $value = $filter($value);
                 } else {
-                    throw new \InvalidArgumentException("The filter [$filter] don't exists!");
+                    throw new \InvalidArgumentException("The filter [{$filter}] don't exists!");
                 }
             } else {
                 $value = Helper::call($filter, $value);
@@ -66,13 +63,12 @@ trait DataFiltersTrait
     /*******************************************************************************
      * custom filters
      ******************************************************************************/
-
     /**
      * @param string $name
      * @param callable $filter
      * @return $this
      */
-    public function addFilter(string $name, callable $filter)
+    public function addFilter($name, callable $filter)
     {
         self::$_filters[$name] = $filter;
 
@@ -83,7 +79,7 @@ trait DataFiltersTrait
      * @param string $name
      * @param callable $filter
      */
-    public static function setFilter(string $name, callable $filter)
+    public static function setFilter($name, callable $filter)
     {
         self::$_filters[$name] = $filter;
     }
@@ -92,7 +88,7 @@ trait DataFiltersTrait
      * @param string $name
      * @return $this
      */
-    public function delFilter(string $name)
+    public function delFilter($name)
     {
         if (isset(self::$_filters[$name])) {
             unset(self::$_filters[$name]);
@@ -112,7 +108,7 @@ trait DataFiltersTrait
     /**
      * @return array
      */
-    public static function getFilters(): array
+    public static function getFilters()
     {
         return self::$_filters;
     }

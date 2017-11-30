@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -29,11 +30,7 @@ class Validation extends AbstractValidation
      */
     public function rules()
     {
-        return [
-            // ['fields', 'validator', arg0, arg1, something ...]
-            // ['tagId,userId,name,email,freeTime', 'required'],
-            // ['userId', 'number'],
-        ];
+        return [];
     }
 
     /**
@@ -41,7 +38,7 @@ class Validation extends AbstractValidation
      * @param null $value
      * @return mixed
      */
-    public function get(string $key, $value = null)
+    public function get($key, $value = null)
     {
         return $this->traitGet($key, $value);
     }

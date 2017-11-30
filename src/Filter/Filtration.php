@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -14,7 +15,6 @@ use Inhere\Validate\Utils\DataFiltersTrait;
  * Class Filtration
  * @package Inhere\Validate\Filter
  * usage:
- *
  * $data = Filtration::make($_POST, [
  *   ['tagId,userId,freeTime', 'int'],
  *   ['name', 'string|trim', 'default' => 'tom'],
@@ -24,12 +24,10 @@ use Inhere\Validate\Utils\DataFiltersTrait;
 class Filtration
 {
     use DataFiltersTrait;
-
     /**
      * @var array
      */
     private $_data;
-
     /**
      * the rules is by setRules()
      * @var array
@@ -90,26 +88,21 @@ class Filtration
         $data = $data ?: $this->_data;
         $rules = $rules ?: $this->_rules;
         $filtered = [];
-
         foreach ($rules as $rule) {
             if (!isset($rule[0], $rule[1])) {
                 continue;
             }
-
-            if (!$fields = $rule[0]) {
+            if (!($fields = $rule[0])) {
                 continue;
             }
-
             $fields = \is_string($fields) ? array_map('trim', explode(',', $fields)) : (array)$fields;
-
             foreach ($fields as $field) {
                 if (!isset($data[$field])) {
-                    $filtered[$field] = $rule['default'] ?? null;
+                    $filtered[$field] = isset($rule['default']) ? $rule['default'] : null;
                 } else {
                     $filtered[$field] = $this->valueFiltering($data[$field], $rule[1]);
                 }
             }
-
         }
 
         return $filtered;
@@ -140,9 +133,7 @@ class Filtration
         if (!isset($this->_data[$field])) {
             return $default;
         }
-
         $value = $this->_data[$field];
-
         if (!$filters) {
             return $value;
         }
@@ -157,7 +148,6 @@ class Filtration
     public function reset($clearFilters = false)
     {
         $this->_data = $this->_rules = [];
-
         if ($clearFilters) {
             self::clearFilters();
         }
@@ -168,7 +158,7 @@ class Filtration
     /**
      * @return array
      */
-    public function getData(): array
+    public function getData()
     {
         return $this->_data;
     }
@@ -176,7 +166,7 @@ class Filtration
     /**
      * @return array
      */
-    public function all(): array
+    public function all()
     {
         return $this->_data;
     }
@@ -195,7 +185,7 @@ class Filtration
     /**
      * @return array
      */
-    public function getRules(): array
+    public function getRules()
     {
         return $this->_rules;
     }
