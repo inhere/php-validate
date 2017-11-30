@@ -566,7 +566,7 @@ public function get(string $key, $default = null)
 `url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
 `email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
 `encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
-`specialChars` | 相当于使用 `htmlspecialchars()` 转义数据 | `['content', 'string', 'filter' => 'specialChars'],`
+`escape/specialChars` | 相当于使用 `htmlspecialchars()` 转义数据 | `['content', 'string', 'filter' => 'specialChars'],`
 `quotes` | 应用 `addslashes()` 转义数据 | `['content', 'string', 'filter' => 'quotes'],`
 
 <a name="built-in-validators"></a>
@@ -652,7 +652,7 @@ $v = Validation::make($_POST, [
 // ...
 ```
 
-### 一些补充说明
+### (注意)一些补充说明
 
 - **请将 `required*` 系列规则写在规则列表的最前面**
 - 关于布尔值验证
@@ -675,9 +675,10 @@ $v = Validation::make($_POST, [
     ['goods.pear', 'max', 30], //goods 下的 pear 值最大不能超过 30
 ```
 
-- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度
 - `required*` 系列规则参考自 laravel
-- `size/range` `length` 可以只定义 min 最小值。 但是当定义了max 值时，必须同时定义最小值
+- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度
+- `size/range` `length` 可以只定义 `min` 最小值。 但是 **当定义了 `max` 值时，必须同时定义最小值**
+- 验证大小范围 是包含边界值的 
 
 ## 代码示例
 

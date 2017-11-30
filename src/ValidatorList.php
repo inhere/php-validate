@@ -228,7 +228,7 @@ final class ValidatorList
     {
         $options = [];
 
-        if (is_numeric($val)) {
+        if (\is_int($val)) {
             $val = (int)$val;
         } elseif (\is_string($val)) {
             $val = Helper::strlen(trim($val));

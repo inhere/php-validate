@@ -47,7 +47,7 @@ class FieldValidationTest extends TestCase
 
         $errors = $v->getErrors();
         $this->assertNotEmpty($errors);
-        $this->assertCount(4, $errors);
+        $this->assertCount(3, $errors);
 
         // var_dump($errors);
     }

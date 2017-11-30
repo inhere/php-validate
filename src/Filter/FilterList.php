@@ -185,7 +185,7 @@ final class FilterList
     }
 
     /**
-     *  应用 addslashes() 转义数据
+     * 应用 addslashes() 转义数据
      * @param  string $var
      * @return string
      */
@@ -195,7 +195,7 @@ final class FilterList
     }
 
     /**
-     *  HTML 转义字符 '"<>& 以及 ASCII 值小于 32 的字符。
+     * like htmlspecialchars(), HTML 转义字符 '"<>& 以及 ASCII 值小于 32 的字符。
      * @param  string $var
      * @param  int $flags 标志
      *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
@@ -212,6 +212,16 @@ final class FilterList
         }
 
         return filter_var($var, FILTER_SANITIZE_SPECIAL_CHARS, $settings);
+    }
+
+    /**
+     * @param $var
+     * @param int $flags
+     * @return string
+     */
+    public static function escape($var, $flags = 0)
+    {
+        return self::specialChars($var, $flags);
     }
 
     /**

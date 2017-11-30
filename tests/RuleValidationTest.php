@@ -1,5 +1,6 @@
 <?php
 
+use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
 use Inhere\Validate\RuleValidation;
 
@@ -15,7 +16,7 @@ class RuleValidationTest extends TestCase
         // 'freeTime' => '1456767657', // filed not exists
         'note' => '',
         'status' => 2,
-        'name' => 'john',
+        'name' => '1234a2',
         'existsField' => 'test',
         'passwd' => 'password',
         'repasswd' => 'repassword',
@@ -73,6 +74,25 @@ class RuleValidationTest extends TestCase
         $this->assertNotEmpty($errors);
         $this->assertTrue(count($errors) > 3);
         $this->assertEquals($v->getSafe('tagId'), null);
+    }
+
+    public function testValidateString()
+    {
+        $val = '123482';
+        $v = Validation::make([
+            'user_name' => $val
+        ], [
+            ['user_name', 'string', 'min' => 6],
+            // ['user_name', 'string', 'max' => 16],
+        ])->validate();
+
+        $this->assertTrue($v->passed());
+        $this->assertFalse($v->failed());
+
+        $errors = $v->getErrors();
+        $this->assertEmpty($errors);
+        $this->assertCount(0, $errors);
+        $this->assertEquals($v->getSafe('user_name'), $val);
     }
 
     protected function someRules()
