@@ -50,7 +50,7 @@ trait ValidationTrait
      * used rules at current scene
      * @var array
      */
-    private $_usedRules = [];
+    protected $_usedRules = [];
 
     /** @var bool */
     private $_validated = false;

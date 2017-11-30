@@ -26,7 +26,7 @@ class PageRequest extends \Inhere\Validate\Validation
         ];
     }
 
-    public function attrTrans()
+    public function translates()
     {
         return [
             'userId' => '用户Id',

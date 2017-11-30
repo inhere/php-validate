@@ -143,6 +143,16 @@ final class FilterList
      * @param string $var
      * @return int
      */
+    public static function timestamp($var)
+    {
+        return self::strToTime($var);
+    }
+
+    /**
+     * string to time
+     * @param string $var
+     * @return int
+     */
     public static function strToTime($var)
     {
         if (!$var || !\is_string($var)) {
