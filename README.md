@@ -1,5 +1,9 @@
 # php validate
 
+[![License](https://img.shields.io/packagist/l/inhere/php-validate.svg?style=flat-square)](LICENSE)
+[![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/php-validate)
+[![Latest Stable Version](http://img.shields.io/packagist/v/inhere/php-validate.svg)](https://packagist.org/packages/inhere/php-validate)
+
 一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无依赖。
 
 - 简单方便，支持添加自定义验证器
@@ -26,7 +30,7 @@
 **注意：**
 
 - master 分支是要求 `php >= 7` 的(推荐使用)。
-- php5 分支是支持 php 5 的代码分支(不再维护)
+- php5 分支是支持 php 5 的代码分支 
 
 ## 安装
 
