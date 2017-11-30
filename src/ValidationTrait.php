@@ -199,6 +199,7 @@ trait ValidationTrait
                 // 字段值过滤
                 if ($filters) {
                     $value = $this->valueFiltering($value, $filters);
+                    $this->data[$field] = $value;
                 }
                 // 字段值验证检查
                 if (!$this->valueValidate($data, $field, $value, $validator, $args)) {
