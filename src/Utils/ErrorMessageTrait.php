@@ -42,6 +42,7 @@ trait ErrorMessageTrait
         'notIn' => '{attr} cannot in ({value0})',
         'string' => ['{attr} must be a string',
             '{attr} must be a string and minimum length be {min}', '{attr} must be a string and length range must be {min} ~ {max}'],
+        'regex' => '{attr} does not match the {value0} conditions',
         'regexp' => '{attr} does not match the {value0} conditions',
 
         'mustBe' => '{attr} must be equals to {value0}',
@@ -50,7 +51,10 @@ trait ErrorMessageTrait
         'compare' => '{attr} must be equals to {value0}', 'same' => '{attr} must be equals to {value0}', 'equal' => '{attr} must be equals to {value0}',
         'notEqual' => '{attr} can not be equals to {value0}',
 
-        'isArray' => '{attr} must be an array', 'isMap' => '{attr} must be an array and is key-value format', 'isList' => '{attr} must be an array of nature', 'intList' => '{attr} must be an array and value is all integers', 'strList' => '{attr} must be an array and value is all strings', 'json' => '{attr} must be an json string', 'file' => '{attr} must be an uploaded file', 'image' => '{attr} must be an uploaded image file', 'callback' => '{attr} don\'t pass the test and verify!', '_' => '{attr} validation is not through!'];
+        'isArray' => '{attr} must be an array', 'isMap' => '{attr} must be an array and is key-value format', 'isList' => '{attr} must be an array of nature',
+        'intList' => '{attr} must be an array and value is all integers',
+        'numList' => '{attr} must be an array and value is all numbers',
+        'strList' => '{attr} must be an array and value is all strings', 'json' => '{attr} must be an json string', 'file' => '{attr} must be an uploaded file', 'image' => '{attr} must be an uploaded image file', 'callback' => '{attr} don\'t pass the test and verify!', '_' => '{attr} validation is not through!'];
     /**
      * attribute field translate list
      * @var array
@@ -320,7 +324,7 @@ trait ErrorMessageTrait
     {
         $trans = $this->getTranslates();
 
-        return isset($trans[$attr]) ? $trans[$attr] : Helper::toSnakeCase($attr, ' ');
+        return isset($trans[$attr]) ? $trans[$attr] : Helper::beautifyFieldName($attr, ' ');
     }
 
     /**
