@@ -380,6 +380,18 @@ trait UserAndContextValidatorsTrait
     {
         return $this->compare($val, $compareField);
     }
+
+    /**
+     * 字段值比较：当前字段值是否与给定的字段值不相同
+     * @param mixed $val
+     * @param string $compareField
+     * @return bool
+     */
+    public function notEqual($val, $compareField)
+    {
+        return $compareField && ($val !== $this->get($compareField));
+    }
+
     /*******************************************************************************
      * getter/setter
      ******************************************************************************/

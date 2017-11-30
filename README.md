@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/packagist/l/inhere/php-validate.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=5.6.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/php-validate)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/php-validate.svg)](https://packagist.org/packages/inhere/php-validate)
-![git branch](https://img.shields.io/badge/branch-php5-yellow.svg)
+[![git branch](https://img.shields.io/badge/branch-php5-yellow.svg)](https://github.com/inhere/php-console/tree/php5)
 
 一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无依赖。
 
@@ -14,7 +14,7 @@
 - 支持自定义每个验证的错误消息，字段翻译，消息翻译，支持默认值
 - 支持基本的数组检查，数组的子级值检查
 - 方便的获取错误信息，验证后的安全数据获取
-- 已经内置了30多个常用的验证器[内置验证器](#built-in-validators)
+- 已经内置了40多个常用的验证器[内置验证器](#built-in-validators)
 - 规则设置参考自 yii 的。部分规则参考自 laravel
 - `RuleValidation` 规则配置类似于Yii: 每条规则中，允许多个字段，但只能有一个验证器。
   - e.g `['tagId,userId,name,email,freeTime', 'required', ...]`(下面的示例都是这种)
@@ -604,7 +604,9 @@ public function get(string $key, $default = null)
 `in/enum`    | 枚举验证 | `['status', 'in', [1,2,3]`
 `notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
 `mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 0]`
+`notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
 `compare/same/equal` | 字段值比较 | `['passwd', 'compare', 'repasswd']`
+`notEqual` | 字段值不能相同比较 | `['passwd', 'notEqual', 'repasswd']`
 `required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
 `requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
 `requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`

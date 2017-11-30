@@ -1,7 +1,9 @@
 <?php
-
 /**
- *
+ * Created by PhpStorm.
+ * User: inhere
+ * Date: 2017-03-17
+ * Time: 11:26
  */
 
 namespace Inhere\Validate\Utils;
@@ -16,8 +18,8 @@ class Helper
      * known image mime types
      * @link https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
      */
-    const IMG_MIME_TYPES = ['bmp' => 'image/bmp', 'gif' => 'image/gif', 'ief' => 'image/ief', 'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg', 'jpe' => 'image/jpeg', 'png' => 'image/png', 'svg' => 'image/svg+xml', 'ico' => 'image/x-icon'];
-    const IMG_MIME_CONSTANTS = [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP, IMAGETYPE_WBMP, IMAGETYPE_ICO];
+    public static $imgMimeTypes = ['bmp' => 'image/bmp', 'gif' => 'image/gif', 'ief' => 'image/ief', 'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg', 'jpe' => 'image/jpeg', 'png' => 'image/png', 'svg' => 'image/svg+xml', 'ico' => 'image/x-icon'];
+    public static $imgMimeConstants = [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP, IMAGETYPE_WBMP, IMAGETYPE_ICO];
 
     /**
      * @param string $ext
@@ -25,7 +27,7 @@ class Helper
      */
     public static function getImageMime($ext)
     {
-        return isset(self::IMG_MIME_TYPES[$ext]) ? self::IMG_MIME_TYPES[$ext] : null;
+        return isset(self::$imgMimeTypes[$ext]) ? self::$imgMimeTypes[$ext] : null;
     }
 
     /**
@@ -34,9 +36,9 @@ class Helper
      */
     public static function getImageExtByMime($mime)
     {
-        $key = array_search($mime, self::IMG_MIME_TYPES, true);
+        $key = array_search($mime, self::$imgMimeTypes, true);
 
-        return false !== $key ? self::IMG_MIME_TYPES[$key] : null;
+        return false !== $key ? self::$imgMimeTypes[$key] : null;
     }
 
     /**
