@@ -67,9 +67,13 @@ trait ErrorMessageTrait
         ],
         'regexp' => '{attr} does not match the {value0} conditions',
 
+        'mustBe' => '{attr} must be equals to {value0}',
+        'notBe' => '{attr} can not be equals to {value0}',
+
         'compare' => '{attr} must be equals to {value0}',
         'same' => '{attr} must be equals to {value0}',
         'equal' => '{attr} must be equals to {value0}',
+        'notEqual' => '{attr} can not be equals to {value0}',
 
         'isArray' => '{attr} must be an array',
         'isMap' => '{attr} must be an array and is key-value format',

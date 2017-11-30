@@ -290,6 +290,17 @@ final class ValidatorList
     }
 
     /**
+     * 不能等于给定值
+     * @param  mixed $val
+     * @param  mixed $excepted
+     * @return bool
+     */
+    public static function notBe($val, $excepted)
+    {
+        return $val !== $excepted;
+    }
+
+    /**
      * 最小值检查
      * @param  int $val
      * @param  integer $minRange
