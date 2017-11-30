@@ -1,18 +1,6 @@
 <?php
 
-spl_autoload_register(function($class)
-{
-    // e.g. "inhere\validate\ValidationTrait"
-    if (strpos($class,'\\')) {
-        $file = dirname(__DIR__) . '/src/' . trim(strrchr($class,'\\'),'\\'). '.php';
-    } else {
-        $file = __DIR__ . '/' . $class. '.php';
-    }
-
-    if (is_file($file)) {
-        include $file;
-    }
-});
+require __DIR__ . '/simple-loader.php';
 
 $data = [
     // 'userId' => 234,
@@ -23,7 +11,7 @@ $data = [
     'name' => 'Ajohn',
     'existsField' => 'test',
     'passwd' => 'password',
-    'repasswd' => 'repassword',
+    'repasswd' => 'password',
     'insertTime' => '1456767657',
     'goods' => [
         'apple' => 34,
@@ -32,7 +20,7 @@ $data = [
 ];
 
 $rules = [
-    ['tagId,userId,freeTime', 'required', 'msg' => '{attr} is required!'],// set message
+    ['tagId,userId,freeTime', 'required'],// set message
     ['tagId,userId,freeTime', 'number'],
     ['note', 'email', 'skipOnEmpty' => false], // set skipOnEmpty is false.
     ['insertTime', 'email', 'scene' => 'otherScene' ],// set scene. will is not validate it on default.
@@ -75,17 +63,23 @@ echo "\n----------------------------\n use ValidationTrait\n--------------------
 //$model = new DataModel($_POST,$rules);
 $model = new DataModel;
 $model->setData($data)->setRules($rules);
+$model->setMessages([
+    'freeTime.required' => 'freeTime is required!!!!'
+]);
 $model->validate();
 
 print_r($model->getErrors());
 
 echo "\n----------------------------\n use Validation\n----------------------------\n\n";
 
-$valid = \inhere\validate\Validation::make($data, $rules)
-        ->setAttrTrans([
+$v = \Inhere\Validate\Validation::make($data, $rules)
+        ->setTranslates([
             'goods.pear' => '梨子'
+        ])
+        ->setMessages([
+            'freeTime.required' => 'freeTime is required!!!!'
         ])
        ->validate([], false);
 
-print_r($valid->getErrors());
+print_r($v->getErrors());
 

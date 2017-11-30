@@ -1,91 +1,163 @@
 <?php
+
 /**
- * @date 2015.08.05
+ * @date 2015.08.05 sanitize
  * 过滤器(strainer/filter): 过滤数据，去除不合要求的数据，返回过滤后的数据(始终返回字符串, 全部不符合返回空字符串)
  */
-namespace inhere\validate;
+
+namespace Inhere\Validate\Filter;
+
+use Inhere\Validate\Utils\Helper;
 
 /**
  * Class FilterList
- * @package inhere\validate
+ * @package Inhere\Validate\Filter
  */
 final class FilterList
 {
-/////////////////////////////// php internal Filter ///////////////////////////////
-
-    /**
-     * simple trim space
-     * @param $var
-     * @return string
-     */
-    public static function trim($var)
-    {
-        return is_array($var) ? array_walk_recursive($var, function (&$val) {
-            $val = trim((string) $val);
-        }) : trim((string) $var);
-    }
-
     /**
      * 过滤器删除数字中所有非法的字符。
      * @note 该过滤器允许所有数字以及 . + -
-     * @param  mixed $int 要过滤的变量
+     * @param  mixed $var 要过滤的变量
      * @return mixed $string
      */
-    public static function integer($int)
+    public static function integer($var)
     {
-        return filter_var($int, FILTER_SANITIZE_NUMBER_INT);
-    }
-    public static function int($int)
-    {
-        return self::integer($int);
+        return (int)filter_var($var, FILTER_SANITIZE_NUMBER_INT);
     }
 
     /**
-     * @param $var
+     * @see FilterList::integer()
+     * {@inheritdoc}
+     */
+    public static function int($var)
+    {
+        return self::integer($var);
+    }
+
+    /**
+     * @param mixed $var
      * @return number
      */
     public static function abs($var)
     {
-        return abs((int) $var);
-    }
-
-    /**
-     * 字符串长度过滤截取
-     * @param  string   $string      字符串
-     * @param  integer  $start   起始长度
-     * @param  int      $end   结束位置
-     * @return mixed
-     */
-    public static function lengthCute($string, $start = 0, $end = null)
-    {
-        if (!is_string($string)) {
-            return '';
-        }
-
-        // $length    = Helper::strlen($string);
-        return Helper::substr($string, $start, $end);
+        return abs((int)$var);
     }
 
     /**
      * 过滤器删除浮点数中所有非法的字符。
      * @note 该过滤器默认允许所有数字以及 + -
      * @param  mixed $var 要过滤的变量
-     * @param array $options
      * @param  int $flags 标志
      *                    FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
      *                    FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
      * @return mixed
      */
-    public static function float($var, array $options = [], $flags = 0)
+    public static function float($var, $flags = FILTER_FLAG_ALLOW_FRACTION)
     {
         $settings = [];
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
+        }
+        $ret = filter_var($var, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
 
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        return strpos($ret, '.') ? (double)$ret : $ret;
+    }
+
+    /**
+     * 去除标签，去除或编码特殊字符。
+     * @param  string $var
+     * @param  int $flags 标志
+     *                    FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
+     *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
+     *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 127 以上的字符
+     *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
+     *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 127 以上的字符
+     *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
+     * @return string
+     */
+    public static function string($var, $flags = 0)
+    {
+        $settings = [];
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
-        return filter_var($var, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
+        return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+    }
+
+    /**
+     * @see FilterList::string()
+     * {@inheritdoc}
+     */
+    public static function stripped($var, $flags = 0)
+    {
+        return self::string($var, $flags);
+    }
+
+    /**
+     * simple trim space
+     * @param string|array $var
+     * @return string|array
+     */
+    public static function trim($var)
+    {
+        return \is_array($var) ? array_map(function ($val) {
+            return \is_string($val) ? trim($val) : $val;
+        }, $var) : trim((string)$var);
+    }
+
+    /**
+     * string to lowercase
+     * @param string $var
+     * @return string
+     */
+    public static function lowercase($var)
+    {
+        if (!$var || !\is_string($var)) {
+            return \is_numeric($var) ? $var : '';
+        }
+
+        return Helper::strToLower($var);
+    }
+
+    /**
+     * string to uppercase
+     * @param string $var
+     * @return string
+     */
+    public static function uppercase($var)
+    {
+        if (!$var || !\is_string($var)) {
+            return \is_numeric($var) ? $var : '';
+        }
+
+        return Helper::strToUpper($var);
+    }
+
+    /**
+     * string to time
+     * @param string $var
+     * @return int
+     */
+    public static function timestamp($var)
+    {
+        return self::strToTime($var);
+    }
+
+    /**
+     * string to time
+     * @param string $var
+     * @return int
+     */
+    public static function strToTime($var)
+    {
+        if (!$var || !\is_string($var)) {
+            return 0;
+        }
+
+        return (int)strtotime($var);
     }
 
     /**
@@ -102,16 +174,15 @@ final class FilterList
     public static function encoded($var, $flags = 0)
     {
         $settings = [];
-
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_ENCODED, $settings);
     }
 
     /**
-     *  应用 addslashes(), 转义数据
+     *  应用 addslashes() 转义数据
      * @param  string $var
      * @return string
      */
@@ -132,9 +203,8 @@ final class FilterList
     public static function specialChars($var, $flags = 0)
     {
         $settings = [];
-
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_SPECIAL_CHARS, $settings);
@@ -149,39 +219,28 @@ final class FilterList
     public static function fullSpecialChars($var, $flags = 0)
     {
         $settings = [];
-
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
 
     /**
-     *  去除标签，去除或编码特殊字符。
-     * @param  string $var
-     * @param  int $flags 标志
-     *                    FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
-     *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 127 以上的字符
-     *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 127 以上的字符
-     *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
-     * @return string
+     * 字符串长度过滤截取
+     * @param  string $string 字符串
+     * @param  integer $start 起始长度
+     * @param  int $end 结束位置
+     * @return mixed
      */
-    public static function string($var, $flags = 0)
+    public static function stringCute($string, $start = 0, $end = null)
     {
-        $settings = [];
-
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if (!\is_string($string)) {
+            return '';
         }
 
-        return filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
-    }
-    public static function stripped($var, $flags = 0)
-    {
-        return self::string($var, $flags);
+        // $length    = Helper::strlen($string);
+        return Helper::subStr($string, $start, $end);
     }
 
     /**
@@ -221,9 +280,8 @@ final class FilterList
     public static function unsafeRaw($string, $flags = 0)
     {
         $settings = [];
-
-        if ((int) $flags !== 0) {
-            $settings['flags'] = (int) $flags;
+        if ((int)$flags !== 0) {
+            $settings['flags'] = (int)$flags;
         }
 
         return filter_var($string, FILTER_UNSAFE_RAW, $settings);
@@ -231,7 +289,7 @@ final class FilterList
 
     /**
      * 自定义回调过滤
-     * @param  mixed   $val
+     * @param  mixed $val
      * @param  callable $callback
      * @return bool
      */

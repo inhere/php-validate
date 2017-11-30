@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @date 2015.08.04
  * 验证器列表
@@ -7,14 +8,19 @@
  * 后期通过类似 $_GET['test']='help'; 将不会存在 输入数据常量中(INPUT_GET 没有test项)。
  */
 
-namespace inhere\validate;
+namespace Inhere\Validate;
+
+use Inhere\Validate\Utils\Helper;
 
 /**
  * Class ValidatorList
- * @package inhere\validate
+ * @package Inhere\Validate
  */
 final class ValidatorList
 {
+    /*******************************************************************************
+     * Validators
+     ******************************************************************************/
     /**
      * 值是否为空判断
      * @param mixed $val
@@ -22,204 +28,16 @@ final class ValidatorList
      */
     public static function isEmpty($val)
     {
-        if (is_string($val)) {
+        if (\is_string($val)) {
             $val = trim($val);
         }
 
         return $val === '' || $val === null || $val === false || $val === [];
     }
 
-    /**
-     * int 验证
-     * @param  mixed $val 要验证的变量
-     * @param  array $options 可选的选项设置
-     * @param  int $flags 标志
-     *                    FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
-     *                    FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
-     * @return mixed $int|false
-     * @example
-     * $options = [
-     *    'min_range' => 0,
-     *    'max_range' => 256 // 添加范围限定
-     *    // 'default' => 3, // value to return if the filter fails
-     * ]
-     */
-    public static function integer($val, array $options = [], $flags = 0)
-    {
-        if (!is_numeric($val)) {
-            return false;
-        }
-
-        $settings = [];
-
-        if ($options) {
-            $settings['options'] = $options;
-        }
-
-        if ($flags !== 0) {
-            $settings['flags'] = $flags;
-        }
-
-        return filter_var($val, FILTER_VALIDATE_INT, $settings);
-    }
-    public static function int($val, array $options = [], $flags = 0)
-    {
-        return self::integer($val, $options, $flags);
-    }
-
-    /**
-     * check var is a integer and greater than 0
-     * @param $val
-     * @param array $options
-     * @param int $flags
-     * @return mixed
-     */
-    public static function number($val, array $options = [], $flags = 0)
-    {
-        return self::integer($val, $options, $flags) && self::size($val, 1);
-    }
-    public static function num($val, array $options = [], $flags = 0)
-    {
-        return self::number($val, $options, $flags);
-    }
-
-    /**
-     * check val is a string
-     * @param mixed $val
-     * @param int $minLength
-     * @param null|int $maxLength
-     * @return mixed
-     */
-    public static function string($val, $minLength = 0, $maxLength = null)
-    {
-        return !is_string($val) ? false : self::length($val, $minLength, $maxLength);
-    }
-
-    /**
-     * 验证字段值是否仅包含字母字符
-     * @param  string $val
-     * @return bool
-     */
-    public static function alpha($val)
-    {
-        return is_string($val) && preg_match('/^[a-zA-Z]+$/', $val);
-    }
-
-    /**
-     * 验证字段值是否仅包含字母、数字
-     * @param  string $val
-     * @return bool
-     */
-    public static function alphaNum($val)
-    {
-        if (!is_string($val) && !is_numeric($val)) {
-            return false;
-        }
-
-        return 1 === preg_match('/^[a-zA-Z0-9]+$/', $val);
-    }
-
-    /**
-     * 验证字段值是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ）
-     * @param  string $val
-     * @return bool
-     */
-    public static function alphaDash($val)
-    {
-        if (!is_string($val) && !is_numeric($val)) {
-            return false;
-        }
-
-        return 1 === preg_match('/^[\w-]+$/', $val);
-    }
-
-    /**
-     * 范围检查
-     * $min $max 即使传错位置也会自动调整
-     *
-     * @param  int|string|array $val 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
-     * @param  null|integer     $min 最小值
-     * @param  null|int         $max 最大值
-     * @return mixed
-     */
-    public static function size($val, $min = null, $max = null)
-    {
-        $options = [];
-
-        if (is_numeric($val)) {
-            $val = (int) $val;
-        } elseif (is_string($val)) {
-            $val = Helper::strlen(trim($val));
-        } elseif (is_array($val)) {
-            $val = count($val);
-        } else {
-            return false;
-        }
-
-        $minIsNum = is_numeric($min);
-        $maxIsNum = is_numeric($max);
-
-        if ($minIsNum && $maxIsNum) {
-            if ($max > $min) {
-                $options['min_range'] = (int) $min;
-                $options['max_range'] = (int) $max;
-            } else {
-                $options['min_range'] = (int) $max;
-                $options['max_range'] = (int) $min;
-            }
-        } elseif ($minIsNum) {
-            $options['min_range'] = (int) $min;
-        } elseif ($maxIsNum) {
-            $options['max_range'] = (int) $max;
-        } else {
-            return false;
-        }
-
-        return self::integer($val, $options);
-    }
-    public static function range($val, $min = null, $max = null)
-    {
-        return self::size($val, $min, $max);
-    }
-
-    /**
-     * 最小值检查
-     * @param  int  $val
-     * @param  integer $minRange
-     * @return mixed
-     */
-    public static function min($val, $minRange)
-    {
-        return self::size($val, (int) $minRange);
-    }
-
-    /**
-     * 最大值检查
-     * @param  int  $val
-     * @param  int  $maxRange
-     * @return mixed
-     */
-    public static function max($val, $maxRange)
-    {
-        return self::size($val, null, (int) $maxRange);
-    }
-
-    /**
-     * 字符串/数组长度检查
-     * @param  string|array   $val         字符串/数组
-     * @param  integer        $minLength   最小长度
-     * @param  int            $maxLength   最大长度
-     * @return mixed
-     */
-    public static function length($val, $minLength = 0, $maxLength = null)
-    {
-        if (!is_string($val) && !is_array($val)) {
-            return false;
-        }
-
-        return self::size($val, $minLength, $maxLength);
-    }
-
+    /*******************************************************************************
+     * bool/int/float/string validators
+     ******************************************************************************/
     /**
      * 布尔值验证，把值作为布尔选项来验证。
      *   如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE。
@@ -233,17 +51,20 @@ final class ValidatorList
     public static function boolean($val, $default = null, $flags = 0)
     {
         $settings = [];
-
         if ($default !== null) {
             $settings['options']['default'] = $default;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
 
         return filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
     }
+
+    /**
+     * @see ValidatorList::boolean()
+     * {@inheritdoc}
+     */
     public static function bool($val, $default = null, $flags = 0)
     {
         return self::boolean($val, $default, $flags);
@@ -262,11 +83,9 @@ final class ValidatorList
     public static function float($val, array $options = [], $flags = 0)
     {
         $settings = [];
-
         if ($options) {
             $settings['options'] = $options;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
@@ -274,6 +93,229 @@ final class ValidatorList
         return filter_var($val, FILTER_VALIDATE_FLOAT, $settings);
     }
 
+    /**
+     * int 验证
+     * @param  mixed $val 要验证的变量
+     * @param  array $options 可选的选项设置
+     * @param  int $flags 标志
+     *                    FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
+     *                    FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
+     * @return bool false
+     * @example
+     * $options = [
+     *    'min_range' => 0,
+     *    'max_range' => 256 // 添加范围限定
+     *    // 'default' => 3, // value to return if the filter fails
+     * ]
+     */
+    public static function integer($val, array $options = [], $flags = 0)
+    {
+        if (!is_numeric($val)) {
+            return false;
+        }
+        $settings = [];
+        if ($options) {
+            $settings['options'] = $options;
+        }
+        if ($flags !== 0) {
+            $settings['flags'] = $flags;
+        }
+
+        return filter_var($val, FILTER_VALIDATE_INT, $settings) !== false;
+    }
+
+    /**
+     * @see ValidatorList::integer()
+     * {@inheritdoc}
+     */
+    public static function int($val, array $options = [], $flags = 0)
+    {
+        return self::integer($val, $options, $flags);
+    }
+
+    /**
+     * check var is a integer and greater than 0
+     * @param $val
+     * @param array $options
+     * @param int $flags
+     * @return bool
+     */
+    public static function number($val, array $options = [], $flags = 0)
+    {
+        return self::integer($val, $options, $flags) && $val > 0;
+    }
+
+    /**
+     * @see ValidatorList::number()
+     * {@inheritdoc}
+     */
+    public static function num($val, array $options = [], $flags = 0)
+    {
+        return self::number($val, $options, $flags);
+    }
+
+    /**
+     * check val is a string
+     * @param mixed $val
+     * @param int $minLength
+     * @param null|int $maxLength
+     * @return bool
+     */
+    public static function string($val, $minLength = 0, $maxLength = null)
+    {
+        return !\is_string($val) ? false : self::length($val, $minLength, $maxLength);
+    }
+
+    /**
+     * 验证字段值是否仅包含字母字符
+     * @param  string $val
+     * @return bool
+     */
+    public static function alpha($val)
+    {
+        return \is_string($val) && preg_match('/^[a-zA-Z]+$/', $val);
+    }
+
+    /**
+     * 验证字段值是否仅包含字母、数字
+     * @param  string $val
+     * @return bool
+     */
+    public static function alphaNum($val)
+    {
+        if (!\is_string($val) && !is_numeric($val)) {
+            return false;
+        }
+
+        return 1 === preg_match('/^[a-zA-Z0-9]+$/', $val);
+    }
+
+    /**
+     * 验证字段值是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ）
+     * @param  string $val
+     * @return bool
+     */
+    public static function alphaDash($val)
+    {
+        if (!\is_string($val) && !is_numeric($val)) {
+            return false;
+        }
+
+        return 1 === preg_match('/^[\\w-]+$/', $val);
+    }
+    /*******************************************************************************
+     * size/range/length validators
+     ******************************************************************************/
+    /**
+     * 范围检查
+     * $min $max 即使传错位置也会自动调整
+     * @param  int|string|array $val 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
+     * @param  null|integer $min 最小值
+     * @param  null|int $max 最大值
+     * @return mixed
+     */
+    public static function size($val, $min = null, $max = null)
+    {
+        $options = [];
+        if (is_numeric($val)) {
+            $val = (int)$val;
+        } elseif (\is_string($val)) {
+            $val = Helper::strlen(trim($val));
+        } elseif (\is_array($val)) {
+            $val = \count($val);
+        } else {
+            return false;
+        }
+        $minIsNum = is_numeric($min);
+        $maxIsNum = is_numeric($max);
+        if ($minIsNum && $maxIsNum) {
+            if ($max > $min) {
+                $options['min_range'] = (int)$min;
+                $options['max_range'] = (int)$max;
+            } else {
+                $options['min_range'] = (int)$max;
+                $options['max_range'] = (int)$min;
+            }
+        } elseif ($minIsNum) {
+            $options['min_range'] = (int)$min;
+        } elseif ($maxIsNum) {
+            $options['max_range'] = (int)$max;
+        } else {
+            return false;
+        }
+
+        return self::integer($val, $options);
+    }
+
+    /**
+     * @see ValidatorList::size()
+     * {@inheritdoc}
+     */
+    public static function between($val, $min = null, $max = null)
+    {
+        return self::size($val, $min, $max);
+    }
+
+    /**
+     * @see ValidatorList::size()
+     * {@inheritdoc}
+     */
+    public static function range($val, $min = null, $max = null)
+    {
+        return self::size($val, $min, $max);
+    }
+
+    /**
+     * 必须是等于给定值
+     * @param  mixed $val
+     * @param  mixed $excepted
+     * @return bool
+     */
+    public static function mustBe($val, $excepted)
+    {
+        return $val === $excepted;
+    }
+
+    /**
+     * 最小值检查
+     * @param  int $val
+     * @param  integer $minRange
+     * @return bool
+     */
+    public static function min($val, $minRange)
+    {
+        return self::size($val, (int)$minRange);
+    }
+
+    /**
+     * 最大值检查
+     * @param  int $val
+     * @param  int $maxRange
+     * @return bool
+     */
+    public static function max($val, $maxRange)
+    {
+        return self::size($val, null, (int)$maxRange);
+    }
+
+    /**
+     * 字符串/数组长度检查
+     * @param  string|array $val 字符串/数组
+     * @param  integer $minLength 最小长度
+     * @param  int $maxLength 最大长度
+     * @return bool
+     */
+    public static function length($val, $minLength = 0, $maxLength = null)
+    {
+        if (!\is_string($val) && !\is_array($val)) {
+            return false;
+        }
+
+        return self::size($val, $minLength, $maxLength);
+    }
+    /*******************************************************************************
+     * custom validators
+     ******************************************************************************/
     /**
      * 用正则验证数据
      * @param  string $val 要验证的数据
@@ -283,16 +325,14 @@ final class ValidatorList
      */
     public static function regexp($val, $regexp, $default = null)
     {
-        $options = [
-            'regexp' => $regexp
-        ];
-
+        $options = ['regexp' => $regexp];
         if ($default !== null) {
             $options['default'] = $default;
         }
 
         return filter_var($val, FILTER_VALIDATE_REGEXP, ['options' => $options]);
     }
+
     public static function regex($val, $regexp, $default = null)
     {
         return self::regexp($val, $regexp, $default);
@@ -312,11 +352,9 @@ final class ValidatorList
     public static function url($val, $default = null, $flags = 0)
     {
         $settings = [];
-
         if ($default !== null) {
             $settings['options']['default'] = $default;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
@@ -333,7 +371,6 @@ final class ValidatorList
     public static function email($val, $default = null)
     {
         $options = [];
-
         if ($default !== null) {
             $options['default'] = $default;
         }
@@ -355,11 +392,9 @@ final class ValidatorList
     public static function ip($val, $default = null, $flags = 0)
     {
         $settings = [];
-
         if ($default !== null) {
             $settings['options']['default'] = $default;
         }
-
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
@@ -386,30 +421,31 @@ final class ValidatorList
     {
         return self::ip($val, false, FILTER_FLAG_IPV6);
     }
-
+    /*******************************************************************************
+     * list/map/enum validators
+     ******************************************************************************/
     /**
      * 验证值是否是一个数组
-     * @param  mixed  $val
+     * @param  mixed $val
      * @return bool
      */
     public static function isArray($val)
     {
-        return is_array($val);
+        return \is_array($val);
     }
 
     /**
      * 验证值是否是一个非自然数组 map (key - value 形式的)
-     * @param  array  $val
+     * @param  array $val
      * @return bool
      */
     public static function isMap($val)
     {
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             return false;
         }
-
         foreach ($val as $k => $v) {
-            if (is_string($k)) {
+            if (\is_string($k)) {
                 return true;
             }
         }
@@ -424,21 +460,17 @@ final class ValidatorList
      */
     public static function isList($val)
     {
-        if (!is_array($val) || !isset($val[0])) {
+        if (!\is_array($val) || !isset($val[0])) {
             return false;
         }
-
         $prevKey = 0;
-
         foreach ($val as $k => $v) {
-            if (!is_int($k)) {
+            if (!\is_int($k)) {
                 return false;
             }
-
             if ($k !== $prevKey) {
                 return false;
             }
-
             $prevKey++;
         }
 
@@ -452,10 +484,9 @@ final class ValidatorList
      */
     public static function intList($val)
     {
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             return false;
         }
-
         foreach ($val as $v) {
             if (!is_numeric($v)) {
                 return false;
@@ -472,12 +503,11 @@ final class ValidatorList
      */
     public static function strList($val)
     {
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             return false;
         }
-
         foreach ($val as $v) {
-            if (is_string($v)) {
+            if (\is_string($v)) {
                 return true;
             }
         }
@@ -492,10 +522,9 @@ final class ValidatorList
      */
     public static function json($val)
     {
-        if (!$val || (!is_string($val) && !method_exists($val, '__toString'))) {
+        if (!$val || (!\is_string($val) && !method_exists($val, '__toString'))) {
             return false;
         }
-
         json_decode($val);
 
         return json_last_error() === JSON_ERROR_NONE;
@@ -503,22 +532,42 @@ final class ValidatorList
 
     /**
      * @param  mixed $val
-     * @param array $array
+     * @param array|string $dict
      * @return bool
      */
-    public static function in($val, array $array)
+    public static function in($val, $dict)
     {
-        return in_array($val, $array, true);
+        if (\is_string($dict) && strpos($dict, ',')) {
+            $val = (string)$val;
+            // fixed: data type
+            $dict = array_map('trim', explode(',', $dict));
+        }
+
+        return \in_array($val, (array)$dict, false);
     }
 
     /**
      * @param  mixed $val
-     * @param array $array
+     * @param array|string $dict
      * @return bool
      */
-    public static function notIn($val, array $array)
+    public static function enum($val, $dict)
     {
-        return !in_array($val, $array, true);
+        return self::in($val, $dict);
+    }
+
+    /**
+     * @param  mixed $val
+     * @param array|string $dict
+     * @return bool
+     */
+    public static function notIn($val, $dict)
+    {
+        if (\is_string($dict) && strpos($dict, ',')) {
+            $dict = array_map('trim', explode(',', $dict));
+        }
+
+        return !\in_array($val, (array)$dict, true);
     }
 
     /**
@@ -530,92 +579,123 @@ final class ValidatorList
     {
         return $val === $compareVal;
     }
-
+    /*******************************************************************************
+     * date validators
+     ******************************************************************************/
     /**
-     * @param mixed $val
-     * @param mixed $compareVal
-     * @return bool
+     * 校验字段值是否是日期格式
+     * @param string $val 日期
+     * @return boolean
      */
-    public static function same($val, $compareVal)
+    public static function date($val)
     {
-        return $val === $compareVal;
+        // strtotime 转换不对，日期格式显然不对。
+        return strtotime($val) ? true : false;
     }
 
     /**
-     * 校验字段值是否是日期格式
-     *
-     * @param string $date 日期
+     * 校验字段值是否是等于给定日期
+     * @param string $val
+     * @param string $date 给定日期
      * @return boolean
      */
-    public static function date($date)
+    public static function dateEquals($val, $date)
     {
-        // strtotime转换不对，日期格式显然不对。
-        return strtotime($date) ? true : false;
+        if (!$val || !($time = strtotime($val))) {
+            return false;
+        }
+        if (!$date) {
+            return false;
+        }
+
+        return $time === strtotime($date);
     }
 
     /**
      * 校验字段值是否是日期并且是否满足设定格式
-     *
-     * @param string $date 日期
+     * @param string $val 日期
      * @param string $format 需要检验的格式数组
      * @return boolean
      */
-    public static function dateFormat($date, $format = 'Y-m-d')
+    public static function dateFormat($val, $format = 'Y-m-d')
     {
-        if (!$unixTime = strtotime($date)) {
+        if (!$val || !($unixTime = strtotime($val))) {
             return false;
         }
-
         // 校验日期的格式有效性
-        if (date($format, $unixTime) === $date) {
+        if (date($format, $unixTime) === $val) {
             return true;
         }
 
         return false;
     }
-/////////////////////////////// extension validator ///////////////////////////////
 
     /**
-     * @param $val
+     * 字段值必须是给定日期之前的值
+     * @param string $val
+     * @param string $beforeDate 若为空，将使用当前时间
+     * @param string $symbol allow '<' '<='
      * @return bool
      */
-    public static function phone($val)
+    public static function beforeDate($val, $beforeDate, $symbol = '<')
     {
-        return 1 === preg_match('/^1[2-9]\d{9}$/', $val);
-    }
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+        if (!($valueTime = strtotime($val))) {
+            return false;
+        }
+        $beforeTime = $beforeDate ? strtotime($beforeDate) : time();
+        if ($symbol === '>') {
+            return $beforeTime < $valueTime;
+        }
 
-    // public static function telNumber($val)
-    // {}
-
-    /**
-     * Check for postal code validity
-     *
-     * @param string $val Postal code to validate
-     * @return bool Validity is ok or not
-     */
-    public static function postCode($val)
-    {
-        return empty($val) || preg_match('/^\d{6}$/', $val);
+        return $beforeTime <= $valueTime;
     }
 
     /**
-     * Check for price validity
-     * @param string $price Price to validate
-     * @return bool Validity is ok or not
+     * 字段值必须是小于或等于给定日期的值
+     * @param string $val
+     * @param string $beforeDate
+     * @return bool
      */
-    public static function price($price)
+    public static function beforeOrEqualDate($val, $beforeDate)
     {
-        return 1 === preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return self::beforeDate($val, $beforeDate, '<=');
     }
 
     /**
-     * Check for price validity (including negative price)
-     * @param string $price Price to validate
-     * @return bool Validity is ok or not
+     * 字段值必须是给定日期之后的值
+     * @param string $val
+     * @param string $afterDate
+     * @param string $symbol allow: '>' '>='
+     * @return bool
      */
-    public static function negativePrice($price)
+    public static function afterDate($val, $afterDate, $symbol = '>')
     {
-        return 1 === preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+        if (!($valueTime = strtotime($val))) {
+            return false;
+        }
+        $afterTime = $afterDate ? strtotime($afterDate) : time();
+        if ($symbol === '>') {
+            return $afterTime > $valueTime;
+        }
+
+        return $afterTime >= $valueTime;
+    }
+
+    /**
+     * 字段值必须是大于或等于给定日期的值
+     * @param string $val
+     * @param string $afterDate
+     * @return bool
+     */
+    public static function afterOrEqualDate($val, $afterDate)
+    {
+        return self::afterDate($val, $afterDate, '>=');
     }
 
     /**
@@ -625,7 +705,7 @@ final class ValidatorList
      */
     public static function isDateFormat($date)
     {
-        return (bool) preg_match('/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date);
+        return (bool)preg_match('/^([\\d]{4})-((0?[\\d])|(1[0-2]))-((0?[\\d])|([1-2][\\d])|(3[01]))( [\\d]{2}:[\\d]{2}:[\\d]{2})?$/', $date);
     }
 
     /**
@@ -635,11 +715,53 @@ final class ValidatorList
      */
     public static function isDate($date)
     {
-        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/', $date, $matches)) {
+        if (!preg_match('/^([\\d]{4})-((?:0?[\\d])|(?:1[0-2]))-((?:0?[\\d])|(?:[1-2][\\d])|(?:3[01]))( [\\d]{2}:[\\d]{2}:[\\d]{2})?$/', $date, $matches)) {
             return false;
         }
 
-        return checkdate((int) $matches[2], (int) $matches[3], (int) $matches[1]);
+        return checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1]);
+    }
+    /*******************************************************************************
+     * extension validators
+     ******************************************************************************/
+    /**
+     * @param $val
+     * @return bool
+     */
+    public static function phone($val)
+    {
+        return 1 === preg_match('/^1[2-9]\\d{9}$/', $val);
+    }
+    // public static function telNumber($val)
+    // {}
+    /**
+     * Check for postal code validity
+     * @param string $val Postal code to validate
+     * @return bool Validity is ok or not
+     */
+    public static function postCode($val)
+    {
+        return empty($val) || preg_match('/^\\d{6}$/', $val);
+    }
+
+    /**
+     * Check for price validity
+     * @param string $price Price to validate
+     * @return bool Validity is ok or not
+     */
+    public static function price($price)
+    {
+        return 1 === preg_match('/^[\\d]{1,10}(\\.[\\d]{1,9})?$/', $price);
+    }
+
+    /**
+     * Check for price validity (including negative price)
+     * @param string $price Price to validate
+     * @return bool Validity is ok or not
+     */
+    public static function negativePrice($price)
+    {
+        return 1 === preg_match('/^[-]?[\\d]{1,10}(\\.[\\d]{1,9})?$/', $price);
     }
 
     /**
@@ -649,12 +771,12 @@ final class ValidatorList
      */
     public static function isFloat($float)
     {
-        return (string)((float)$float) === (string)$float;
+        return (string)(double)$float === (string)$float;
     }
 
     public static function isUnsignedFloat($float)
     {
-        return (string) ((float) $float) === (string) $float && $float >= 0;
+        return (string)(double)$float === (string)$float && $float >= 0;
     }
 
     /**
@@ -664,7 +786,7 @@ final class ValidatorList
      */
     public static function isInt($value)
     {
-        return ((string)(int)$value === (string)$value || $value === false);
+        return (string)(int)$value === (string)$value || $value === false;
     }
 
     /**
@@ -674,37 +796,49 @@ final class ValidatorList
      */
     public static function isUnsignedInt($value)
     {
-        return ((string) (int) $value === (string) $value && $value < 4294967296 && $value >= 0);
+        return (string)(int)$value === (string)$value && $value < 4294967296 && $value >= 0;
     }
 
     /**
      * Check for MD5 string validity
-     * @param string $md5 MD5 string to validate
+     * @param string $val MD5 string to validate
      * @return bool Validity is ok or not
      */
-    public static function md5($md5)
+    public static function md5($val)
     {
-        return preg_match('/^[a-f0-9A-F]{32}$/', $md5);
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        return preg_match('/^[a-f0-9A-F]{32}$/', $val);
     }
 
     /**
      * Check for SHA1 string validity
-     * @param string $sha1 SHA1 string to validate
+     * @param string $val SHA1 string to validate
      * @return bool Validity is ok or not
      */
-    public static function sha1($sha1)
+    public static function sha1($val)
     {
-        return preg_match('/^[a-fA-F0-9]{40}$/', $sha1);
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        return preg_match('/^[a-fA-F0-9]{40}$/', $val);
     }
 
     /**
      * Check object validity
-     * @param $color
+     * @param string $val e.g '#dedede'
      * @return bool Validity is ok or not
      */
-    public static function color($color)
+    public static function color($val)
     {
-        return preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $color);
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+
+        return preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $val);
     }
 
     /**
@@ -715,15 +849,14 @@ final class ValidatorList
     public static function absoluteUrl($url)
     {
         if (!empty($url)) {
-            return preg_match('/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/', $url);
+            return preg_match('/^(https?:)?\\/\\/[$~:;#,%&_=\\(\\)\\[\\]\\.\\? \\+\\-@\\/a-zA-Z0-9]+$/', $url);
         }
 
-        return true;
+        return false;
     }
 
     /**
      * Check for standard name file validity
-     *
      * @param string $name Name to validate
      * @return bool Validity is ok or not
      */
@@ -734,15 +867,13 @@ final class ValidatorList
 
     /**
      * Check for standard name directory validity
-     *
      * @param string $dir Directory to validate
      * @return bool Validity is ok or not
      */
     public static function dirName($dir)
     {
-        return (bool) preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
+        return (bool)preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
     }
-
     ///////////////////////////////////////////
 
     /**
@@ -771,7 +902,7 @@ final class ValidatorList
      * 检查(验证/过滤)输入数据中的多个变量名 like filter_input_array()
      * 当需要获取很多变量却不想重复调用 filter_input()时很有用。
      * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
-     * @param  mixed  $definition 一个定义参数的数组。
+     * @param  mixed $definition 一个定义参数的数组。
      *                            一个有效的键必须是一个包含变量名的string，
      *                            一个有效的值要么是一个filter type，或者是一个array 指明了过滤器、标示和选项。
      *                            如果值是一个数组，那么它的有效的键可以是 :
@@ -779,7 +910,7 @@ final class ValidatorList
      *                                flags 用于指明任何想要用于过滤器的标示，
      *                                options 用于指明任何想要用于过滤器的选项。
      *                            参考下面的例子来更好的理解这段说明。
-     * @param  bool  $addEmpty 在返回值中添加 NULL 作为不存在的键。
+     * @param  bool $addEmpty 在返回值中添加 NULL 作为不存在的键。
      * 如果成功的话返回一个所请求的变量的数组，
      * 如果失败的话返回 FALSE 。
      * 对于数组的值，
@@ -799,5 +930,4 @@ final class ValidatorList
     public static function inputHasVar($type, $varName)
     {
     }
-
 }
