@@ -323,8 +323,8 @@ trait ValidationTrait
                 $passed = $callback($value, ...$args);
 
                 // if $validator is a custom method of the subclass.
-            } elseif (method_exists($this, $validator)) {
-                $passed = $this->$validator($value, ...$args);
+            } elseif (method_exists($this, $method = $validator . 'Validator')) {
+                $passed = $this->$method($value, ...$args);
 
                 // $validator is a method of the class 'ValidatorList'
             } elseif (method_exists(ValidatorList::class, $validator)) {

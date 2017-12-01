@@ -276,7 +276,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      * @return bool
      */
-    public function file($field, $suffixes = null)
+    public function fileValidator($field, $suffixes = null)
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -308,7 +308,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      * @return bool
      */
-    public function image($field, $suffixes = null)
+    public function imageValidator($field, $suffixes = null)
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -355,7 +355,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $types
      * @return bool
      */
-    public function mimeTypes($field, $types)
+    public function mimeTypesValidator($field, $types)
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -382,7 +382,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $types
      * return bool
      */
-    public function mimes($field, $types = null)
+    public function mimesValidator($field, $types = null)
     {
     }
 
@@ -396,17 +396,17 @@ trait UserAndContextValidatorsTrait
      * @param string $compareField
      * @return bool
      */
-    public function compare($val, $compareField)
+    public function compareValidator($val, $compareField)
     {
         return $compareField && ($val === $this->get($compareField));
     }
 
-    public function same($val, $compareField)
+    public function sameValidator($val, $compareField)
     {
         return $this->compare($val, $compareField);
     }
 
-    public function equal($val, $compareField)
+    public function equalValidator($val, $compareField)
     {
         return $this->compare($val, $compareField);
     }
@@ -417,7 +417,7 @@ trait UserAndContextValidatorsTrait
      * @param string $compareField
      * @return bool
      */
-    public function notEqual($val, $compareField)
+    public function notEqualValidator($val, $compareField)
     {
         return $compareField && ($val !== $this->get($compareField));
     }

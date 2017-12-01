@@ -62,7 +62,7 @@ git clone https://gitee.com/inhere/php-validate.git // git@osc
 
 ## 使用
 
-<a name="how-to-use"></a>
+<a name="how-to-use1"></a>
 ### 方式 1: 创建一个新的class，并继承Validation
 
 创建一个新的class，并继承 `Inhere\Validate\Validation`。用于一个（或一系列相关）请求的验证, 相当于 laravel 的 表单请求验证
@@ -145,6 +145,7 @@ $safeData = $v->getSafeData(); // 验证通过的安全数据
 $db->save($safeData);
 ```
 
+<a name="how-to-use2"></a>
 ### 方式 2: 直接使用类 Validation
 
 需要快速简便的使用验证时，可直接使用 `Inhere\Validate\Validation`
@@ -175,6 +176,7 @@ class SomeController
 }
 ```
 
+<a name="how-to-use3"></a>
 ### 方式 3: 创建一个新的class，使用  ValidationTrait
 
 创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中
@@ -252,7 +254,10 @@ class UserController
 
 ## 添加自定义验证器
 
-- 在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 **使用方式1**
+- 在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use1)
+
+> 注意： 写在当前类里的过滤器方法必须带有后缀 `Validator`, 以防止对内部的其他的方法造成干扰
+
 - 通过 `Validation::addValidator()` 添加自定义验证器. e.g:
 
 ```php
