@@ -23,36 +23,42 @@ trait DataFiltersTrait
      */
     private static $_filters = [];
 
+
     /**
      * value sanitize 直接对给的值进行过滤
      * @param  mixed $value
      * @param  string|array $filters
+     * string:
+     *  'string|trim|upper'
+     * array:
+     *  [
+     *      'string',
+     *      'trim',
+     *      ['Class', 'method'],
+     *      // 追加额外参数. 传入时，第一个参数总是要过滤的字段值，其余的依次追加
+     *      'myFilter' => ['arg1', 'arg2'],
+     *  ]
      * @return mixed
      * @throws \InvalidArgumentException
      */
     protected function valueFiltering($value, $filters)
     {
-        $filters = \is_string($filters) ? array_map('trim', explode('|', $filters)) : $filters;
-        foreach ($filters as $filter) {
-            if (\is_object($filter) && method_exists($filter, '__invoke')) {
+        $filters = \is_string($filters) ? Helper::explode($filters, '|') : $filters;
+
+        foreach ($filters as $key => $filter) {
+            // key is a filter. ['myFilter' => ['arg1', 'arg2']]
+            if (\is_string($key)) {
+                $args = (array)$filter;
+                $value = $this->callStringCallback($key, $value, ...$args);
+
+                // closure
+            } elseif (\is_object($filter) && method_exists($filter, '__invoke')) {
                 $value = $filter($value);
+                // string, trim, ....
             } elseif (\is_string($filter)) {
-                // if $filter is a custom add callback in the property {@see $_filters}.
-                if (isset(self::$_filters[$filter])) {
-                    $callback = self::$_filters[$filter];
-                    $value = $callback($value);
-                    // if $filter is a custom method of the subclass.
-                } elseif (method_exists($this, $filter)) {
-                    $value = $this->{$filter}($value);
-                    // $filter is a method of the class 'FilterList'
-                } elseif (method_exists(FilterList::class, $filter)) {
-                    $value = FilterList::$filter($value);
-                    // it is function name
-                } elseif (\function_exists($filter)) {
-                    $value = $filter($value);
-                } else {
-                    throw new \InvalidArgumentException("The filter [{$filter}] don't exists!");
-                }
+                $value = $this->callStringCallback($filter, $value);
+
+                // e.g ['Class', 'method'],
             } else {
                 $value = Helper::call($filter, $value);
             }
@@ -60,6 +66,38 @@ trait DataFiltersTrait
 
         return $value;
     }
+
+    /**
+     * @param $filter
+     * @param array ...$args
+     * @return mixed
+     */
+    protected function callStringCallback($filter, ...$args)
+    {
+        // if $filter is a custom add callback in the property {@see $_filters}.
+        if (isset(self::$_filters[$filter])) {
+            $callback = self::$_filters[$filter];
+            $value = $callback(...$args);
+
+            // if $filter is a custom method of the subclass.
+        } elseif (method_exists($this, $filter . 'Filter')) {
+            $filter .= 'Filter';
+            $value = $this->$filter(...$args);
+
+            // $filter is a method of the class 'FilterList'
+        } elseif (method_exists(FilterList::class, $filter)) {
+            $value = FilterList::$filter(...$args);
+
+            // it is function name
+        } elseif (\function_exists($filter)) {
+            $value = $filter(...$args);
+        } else {
+            throw new \InvalidArgumentException("The filter [$filter] don't exists!");
+        }
+
+        return $value;
+    }
+
     /*******************************************************************************
      * custom filters
      ******************************************************************************/

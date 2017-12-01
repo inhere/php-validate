@@ -25,8 +25,8 @@
 
 ## 项目地址
 
-- **github** https://github.com/inhere/php-console.git
-- **git@osc** https://gitee.com/inhere/php-console.git
+- **github** https://github.com/inhere/php-validate.git
+- **git@osc** https://gitee.com/inhere/php-validate.git
 
 **注意：**
 
@@ -39,7 +39,7 @@
 
 ```bash
 composer require inhere/php-validate 
-// composer require inhere/php-validate ^1.2
+// composer require inhere/php-validate ^version // 指定版本
 ```
 
 - 使用 composer.json
@@ -62,7 +62,7 @@ git clone https://gitee.com/inhere/php-validate.git // git@osc
 
 ## 使用
 
-<a name="how-to-use"></a>
+<a name="how-to-use1"></a>
 ### 方式 1: 创建一个新的class，并继承Validation
 
 创建一个新的class，并继承 `Inhere\Validate\Validation`。用于一个（或一系列相关）请求的验证, 相当于 laravel 的 表单请求验证
@@ -145,6 +145,7 @@ $safeData = $v->getSafeData(); // 验证通过的安全数据
 $db->save($safeData);
 ```
 
+<a name="how-to-use2"></a>
 ### 方式 2: 直接使用类 Validation
 
 需要快速简便的使用验证时，可直接使用 `Inhere\Validate\Validation`
@@ -175,6 +176,7 @@ class SomeController
 }
 ```
 
+<a name="how-to-use3"></a>
 ### 方式 3: 创建一个新的class，使用  ValidationTrait
 
 创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中
@@ -250,10 +252,12 @@ class UserController
 }
 ```
 
-
 ## 添加自定义验证器
 
-- 在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 **使用方式1**
+- 在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use1)
+
+> 注意： 写在当前类里的验证器方法必须带有后缀 `Validator`, 以防止对内部的其他的方法造成干扰
+
 - 通过 `Validation::addValidator()` 添加自定义验证器. e.g:
 
 ```php
@@ -410,7 +414,20 @@ $v = Validation::make($_POST,[
 ```php
 ['tagId,userId,freeTime', 'number', 'filter' => 'int'],
 ['field', 'validator', 'filter' => 'filter0|filter1...'],
+
+// 需要自定义性更高时，可以使用数组。
+['field1', 'validator', 'filter' => [
+    'string',
+    'trim',
+    ['Class', 'method'],
+    ['Object', 'method'],
+    // 追加额外参数。 传入时，第一个参数总是要过滤的字段值，其余的依次追加
+    'myFilter' => ['arg1', 'arg2'],
+]],
 ```
+
+> 注意： 写在当前类里的过滤器方法必须带有后缀 `Filter`, 以防止对内部的其他的方法造成干扰
+
 
 > 过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
 
@@ -565,17 +582,20 @@ public function get(string $key, $default = null)
 `float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
 `string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
 `trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'trim'],`
-`lowercase` | 字符串转换为小写 | `['description', 'string', 'filter' => 'lowercase'],`
-`uppercase` | 字符串转换为大写 | `['title', 'string', 'filter' => 'uppercase'],`
-`snakeCase` | 字符串转换为蛇形风格 | `['title', 'string', 'filter' => 'snakeCase'],`
-`camelCase` | 字符串转换为驼峰风格 | `['title', 'string', 'filter' => 'camelCase'],`
+`lower/lowercase` | 字符串转换为小写 | `['description', 'string', 'filter' => 'lowercase'],`
+`upper/uppercase` | 字符串转换为大写 | `['title', 'string', 'filter' => 'uppercase'],`
+`snake/snakeCase` | 字符串转换为蛇形风格 | `['title', 'string', 'filter' => 'snakeCase'],`
+`camel/camelCase` | 字符串转换为驼峰风格 | `['title', 'string', 'filter' => 'camelCase'],`
 `timestamp/strToTime` | 字符串日期转换时间戳 | `['pulishedAt', 'number', 'filter' => 'strToTime'],`
 `abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
 `url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
 `email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
 `encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
+`clearTags/stripTags` | 相当于使用 `strip_tags()` | `['content', 'string', 'filter' => 'clearTags'],`
 `escape/specialChars` | 相当于使用 `htmlspecialchars()` 转义数据 | `['content', 'string', 'filter' => 'specialChars'],`
 `quotes` | 应用 `addslashes()` 转义数据 | `['content', 'string', 'filter' => 'quotes'],`
+
+> php 内置的函数可直接使用。 e.g `string|ucfirst`
 
 <a name="built-in-validators"></a>
 ## 内置的验证器
@@ -606,9 +626,9 @@ public function get(string $key, $default = null)
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
 `in/enum`    | 枚举验证 | `['status', 'in', [1,2,3]`
 `notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
-`mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 0]`
+`mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
 `notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
-`compare/same/equal` | 字段值比较 | `['passwd', 'compare', 'repasswd']`
+`compare/same/equal` | 字段值相同比较 | `['passwd', 'compare', 'repasswd']`
 `notEqual` | 字段值不能相同比较 | `['passwd', 'notEqual', 'repasswd']`
 `required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
 `requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
@@ -633,7 +653,7 @@ public function get(string $key, $default = null)
 `md5`    | 验证是否是 md5 格式的字符串 | `['passwd', 'md5']`
 `sha1`    | 验证是否是 sha1 格式的字符串 | `['passwd', 'sha1']`
 `color`    | 验证是否是html color | `['backgroundColor', 'color']`
-`regex/regexp`    | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
+`regex/regexp` | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
 `safe`    | 用于标记字段是安全的，无需验证 | `['createdAt, updatedAt', 'safe']`
 
 ### `safe` 验证器,标记属性/字段是安全的
@@ -661,13 +681,13 @@ $v = Validation::make($_POST, [
 // ...
 ```
 
-### 一些补充说明
+### (注意)一些补充说明
 
 - **请将 `required*` 系列规则写在规则列表的最前面**
 - 关于布尔值验证
     * 如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE
     * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE
-- `size/range` `length` 可以只定义 min 最小值。 但是 **当定义了max 值时，必须同时定义最小值**
+- `size/range` `length` 可以只定义 `min` 最小值。 但是 **当定义了 `max` 值时，必须同时定义最小值**
 - 支持对数组的子级值验证 
 
 ```php
@@ -685,8 +705,8 @@ $v = Validation::make($_POST, [
     ['goods.pear', 'max', 30], //goods 下的 pear 值最大不能超过 30
 ```
 
-- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
 - `required*` 系列规则参考自 laravel
+- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
 
 ## 代码示例
 
