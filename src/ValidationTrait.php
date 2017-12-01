@@ -88,7 +88,7 @@ trait ValidationTrait
         return [
             // validator name => message string
             // 'required' => '{attr} 是必填项。',
-            // 'required.username' => '用户名 是必填项。',
+            // 'username.required' => '用户名 是必填项。',
         ];
     }
 
@@ -178,17 +178,16 @@ trait ValidationTrait
 
             // 验证的前置条件 -- 不满足条件,跳过此条规则
             $when = $rule['when'] ?? null;
-            if ($when && $when instanceof \Closure && $when($data, $this) !== true) {
+            if ($when && ($when instanceof \Closure) && $when($data, $this) !== true) {
                 continue;
             }
 
             // clear all keywords options
             unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
 
-            // 验证设置, 有一些验证器需要参数。 e.g. size()
+            // 验证器参数, 有一些验证器需要参数。 e.g. size()
             $args = $rule;
 
-            // 循环检查属性
             foreach ($fields as $field) {
                 if (!$field || ($onlyChecked && !\in_array($field, $onlyChecked, true))) {
                     continue;

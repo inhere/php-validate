@@ -278,28 +278,6 @@ final class ValidatorList
     }
 
     /**
-     * 必须是等于给定值
-     * @param  mixed $val
-     * @param  mixed $excepted
-     * @return bool
-     */
-    public static function mustBe($val, $excepted)
-    {
-        return $val === $excepted;
-    }
-
-    /**
-     * 不能等于给定值
-     * @param  mixed $val
-     * @param  mixed $excepted
-     * @return bool
-     */
-    public static function notBe($val, $excepted)
-    {
-        return $val !== $excepted;
-    }
-
-    /**
      * 最小值检查
      * @param  int|string|array $val
      * @param  integer $minRange
@@ -335,6 +313,37 @@ final class ValidatorList
         }
 
         return self::size($val, $minLength, $maxLength);
+    }
+
+    /**
+     * 固定的长度
+     * @param mixed $val
+     * @param int $size
+     * @return bool
+     */
+    public static function fixedLength($val, $size)
+    {
+        return self::fixedSize($val, $size);
+    }
+
+    /**
+     * @param mixed $val
+     * @param int $size
+     * @return bool
+     */
+    public static function fixedSize($val, $size)
+    {
+        if (!\is_int($val)) {
+            if (\is_string($val)) {
+                $val = Helper::strlen(trim($val));
+            } elseif (\is_array($val)) {
+                $val = \count($val);
+            } else {
+                return false;
+            }
+        }
+
+        return $val === (int)$size;
     }
 
     /*******************************************************************************
@@ -650,13 +659,25 @@ final class ValidatorList
     }
 
     /**
-     * @param mixed $val
-     * @param mixed $compareVal
+     * 必须是等于给定值
+     * @param  mixed $val
+     * @param  mixed $excepted
      * @return bool
      */
-    public static function compare($val, $compareVal)
+    public static function mustBe($val, $excepted)
     {
-        return $val === $compareVal;
+        return $val === $excepted;
+    }
+
+    /**
+     * 不能等于给定值
+     * @param  mixed $val
+     * @param  mixed $excepted
+     * @return bool
+     */
+    public static function notBe($val, $excepted)
+    {
+        return $val !== $excepted;
     }
 
     /*******************************************************************************

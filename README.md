@@ -357,8 +357,7 @@ $v = Validation::make($_POST,[
     {
          return [
             ['title', 'required' ],
-            ['tagId', 'number', 'when' => function($data)
-            {
+            ['tagId', 'number', 'when' => function($data) {
                return isset($data['status']) && $data['status'] > 2;
             }],
         ];
@@ -495,6 +494,7 @@ public function isFail() // hasError() 的别名方法
 public function fail() // hasError() 的别名方法
 
 // 成功通过验证
+public function ok() 
 public function passed() 
 public function isPassed() // passed() 的别名方法
 ```
@@ -624,7 +624,8 @@ public function get(string $key, $default = null)
 `max`   | 最大边界值验证 | `['title', 'max', 40]`
 `size/range/between`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
-`in/enum`    | 枚举验证 | `['status', 'in', [1,2,3]`
+`fixedSize/fixedLength`    | 固定的长度/大小 | `['field', 'fixedSize', 12]`
+`in/enum`    | 枚举验证 | `['status', 'in', [1,2,3]]`
 `notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
 `mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
 `notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`

@@ -55,6 +55,7 @@ trait ErrorMessageTrait
             '{attr} must be an integer/string/array and minimum value/length is {min}',
             '{attr} must be an integer/string/array and value/length between {min} ~ {max}',
         ],
+        'fixedSize' => '{attr} length must is {value0}',
         'min' => '{attr} minimum boundary is {value0}',
         'max' => '{attr} maximum boundary is {value0}',
         'in' => '{attr} must in ({value0})',
@@ -104,7 +105,7 @@ trait ErrorMessageTrait
      * [
      *     [ field => errorMessage1 ],
      *     [ field => errorMessage2 ],
-     *     [ field2 => errorMessage3 ]
+     *     [ field2 => errorMessage3 ],
      * ]
      */
     private $_errors = [];
@@ -120,16 +121,6 @@ trait ErrorMessageTrait
     /*******************************************************************************
      * Errors Information
      ******************************************************************************/
-
-    /**
-     * @return $this
-     */
-    public function clearErrors()
-    {
-        $this->_errors = [];
-
-        return $this;
-    }
 
     /**
      * 是否有错误
@@ -167,6 +158,14 @@ trait ErrorMessageTrait
     /**
      * @return bool
      */
+    public function ok(): bool
+    {
+        return !$this->isFail();
+    }
+
+    /**
+     * @return bool
+     */
     public function passed(): bool
     {
         return !$this->isFail();
@@ -195,6 +194,16 @@ trait ErrorMessageTrait
     public function getErrors(): array
     {
         return $this->_errors;
+    }
+
+    /**
+     * @return $this
+     */
+    public function clearErrors()
+    {
+        $this->_errors = [];
+
+        return $this;
     }
 
     /**
@@ -380,18 +389,4 @@ trait ErrorMessageTrait
 
         return $trans[$attr] ?? Helper::beautifyFieldName($attr);
     }
-
-    /**
-     * set the attrs translation data
-     * @deprecated please use setTranslates() instead.
-     * @param array $attrTrans
-     * @return $this
-     */
-    public function setAttrTrans(array $attrTrans)
-    {
-        $this->_translates = $attrTrans;
-
-        return $this;
-    }
-
 }
