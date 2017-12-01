@@ -9,6 +9,7 @@
 namespace Inhere\Validate\Filter;
 
 use Inhere\Validate\Utils\DataFiltersTrait;
+use Inhere\Validate\Utils\Helper;
 
 /**
  * Class Filtration
@@ -100,7 +101,7 @@ class Filtration
                 continue;
             }
 
-            $fields = \is_string($fields) ? array_map('trim', explode(',', $fields)) : (array)$fields;
+            $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
 
             foreach ($fields as $field) {
                 if (!isset($data[$field])) {
@@ -109,7 +110,6 @@ class Filtration
                     $filtered[$field] = $this->valueFiltering($data[$field], $rule[1]);
                 }
             }
-
         }
 
         return $filtered;

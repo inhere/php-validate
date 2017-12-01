@@ -161,7 +161,7 @@ trait ValidationTrait
         $data = $this->data;
 
         foreach ($this->collectRules() as $fields => $rule) {
-            $fields = \is_string($fields) ? array_map('trim', explode(',', $fields)) : (array)$fields;
+            $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
             $validator = array_shift($rule);
 
             // 为空时是否跳过(非 required 时). 参考自 yii2
@@ -352,6 +352,22 @@ trait ValidationTrait
     }
 
     /**
+     * collect Safe Value
+     * @param string $field
+     * @param mixed $value
+     */
+    protected function collectSafeValue($field, $value)
+    {
+        // 进行的是子级属性检查 eg: 'goods.apple'
+        if ($pos = strpos($field, '.')) {
+            $firstLevelKey = substr($field, 0, $pos);
+            $this->_safeData[$firstLevelKey] = $this->data[$firstLevelKey];
+        } else {
+            $this->_safeData[$field] = $value;
+        }
+    }
+
+    /**
      * @param bool|false $clearErrors
      * @return $this
      */
@@ -393,7 +409,7 @@ trait ValidationTrait
 
                 // only use to special scene.
             } else {
-                $sceneList = \is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
+                $sceneList = \is_string($rule['on']) ? Helper::explode($rule['on']) : (array)$rule['on'];
 
                 if ($scene && !\in_array($scene, $sceneList, true)) {
                     continue;
@@ -405,26 +421,33 @@ trait ValidationTrait
 
             $fields = array_shift($rule);
 
-            yield $fields => $rule;
+            yield $fields => $this->prepareRule($rule);
         }
 
         //
     }
 
     /**
-     * collect Safe Value
-     * @param string $field
-     * @param mixed $value
+     * @param array $rule
+     * @return array
      */
-    protected function collectSafeValue($field, $value)
+    protected function prepareRule(array $rule)
     {
-        // 进行的是子级属性检查 eg: 'goods.apple'
-        if ($pos = strpos($field, '.')) {
-            $firstLevelKey = substr($field, 0, $pos);
-            $this->_safeData[$firstLevelKey] = $this->data[$firstLevelKey];
-        } else {
-            $this->_safeData[$field] = $value;
+        $validator = $rule[0];
+
+        switch ($validator) {
+            case 'size':
+            case 'range':
+            case 'string':
+            case 'between':
+                // fixed: 当只有 max 时，自动补充一个 min
+                if (isset($rule['max']) && !isset($rule['min'])) {
+                    $rule['min'] = 0;
+                }
+                break;
         }
+
+        return $rule;
     }
 
     /*******************************************************************************
@@ -547,6 +570,16 @@ trait ValidationTrait
     }
 
     /**
+     * @param string $key
+     * @param null $default
+     * @return mixed
+     */
+    public function getRaw(string $key, $default = null)
+    {
+        return $this->has($key) ? $this->data[$key] : $default;
+    }
+
+    /**
      * Get data item by key
      *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
      * @param string $key The data key
@@ -581,11 +614,33 @@ trait ValidationTrait
     }
 
     /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function setSafe(string $key, $value)
+    {
+        $this->_safeData[$key] = $value;
+    }
+
+    /**
      * @return array
      */
     public function getSafeData(): array
     {
         return $this->_safeData;
+    }
+
+    /**
+     * @param array $safeData
+     * @param bool $clearOld
+     */
+    public function setSafeData(array $safeData, $clearOld = false)
+    {
+        if ($clearOld) {
+            $this->_safeData = [];
+        }
+
+        $this->_safeData = array_merge($this->_safeData, $safeData);
     }
 
     /**

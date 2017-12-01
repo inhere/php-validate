@@ -409,6 +409,16 @@ $v = Validation::make($_POST,[
 ```php
 ['tagId,userId,freeTime', 'number', 'filter' => 'int'],
 ['field', 'validator', 'filter' => 'filter0|filter1...'],
+
+// 需要自定义性更高时，可以使用数组。
+['field1', 'validator', 'filter' => [
+    'string',
+    'trim',
+    ['Class', 'method'],
+    ['Object', 'method'],
+    // 追加额外参数。 传入时，第一个参数总是要过滤的字段值，其余的依次追加
+    'myFilter' => ['arg1', 'arg2'],
+]],
 ```
 
 > 过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
@@ -564,17 +574,20 @@ public function get(string $key, $default = null)
 `float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
 `string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
 `trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'trim'],`
-`lowercase` | 字符串转换为小写 | `['description', 'string', 'filter' => 'lowercase'],`
-`uppercase` | 字符串转换为大写 | `['title', 'string', 'filter' => 'uppercase'],`
-`snakeCase` | 字符串转换为蛇形风格 | `['title', 'string', 'filter' => 'snakeCase'],`
-`camelCase` | 字符串转换为驼峰风格 | `['title', 'string', 'filter' => 'camelCase'],`
+`lower/lowercase` | 字符串转换为小写 | `['description', 'string', 'filter' => 'lowercase'],`
+`upper/uppercase` | 字符串转换为大写 | `['title', 'string', 'filter' => 'uppercase'],`
+`snake/snakeCase` | 字符串转换为蛇形风格 | `['title', 'string', 'filter' => 'snakeCase'],`
+`camel/camelCase` | 字符串转换为驼峰风格 | `['title', 'string', 'filter' => 'camelCase'],`
 `timestamp/strToTime` | 字符串日期转换时间戳 | `['pulishedAt', 'number', 'filter' => 'strToTime'],`
 `abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
 `url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
 `email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
 `encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
+`clearTags/stripTags` | 相当于使用 `strip_tags()` | `['content', 'string', 'filter' => 'clearTags'],`
 `escape/specialChars` | 相当于使用 `htmlspecialchars()` 转义数据 | `['content', 'string', 'filter' => 'specialChars'],`
 `quotes` | 应用 `addslashes()` 转义数据 | `['content', 'string', 'filter' => 'quotes'],`
+
+> php 内置的函数可直接使用。 e.g `string|ucfirst`
 
 <a name="built-in-validators"></a>
 ## 内置的验证器

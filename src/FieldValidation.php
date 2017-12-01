@@ -8,6 +8,8 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Utils\Helper;
+
 /**
  * Class FieldValidation
  * - one field to many rules. like Laravel framework
@@ -54,7 +56,7 @@ class FieldValidation extends AbstractValidation
 
             // an rule for special scene.
             if (!empty($rule['on'])) {
-                $sceneList = \is_string($rule['on']) ? array_map('trim', explode(',', $rule['on'])) : (array)$rule['on'];
+                $sceneList = \is_string($rule['on']) ? Helper::explode($rule['on']) : (array)$rule['on'];
 
                 if ($scene && !\in_array($scene, $sceneList, true)) {
                     continue;
