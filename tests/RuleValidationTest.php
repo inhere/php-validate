@@ -83,7 +83,7 @@ class RuleValidationTest extends TestCase
             'user_name' => $val
         ], [
             ['user_name', 'string', 'min' => 6],
-            // ['user_name', 'string', 'max' => 16],
+            ['user_name', 'string', 'max' => 17],
         ])->validate();
 
         $this->assertTrue($v->passed());

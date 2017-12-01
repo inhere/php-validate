@@ -331,7 +331,7 @@ trait UserAndContextValidatorsTrait
             $mime = strtolower($imgInfo['mime']); // 支持不标准扩展名
 
             // 是否是图片
-            if (!\in_array($mime, Helper::IMG_MIME_TYPES, true)) {
+            if (!\in_array($mime, Helper::$imgMimeTypes, true)) {
                 return false;
             }
 
@@ -403,12 +403,12 @@ trait UserAndContextValidatorsTrait
 
     public function sameValidator($val, $compareField)
     {
-        return $this->compare($val, $compareField);
+        return $this->compareValidator($val, $compareField);
     }
 
     public function equalValidator($val, $compareField)
     {
-        return $this->compare($val, $compareField);
+        return $this->compareValidator($val, $compareField);
     }
 
     /**

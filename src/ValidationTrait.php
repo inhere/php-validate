@@ -442,7 +442,7 @@ trait ValidationTrait
             case 'between':
                 // fixed: 当只有 max 时，自动补充一个 min
                 if (isset($rule['max']) && !isset($rule['min'])) {
-                    $rule['min'] = 0;
+                    $rule['min'] = PHP_INT_MIN;
                 }
                 break;
         }
