@@ -256,7 +256,7 @@ class UserController
 
 - 在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use1)
 
-> 注意： 写在当前类里的过滤器方法必须带有后缀 `Validator`, 以防止对内部的其他的方法造成干扰
+> 注意： 写在当前类里的验证器方法必须带有后缀 `Validator`, 以防止对内部的其他的方法造成干扰
 
 - 通过 `Validation::addValidator()` 添加自定义验证器. e.g:
 
@@ -425,6 +425,9 @@ $v = Validation::make($_POST,[
     'myFilter' => ['arg1', 'arg2'],
 ]],
 ```
+
+> 注意： 写在当前类里的过滤器方法必须带有后缀 `Filter`, 以防止对内部的其他的方法造成干扰
+
 
 > 过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
 
