@@ -393,9 +393,9 @@ trait ValidationTrait
             case 'range':
             case 'string':
             case 'between':
-                // fixed: 当只有 max 时，自动补充一个 min
+                // fixed: 当只有 max 时，自动补充一个 min. PHP_INT_MIN 在 php 5 不可用
                 if (isset($rule['max']) && !isset($rule['min'])) {
-                    $rule['min'] = PHP_INT_MIN;
+                    $rule['min'] = - PHP_INT_MAX;
                 }
                 break;
         }
