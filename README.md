@@ -16,12 +16,32 @@
 - 方便的获取错误信息，验证后的安全数据获取
 - 已经内置了40多个常用的验证器[内置验证器](#built-in-validators)
 - 规则设置参考自 yii 的。部分规则参考自 laravel
-- `Validation/RuleValidation` 规则配置类似于Yii: 每条规则中，允许多个字段，但只能有一个验证器。
-  - e.g `['tagId,userId,name,email,freeTime', 'required', ...]`(下面的示例都是这种)
-- `FieldValidation` 规则配置类似于Laravel: 每条规则中，只能有一个字段，但允许多个验证器。
-  - e.g `['field', 'required|string:5,10|...', ...]`
+- 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration` 用于数据过滤
 
-> 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration` 用于数据过滤
+
+支持两种规则配置方式：
+
+- `Validation/RuleValidation` 规则配置类似于Yii: 每条规则中，允许多个字段，但只能有一个验证器。
+
+e.g (下面的示例都是这种)
+
+```php
+[
+    ['tagId,userId,name,email,freeTime', 'required', ...],
+    // ... ...
+];
+```
+
+- `FieldValidation` 规则配置类似于Laravel: 每条规则中，只能有一个字段，但允许多个验证器。
+
+e.g 
+
+```php
+[
+    ['field', 'required|string:5,10|...', ...],
+    // ... ... 
+]
+```
 
 ## 项目地址
 
