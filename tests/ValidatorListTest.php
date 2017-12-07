@@ -21,6 +21,30 @@ class ValidatorListTest extends TestCase
         $this->assertTrue(ValidatorList::isEmpty(' '));
     }
 
+    public function testBool()
+    {
+        $this->assertFalse(ValidatorList::bool(null));
+        $this->assertFalse(ValidatorList::bool([]));
+
+        $this->assertTrue(ValidatorList::bool('1'));
+        $this->assertTrue(ValidatorList::bool(1));
+    }
+
+    public function testFloat()
+    {
+        $this->assertFalse(ValidatorList::float(null));
+        $this->assertFalse(ValidatorList::float(false));
+        $this->assertFalse(ValidatorList::float(''));
+
+        $this->assertTrue(ValidatorList::float('1'));
+        $this->assertTrue(ValidatorList::float('1.0'));
+        $this->assertTrue(ValidatorList::float(3.4));
+        $this->assertTrue(ValidatorList::float(-3.4));
+        $this->assertTrue(ValidatorList::float(3.4, 3.1));
+        $this->assertTrue(ValidatorList::float(3.4, 3.1, 5.4));
+        $this->assertTrue(ValidatorList::float(3.4, null, 5.4));
+    }
+
     public function testInteger()
     {
         $this->assertFalse(ValidatorList::integer(''));

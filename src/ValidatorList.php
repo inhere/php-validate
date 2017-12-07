@@ -47,7 +47,7 @@ final class ValidatorList
      * @param  mixed $val 要验证的数据
      * @param  mixed $default 设置验证失败时返回默认值
      * @param  int $flags 标志  FILTER_NULL_ON_FAILURE
-     * @return mixed
+     * @return bool
      */
     public static function boolean($val, $default = null, $flags = 0)
     {
@@ -61,7 +61,7 @@ final class ValidatorList
             $settings['flags'] = $flags;
         }
 
-        return filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
+        return (bool)filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
     }
 
     /**
@@ -75,7 +75,8 @@ final class ValidatorList
 
     /**
      * @param  mixed $val 要验证的变量
-     * @param  array $options 可选的选项设置
+     * @param  null|integer|float $min 最小值
+     * @param  null|int|float     $max 最大值
      * $options = [
      *      'default' => 'default value',
      *      'decimal' => 2
@@ -83,19 +84,42 @@ final class ValidatorList
      * @param  int $flags FILTER_FLAG_ALLOW_THOUSAND
      * @return mixed
      */
-    public static function float($val, array $options = [], $flags = 0)
+    public static function float($val, $min = null, $max = null, $flags = 0)
     {
         $settings = [];
-
-        if ($options) {
-            $settings['options'] = $options;
-        }
 
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
 
-        return filter_var($val, FILTER_VALIDATE_FLOAT, $settings);
+        if (filter_var($val, FILTER_VALIDATE_FLOAT, $settings) === false) {
+            return false;
+        }
+
+        $minIsNum = is_numeric($min);
+        $maxIsNum = is_numeric($max);
+
+        if ($minIsNum && $maxIsNum) {
+            if ($max > $min) {
+                $minV = $min;
+                $maxV = $max;
+            } else {
+                $minV = $max;
+                $maxV = $min;
+            }
+
+            return $val >= $minV && $val <= $maxV;
+        }
+
+        if ($minIsNum) {
+            return $val >= $min;
+        }
+
+        if ($maxIsNum) {
+            return $val <= $max;
+        }
+
+        return true;
     }
 
     /**

@@ -624,8 +624,8 @@ public function get(string $key, $default = null)
 
 验证器 | 说明 | 规则示例
 ----------|-------------|------------
-`int/integer`   | 验证是否是 int | `['userId', 'int']`
-`num/number`    | 验证是否是 number | `['userId', 'number']`
+`int/integer`   | 验证是否是 int 支持范围检查 | `['userId', 'int']` `['userId', 'int', 'min'=>4, 'max'=>16]`
+`num/number`    | 验证是否是 number | `['userId', 'number']` `['userId', 'number', 'min'=>4, 'max'=>16]`
 `bool/boolean`  | 验证是否是 bool | `['open', 'bool']`
 `float` | 验证是否是 float | `['price', 'float']`
 `string`    | 验证是否是 string. 支持长度检查 | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
