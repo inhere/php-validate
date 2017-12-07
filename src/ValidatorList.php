@@ -99,9 +99,10 @@ final class ValidatorList
     }
 
     /**
-     * int 验证
+     * int 验证 (所有的最小、最大都是包含边界值的)
      * @param  mixed $val 要验证的变量
-     * @param  array $options 可选的选项设置
+     * @param  null|integer $min 最小值
+     * @param  null|int     $max 最大值
      * @param  int $flags 标志
      *                    FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
      *                    FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
@@ -113,13 +114,29 @@ final class ValidatorList
      *    // 'default' => 3, // value to return if the filter fails
      * ]
      */
-    public static function integer($val, array $options = [], $flags = 0)
+    public static function integer($val, $min = null, $max = null, $flags = 0)
     {
         if (!is_numeric($val)) {
             return false;
         }
 
-        $settings = [];
+        $options = $settings = [];
+        $minIsNum = is_numeric($min);
+        $maxIsNum = is_numeric($max);
+
+        if ($minIsNum && $maxIsNum) {
+            if ($max > $min) {
+                $options['min_range'] = (int)$min;
+                $options['max_range'] = (int)$max;
+            } else {
+                $options['min_range'] = (int)$max;
+                $options['max_range'] = (int)$min;
+            }
+        } elseif ($minIsNum) {
+            $options['min_range'] = (int)$min;
+        } elseif ($maxIsNum) {
+            $options['max_range'] = (int)$max;
+        }
 
         if ($options) {
             $settings['options'] = $options;
@@ -136,42 +153,60 @@ final class ValidatorList
      * @see ValidatorList::integer()
      * {@inheritdoc}
      */
-    public static function int($val, array $options = [], $flags = 0)
+    public static function int($val, $min = null, $max = null, $flags = 0)
     {
-        return self::integer($val, $options, $flags);
+        return self::integer($val, $min, $max, $flags);
     }
 
     /**
      * check var is a integer and greater than 0
-     * @param $val
-     * @param array $options
+     * @param mixed $val
+     * @param  null|integer $min 最小值
+     * @param  null|int $max 最大值
      * @param int $flags
      * @return bool
      */
-    public static function number($val, array $options = [], $flags = 0)
+    public static function number($val, $min = null, $max = null, $flags = 0)
     {
-        return self::integer($val, $options, $flags) && ($val > 0);
+        if (!is_numeric($val)) {
+            return false;
+        }
+
+        if ($val <= 0) {
+            return false;
+        }
+
+        return self::integer($val, $min, $max, $flags);
     }
 
     /**
      * @see ValidatorList::number()
      * {@inheritdoc}
      */
-    public static function num($val, array $options = [], $flags = 0)
+    public static function num($val, $min = null, $max = null, $flags = 0)
     {
-        return self::number($val, $options, $flags);
+        return self::number($val, $min, $max, $flags);
     }
 
     /**
      * check val is a string
      * @param mixed $val
-     * @param int $minLength
-     * @param null|int $maxLength
+     * @param int $minLen
+     * @param null|int $maxLen
      * @return bool
      */
-    public static function string($val, $minLength = 0, $maxLength = null)
+    public static function string($val, $minLen = 0, $maxLen = null)
     {
-        return !\is_string($val) ? false : self::length($val, $minLength, $maxLength);
+        if (!\is_string($val)) {
+            return false;
+        }
+        
+        // only type check.
+        if ($minLen === 0 && $maxLen === null) {
+            return true;
+        }
+        
+        return self::integer(Helper::strlen($val), $minLen, $maxLen);
     }
 
     /**
@@ -236,27 +271,7 @@ final class ValidatorList
             }
         }
 
-        $options = [];
-        $minIsNum = is_numeric($min);
-        $maxIsNum = is_numeric($max);
-
-        if ($minIsNum && $maxIsNum) {
-            if ($max > $min) {
-                $options['min_range'] = (int)$min;
-                $options['max_range'] = (int)$max;
-            } else {
-                $options['min_range'] = (int)$max;
-                $options['max_range'] = (int)$min;
-            }
-        } elseif ($minIsNum) {
-            $options['min_range'] = (int)$min;
-        } elseif ($maxIsNum) {
-            $options['max_range'] = (int)$max;
-        } else {
-            return false;
-        }
-
-        return self::integer($val, $options);
+        return self::integer($val, $min, $max);
     }
 
     /**
@@ -302,17 +317,17 @@ final class ValidatorList
     /**
      * 字符串/数组长度检查
      * @param  string|array $val 字符串/数组
-     * @param  integer $minLength 最小长度
-     * @param  int $maxLength 最大长度
+     * @param  integer $minLen 最小长度
+     * @param  int $maxLen 最大长度
      * @return bool
      */
-    public static function length($val, $minLength = 0, $maxLength = null)
+    public static function length($val, $minLen = 0, $maxLen = null)
     {
         if (!\is_string($val) && !\is_array($val)) {
             return false;
         }
 
-        return self::size($val, $minLength, $maxLength);
+        return self::size($val, $minLen, $maxLen);
     }
 
     /**

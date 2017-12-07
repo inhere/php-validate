@@ -435,9 +435,19 @@ trait ValidationTrait
         $validator = $rule[0];
 
         switch ($validator) {
+            case 'num':
+            case 'number':
+            case 'string':
+            case 'length':
+                // fixed: 当只有 max 时，自动补充一个 min. 字符串最小长度就是 0
+                if (isset($rule['max']) && !isset($rule['min'])) {
+                    $rule['min'] = 0;
+                }
+                break;
+            case 'int':
             case 'size':
             case 'range':
-            case 'string':
+            case 'integer':
             case 'between':
                 // fixed: 当只有 max 时，自动补充一个 min
                 if (isset($rule['max']) && !isset($rule['min'])) {

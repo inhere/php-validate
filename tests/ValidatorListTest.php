@@ -26,11 +26,15 @@ class ValidatorListTest extends TestCase
         $this->assertFalse(ValidatorList::integer(''));
         $this->assertFalse(ValidatorList::integer(null));
         $this->assertFalse(ValidatorList::integer(false));
+        $this->assertFalse(ValidatorList::integer(2, 5));
 
         $this->assertTrue(ValidatorList::integer(0));
         $this->assertTrue(ValidatorList::integer(1));
         $this->assertTrue(ValidatorList::integer(-1));
         $this->assertTrue(ValidatorList::integer('1'));
+        $this->assertTrue(ValidatorList::integer(-2, -3, 1));
+        $this->assertTrue(ValidatorList::integer(2, 2, 5));
+        $this->assertTrue(ValidatorList::integer(2, null, 5));
     }
 
     public function testNumber()
