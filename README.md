@@ -98,14 +98,14 @@ class PageRequest extends Validation
     {
         return [
             ['tagId,title,userId,freeTime', 'required'],
-            ['tagId', 'size', 'min'=>4, 'max'=>567], // 4<= tagId <=567
-            ['title', 'min', 40],
+            ['tagId', 'size', 'min'=>4, 'max'=>567, 'filter' => 'int'], // 4<= tagId <=567
+            ['title', 'min', 40, 'filter' => 'trim'],
             ['freeTime', 'number'],
             ['tagId', 'number', 'when' => function($data) {
                 return isset($data['status']) && $data['status'] > 2;
             }],
-            ['userId', 'number', 'on' => 'scene1' ],
-            ['username', 'string', 'on' => 'scene2' ],
+            ['userId', 'number', 'on' => 'scene1', 'filter' => 'int'],
+            ['username', 'string', 'on' => 'scene2', 'filter' => 'trim'],
             ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
             ['title', 'customValidator', 'msg' => '{attr} error msg!' ], // 指定当前规则的消息
             ['status', function($status) { // 直接使用闭包验证
