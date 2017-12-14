@@ -360,18 +360,19 @@ trait ValidationTrait
             if (!isset($rule[1]) || !$rule[1]) {
                 throw new \InvalidArgumentException('The rule validator is must be setting! position: rule[1].');
             }
-            // global rule.
-            if (empty($rule['on'])) {
-                $this->_usedRules[] = $rule;
-                // only use to special scene.
-            } else {
+            // only use to special scene.
+            if (!empty($rule['on'])) {
+                if (!$scene) {
+                    continue;
+                }
                 $sceneList = \is_string($rule['on']) ? Helper::explode($rule['on']) : (array)$rule['on'];
-                if ($scene && !\in_array($scene, $sceneList, true)) {
+                if (!\in_array($scene, $sceneList, true)) {
                     continue;
                 }
                 unset($rule['on']);
-                $this->_usedRules[] = $rule;
             }
+
+            $this->_usedRules[] = $rule;
             $fields = array_shift($rule);
 
             (yield $fields => $this->prepareRule($rule));

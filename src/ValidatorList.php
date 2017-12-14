@@ -562,14 +562,23 @@ final class ValidatorList
 
     /**
      * 验证字段值是否是一个有效的 JSON 字符串。
-     * @param  string $val
+     * @param mixed $val
+     * @param bool $strict
      * @return bool
      */
-    public static function json($val)
+    public static function json($val, $strict = true)
     {
         if (!$val || (!\is_string($val) && !method_exists($val, '__toString'))) {
             return false;
         }
+
+        $val = (string)$val;
+
+        // must start with: { OR [
+        if ($strict && '[' !== $val[0] && '{' !== $val[0]) {
+            return false;
+        }
+
         json_decode($val);
 
         return json_last_error() === JSON_ERROR_NONE;
