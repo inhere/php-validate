@@ -76,7 +76,7 @@ final class ValidatorList
     /**
      * @param  mixed $val 要验证的变量
      * @param  null|integer|float $min 最小值
-     * @param  null|int|float     $max 最大值
+     * @param  null|int|float $max 最大值
      * $options = [
      *      'default' => 'default value',
      *      'decimal' => 2
@@ -126,7 +126,7 @@ final class ValidatorList
      * int 验证 (所有的最小、最大都是包含边界值的)
      * @param  mixed $val 要验证的变量
      * @param  null|integer $min 最小值
-     * @param  null|int     $max 最大值
+     * @param  null|int $max 最大值
      * @param  int $flags 标志
      *                    FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
      *                    FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
@@ -224,12 +224,12 @@ final class ValidatorList
         if (!\is_string($val)) {
             return false;
         }
-        
+
         // only type check.
         if ($minLen === 0 && $maxLen === null) {
             return true;
         }
-        
+
         return self::integer(Helper::strlen($val), $minLen, $maxLen);
     }
 
@@ -540,7 +540,7 @@ final class ValidatorList
 
     /**
      * 验证值是否是一个自然数组 list (key是从0自然增长的)
-     * @param  array|mixed $val
+     * @param array|mixed $val
      * @return bool
      */
     public static function isList($val)
@@ -569,7 +569,7 @@ final class ValidatorList
 
     /**
      * 验证字段值是否是一个 int list
-     * @param  array|mixed $val
+     * @param array|mixed $val
      * @return bool
      */
     public static function intList($val)
@@ -594,7 +594,7 @@ final class ValidatorList
 
     /**
      * 验证字段值是否是一个 number list
-     * @param  array|mixed $val
+     * @param array|mixed $val
      * @return bool
      */
     public static function numList($val)
@@ -604,7 +604,7 @@ final class ValidatorList
         }
 
         /** @var array $val */
-        foreach ($val as $k =>  $v) {
+        foreach ($val as $k => $v) {
             if (!\is_int($k)) {
                 return false;
             }
@@ -619,7 +619,7 @@ final class ValidatorList
 
     /**
      * 验证字段值是否是一个 string list
-     * @param  array|mixed $val
+     * @param array|mixed $val
      * @return bool
      */
     public static function strList($val)
@@ -634,17 +634,17 @@ final class ValidatorList
                 return false;
             }
 
-            if (\is_string($v)) {
-                return true;
+            if (!\is_string($v)) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     /**
      * 验证字段值是否是一个有效的 JSON 字符串。
-     * @param  string $val
+     * @param mixed $val
      * @param bool $strict
      * @return bool
      */
@@ -665,7 +665,7 @@ final class ValidatorList
     }
 
     /**
-     * @param  mixed $val
+     * @param mixed $val
      * @param array|string $dict
      * @return bool
      */
