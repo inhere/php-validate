@@ -56,16 +56,20 @@ class FieldValidation extends AbstractValidation
 
             // an rule for special scene.
             if (!empty($rule['on'])) {
+                if (!$scene) {
+                    continue;
+                }
+
                 $sceneList = \is_string($rule['on']) ? Helper::explode($rule['on']) : (array)$rule['on'];
 
-                if ($scene && !\in_array($scene, $sceneList, true)) {
+                if (!\in_array($scene, $sceneList, true)) {
                     continue;
                 }
 
                 unset($rule['on']);
-                $this->_usedRules[] = $rule;
             }
 
+            $this->_usedRules[] = $rule;
             $field = array_shift($rule);
 
             if (\is_object($rule[0])) {
