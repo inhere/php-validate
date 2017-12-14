@@ -665,7 +665,7 @@ public function get(string $key, $default = null)
 `beforeOrEqualDate` | 字段值必须是小于或等于给定日期的值 | `['publishedAt', 'beforeOrEqualDate', '2017-05-12']`
 `afterOrEqualDate` | 字段值必须是大于或等于给定日期的值 | `['publishedAt', 'afterOrEqualDate', '2017-05-12']`
 `afterDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'afterDate', '2017-05-12']`
-`json`   | 验证是否是json字符串 | `['goods', 'json']`
+`json`   | 验证是否是json字符串(默认严格验证，必须以`{` `[` 开始) | `['goods', 'json']` `['somedata', 'json', false]` - 非严格，普通字符串`eg 'test'`也会通过
 `file`   | 验证是否是上传的文件 | `['upFile', 'file']`
 `image`   | 验证是否是上传的图片文件 | `['avatar', 'image']`, 限定后缀名 `['avatar', 'image', 'jpg,png']`
 `ip`    | 验证是否是 IP | `['ipAddr', 'ip']`

@@ -245,4 +245,20 @@ class ValidatorListTest extends TestCase
         $this->assertTrue(ValidatorList::strList(['abc']));
         $this->assertTrue(ValidatorList::strList(['abc', 565, null]));
     }
+
+    public function testJson()
+    {
+        $this->assertFalse(ValidatorList::json('test'));
+        $this->assertFalse(ValidatorList::json([]));
+
+        $this->assertFalse(ValidatorList::json(123));
+        $this->assertFalse(ValidatorList::json('123'));
+        $this->assertTrue(ValidatorList::json('123', false));
+
+        $this->assertFalse(ValidatorList::json('{aa: 34}'));
+
+        $this->assertTrue(ValidatorList::json('{}'));
+        $this->assertTrue(ValidatorList::json('[]'));
+        $this->assertTrue(ValidatorList::json('{"aa": 34}'));
+    }
 }

@@ -95,6 +95,28 @@ class RuleValidationTest extends TestCase
         $this->assertEquals($v->getSafe('user_name'), $val);
     }
 
+    public function testValidateJson()
+    {
+        $v = Validation::make([
+            'log_level' => 'debug',
+            'log_data' => '[23]',
+            'log_data1' => '234',
+        ], [
+            ['log_level, log_data', 'required'],
+            ['log_level, log_data', 'string'],
+            ['log_data', 'json'],
+            ['log_data1', 'json', false],
+        ])->validate();
+
+        // var_dump($v->getErrors());
+        $this->assertTrue($v->passed());
+        $this->assertFalse($v->failed());
+
+        $errors = $v->getErrors();
+        $this->assertEmpty($errors);
+        $this->assertCount(0, $errors);
+    }
+
     protected function someRules()
     {
         return [
