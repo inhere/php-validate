@@ -654,12 +654,14 @@ final class ValidatorList
             return false;
         }
 
+        $val = (string)$val;
+
         // must start with: { OR [
         if ($strict && '[' !== $val[0] && '{' !== $val[0]) {
             return false;
         }
 
-        json_decode((string)$val);
+        json_decode($val);
 
         return json_last_error() === JSON_ERROR_NONE;
     }
