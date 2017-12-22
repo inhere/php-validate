@@ -68,4 +68,18 @@ abstract class AbstractValidation implements ValidationInterface
         return new static($data, $rules, $translates, $scene, $startValidate);
     }
 
+    /**
+     * 创建并且立即开始验证
+     * @param array $data
+     * @param array $rules
+     * @param array $translates
+     * @param string $scene    
+     * @return static
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public static function makeAndValidate(array $data, array $rules = [], array $translates = [], $scene = '')
+    {
+        return new static($data, $rules, $translates, $scene, true);
+    }
 }
