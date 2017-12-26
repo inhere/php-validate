@@ -22,6 +22,10 @@ final class FilterList
      */
     public static function integer($val)
     {
+        if (\is_array($val)) {
+            return array_map(self::class . '::integer', $val);
+        }
+
         return (int)filter_var($val, FILTER_SANITIZE_NUMBER_INT);
     }
 
@@ -93,6 +97,43 @@ final class FilterList
         }
 
         return filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+    }
+
+    /**
+     * Convert \n and \r\n and \r to <br/>
+     * @param string $str String to transform
+     * @return string New string
+     */
+    public static function nl2br($str)
+    {
+        return str_replace(["\r\n", "\r", "\n"], '<br/>', $str);
+    }
+
+    /**
+     * @param string $str
+     * @param string $sep
+     * @return array
+     */
+    public static function str2list($str, $sep = ',')
+    {
+        return self::str2array($str, $sep);
+    }
+
+    /**
+     * var_dump(str2array('34,56,678, 678, 89, '));
+     * @param string $str
+     * @param string $sep
+     * @return array
+     */
+    public static function str2array($str, $sep = ',')
+    {
+        $str = trim($str, "$sep ");
+
+        if (!$str) {
+            return [];
+        }
+
+        return preg_split("/\s*$sep\s*/", $str, -1, PREG_SPLIT_NO_EMPTY);
     }
 
     /**

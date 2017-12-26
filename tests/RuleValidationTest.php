@@ -55,6 +55,45 @@ class RuleValidationTest extends TestCase
         $this->assertSame($v->getSafe('tagId'), 35);
     }
 
+    public function testCollectRules()
+    {
+        $data = [
+            'userId' => 234,
+            'tagId' => 35,
+            'freeTime' => '1456767657',
+            'status' => 2,
+            'name' => '1234a2',
+            'goods' => [
+                'apple' => 34,
+                'pear' => 50,
+            ],
+
+        ];
+
+        $rules = [
+            ['tagId,userId,freeTime', 'required'],
+            ['tagId,userId,freeTime', 'number', 'on' => 's1'],
+            ['tagId', 'size', 'max'=> 567, 'min'=> 4, 'on' => 's2'],
+            ['name', 'string', 'on' => 's2'],
+            ['goods.pear', 'max', 60],
+        ];
+
+        $v = RuleValidation::make($data, $rules)->validate();
+
+        $this->assertTrue($v->passed());
+        $this->assertCount(2, $v->getUsedRules());
+
+        $v = RuleValidation::make($data, $rules)->atScene('s1')->validate();
+
+        $this->assertTrue($v->passed());
+        $this->assertCount(3, $v->getUsedRules());
+
+        $v = RuleValidation::make($data, $rules)->atScene('s2')->validate();
+
+        $this->assertTrue($v->passed());
+        $this->assertCount(4, $v->getUsedRules());
+    }
+
     public function testValidateFailed()
     {
         $rules = $this->someRules();

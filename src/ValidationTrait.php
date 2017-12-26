@@ -520,7 +520,7 @@ trait ValidationTrait
      */
     public function setScene(string $scene)
     {
-        $this->scene = $scene;
+        $this->scene = trim($scene);
 
         return $this;
     }
@@ -531,6 +531,16 @@ trait ValidationTrait
      * @return static
      */
     public function atScene(string $scene)
+    {
+        return $this->setScene($scene);
+    }
+
+    /**
+     * alias of the `setScene()`
+     * @param string $scene
+     * @return static
+     */
+    public function onScene(string $scene)
     {
         return $this->setScene($scene);
     }

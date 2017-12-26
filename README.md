@@ -15,9 +15,8 @@
 - 支持基本的数组检查，数组的子级值检查
 - 方便的获取错误信息，验证后的安全数据获取
 - 已经内置了40多个常用的验证器[内置验证器](#built-in-validators)
-- 规则设置参考自 yii 的。部分规则参考自 laravel
+- 规则设置参考 yii. 部分规则参考自 laravel, Respect/Validation
 - 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration` 用于数据过滤
-
 
 支持两种规则配置方式：
 
@@ -598,17 +597,19 @@ public function get(string $key, $default = null)
 
 过滤器 | 说明 | 示例
 -------|-------------|------------
-`int/integer` | 过滤非法字符并转换为`int`类型 | `['userId', 'number', 'filter' => 'int'],`
+`abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
+`int/integer` | 过滤非法字符并转换为`int`类型 **支持数组** | `['userId', 'number', 'filter' => 'int'],`
 `float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
 `string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
 `trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'trim'],`
+`nl2br` | 转换 `\n` `\r\n` `\r` 为 `<br/>` | `['content', 'string', 'filter' => 'nl2br'],`
 `lower/lowercase` | 字符串转换为小写 | `['description', 'string', 'filter' => 'lowercase'],`
 `upper/uppercase` | 字符串转换为大写 | `['title', 'string', 'filter' => 'uppercase'],`
 `snake/snakeCase` | 字符串转换为蛇形风格 | `['title', 'string', 'filter' => 'snakeCase'],`
 `camel/camelCase` | 字符串转换为驼峰风格 | `['title', 'string', 'filter' => 'camelCase'],`
 `timestamp/strToTime` | 字符串日期转换时间戳 | `['pulishedAt', 'number', 'filter' => 'strToTime'],`
-`abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
 `url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
+`str2list/str2array` | 字符串转数组 `'tag0,tag1' -> ['tag0', 'tag1']` | `['tags', 'strList', 'filter' => 'str2array'],`
 `email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
 `encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
 `clearTags/stripTags` | 相当于使用 `strip_tags()` | `['content', 'string', 'filter' => 'clearTags'],`
@@ -624,11 +625,11 @@ public function get(string $key, $default = null)
 
 验证器 | 说明 | 规则示例
 ----------|-------------|------------
-`int/integer`   | 验证是否是 int 支持范围检查 | `['userId', 'int']` `['userId', 'int', 'min'=>4, 'max'=>16]`
-`num/number`    | 验证是否是 number | `['userId', 'number']` `['userId', 'number', 'min'=>4, 'max'=>16]`
+`int/integer`   | 验证是否是 int **支持范围检查** | `['userId', 'int']` `['userId', 'int', 'min'=>4, 'max'=>16]`
+`num/number`    | 验证是否是 number **支持范围检查** | `['userId', 'number']` `['userId', 'number', 'min'=>4, 'max'=>16]`
 `bool/boolean`  | 验证是否是 bool | `['open', 'bool']`
 `float` | 验证是否是 float | `['price', 'float']`
-`string`    | 验证是否是 string. 支持长度检查 | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
+`string`    | 验证是否是 string. **支持长度检查** | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
 `url`   | 验证是否是 url | `['myUrl', 'url']`
 `email` | 验证是否是 email | `['userEmail', 'email']`
 `alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
@@ -637,6 +638,7 @@ public function get(string $key, $default = null)
 `isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
 `isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
 `isArray`   | 验证是否是数组 | `['goods', 'isArray']`
+`hasKey`   | 验证数组存在给定的key(s) | `['goods', 'hasKey', 'pear']` `['goods', 'hasKey', ['pear', 'banana']]`
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
 `numList`   | 验证字段值是否是一个 number list | `['tagIds', 'numList']`
 `strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
@@ -645,6 +647,8 @@ public function get(string $key, $default = null)
 `size/range/between`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
 `fixedSize/fixedLength`    | 固定的长度/大小 | `['field', 'fixedSize', 12]`
+`startWith` | 值(`string/array`)是以给定的字符串开始 | `['field', 'startWith', 'hell']`
+`endWith` | 值(`string/array`)是以给定的字符串结尾 | `['field', 'endWith', 'world']`
 `in/enum`    | 枚举验证 | `['status', 'in', [1,2,3]]`
 `notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
 `mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
@@ -671,6 +675,7 @@ public function get(string $key, $default = null)
 `ip`    | 验证是否是 IP | `['ipAddr', 'ip']`
 `ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
 `ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
+`macAddress`    | 验证是否是 mac Address | `['field', 'macAddress']`
 `md5`    | 验证是否是 md5 格式的字符串 | `['passwd', 'md5']`
 `sha1`    | 验证是否是 sha1 格式的字符串 | `['passwd', 'sha1']`
 `color`    | 验证是否是html color | `['backgroundColor', 'color']`
