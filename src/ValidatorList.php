@@ -518,7 +518,7 @@ final class ValidatorList
     }
 
     /**
-     * 验证值是否是一个非自然数组 map (key - value 形式的)
+     * 验证值是否是一个非自然数组 map (key不是自然增长的 OR key - value 形式的)
      * @param  mixed $val
      * @return bool
      */
@@ -529,13 +529,9 @@ final class ValidatorList
         }
 
         /** @var array $val */
-        foreach ($val as $k => $v) {
-            if (\is_string($k)) {
-                return true;
-            }
-        }
-
-        return false;
+        $keys = array_keys($val);
+        
+        return array_keys($keys) !== $keys;
     }
 
     /**
@@ -549,22 +545,10 @@ final class ValidatorList
             return false;
         }
 
-        $prevKey = 0;
-
         /** @var array $val */
-        foreach ($val as $k => $v) {
-            if (!\is_int($k)) {
-                return false;
-            }
+        $keys = array_keys($val);
 
-            if ($k !== $prevKey) {
-                return false;
-            }
-
-            $prevKey++;
-        }
-
-        return true;
+        return array_keys($keys) === $keys;
     }
 
     /**
