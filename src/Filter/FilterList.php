@@ -153,10 +153,20 @@ final class FilterList
     public static function trim($val)
     {
         return \is_array($val) ? array_map(function ($val) {
-            return \is_string($val) ? trim($val) : $val;
-        }, $val) : trim((string)$val);
+            return \is_string($val) ? \trim($val) : $val;
+        }, $val) : \trim((string)$val);
     }
 
+    /**
+     * clear space
+     * @param string $val
+     * @return mixed
+     */
+    public static function clearSpace($val)
+    {
+        return str_replace(' ', '', \trim($val));
+    }
+    
     /**
      * string to lowercase
      * @param string $val
