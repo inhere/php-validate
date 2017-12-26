@@ -376,7 +376,7 @@ trait UserAndContextValidatorsTrait
         return $this->compareValidator($val, $compareField);
     }
 
-    public function equal($val, $compareField)
+    public function equalValidator($val, $compareField)
     {
         return $this->compareValidator($val, $compareField);
     }
@@ -389,9 +389,8 @@ trait UserAndContextValidatorsTrait
      */
     public function notEqualValidator($val, $compareField)
     {
-        return $compareField && ($val !== $this->get($compareField));
+        return $compareField && $val !== $this->get($compareField);
     }
-
     /*******************************************************************************
      * getter/setter
      ******************************************************************************/

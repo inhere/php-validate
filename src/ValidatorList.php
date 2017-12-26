@@ -34,7 +34,6 @@ final class ValidatorList
 
         return $val === '' || $val === null || $val === false || $val === [];
     }
-
     /*******************************************************************************
      * bool/int/float/string validators
      ******************************************************************************/
@@ -58,7 +57,7 @@ final class ValidatorList
             $settings['flags'] = $flags;
         }
 
-        return filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
+        return (bool)filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
     }
 
     /**
@@ -72,31 +71,52 @@ final class ValidatorList
 
     /**
      * @param  mixed $val 要验证的变量
-     * @param  array $options 可选的选项设置
+     * @param  null|integer|float $min 最小值
+     * @param  null|int|float $max 最大值
      * $options = [
      *      'default' => 'default value',
      *      'decimal' => 2
      *  ]
      * @param  int $flags FILTER_FLAG_ALLOW_THOUSAND
-     * @return bool
+     * @return mixed
      */
-    public static function float($val, array $options = [], $flags = 0)
+    public static function float($val, $min = null, $max = null, $flags = 0)
     {
         $settings = [];
-        if ($options) {
-            $settings['options'] = $options;
-        }
         if ($flags !== 0) {
             $settings['flags'] = $flags;
         }
+        if (filter_var($val, FILTER_VALIDATE_FLOAT, $settings) === false) {
+            return false;
+        }
+        $minIsNum = is_numeric($min);
+        $maxIsNum = is_numeric($max);
+        if ($minIsNum && $maxIsNum) {
+            if ($max > $min) {
+                $minV = $min;
+                $maxV = $max;
+            } else {
+                $minV = $max;
+                $maxV = $min;
+            }
 
-        return filter_var($val, FILTER_VALIDATE_FLOAT, $settings);
+            return $val >= $minV && $val <= $maxV;
+        }
+        if ($minIsNum) {
+            return $val >= $min;
+        }
+        if ($maxIsNum) {
+            return $val <= $max;
+        }
+
+        return true;
     }
 
     /**
-     * int 验证
+     * int 验证 (所有的最小、最大都是包含边界值的)
      * @param  mixed $val 要验证的变量
-     * @param  array $options 可选的选项设置
+     * @param  null|integer $min 最小值
+     * @param  null|int $max 最大值
      * @param  int $flags 标志
      *                    FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
      *                    FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
@@ -108,12 +128,27 @@ final class ValidatorList
      *    // 'default' => 3, // value to return if the filter fails
      * ]
      */
-    public static function integer($val, array $options = [], $flags = 0)
+    public static function integer($val, $min = null, $max = null, $flags = 0)
     {
         if (!is_numeric($val)) {
             return false;
         }
-        $settings = [];
+        $options = $settings = [];
+        $minIsNum = is_numeric($min);
+        $maxIsNum = is_numeric($max);
+        if ($minIsNum && $maxIsNum) {
+            if ($max > $min) {
+                $options['min_range'] = (int)$min;
+                $options['max_range'] = (int)$max;
+            } else {
+                $options['min_range'] = (int)$max;
+                $options['max_range'] = (int)$min;
+            }
+        } elseif ($minIsNum) {
+            $options['min_range'] = (int)$min;
+        } elseif ($maxIsNum) {
+            $options['max_range'] = (int)$max;
+        }
         if ($options) {
             $settings['options'] = $options;
         }
@@ -128,42 +163,58 @@ final class ValidatorList
      * @see ValidatorList::integer()
      * {@inheritdoc}
      */
-    public static function int($val, array $options = [], $flags = 0)
+    public static function int($val, $min = null, $max = null, $flags = 0)
     {
-        return self::integer($val, $options, $flags);
+        return self::integer($val, $min, $max, $flags);
     }
 
     /**
      * check var is a integer and greater than 0
-     * @param $val
-     * @param array $options
+     * @param mixed $val
+     * @param  null|integer $min 最小值
+     * @param  null|int $max 最大值
      * @param int $flags
      * @return bool
      */
-    public static function number($val, array $options = [], $flags = 0)
+    public static function number($val, $min = null, $max = null, $flags = 0)
     {
-        return self::integer($val, $options, $flags) && $val > 0;
+        if (!is_numeric($val)) {
+            return false;
+        }
+        if ($val <= 0) {
+            return false;
+        }
+
+        return self::integer($val, $min, $max, $flags);
     }
 
     /**
      * @see ValidatorList::number()
      * {@inheritdoc}
      */
-    public static function num($val, array $options = [], $flags = 0)
+    public static function num($val, $min = null, $max = null, $flags = 0)
     {
-        return self::number($val, $options, $flags);
+        return self::number($val, $min, $max, $flags);
     }
 
     /**
      * check val is a string
      * @param mixed $val
-     * @param int $minLength
-     * @param null|int $maxLength
+     * @param int $minLen
+     * @param null|int $maxLen
      * @return bool
      */
-    public static function string($val, $minLength = 0, $maxLength = null)
+    public static function string($val, $minLen = 0, $maxLen = null)
     {
-        return !\is_string($val) ? false : self::length($val, $minLength, $maxLength);
+        if (!\is_string($val)) {
+            return false;
+        }
+        // only type check.
+        if ($minLen === 0 && $maxLen === null) {
+            return true;
+        }
+
+        return self::integer(Helper::strlen($val), $minLen, $maxLen);
     }
 
     /**
@@ -212,7 +263,7 @@ final class ValidatorList
      * @param  int|string|array $val 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
      * @param  null|integer $min 最小值
      * @param  null|int $max 最大值
-     * @return bool
+     * @return mixed
      */
     public static function size($val, $min = null, $max = null)
     {
@@ -226,26 +277,7 @@ final class ValidatorList
             }
         }
 
-        $options = [];
-        $minIsNum = is_numeric($min);
-        $maxIsNum = is_numeric($max);
-        if ($minIsNum && $maxIsNum) {
-            if ($max > $min) {
-                $options['min_range'] = (int)$min;
-                $options['max_range'] = (int)$max;
-            } else {
-                $options['min_range'] = (int)$max;
-                $options['max_range'] = (int)$min;
-            }
-        } elseif ($minIsNum) {
-            $options['min_range'] = (int)$min;
-        } elseif ($maxIsNum) {
-            $options['max_range'] = (int)$max;
-        } else {
-            return false;
-        }
-
-        return self::integer($val, $options);
+        return self::integer($val, $min, $max);
     }
 
     /**
@@ -264,17 +296,6 @@ final class ValidatorList
     public static function range($val, $min = null, $max = null)
     {
         return self::size($val, $min, $max);
-    }
-
-    /**
-     * 必须是等于给定值
-     * @param  mixed $val
-     * @param  mixed $excepted
-     * @return bool
-     */
-    public static function mustBe($val, $excepted)
-    {
-        return $val === $excepted;
     }
 
     /**
@@ -302,21 +323,77 @@ final class ValidatorList
     /**
      * 字符串/数组长度检查
      * @param  string|array $val 字符串/数组
-     * @param  integer $minLength 最小长度
-     * @param  int $maxLength 最大长度
+     * @param  integer $minLen 最小长度
+     * @param  int $maxLen 最大长度
      * @return bool
      */
-    public static function length($val, $minLength = 0, $maxLength = null)
+    public static function length($val, $minLen = 0, $maxLen = null)
     {
         if (!\is_string($val) && !\is_array($val)) {
             return false;
         }
 
-        return self::size($val, $minLength, $maxLength);
+        return self::size($val, $minLen, $maxLen);
+    }
+
+    /**
+     * 固定的长度
+     * @param mixed $val
+     * @param int $size
+     * @return bool
+     */
+    public static function fixedLength($val, $size)
+    {
+        return self::fixedSize($val, $size);
+    }
+
+    /**
+     * @param mixed $val
+     * @param int $size
+     * @return bool
+     */
+    public static function fixedSize($val, $size)
+    {
+        if (!\is_int($val)) {
+            if (\is_string($val)) {
+                $val = Helper::strlen(trim($val));
+            } elseif (\is_array($val)) {
+                $val = \count($val);
+            } else {
+                return false;
+            }
+        }
+
+        return $val === (int)$size;
     }
     /*******************************************************************************
-     * custom validators
+     * extra string validators
      ******************************************************************************/
+    /**
+     * 值是否包含给的数据
+     * @param string|mixed $val
+     * @param string|array $needle
+     * @return bool
+     */
+    public static function contains($val, $needle)
+    {
+        if (!$val || !\is_string($val)) {
+            return false;
+        }
+        if (\is_string($needle)) {
+            return stripos($val, $needle) !== false;
+        }
+        if (\is_array($needle)) {
+            foreach ((array)$needle as $item) {
+                if (stripos($val, $item) !== false) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     /**
      * 用正则验证数据
      * @param  string $val 要验证的数据
@@ -422,142 +499,29 @@ final class ValidatorList
     {
         return self::ip($val, false, FILTER_FLAG_IPV6);
     }
-    /*******************************************************************************
-     * list/map/enum validators
-     ******************************************************************************/
+
     /**
-     * 验证值是否是一个数组
-     * @param  mixed $val
+     * mac Address
+     * @param string $input
      * @return bool
      */
-    public static function isArray($val)
+    public static function macAddress($input)
     {
-        return \is_array($val);
+        return !empty($input) && preg_match('/^(([0-9a-fA-F]{2}-){5}|([0-9a-fA-F]{2}:){5})[0-9a-fA-F]{2}$/', $input);
     }
 
     /**
-     * 验证值是否是一个非自然数组 map (key - value 形式的)
-     * @param  mixed $val
+     * english chars string
+     * @param  string $val
      * @return bool
      */
-    public static function isMap($val)
+    public static function english($val)
     {
-        if (!\is_array($val)) {
+        if (!$val || !\is_string($val)) {
             return false;
         }
 
-        /** @var array $val */
-        foreach ($val as $k => $v) {
-            if (\is_string($k)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * 验证值是否是一个自然数组 list (key是从0自然增长的)
-     * @param  array|mixed $val
-     * @return bool
-     */
-    public static function isList($val)
-    {
-        if (!\is_array($val) || !isset($val[0])) {
-            return false;
-        }
-
-        $prevKey = 0;
-
-        /** @var array $val */
-        foreach ($val as $k => $v) {
-            if (!\is_int($k)) {
-                return false;
-            }
-
-            if ($k !== $prevKey) {
-                return false;
-            }
-
-            $prevKey++;
-        }
-
-        return true;
-    }
-
-    /**
-     * 验证字段值是否是一个 int list
-     * @param  array|mixed $val
-     * @return bool
-     */
-    public static function intList($val)
-    {
-        if (!$val || !\is_array($val)) {
-            return false;
-        }
-
-        /** @var array $val */
-        foreach ($val as $k => $v) {
-            if (!\is_int($k)) {
-                return false;
-            }
-
-            if (!is_numeric($v)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * 验证字段值是否是一个 number list
-     * @param  array|mixed $val
-     * @return bool
-     */
-    public static function numList($val)
-    {
-        if (!$val || !\is_array($val)) {
-            return false;
-        }
-
-        /** @var array $val */
-        foreach ($val as $k =>  $v) {
-            if (!\is_int($k)) {
-                return false;
-            }
-
-            if (!is_numeric($v) || $v <= 0) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * 验证字段值是否是一个 string list
-     * @param  array|mixed $val
-     * @return bool
-     */
-    public static function strList($val)
-    {
-        if (!$val || !\is_array($val)) {
-            return false;
-        }
-
-        /** @var array $val */
-        foreach ($val as $k => $v) {
-            if (!\is_int($k)) {
-                return false;
-            }
-
-            if (\is_string($v)) {
-                return true;
-            }
-        }
-
-        return false;
+        return preg_match('/^[A-Za-z]+$/', $val) === 1;
     }
 
     /**
@@ -571,21 +535,159 @@ final class ValidatorList
         if (!$val || (!\is_string($val) && !method_exists($val, '__toString'))) {
             return false;
         }
-
         $val = (string)$val;
-
         // must start with: { OR [
         if ($strict && '[' !== $val[0] && '{' !== $val[0]) {
             return false;
         }
-
         json_decode($val);
 
         return json_last_error() === JSON_ERROR_NONE;
     }
+    /*******************************************************************************
+     * array(list/map/enum) validators
+     ******************************************************************************/
+    /**
+     * 验证值是否是一个数组
+     * @param  mixed $val
+     * @return bool
+     */
+    public static function isArray($val)
+    {
+        return \is_array($val);
+    }
 
     /**
+     * 验证值是否是一个非自然数组 map (key不是自然增长的 OR key - value 形式的)
      * @param  mixed $val
+     * @return bool
+     */
+    public static function isMap($val)
+    {
+        if (!\is_array($val)) {
+            return false;
+        }
+        /** @var array $val */
+        $keys = array_keys($val);
+
+        return array_keys($keys) !== $keys;
+    }
+
+    /**
+     * 验证值是否是一个自然数组 list (key是从0自然增长的)
+     * @param array|mixed $val
+     * @return bool
+     */
+    public static function isList($val)
+    {
+        if (!\is_array($val) || !isset($val[0])) {
+            return false;
+        }
+        /** @var array $val */
+        $keys = array_keys($val);
+
+        return array_keys($keys) === $keys;
+    }
+
+    /**
+     * 验证字段值是否是一个 int list(key是从0自然增长的, val是数字)
+     * @param array|mixed $val
+     * @return bool
+     */
+    public static function intList($val)
+    {
+        if (!\is_array($val) || !isset($val[0])) {
+            return false;
+        }
+        $lastK = -1;
+        /** @var array $val */
+        foreach ($val as $k => $v) {
+            if (!\is_int($k) || $k !== $lastK + 1) {
+                return false;
+            }
+            if (!is_numeric($v)) {
+                return false;
+            }
+            $lastK = $k;
+        }
+
+        return true;
+    }
+
+    /**
+     * 验证字段值是否是一个 number list(key是从0自然增长的, val是大于0的数字)
+     * @param array|mixed $val
+     * @return bool
+     */
+    public static function numList($val)
+    {
+        if (!\is_array($val) || !isset($val[0])) {
+            return false;
+        }
+        $lastK = -1;
+        /** @var array $val */
+        foreach ($val as $k => $v) {
+            if (!\is_int($k) || $k !== $lastK + 1) {
+                return false;
+            }
+            if (!is_numeric($v) || $v <= 0) {
+                return false;
+            }
+            $lastK = $k;
+        }
+
+        return true;
+    }
+
+    /**
+     * 验证字段值是否是一个 string list(key是从0自然增长的, val是 string)
+     * @param array|mixed $val
+     * @return bool
+     */
+    public static function strList($val)
+    {
+        if (!$val || !\is_array($val)) {
+            return false;
+        }
+        $lastK = -1;
+        /** @var array $val */
+        foreach ($val as $k => $v) {
+            if (!\is_int($k) || $k !== $lastK + 1) {
+                return false;
+            }
+            if (!\is_string($v)) {
+                return false;
+            }
+            $lastK = $k;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array|mixed $val
+     * @param string|int|array $key
+     * @return bool
+     */
+    public static function hasKey($val, $key)
+    {
+        if (!$val || !\is_array($val)) {
+            return false;
+        }
+        if (\is_string($key) || \is_int($key)) {
+            return array_key_exists($key, $val);
+        }
+        if (\is_array($key)) {
+            $keys = array_keys($val);
+
+            return !array_diff($key, $keys);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param mixed $val
      * @param array|string $dict
      * @return bool
      */
@@ -623,15 +725,70 @@ final class ValidatorList
 
         return !\in_array($val, (array)$dict, true);
     }
+    /*******************************************************************************
+     * mixed data validators
+     ******************************************************************************/
+    /**
+     * @param mixed $val
+     * @param string $start
+     * @param bool $identical
+     * @return bool
+     */
+    public static function startWith($val, $start, $identical = true)
+    {
+        $start = (string)$start;
+        if (\is_string($val)) {
+            return ($identical ? strpos($val, $start) : stripos($val, $start)) === 0;
+        }
+        if (\is_array($val)) {
+            $first = array_shift($val);
+
+            return $identical ? $first === $start : $first == $start;
+        }
+
+        return false;
+    }
 
     /**
      * @param mixed $val
-     * @param mixed $compareVal
+     * @param string $end
+     * @param bool $identical
      * @return bool
      */
-    public static function compare($val, $compareVal)
+    public static function endWith($val, $end, $identical = true)
     {
-        return $val === $compareVal;
+        $last = null;
+        $end = (string)$end;
+        if (\is_string($val)) {
+            $last = substr($val, -Helper::strlen($end));
+        }
+        if (\is_array($val)) {
+            $last = array_pop($val);
+        }
+
+        return $identical ? $last === $end : $last == $end;
+    }
+
+    /**
+     * 必须是等于给定值
+     * @param  mixed $val
+     * @param  mixed $excepted
+     * @return bool
+     */
+    public static function mustBe($val, $excepted)
+    {
+        return $val === $excepted;
+    }
+
+    /**
+     * 不能等于给定值
+     * @param  mixed $val
+     * @param  mixed $excepted
+     * @return bool
+     */
+    public static function notBe($val, $excepted)
+    {
+        return $val !== $excepted;
     }
     /*******************************************************************************
      * date validators
@@ -759,7 +916,8 @@ final class ValidatorList
      */
     public static function isDateFormat($date)
     {
-        return (bool)preg_match('/^([\\d]{4})-((0?[\\d])|(1[0-2]))-((0?[\\d])|([1-2][\\d])|(3[01]))( [\\d]{2}:[\\d]{2}:[\\d]{2})?$/', $date);
+        return (bool)preg_match('/^([\\d]{4})-((0?[\\d])|(1[0-2]))-((0?[\\d])|([1-2][\\d])|(3[01]))( [\\d]{2}:[\\d]{2}:[\\d]{2})?$/',
+            $date);
     }
 
     /**
@@ -769,7 +927,8 @@ final class ValidatorList
      */
     public static function isDate($date)
     {
-        if (!preg_match('/^([\\d]{4})-((?:0?[\\d])|(?:1[0-2]))-((?:0?[\\d])|(?:[1-2][\\d])|(?:3[01]))( [\\d]{2}:[\\d]{2}:[\\d]{2})?$/', $date, $matches)) {
+        if (!preg_match('/^([\\d]{4})-((?:0?[\\d])|(?:1[0-2]))-((?:0?[\\d])|(?:[1-2][\\d])|(?:3[01]))( [\\d]{2}:[\\d]{2}:[\\d]{2})?$/',
+            $date, $matches)) {
             return false;
         }
 
@@ -927,61 +1086,5 @@ final class ValidatorList
     public static function dirName($dir)
     {
         return (bool)preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
-    }
-    ///////////////////////////////////////////
-
-    /**
-     * @link http://php.net/manual/zh/function.filter-input.php
-     * @param  int $type INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV
-     * @param $varName
-     * @param  array $filter 过滤/验证器 {@link http://php.net/manual/zh/filter.filters.php}
-     * @param  array $options 一个选项的关联数组，或者按位区分的标示。
-     *                         如果过滤器接受选项，可以通过数组的 "flags" 位去提供这些标示。
-     * 如果成功的话返回所请求的变量。
-     * 如果成功的话返回所请求的变量。
-     * 如果过滤失败则返回 FALSE ，
-     * 如果 varName 不存在的话则返回 NULL 。
-     * 如果标示 FILTER_NULL_ON_FAILURE 被使用了，那么当变量不存在时返回 FALSE ，当过滤失败时返回 NULL 。
-     */
-    public static function input($type, $varName, $filter, array $options = [])
-    {
-    }
-
-    public static function multi(array $data, array $filters = [])
-    {
-    }
-
-    /**
-     * @link http://php.net/manual/zh/function.filter-input-array.php
-     * 检查(验证/过滤)输入数据中的多个变量名 like filter_input_array()
-     * 当需要获取很多变量却不想重复调用 filter_input()时很有用。
-     * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
-     * @param  mixed $definition 一个定义参数的数组。
-     *                            一个有效的键必须是一个包含变量名的string，
-     *                            一个有效的值要么是一个filter type，或者是一个array 指明了过滤器、标示和选项。
-     *                            如果值是一个数组，那么它的有效的键可以是 :
-     *                                filter， 用于指明 filter type，
-     *                                flags 用于指明任何想要用于过滤器的标示，
-     *                                options 用于指明任何想要用于过滤器的选项。
-     *                            参考下面的例子来更好的理解这段说明。
-     * @param  bool $addEmpty 在返回值中添加 NULL 作为不存在的键。
-     * 如果成功的话返回一个所请求的变量的数组，
-     * 如果失败的话返回 FALSE 。
-     * 对于数组的值，
-     *     如果过滤失败则返回 FALSE ，
-     *     如果 variable_name 不存在的话则返回 NULL 。
-     * 如果标示 FILTER_NULL_ON_FAILURE 被使用了，那么当变量不存在时返回 FALSE ，当过滤失败时返回 NULL 。
-     */
-    public static function inputMulti($type, $definition, $addEmpty = true)
-    {
-    }
-
-    /**
-     * 检查变量名是否存在
-     * @param  int $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV. 要检查的输入数据
-     * @param  string $varName Name of a variable to check. 要检查的变量名
-     */
-    public static function inputHasVar($type, $varName)
-    {
     }
 }

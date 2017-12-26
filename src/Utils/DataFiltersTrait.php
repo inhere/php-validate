@@ -23,7 +23,6 @@ trait DataFiltersTrait
      */
     private static $_filters = [];
 
-
     /**
      * value sanitize 直接对给的值进行过滤
      * @param  mixed $value
@@ -44,20 +43,17 @@ trait DataFiltersTrait
     protected function valueFiltering($value, $filters)
     {
         $filters = \is_string($filters) ? Helper::explode($filters, '|') : $filters;
-
         foreach ($filters as $key => $filter) {
             // key is a filter. ['myFilter' => ['arg1', 'arg2']]
             if (\is_string($key)) {
                 $args = (array)$filter;
                 $value = $this->callStringCallback($key, $value, ...$args);
-
                 // closure
             } elseif (\is_object($filter) && method_exists($filter, '__invoke')) {
                 $value = $filter($value);
                 // string, trim, ....
             } elseif (\is_string($filter)) {
                 $value = $this->callStringCallback($filter, $value);
-
                 // e.g ['Class', 'method'],
             } else {
                 $value = Helper::call($filter, $value);
@@ -78,26 +74,22 @@ trait DataFiltersTrait
         if (isset(self::$_filters[$filter])) {
             $callback = self::$_filters[$filter];
             $value = $callback(...$args);
-
             // if $filter is a custom method of the subclass.
         } elseif (method_exists($this, $filter . 'Filter')) {
             $filter .= 'Filter';
-            $value = $this->$filter(...$args);
-
+            $value = $this->{$filter}(...$args);
             // $filter is a method of the class 'FilterList'
         } elseif (method_exists(FilterList::class, $filter)) {
             $value = FilterList::$filter(...$args);
-
             // it is function name
         } elseif (\function_exists($filter)) {
             $value = $filter(...$args);
         } else {
-            throw new \InvalidArgumentException("The filter [$filter] don't exists!");
+            throw new \InvalidArgumentException("The filter [{$filter}] don't exists!");
         }
 
         return $value;
     }
-
     /*******************************************************************************
      * custom filters
      ******************************************************************************/

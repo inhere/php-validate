@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -18,8 +19,28 @@ class Helper
      * known image mime types
      * @link https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
      */
-    public static $imgMimeTypes = ['bmp' => 'image/bmp', 'gif' => 'image/gif', 'ief' => 'image/ief', 'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg', 'jpe' => 'image/jpeg', 'png' => 'image/png', 'svg' => 'image/svg+xml', 'ico' => 'image/x-icon'];
-    public static $imgMimeConstants = [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP, IMAGETYPE_WBMP, IMAGETYPE_ICO];
+    public static $imgMimeTypes = [
+        'bmp' => 'image/bmp',
+        'gif' => 'image/gif',
+        'ief' => 'image/ief',
+        'jpeg' => 'image/jpeg',
+        'jpg' => 'image/jpeg',
+        'jpe' => 'image/jpeg',
+        'png' => 'image/png',
+        'svg' => 'image/svg+xml',
+        'ico' => 'image/x-icon'
+    ];
+    /**
+     * @var array
+     */
+    public static $imgMimeConstants = [
+        IMAGETYPE_GIF,
+        IMAGETYPE_JPEG,
+        IMAGETYPE_PNG,
+        IMAGETYPE_BMP,
+        IMAGETYPE_WBMP,
+        IMAGETYPE_ICO
+    ];
 
     /**
      * @param string $ext

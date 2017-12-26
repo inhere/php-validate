@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @date 2015.08.05 sanitize
  * 过滤器(strainer/filter): 过滤数据，去除不合要求的数据，返回过滤后的数据(始终返回字符串, 全部不符合返回空字符串)
@@ -22,6 +23,10 @@ final class FilterList
      */
     public static function integer($val)
     {
+        if (\is_array($val)) {
+            return array_map(self::class . '::integer', $val);
+        }
+
         return (int)filter_var($val, FILTER_SANITIZE_NUMBER_INT);
     }
 
@@ -47,23 +52,26 @@ final class FilterList
      * 过滤器删除浮点数中所有非法的字符。
      * @note 该过滤器默认允许所有数字以及 + -
      * @param  mixed $val 要过滤的变量
+     * @param null|int $decimal
      * @param  int $flags 标志
      *                    FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
      *                    FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
      * @return mixed
      */
-    public static function float($val, $flags = FILTER_FLAG_ALLOW_FRACTION)
+    public static function float($val, $decimal = null, $flags = FILTER_FLAG_ALLOW_FRACTION)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
-
         $ret = filter_var($val, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
+        $new = strpos($ret, '.') ? (double)$ret : $ret;
+        if (\is_int($decimal)) {
+            return round($new, $decimal);
+        }
 
-        return strpos($ret, '.') ? (float)$ret : $ret;
+        return $new;
     }
 
     /**
@@ -81,12 +89,47 @@ final class FilterList
     public static function string($val, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
 
         return filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+    }
+
+    /**
+     * Convert \n and \r\n and \r to <br/>
+     * @param string $str String to transform
+     * @return string New string
+     */
+    public static function nl2br($str)
+    {
+        return str_replace(["\r\n", "\r", "\n"], '<br/>', $str);
+    }
+
+    /**
+     * @param string $str
+     * @param string $sep
+     * @return array
+     */
+    public static function str2list($str, $sep = ',')
+    {
+        return self::str2array($str, $sep);
+    }
+
+    /**
+     * var_dump(str2array('34,56,678, 678, 89, '));
+     * @param string $str
+     * @param string $sep
+     * @return array
+     */
+    public static function str2array($str, $sep = ',')
+    {
+        $str = trim($str, "{$sep} ");
+        if (!$str) {
+            return [];
+        }
+
+        return preg_split("/\\s*{$sep}\\s*/", $str, -1, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -106,8 +149,18 @@ final class FilterList
     public static function trim($val)
     {
         return \is_array($val) ? array_map(function ($val) {
-            return \is_string($val) ? trim($val) : $val;
-        }, $val) : trim((string)$val);
+            return \is_string($val) ? \trim($val) : $val;
+        }, $val) : \trim((string)$val);
+    }
+
+    /**
+     * clear space
+     * @param string $val
+     * @return mixed
+     */
+    public static function clearSpace($val)
+    {
+        return str_replace(' ', '', \trim($val));
     }
 
     /**
@@ -272,7 +325,6 @@ final class FilterList
     public static function encoded($val, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
@@ -302,7 +354,6 @@ final class FilterList
     public static function specialChars($val, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
@@ -329,7 +380,6 @@ final class FilterList
     public static function fullSpecialChars($val, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }
@@ -391,7 +441,6 @@ final class FilterList
     public static function unsafeRaw($string, $flags = 0)
     {
         $settings = [];
-
         if ((int)$flags !== 0) {
             $settings['flags'] = (int)$flags;
         }

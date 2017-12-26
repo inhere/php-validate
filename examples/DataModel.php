@@ -11,6 +11,8 @@ class DataModel
 
     protected $data = [];
 
+    protected $db;
+
     /**
      * @param array $data
      * @return $this
@@ -20,5 +22,14 @@ class DataModel
         $this->data = $data;
 
         return $this;
+    }
+
+    public function create()
+    {
+        if ($this->validate()->fail()) {
+            return false;
+        }
+
+        return $this->db->insert($this->getSafeData());
     }
 }

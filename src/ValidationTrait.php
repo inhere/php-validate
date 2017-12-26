@@ -33,21 +33,18 @@ trait ValidationTrait
      * @var string
      */
     protected $scene = '';
-    /**
-     * Through the validation of the data
-     * @var array
-     */
-    private $_safeData = [];
+    /** @var array used rules at current scene */
+    protected $_usedRules = [];
     /**
      * the rules is by setRules()
      * @var array
      */
     private $_rules = [];
     /**
-     * used rules at current scene
+     * Through the validation of the data
      * @var array
      */
-    protected $_usedRules = [];
+    private $_safeData = [];
     /** @var bool */
     private $_validated = false;
     /** @var \Closure before validate handler */
@@ -144,24 +141,21 @@ trait ValidationTrait
         }
         $data = $this->data;
         foreach ($this->collectRules() as $fields => $rule) {
-            $fields = \is_string($fields) ? array_map('trim', explode(',', $fields)) : (array)$fields;
+            $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
             $validator = array_shift($rule);
             // 为空时是否跳过(非 required 时). 参考自 yii2
             $skipOnEmpty = isset($rule['skipOnEmpty']) ? $rule['skipOnEmpty'] : true;
-
             $filters = isset($rule['filter']) ? $rule['filter'] : null;
             // 使用过滤器
             $defMsg = isset($rule['msg']) ? $rule['msg'] : null;
             // 自定义错误消息
             $defValue = isset($rule['default']) ? $rule['default'] : null;
             // 允许默认值
-
             // 如何判断属性为空 默认使用 ValidatorList::isEmpty(). 也可自定义
             $isEmpty = [ValidatorList::class, 'isEmpty'];
             if (!empty($rule['isEmpty']) && (\is_string($rule['isEmpty']) || $rule['isEmpty'] instanceof \Closure)) {
                 $isEmpty = $rule['isEmpty'];
             }
-
             // 验证的前置条件 -- 不满足条件,跳过此条规则
             $when = isset($rule['when']) ? $rule['when'] : null;
             if ($when && $when instanceof \Closure && $when($data, $this) !== true) {
@@ -169,9 +163,8 @@ trait ValidationTrait
             }
             // clear all keywords options
             unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
-            // 验证设置, 有一些验证器需要参数。 e.g. size()
+            // 验证器参数, 有一些验证器需要参数。 e.g. size()
             $args = $rule;
-            // 循环检查属性
             foreach ($fields as $field) {
                 if (!$field || ($onlyChecked && !\in_array($field, $onlyChecked, true))) {
                     continue;
@@ -371,14 +364,12 @@ trait ValidationTrait
                 }
                 unset($rule['on']);
             }
-
             $this->_usedRules[] = $rule;
             $fields = array_shift($rule);
-
             (yield $fields => $this->prepareRule($rule));
         }
 
-        yield [];
+        //
     }
 
     /**
@@ -388,26 +379,33 @@ trait ValidationTrait
     protected function prepareRule(array $rule)
     {
         $validator = $rule[0];
-
         switch ($validator) {
+            case 'num':
+            case 'number':
+            case 'string':
+            case 'length':
+                // fixed: 当只有 max 时，自动补充一个 min. 字符串最小长度就是 0
+                if (isset($rule['max']) && !isset($rule['min'])) {
+                    $rule['min'] = 0;
+                }
+                break;
+            case 'int':
             case 'size':
             case 'range':
-            case 'string':
+            case 'integer':
             case 'between':
-                // fixed: 当只有 max 时，自动补充一个 min. PHP_INT_MIN 在 php 5 不可用
+                // fixed: 当只有 max 时，自动补充一个 min
                 if (isset($rule['max']) && !isset($rule['min'])) {
-                    $rule['min'] = - PHP_INT_MAX;
+                    $rule['min'] = PHP_INT_MIN;
                 }
                 break;
         }
 
         return $rule;
     }
-
     /*******************************************************************************
      * getter/setter
      ******************************************************************************/
-
     /**
      * @return bool
      */
@@ -465,7 +463,7 @@ trait ValidationTrait
      */
     public function setScene($scene)
     {
-        $this->scene = $scene;
+        $this->scene = trim($scene);
 
         return $this;
     }
@@ -476,6 +474,16 @@ trait ValidationTrait
      * @return static
      */
     public function atScene($scene)
+    {
+        return $this->setScene($scene);
+    }
+
+    /**
+     * alias of the `setScene()`
+     * @param string $scene
+     * @return static
+     */
+    public function onScene($scene)
     {
         return $this->setScene($scene);
     }
@@ -524,6 +532,16 @@ trait ValidationTrait
     }
 
     /**
+     * @param string $key
+     * @param null $default
+     * @return mixed
+     */
+    public function getRaw($key, $default = null)
+    {
+        return $this->has($key) ? $this->data[$key] : $default;
+    }
+
+    /**
      * Get data item by key
      *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
      * @param string $key The data key
@@ -558,11 +576,32 @@ trait ValidationTrait
     }
 
     /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function setSafe($key, $value)
+    {
+        $this->_safeData[$key] = $value;
+    }
+
+    /**
      * @return array
      */
     public function getSafeData()
     {
         return $this->_safeData;
+    }
+
+    /**
+     * @param array $safeData
+     * @param bool $clearOld
+     */
+    public function setSafeData(array $safeData, $clearOld = false)
+    {
+        if ($clearOld) {
+            $this->_safeData = [];
+        }
+        $this->_safeData = array_merge($this->_safeData, $safeData);
     }
 
     /**

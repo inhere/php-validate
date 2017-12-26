@@ -12,6 +12,8 @@ class FilterListTest extends TestCase
     {
         $this->assertSame(FilterList::integer('456'), 456);
         $this->assertSame(FilterList::integer('4df5dg6'), 456);
+
+        $this->assertSame(FilterList::integer(['34', '67gh']), [34, 67]);
     }
 
     public function testAbs()
@@ -25,6 +27,9 @@ class FilterListTest extends TestCase
 //        $this->assertSame(FilterList::float('4.45'), 4.45);
         $this->assertSame(FilterList::float(45.78), 45.78);
         $this->assertSame(FilterList::float(-45.78), -45.78);
+
+        $this->assertSame(FilterList::float(45.78678, 2), 45.79);
+        $this->assertSame(FilterList::float(457, 2), 457.00);
     }
 
     public function testTrim()
@@ -42,5 +47,13 @@ class FilterListTest extends TestCase
     public function testUppercase()
     {
         $this->assertSame(FilterList::uppercase('Test'), 'TEST');
+    }
+
+    public function testStr2list()
+    {
+        $this->assertSame(FilterList::str2array('a,b,c,'), ['a', 'b', 'c']);
+        $this->assertSame(FilterList::str2array('a, b ,c,'), ['a', 'b', 'c']);
+        $this->assertSame(FilterList::str2array(' a, b , c'), ['a', 'b', 'c']);
+        $this->assertSame(FilterList::str2array(' a,, b ,, c'), ['a', 'b', 'c']);
     }
 }

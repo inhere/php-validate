@@ -8,7 +8,6 @@ use Inhere\Validate\ValidatorList;
  */
 class ValidatorListTest extends TestCase
 {
-
     public function testIsEmpty()
     {
         $this->assertFalse(ValidatorList::isEmpty(1));
@@ -21,16 +20,44 @@ class ValidatorListTest extends TestCase
         $this->assertTrue(ValidatorList::isEmpty(' '));
     }
 
+    public function testBool()
+    {
+        $this->assertFalse(ValidatorList::bool(null));
+        $this->assertFalse(ValidatorList::bool([]));
+
+        $this->assertTrue(ValidatorList::bool('1'));
+        $this->assertTrue(ValidatorList::bool(1));
+    }
+
+    public function testFloat()
+    {
+        $this->assertFalse(ValidatorList::float(null));
+        $this->assertFalse(ValidatorList::float(false));
+        $this->assertFalse(ValidatorList::float(''));
+
+        $this->assertTrue(ValidatorList::float('1'));
+        $this->assertTrue(ValidatorList::float('1.0'));
+        $this->assertTrue(ValidatorList::float(3.4));
+        $this->assertTrue(ValidatorList::float(-3.4));
+        $this->assertTrue(ValidatorList::float(3.4, 3.1));
+        $this->assertTrue(ValidatorList::float(3.4, 3.1, 5.4));
+        $this->assertTrue(ValidatorList::float(3.4, null, 5.4));
+    }
+
     public function testInteger()
     {
         $this->assertFalse(ValidatorList::integer(''));
         $this->assertFalse(ValidatorList::integer(null));
         $this->assertFalse(ValidatorList::integer(false));
+        $this->assertFalse(ValidatorList::integer(2, 5));
 
         $this->assertTrue(ValidatorList::integer(0));
         $this->assertTrue(ValidatorList::integer(1));
         $this->assertTrue(ValidatorList::integer(-1));
         $this->assertTrue(ValidatorList::integer('1'));
+        $this->assertTrue(ValidatorList::integer(-2, -3, 1));
+        $this->assertTrue(ValidatorList::integer(2, 2, 5));
+        $this->assertTrue(ValidatorList::integer(2, null, 5));
     }
 
     public function testNumber()
@@ -40,6 +67,9 @@ class ValidatorListTest extends TestCase
         $this->assertFalse(ValidatorList::number(0));
 
         $this->assertTrue(ValidatorList::number(1));
+        $this->assertTrue(ValidatorList::number(10, 5, 12));
+        $this->assertTrue(ValidatorList::number(10, 12, 5));
+        $this->assertTrue(ValidatorList::number(10, null, 12));
     }
 
     public function testString()
@@ -177,6 +207,7 @@ class ValidatorListTest extends TestCase
         $this->assertFalse(ValidatorList::isList([]));
         $this->assertFalse(ValidatorList::isList(['a' => 'v']));
         $this->assertFalse(ValidatorList::isList(['value', 'a' => 'v']));
+        $this->assertFalse(ValidatorList::isList([3 => 'abc']));
 
         $this->assertTrue(ValidatorList::isList(['abc']));
         $this->assertTrue(ValidatorList::isList(['abc', 565, null]));
@@ -187,8 +218,10 @@ class ValidatorListTest extends TestCase
         $this->assertFalse(ValidatorList::intList('test'));
         $this->assertFalse(ValidatorList::intList([]));
         $this->assertFalse(ValidatorList::intList(['a', 'v']));
+        $this->assertFalse(ValidatorList::intList(['a', 456]));
         $this->assertFalse(ValidatorList::intList(['a' => 'v']));
         $this->assertFalse(ValidatorList::intList(['value', 'a' => 'v']));
+        $this->assertFalse(ValidatorList::intList([2 => '343', 45]));
 
         $this->assertTrue(ValidatorList::intList(['343', 45]));
         $this->assertTrue(ValidatorList::intList([565, 3234, -56]));
@@ -202,6 +235,7 @@ class ValidatorListTest extends TestCase
         $this->assertFalse(ValidatorList::numList(['a' => 'v']));
         $this->assertFalse(ValidatorList::numList(['value', 'a' => 'v']));
         $this->assertFalse(ValidatorList::numList([565, 3234, -56]));
+        $this->assertFalse(ValidatorList::numList([2 => 56, 45]));
 
         $this->assertTrue(ValidatorList::numList(['343', 45]));
         $this->assertTrue(ValidatorList::numList([56, 45]));
@@ -212,9 +246,68 @@ class ValidatorListTest extends TestCase
         $this->assertFalse(ValidatorList::strList('test'));
         $this->assertFalse(ValidatorList::strList([]));
         $this->assertFalse(ValidatorList::strList(['a' => 'v']));
+        $this->assertFalse(ValidatorList::strList(['value', 'a' => 'v']));
+        $this->assertFalse(ValidatorList::strList(['abc', 565]));
+        $this->assertFalse(ValidatorList::strList(['abc', 565, null]));
 
-        $this->assertTrue(ValidatorList::strList(['value', 'a' => 'v']));
-        $this->assertTrue(ValidatorList::strList(['abc']));
-        $this->assertTrue(ValidatorList::strList(['abc', 565, null]));
+        $this->assertTrue(ValidatorList::strList(['abc', 'efg']));
+    }
+
+    public function testJson()
+    {
+        $this->assertFalse(ValidatorList::json('test'));
+        $this->assertFalse(ValidatorList::json([]));
+
+        $this->assertFalse(ValidatorList::json(123));
+        $this->assertFalse(ValidatorList::json('123'));
+        $this->assertTrue(ValidatorList::json('123', false));
+
+        $this->assertFalse(ValidatorList::json('{aa: 34}'));
+
+        $this->assertTrue(ValidatorList::json('{}'));
+        $this->assertTrue(ValidatorList::json('[]'));
+        $this->assertTrue(ValidatorList::json('{"aa": 34}'));
+    }
+
+    public function testHasKey()
+    {
+        $this->assertFalse(ValidatorList::hasKey('hello, world', 'all'));
+        $this->assertFalse(ValidatorList::hasKey(['a' => 'v0', 'b' => 'v1', 'c' => 'v2'], 'd'));
+        $this->assertFalse(ValidatorList::hasKey(['a' => 'v0', 'b' => 'v1', 'c' => 'v2'], ['c', 'd']));
+
+        $this->assertTrue(ValidatorList::hasKey(['a' => 'v0', 'b' => 'v1', 'c' => 'v2'], 'b'));
+        $this->assertTrue(ValidatorList::hasKey(['a' => 'v0', 'b' => 'v1', 'c' => 'v2'], ['b', 'c']));
+    }
+
+    public function testContains()
+    {
+        $this->assertFalse(ValidatorList::contains('hello, world', 'all'));
+
+        $this->assertTrue(ValidatorList::contains('hello, world', 'llo'));
+        $this->assertTrue(ValidatorList::contains('hello, world', ['llo', 'wor']));
+    }
+
+    public function testStartWith()
+    {
+        $this->assertFalse(ValidatorList::startWith('hello, world', 'ell'));
+
+        $this->assertTrue(ValidatorList::startWith('hello, world', 'hell'));
+        $this->assertTrue(ValidatorList::startWith(['hello', 'world'], 'hello'));
+    }
+
+    public function testEndWith()
+    {
+        $this->assertFalse(ValidatorList::endWith('hello, world', 'ell'));
+
+        $this->assertTrue(ValidatorList::endWith('hello, world', 'world'));
+        $this->assertTrue(ValidatorList::endWith(['hello', 'world'], 'world'));
+    }
+
+    public function testDate()
+    {
+        $this->assertFalse(ValidatorList::date('hello'));
+
+        $this->assertTrue(ValidatorList::date(170526));
+        $this->assertTrue(ValidatorList::date('20170526'));
     }
 }
