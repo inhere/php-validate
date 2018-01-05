@@ -360,16 +360,6 @@ final class ValidatorList
      * @param int $size
      * @return bool
      */
-    public static function fixedLength($val, $size)
-    {
-        return self::fixedSize($val, $size);
-    }
-
-    /**
-     * @param mixed $val
-     * @param int $size
-     * @return bool
-     */
     public static function fixedSize($val, $size)
     {
         if (!\is_int($val)) {
@@ -383,6 +373,26 @@ final class ValidatorList
         }
 
         return $val === (int)$size;
+    }
+
+    /**
+     * @param mixed $val
+     * @param int $size
+     * @return bool
+     */
+    public static function lengthEq($val, $size)
+    {
+        return self::fixedSize($val, $size);
+    }
+
+    /**
+     * @param mixed $val
+     * @param int $size
+     * @return bool
+     */
+    public static function sizeEq($val, $size)
+    {
+        return self::fixedSize($val, $size);
     }
 
     /*******************************************************************************

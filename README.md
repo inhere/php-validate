@@ -14,7 +14,7 @@
 - 支持自定义每个验证的错误消息，字段翻译，消息翻译，支持默认值
 - 支持基本的数组检查，数组的子级值检查
 - 方便的获取错误信息，验证后的安全数据获取
-- 已经内置了40多个常用的验证器[内置验证器](#built-in-validators)
+- 已经内置了50多个常用的验证器[内置验证器](#built-in-validators)
 - 规则设置参考 yii. 部分规则参考自 laravel, Respect/Validation
 - 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration` 用于数据过滤
 
@@ -427,7 +427,7 @@ $v = Validation::make($_POST,[
 
 支持在进行验证前对值使用过滤器进行净化过滤[内置过滤器](#built-in-filters)
 
-> 允许同时使用多个过滤器。字符串使用 `|` 分隔，或者配置为数组。
+**通过类 `Filtration`，可以独立使用过滤器**
 
 ```php
 ['tagId,userId,freeTime', 'number', 'filter' => 'int'],
@@ -441,13 +441,18 @@ $v = Validation::make($_POST,[
     ['Object', 'method'],
     // 追加额外参数。 传入时，第一个参数总是要过滤的字段值，其余的依次追加
     'myFilter' => ['arg1', 'arg2'],
+    // 直接使用闭包
+    function($val) {
+        return str_replace(' ', '', $val);
+    },
 ]],
 ```
 
-> 注意： 写在当前类里的过滤器方法必须带有后缀 `Filter`, 以防止对内部的其他的方法造成干扰
+**提示：**
 
-
-> 过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
+- 允许同时使用多个过滤器。字符串使用 `|` 分隔，或者配置为数组。
+- 注意： 写在当前类里的过滤器方法必须带有后缀 `Filter`, 以防止对内部的其他的方法造成干扰
+- php内置过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
 
 ### 一个完整的规则示例
 
@@ -470,7 +475,7 @@ $v = Validation::make($_POST,[
 ]
 ```
 
-## 一些关键方法使用说明
+## 一些关键方法API
 
 ### 设置验证场景
 
@@ -595,6 +600,8 @@ public function get(string $key, $default = null)
 <a name="built-in-filters"></a>
 ## 内置的过滤器
 
+> 一些 php 内置的函数可直接使用。 e.g `trim|ucfirst` `json_decode`
+
 过滤器 | 说明 | 示例
 -------|-------------|------------
 `abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
@@ -612,11 +619,11 @@ public function get(string $key, $default = null)
 `str2list/str2array` | 字符串转数组 `'tag0,tag1' -> ['tag0', 'tag1']` | `['tags', 'strList', 'filter' => 'str2array'],`
 `email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
 `encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
+`clearSpace` | 清理空格 | `['title', 'string', 'filter' => 'clearSpace'],`
+`clearNewline` | 清理换行符 | `['title', 'string', 'filter' => 'clearNewline'],`
 `clearTags/stripTags` | 相当于使用 `strip_tags()` | `['content', 'string', 'filter' => 'clearTags'],`
 `escape/specialChars` | 相当于使用 `htmlspecialchars()` 转义数据 | `['content', 'string', 'filter' => 'specialChars'],`
 `quotes` | 应用 `addslashes()` 转义数据 | `['content', 'string', 'filter' => 'quotes'],`
-
-> php 内置的函数可直接使用。 e.g `string|ucfirst`
 
 <a name="built-in-validators"></a>
 ## 内置的验证器
@@ -625,6 +632,7 @@ public function get(string $key, $default = null)
 
 验证器 | 说明 | 规则示例
 ----------|-------------|------------
+`required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
 `int/integer`   | 验证是否是 int **支持范围检查** | `['userId', 'int']` `['userId', 'int', 'min'=>4, 'max'=>16]`
 `num/number`    | 验证是否是 number **支持范围检查** | `['userId', 'number']` `['userId', 'number', 'min'=>4, 'max'=>16]`
 `bool/boolean`  | 验证是否是 bool | `['open', 'bool']`
@@ -646,22 +654,21 @@ public function get(string $key, $default = null)
 `max`   | 最大边界值验证 | `['title', 'max', 40]`
 `size/range/between`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
 `length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
-`fixedSize/fixedLength`    | 固定的长度/大小 | `['field', 'fixedSize', 12]`
+`fixedSize/sizeEq/lengthEq` | 固定的长度/大小(验证 `string`, `array` 长度, `int` 大小) | `['field', 'fixedSize', 12]`
 `startWith` | 值(`string/array`)是以给定的字符串开始 | `['field', 'startWith', 'hell']`
 `endWith` | 值(`string/array`)是以给定的字符串结尾 | `['field', 'endWith', 'world']`
-`in/enum`    | 枚举验证 | `['status', 'in', [1,2,3]]`
-`notIn`    | 枚举验证 | `['status', 'notIn', [4,5,6]]`
+`in/enum`  | 枚举验证包含 | `['status', 'in', [1,2,3]]`
+`notIn`    | 枚举验证不包含 | `['status', 'notIn', [4,5,6]]`
 `mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
 `notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
 `compare/same/equal` | 字段值相同比较 | `['passwd', 'compare', 'repasswd']`
-`notEqual` | 字段值不能相同比较 | `['passwd', 'notEqual', 'repasswd']`
-`required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
-`requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
-`requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
+`notEqual` | 字段值不能相同比较 | `['userId', 'notEqual', 'targetId']`
+`requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
+`requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
 `requiredWith` | 指定的字段中的 _任意一个_ 有值且不为空，则此字段为 **必填** | `['city', 'requiredWith', ['myCity'] ]`
 `requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填** | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
 `requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填** | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
-`requiredWithoutAll` | 如果所有指定的字段 都没有 值，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
+`requiredWithoutAll` | 如果所有指定的字段 **都没有值**，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
 `date` | 验证是否是 date | `['publishedAt', 'date']`
 `dateFormat` | 验证是否是 date, 并且是指定的格式 | `['publishedAt', 'dateFormat', 'Y-m-d']`
 `dateEquals` | 验证是否是 date, 并且是否是等于给定日期 | `['publishedAt', 'dateEquals', '2017-05-12']`
@@ -713,7 +720,7 @@ $v = Validation::make($_POST, [
 - 关于布尔值验证
     * 如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE
     * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE
-- `size/range` `length` 可以只定义 `min` 最小值。 但是 **当定义了 `max` 值时，必须同时定义最小值**
+- `size/range` `length` 可以只定义 `min` 或者  `max` 值
 - 支持对数组的子级值验证 
 
 ```php

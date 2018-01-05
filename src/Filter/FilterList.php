@@ -100,6 +100,15 @@ final class FilterList
     }
 
     /**
+     * @see FilterList::string()
+     * {@inheritdoc}
+     */
+    public static function stripped($val, $flags = 0)
+    {
+        return self::string($val, $flags);
+    }
+
+    /**
      * Convert \n and \r\n and \r to <br/>
      * @param string $str String to transform
      * @return string New string
@@ -107,42 +116,6 @@ final class FilterList
     public static function nl2br($str)
     {
         return str_replace(["\r\n", "\r", "\n"], '<br/>', $str);
-    }
-
-    /**
-     * @param string $str
-     * @param string $sep
-     * @return array
-     */
-    public static function str2list($str, $sep = ',')
-    {
-        return self::str2array($str, $sep);
-    }
-
-    /**
-     * var_dump(str2array('34,56,678, 678, 89, '));
-     * @param string $str
-     * @param string $sep
-     * @return array
-     */
-    public static function str2array($str, $sep = ',')
-    {
-        $str = trim($str, "$sep ");
-
-        if (!$str) {
-            return [];
-        }
-
-        return preg_split("/\s*$sep\s*/", $str, -1, PREG_SPLIT_NO_EMPTY);
-    }
-
-    /**
-     * @see FilterList::string()
-     * {@inheritdoc}
-     */
-    public static function stripped($val, $flags = 0)
-    {
-        return self::string($val, $flags);
     }
 
     /**
@@ -166,7 +139,17 @@ final class FilterList
     {
         return str_replace(' ', '', \trim($val));
     }
-    
+
+    /**
+     * clear newline `\n` `\r\n` `\r`
+     * @param string $val
+     * @return mixed
+     */
+    public static function clearNewline($val)
+    {
+        return str_replace(["\r\n", "\r", "\n"], '', \trim($val));
+    }
+
     /**
      * string to lowercase
      * @param string $val
@@ -289,6 +272,33 @@ final class FilterList
         }
 
         return (int)strtotime($val);
+    }
+
+    /**
+     * @param string $str
+     * @param string $sep
+     * @return array
+     */
+    public static function str2list($str, $sep = ',')
+    {
+        return self::str2array($str, $sep);
+    }
+
+    /**
+     * var_dump(str2array('34,56,678, 678, 89, '));
+     * @param string $str
+     * @param string $sep
+     * @return array
+     */
+    public static function str2array($str, $sep = ',')
+    {
+        $str = trim($str, "$sep ");
+
+        if (!$str) {
+            return [];
+        }
+
+        return preg_split("/\s*$sep\s*/", $str, -1, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
