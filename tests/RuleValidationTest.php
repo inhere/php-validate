@@ -193,4 +193,35 @@ class RuleValidationTest extends TestCase
             }, 'msg' => 'userId check failure by closure!'],
         ];
     }
+
+    public function testArrayValidate()
+    {
+        $data = [
+            'options' => [
+                'opt1' => true,
+                'opt2' => 34,
+                'opt3' => 'string',
+                'opt4' => '0',
+            ],
+            'key1' => [23, '56'],
+            'key2' => [23, 56],
+            'key3' => ['23', 'str'],
+        ];
+
+        $v = Validation::makeAndValidate($data, [
+            ['options, key1, key2, key3', 'isArray'],
+            ['options', 'isMap'],
+            ['key1', 'isList'],
+            ['key1, key2', 'intList'],
+            ['key3', 'strList'],
+            ['options.opt2', 'num', 'min' => 30, 'max' => 50],
+            ['options.opt3', 'string', 'min' => 3, 'max' => 12],
+            ['options.opt1, options.opt4', 'bool'],
+            ['options.opt1, options.opt4', 'in', [true, false]],
+        ]);
+        // var_dump($v->getErrors());die;
+
+        $this->assertTrue($v->passed());
+        $this->assertFalse($v->failed());
+    }
 }

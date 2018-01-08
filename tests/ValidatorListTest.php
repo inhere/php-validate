@@ -92,6 +92,27 @@ class ValidatorListTest extends TestCase
         $this->assertTrue(ValidatorList::alpha('test'));
     }
 
+    public function testAccepted()
+    {
+        $this->assertFalse(ValidatorList::accepted(5));
+        $this->assertFalse(ValidatorList::accepted('5'));
+        $this->assertFalse(ValidatorList::accepted('no'));
+        $this->assertFalse(ValidatorList::accepted('off'));
+        $this->assertFalse(ValidatorList::accepted('OFF'));
+        $this->assertFalse(ValidatorList::accepted('0'));
+        $this->assertFalse(ValidatorList::accepted(0));
+        $this->assertFalse(ValidatorList::accepted(false));
+        $this->assertFalse(ValidatorList::accepted('false'));
+
+        $this->assertTrue(ValidatorList::accepted('yes'));
+        $this->assertTrue(ValidatorList::accepted('Yes'));
+        $this->assertTrue(ValidatorList::accepted('on'));
+        $this->assertTrue(ValidatorList::accepted('ON'));
+        $this->assertTrue(ValidatorList::accepted('1'));
+        $this->assertTrue(ValidatorList::accepted(1));
+        $this->assertTrue(ValidatorList::accepted(true));
+        $this->assertTrue(ValidatorList::accepted('true'));
+    }
 
     public function testAlphaNum()
     {

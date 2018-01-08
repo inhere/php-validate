@@ -15,15 +15,34 @@ namespace Inhere\Validate\Utils;
 trait ErrorMessageTrait
 {
     /**
+     * @var array
+     */
+    private static $validatorAliases = [
+        'int' => 'integer',
+        'num' => 'number',
+        'bool' => 'boolean',
+        'in' => 'enum',
+        'range' => 'size',
+        'between' => 'size',
+        'lengthEq' => 'fixedSize',
+        'sizeEq' => 'fixedSize',
+        'different' => 'notEqual',
+    ];
+
+    /**
      * 默认的错误提示信息
      * @var array
      */
     public static $messages = [
-        'int' => '{attr} must be an integer!',
+        // 'int' 'integer'
         'integer' => '{attr} must be an integer!',
-        'num' => '{attr} must be an integer greater than 0!',
-        'number' => '{attr} must be an integer greater than 0!',
-        'bool' => '{attr} must be is boolean!',
+        // 'num'
+        'number' => [
+            '{attr} must be an integer greater than 0!',
+            '{attr} must be an integer and minimum value is {min}',
+            '{attr} must be an integer and in the range {min} ~ {max}',
+       ],
+        // 'bool', 'boolean',
         'boolean' => '{attr} must be is boolean!',
         'float' => '{attr} must be is float!',
         'url' => '{attr} is not a url address!',
@@ -39,34 +58,31 @@ trait ErrorMessageTrait
             '{attr} must be an string/array and minimum length is {min}',
             '{attr} must be an string/array and length range {min} ~ {max}',
         ],
+        // 'range', 'between'
         'size' => [
             '{attr} size validation is not through!',
             '{attr} must be an integer/string/array and minimum value/length is {min}',
             // '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
             '{attr} must be in the range {min} ~ {max}',
         ],
-        'range' => [
-            '{attr} range validation is not through!',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
-            '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
-        ],
-        'between' => [
-            '{attr} between validation is not through!',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
-            '{attr} must be an integer/string/array and value/length between {min} ~ {max}',
-        ],
+
+        // 'lengthEq', 'sizeEq'
         'fixedSize' => '{attr} length must is {value0}',
+
         'min' => '{attr} minimum boundary is {value0}',
         'max' => '{attr} maximum boundary is {value0}',
-        'in' => '{attr} must in ({value0})',
+
+        // 'in', 'enum',
         'enum' => '{attr} must in ({value0})',
         'notIn' => '{attr} cannot in ({value0})',
+
         'string' => [
             '{attr} must be a string',
             '{attr} must be a string and minimum length be {min}',
             '{attr} must be a string and length range must be {min} ~ {max}',
         ],
-        'regex' => '{attr} does not match the {value0} conditions',
+
+        // 'regex', 'regexp',
         'regexp' => '{attr} does not match the {value0} conditions',
 
         'mustBe' => '{attr} must be equals to {value0}',
@@ -75,6 +91,8 @@ trait ErrorMessageTrait
         'compare' => '{attr} must be equals to {value0}',
         'same' => '{attr} must be equals to {value0}',
         'equal' => '{attr} must be equals to {value0}',
+
+        // 'different'
         'notEqual' => '{attr} can not be equals to {value0}',
 
         'isArray' => '{attr} must be an array',
@@ -311,7 +329,7 @@ trait ErrorMessageTrait
      */
     public function getMessage($validator, $field, array $args = [], $message = null)
     {
-        $validator = \is_string($validator) ? $validator : 'callback';
+        $validator = self::getValidatorName(\is_string($validator) ? $validator : 'callback');
 
         // get message from default dict.
         if (!$message) {
@@ -388,5 +406,22 @@ trait ErrorMessageTrait
         $trans = $this->getTranslates();
 
         return $trans[$attr] ?? Helper::beautifyFieldName($attr);
+    }
+
+    /**
+     * @param string $validator
+     * @return string
+     */
+    public static function getValidatorName(string $validator)
+    {
+        return self::$validatorAliases[$validator] ?? $validator;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getValidatorAliases(): array
+    {
+        return self::$validatorAliases;
     }
 }

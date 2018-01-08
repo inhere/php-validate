@@ -162,13 +162,7 @@ trait ValidationTrait
 
         foreach ($this->collectRules() as $fields => $rule) {
             $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
-            $validator = array_shift($rule);
-
-            // 为空时是否跳过(非 required 时). 参考自 yii2
-            $skipOnEmpty = $rule['skipOnEmpty'] ?? true;
-            $filters = $rule['filter'] ?? null;  // 使用过滤器
-            $defMsg = $rule['msg'] ?? null; // 自定义错误消息
-            $defValue = $rule['default'] ?? null;// 允许默认值
+            $validator = $rule[0];
 
             // 如何判断属性为空 默认使用 ValidatorList::isEmpty(). 也可自定义
             $isEmpty = [ValidatorList::class, 'isEmpty'];
@@ -182,10 +176,16 @@ trait ValidationTrait
                 continue;
             }
 
-            // clear all keywords options
-            unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
+            // 为空时是否跳过(非 required 时). 参考自 yii2
+            $skipOnEmpty = $rule['skipOnEmpty'] ?? true;
+            $filters = $rule['filter'] ?? null;  // 使用过滤器
+            $defMsg = $rule['msg'] ?? null; // 自定义错误消息
+            $defValue = $rule['default'] ?? null;// 允许默认值
 
-            // 验证器参数, 有一些验证器需要参数。 e.g. size()
+            // clear all keywords options. 0 is the validator
+            unset($rule[0], $rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
+
+            // 余下的都作为验证器参数, 有一些验证器需要参数。 e.g. size()
             $args = $rule;
 
             foreach ($fields as $field) {
@@ -419,8 +419,9 @@ trait ValidationTrait
 
             $this->_usedRules[] = $rule;
             $fields = array_shift($rule);
+            $this->prepareRule($rule);
 
-            yield $fields => $this->prepareRule($rule);
+            yield $fields => $rule;
         }
 
         //
@@ -428,11 +429,14 @@ trait ValidationTrait
 
     /**
      * @param array $rule
-     * @return array
      */
-    protected function prepareRule(array $rule)
+    protected function prepareRule(array &$rule)
     {
         $validator = $rule[0];
+
+        if (!\is_string($validator)) {
+            return;
+        }
 
         switch ($validator) {
             case 'num':
@@ -455,8 +459,6 @@ trait ValidationTrait
                 }
                 break;
         }
-
-        return $rule;
     }
 
     /*******************************************************************************

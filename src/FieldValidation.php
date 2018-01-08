@@ -72,6 +72,7 @@ class FieldValidation extends AbstractValidation
             $this->_usedRules[] = $rule;
             $field = array_shift($rule);
 
+            // if is a Closure
             if (\is_object($rule[0])) {
                 yield $field => $rule;
             } else {

@@ -17,6 +17,10 @@ use Inhere\Validate\Utils\Helper;
  */
 final class ValidatorList
 {
+    const IS_TRUE = '|yes|on|1|true|';
+    const IS_FALSE = '|no|off|0|false|';
+    const IS_BOOL = '|yes|on|1|true|no|off|0|false|';
+
     /*******************************************************************************
      * Validators
      ******************************************************************************/
@@ -40,37 +44,36 @@ final class ValidatorList
      ******************************************************************************/
 
     /**
-     * 布尔值验证，把值作为布尔选项来验证。
-     *   如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE。
-     *   如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE。
-     *   否则返回 NULL。
+     * 布尔值验证，转换成字符串后是下列的一个，就认为他是个bool值
+     *   - "1"、"true"、"on" 和 "yes" (equal TRUE)
+     *   - "0"、"false"、"off"、"no" 和 ""(equal FALSE)
+     * 注意： NULL 不是标量类型
      * @param  mixed $val 要验证的数据
-     * @param  mixed $default 设置验证失败时返回默认值
-     * @param  int $flags 标志  FILTER_NULL_ON_FAILURE
      * @return bool
      */
-    public static function boolean($val, $default = null, $flags = 0)
+    public static function boolean($val)
     {
-        $settings = [];
-
-        if ($default !== null) {
-            $settings['options']['default'] = $default;
+        if (!is_scalar($val)) {
+            return false;
         }
 
-        if ($flags !== 0) {
-            $settings['flags'] = $flags;
+        // $ret = filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
+        $val = (string)$val;
+
+        if ($val === '') {
+            return true;
         }
 
-        return (bool)filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
+        return false !== stripos(self::IS_BOOL, '|' . $val . '|');
     }
 
     /**
      * @see ValidatorList::boolean()
      * {@inheritdoc}
      */
-    public static function bool($val, $default = null, $flags = 0)
+    public static function bool($val)
     {
-        return self::boolean($val, $default, $flags);
+        return self::boolean($val);
     }
 
     /**
@@ -231,6 +234,21 @@ final class ValidatorList
         }
 
         return self::integer(Helper::strlen($val), $minLen, $maxLen);
+    }
+
+    /**
+     * 验证的字段必须为 yes、 on、 1、true。这在确认「服务条款」是否同意时相当有用。
+     * @from laravel
+     * @param mixed $val
+     * @return bool
+     */
+    public static function accepted($val)
+    {
+        if (!is_scalar($val)) {
+            return false;
+        }
+
+        return false !== stripos(self::IS_TRUE, (string)$val);
     }
 
     /**
@@ -446,6 +464,13 @@ final class ValidatorList
         return (bool)filter_var($val, FILTER_VALIDATE_REGEXP, ['options' => $options]);
     }
 
+    /**
+     * alias of the 'regexp()'
+     * @param string $val
+     * @param string $regexp
+     * @param null $default
+     * @return bool
+     */
     public static function regex($val, $regexp, $default = null)
     {
         return self::regexp($val, $regexp, $default);
@@ -615,7 +640,7 @@ final class ValidatorList
 
         /** @var array $val */
         $keys = array_keys($val);
-        
+
         return array_keys($keys) !== $keys;
     }
 
@@ -750,40 +775,44 @@ final class ValidatorList
     /**
      * @param mixed $val
      * @param array|string $dict
+     * @param bool $strict Use strict check, will check data type.
      * @return bool
      */
-    public static function in($val, $dict)
+    public static function in($val, $dict, $strict = false)
     {
         if (\is_string($dict) && strpos($dict, ',')) {
             $val = (string)$val;// fixed: data type
             $dict = array_map('trim', explode(',', $dict));
         }
 
-        return \in_array($val, (array)$dict, false);
+        return \in_array($val, (array)$dict, $strict);
     }
 
     /**
+     * alias of 'in()'
      * @param  mixed $val
      * @param array|string $dict
+     * @param bool $strict
      * @return bool
      */
-    public static function enum($val, $dict)
+    public static function enum($val, $dict, $strict = false)
     {
-        return self::in($val, $dict);
+        return self::in($val, $dict, $strict);
     }
 
     /**
      * @param  mixed $val
      * @param array|string $dict
+     * @param bool $strict
      * @return bool
      */
-    public static function notIn($val, $dict)
+    public static function notIn($val, $dict, $strict = false)
     {
         if (\is_string($dict) && strpos($dict, ',')) {
             $dict = array_map('trim', explode(',', $dict));
         }
 
-        return !\in_array($val, (array)$dict, true);
+        return !\in_array($val, (array)$dict, $strict);
     }
 
     /*******************************************************************************
@@ -793,21 +822,21 @@ final class ValidatorList
     /**
      * @param mixed $val
      * @param string $start
-     * @param bool $identical
+     * @param bool $strict
      * @return bool
      */
-    public static function startWith($val, $start, $identical = true)
+    public static function startWith($val, $start, $strict = true)
     {
         $start = (string)$start;
 
         if (\is_string($val)) {
-            return ($identical ? strpos($val, $start) : stripos($val, $start)) === 0;
+            return ($strict ? strpos($val, $start) : stripos($val, $start)) === 0;
         }
 
         if (\is_array($val)) {
             $first = array_shift($val);
 
-            return $identical ? $first === $start : $first == $start;
+            return $strict ? $first === $start : $first == $start;
         }
 
         return false;
@@ -816,45 +845,47 @@ final class ValidatorList
     /**
      * @param mixed $val
      * @param string $end
-     * @param bool $identical
+     * @param bool $strict
      * @return bool
      */
-    public static function endWith($val, $end, $identical = true)
+    public static function endWith($val, $end, $strict = true)
     {
         $last = null;
         $end = (string)$end;
 
         if (\is_string($val)) {
-            $last = substr($val, - Helper::strlen($end));
+            $last = substr($val, -Helper::strlen($end));
         }
 
         if (\is_array($val)) {
             $last = array_pop($val);
         }
 
-        return $identical ? $last === $end : $last == $end;
+        return $strict ? $last === $end : $last == $end;
     }
 
     /**
      * 必须是等于给定值
      * @param  mixed $val
      * @param  mixed $excepted
+     * @param bool $strict
      * @return bool
      */
-    public static function mustBe($val, $excepted)
+    public static function mustBe($val, $excepted, $strict = true)
     {
-        return $val === $excepted;
+        return $strict ? $val === $excepted : $val == $excepted;
     }
 
     /**
      * 不能等于给定值
      * @param  mixed $val
      * @param  mixed $excepted
+     * @param bool $strict
      * @return bool
      */
-    public static function notBe($val, $excepted)
+    public static function notBe($val, $excepted, $strict = true)
     {
-        return $val !== $excepted;
+        return $strict ? $val !== $excepted : $val == $excepted;
     }
 
     /*******************************************************************************

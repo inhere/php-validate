@@ -251,7 +251,7 @@ class UserModel extends DataModel
     }
 }
 
-// on controller ...
+// on controller action ...
 class UserController 
 {
     // in action
@@ -259,9 +259,9 @@ class UserController
     public function addAction()
     {
         $model = new UserModel;
-        $ret = $model->setData($_POST)->atScene('create')->create();
+        $model->setData($_POST)->atScene('create');
 
-        if (!$ret) {
+        if (!$ret = $model->create()) {
             exit($model->firstError());
         }
 
@@ -306,6 +306,36 @@ $v = Validation::make($_POST,[
         return false;
     }]
 ```
+
+## 一个完整的规则示例
+
+一个完整的规则示例, 包含了所有可添加的项。
+
+**注意：** 
+
+- 每条规则的第一个元素**必须**是 要验证的字段(可以同时配置多个，可以是数组. type:`string|array`)
+- 第二个元素**必须**是**一个**验证器(字符串，闭包，可回调的对象或数组. type:`string|Closure|callable`)
+- 后面紧跟着 是验证器可能需要的参数信息 (若验证器需要的参数只有一个，则参数无需带key)
+- 然后就是其他选项配置(msg,filter...)
+
+```php
+// a full rule
+[
+ // basic validate setting
+ 'field0,field1,...', 'validator', 'arg0', 'arg1', ..., 
+
+ // some extended option settings
+ 'skipOnEmpty' => 'bool', 
+ 'msg' => 'string|array', 
+ 'default' => 'mixed', 
+ 'on' => 'string|array' 
+ 'isEmpty' => 'callback(string|closure)', 
+ 'when' => 'callback(string|closure)', 
+ 'filter' => 'callback(string|array|closure)'
+]
+```
+
+> 字段验证器 `FieldValidation` 的配置类似，只是只有一个字段，而验证器允许有多个
 
 ## 规则关键词
 
@@ -411,6 +441,8 @@ $v = Validation::make($_POST,[
 ['name', 'string', 'skipOnEmpty' => false ]
 ```
 
+> 如何确定值为空 [关于为空](#about-empty-value)
+
 ### `isEmpty` -- 是否为空判断
 
 是否为空判断, 这个判断作为 `skipOnEmpty` 的依据. 默认使用 `ValidatorList::isEmpty` 来判断.
@@ -454,26 +486,154 @@ $v = Validation::make($_POST,[
 - 注意： 写在当前类里的过滤器方法必须带有后缀 `Filter`, 以防止对内部的其他的方法造成干扰
 - php内置过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
 
-### 一个完整的规则示例
+<a name="built-in-filters"></a>
+## 内置的过滤器
 
-一个完整的规则示例, 包含了所有可添加的项。
+> 一些 php 内置的函数可直接使用。 e.g `trim|ucfirst` `json_decode`
+
+过滤器 | 说明 | 示例
+-------|-------------|------------
+`abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
+`int/integer` | 过滤非法字符并转换为`int`类型 **支持数组** | `['userId', 'number', 'filter' => 'int'],`
+`float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
+`string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
+`trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'trim'],`
+`nl2br` | 转换 `\n` `\r\n` `\r` 为 `<br/>` | `['content', 'string', 'filter' => 'nl2br'],`
+`lower/lowercase` | 字符串转换为小写 | `['description', 'string', 'filter' => 'lowercase'],`
+`upper/uppercase` | 字符串转换为大写 | `['title', 'string', 'filter' => 'uppercase'],`
+`snake/snakeCase` | 字符串转换为蛇形风格 | `['title', 'string', 'filter' => 'snakeCase'],`
+`camel/camelCase` | 字符串转换为驼峰风格 | `['title', 'string', 'filter' => 'camelCase'],`
+`timestamp/strToTime` | 字符串日期转换时间戳 | `['pulishedAt', 'number', 'filter' => 'strToTime'],`
+`url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
+`str2list/str2array` | 字符串转数组 `'tag0,tag1' -> ['tag0', 'tag1']` | `['tags', 'strList', 'filter' => 'str2array'],`
+`email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
+`encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
+`clearSpace` | 清理空格 | `['title', 'string', 'filter' => 'clearSpace'],`
+`clearNewline` | 清理换行符 | `['title', 'string', 'filter' => 'clearNewline'],`
+`clearTags/stripTags` | 相当于使用 `strip_tags()` | `['content', 'string', 'filter' => 'clearTags'],`
+`escape/specialChars` | 相当于使用 `htmlspecialchars()` 转义数据 | `['content', 'string', 'filter' => 'specialChars'],`
+`quotes` | 应用 `addslashes()` 转义数据 | `['content', 'string', 'filter' => 'quotes'],`
+
+<a name="built-in-validators"></a>
+## 内置的验证器
+
+> `/` 分隔的验证器，表明功能是一样的，只是有不同的别名
+
+验证器 | 说明 | 规则示例
+----------|-------------|------------
+`required`  | 要求此字段/属性是必须的(不为空的)。[关于为空](#about-empty-value) | `['tagId, userId', 'required' ]`
+`int/integer`   | 验证是否是 int **支持范围检查** | `['userId', 'int']` `['userId', 'int', 'min'=>4, 'max'=>16]`
+`num/number`    | 验证是否是 number(大于0的整数) **支持范围检查** | `['userId', 'number']` `['userId', 'number', 'min'=>4, 'max'=>16]`
+`bool/boolean`  | 验证是否是 bool. [关于bool值](#about-bool-value) | `['open', 'bool']`
+`float` | 验证是否是 float | `['price', 'float']`
+`string`    | 验证是否是 string. **支持长度检查** | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
+`accepted`  | 验证的字段必须为 `yes/on/1/true` 这在确认「服务条款」是否同意时有用(from laravel) | `['agree', 'accepted']`
+`url`   | 验证是否是 url | `['myUrl', 'url']`
+`email` | 验证是否是 email | `['userEmail', 'email']`
+`alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
+`alphaNum`   | 验证是否仅包含字母、数字 | `['field', 'alphaNum']`
+`alphaDash`   | 验证是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ） | `['field', 'alphaDash']`
+`isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
+`isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
+`isArray`   | 验证是否是数组 | `['goods', 'isArray']`
+`hasKey`   | 验证数组存在给定的key(s) | `['goods', 'hasKey', 'pear']` `['goods', 'hasKey', ['pear', 'banana']]`
+`intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
+`numList`   | 验证字段值是否是一个 number list | `['tagIds', 'numList']`
+`strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
+`min`   | 最小边界值验证 | `['title', 'min', 40]`
+`max`   | 最大边界值验证 | `['title', 'max', 40]`
+`size/range/between`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
+`length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
+`fixedSize/sizeEq/lengthEq` | 固定的长度/大小(验证 `string`, `array` 长度, `int` 大小) | `['field', 'fixedSize', 12]`
+`startWith` | 值(`string/array`)是以给定的字符串开始 | `['field', 'startWith', 'hell']`
+`endWith` | 值(`string/array`)是以给定的字符串结尾 | `['field', 'endWith', 'world']`
+`in/enum`  | 枚举验证包含 | `['status', 'in', [1,2,3]]`
+`notIn`    | 枚举验证不包含 | `['status', 'notIn', [4,5,6]]`
+`mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
+`notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
+`compare/same/equal` | 字段值相同比较 | `['passwd', 'compare', 'repasswd']`
+`different/notEqual` | 字段值不能相同比较 | `['userId', 'notEqual', 'targetId']`
+`requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
+`requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
+`requiredWith` | 指定的字段中的 _任意一个_ 有值且不为空，则此字段为 **必填** | `['city', 'requiredWith', ['myCity'] ]`
+`requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填** | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
+`requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填** | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
+`requiredWithoutAll` | 如果所有指定的字段 **都没有值**，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
+`date` | 验证是否是 date | `['publishedAt', 'date']`
+`dateFormat` | 验证是否是 date, 并且是指定的格式 | `['publishedAt', 'dateFormat', 'Y-m-d']`
+`dateEquals` | 验证是否是 date, 并且是否是等于给定日期 | `['publishedAt', 'dateEquals', '2017-05-12']`
+`beforeDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'beforeDate', '2017-05-12']`
+`beforeOrEqualDate` | 字段值必须是小于或等于给定日期的值 | `['publishedAt', 'beforeOrEqualDate', '2017-05-12']`
+`afterOrEqualDate` | 字段值必须是大于或等于给定日期的值 | `['publishedAt', 'afterOrEqualDate', '2017-05-12']`
+`afterDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'afterDate', '2017-05-12']`
+`json`   | 验证是否是json字符串(默认严格验证，必须以`{` `[` 开始) | `['goods', 'json']` `['somedata', 'json', false]` - 非严格，普通字符串`eg 'test'`也会通过
+`file`   | 验证是否是上传的文件 | `['upFile', 'file']`
+`image`   | 验证是否是上传的图片文件 | `['avatar', 'image']`, 限定后缀名 `['avatar', 'image', 'jpg,png']`
+`ip`    | 验证是否是 IP | `['ipAddr', 'ip']`
+`ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
+`ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
+`macAddress`    | 验证是否是 mac Address | `['field', 'macAddress']`
+`md5`    | 验证是否是 md5 格式的字符串 | `['passwd', 'md5']`
+`sha1`    | 验证是否是 sha1 格式的字符串 | `['passwd', 'sha1']`
+`color`    | 验证是否是html color | `['backgroundColor', 'color']`
+`regex/regexp` | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
+`safe`    | 用于标记字段是安全的，无需验证 | `['createdAt, updatedAt', 'safe']`
+
+### `safe` 验证器,标记属性/字段是安全的
+
+特殊验证器 用于标记字段是安全的，无需验证，直接加入到安全数据中。
+
+比如我们在写入数据库之前手动追加的字段: 创建时间，更新时间。
 
 ```php
-// a full rule: 
-[
- // validate setting
- 'field0,field1,...', 'validator', 'arg0', 'arg1', ..., 
+['createdAt, updatedAt', 'safe']
+```
 
- // some extended option settings
- 'skipOnEmpty' => 'bool', 
- 'msg' => 'string|array', 
- 'default' => 'mixed', 
- 'on' => 'string|array' 
- 'isEmpty' => 'callback(string|closure)', 
- 'when' => 'callback(string|closure)', 
- 'filter' => 'callback(string|array|closure)'
+### 关于文件验证
+
+文件验证时注意要设置文件信息源数据
+
+```php
+$v = Validation::make($_POST, [
+    // [...], 
+    // some rules ...
+])
+->setUploadedFiles($_FILES)
+->validate();
+
+// ...
+```
+
+### (注意)一些补充说明
+
+- **请将 `required*` 系列规则写在规则列表的最前面**
+- 关于为空判断：字段符合下方任一条件时即为「空」<a name="#about-empty-value"></a>
+  - 该值为 `null`.
+  - 该值为空字符串
+  - 该值为空数组
+- 关于布尔值验证<a name="#about-bool-value"></a>
+  * 如果是 "1"、"true"、"on" 和 "yes"，则返回 `TRUE`
+  * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 `FALSE`
+- `size/range` `length` 可以只定义 `min` 或者  `max` 值
+- 支持对数组的子级值验证 
+
+```php
+[
+    'goods' => [
+        'apple' => 34,
+        'pear' => 50,
+    ],
 ]
 ```
+
+规则：
+
+```php
+    ['goods.pear', 'max', 30], //goods 下的 pear 值最大不能超过 30
+```
+
+- `required*` 系列规则参考自 laravel
+- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
 
 ## 一些关键方法API
 
@@ -596,150 +756,6 @@ public function get(string $key, $default = null)
 ```
 
 从验证时传入的数据中取出对应 key 的值
-
-<a name="built-in-filters"></a>
-## 内置的过滤器
-
-> 一些 php 内置的函数可直接使用。 e.g `trim|ucfirst` `json_decode`
-
-过滤器 | 说明 | 示例
--------|-------------|------------
-`abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
-`int/integer` | 过滤非法字符并转换为`int`类型 **支持数组** | `['userId', 'number', 'filter' => 'int'],`
-`float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
-`string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
-`trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'trim'],`
-`nl2br` | 转换 `\n` `\r\n` `\r` 为 `<br/>` | `['content', 'string', 'filter' => 'nl2br'],`
-`lower/lowercase` | 字符串转换为小写 | `['description', 'string', 'filter' => 'lowercase'],`
-`upper/uppercase` | 字符串转换为大写 | `['title', 'string', 'filter' => 'uppercase'],`
-`snake/snakeCase` | 字符串转换为蛇形风格 | `['title', 'string', 'filter' => 'snakeCase'],`
-`camel/camelCase` | 字符串转换为驼峰风格 | `['title', 'string', 'filter' => 'camelCase'],`
-`timestamp/strToTime` | 字符串日期转换时间戳 | `['pulishedAt', 'number', 'filter' => 'strToTime'],`
-`url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
-`str2list/str2array` | 字符串转数组 `'tag0,tag1' -> ['tag0', 'tag1']` | `['tags', 'strList', 'filter' => 'str2array'],`
-`email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
-`encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
-`clearSpace` | 清理空格 | `['title', 'string', 'filter' => 'clearSpace'],`
-`clearNewline` | 清理换行符 | `['title', 'string', 'filter' => 'clearNewline'],`
-`clearTags/stripTags` | 相当于使用 `strip_tags()` | `['content', 'string', 'filter' => 'clearTags'],`
-`escape/specialChars` | 相当于使用 `htmlspecialchars()` 转义数据 | `['content', 'string', 'filter' => 'specialChars'],`
-`quotes` | 应用 `addslashes()` 转义数据 | `['content', 'string', 'filter' => 'quotes'],`
-
-<a name="built-in-validators"></a>
-## 内置的验证器
-
-> `/` 分隔的验证器，表明功能是一样的，只是有不同的别名
-
-验证器 | 说明 | 规则示例
-----------|-------------|------------
-`required`  | 要求此字段/属性是必须的 | `['tagId, userId', 'required' ]`
-`int/integer`   | 验证是否是 int **支持范围检查** | `['userId', 'int']` `['userId', 'int', 'min'=>4, 'max'=>16]`
-`num/number`    | 验证是否是 number **支持范围检查** | `['userId', 'number']` `['userId', 'number', 'min'=>4, 'max'=>16]`
-`bool/boolean`  | 验证是否是 bool | `['open', 'bool']`
-`float` | 验证是否是 float | `['price', 'float']`
-`string`    | 验证是否是 string. **支持长度检查** | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
-`url`   | 验证是否是 url | `['myUrl', 'url']`
-`email` | 验证是否是 email | `['userEmail', 'email']`
-`alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
-`alphaNum`   | 验证是否仅包含字母、数字 | `['field', 'alphaNum']`
-`alphaDash`   | 验证是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ） | `['field', 'alphaDash']`
-`isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
-`isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
-`isArray`   | 验证是否是数组 | `['goods', 'isArray']`
-`hasKey`   | 验证数组存在给定的key(s) | `['goods', 'hasKey', 'pear']` `['goods', 'hasKey', ['pear', 'banana']]`
-`intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
-`numList`   | 验证字段值是否是一个 number list | `['tagIds', 'numList']`
-`strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
-`min`   | 最小边界值验证 | `['title', 'min', 40]`
-`max`   | 最大边界值验证 | `['title', 'max', 40]`
-`size/range/between`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`
-`length`    | 长度验证（ 跟 `size`差不多, 但只能验证 `string`, `array` 的长度 | `['username', 'length', 'min' => 5, 'max' => 20]`
-`fixedSize/sizeEq/lengthEq` | 固定的长度/大小(验证 `string`, `array` 长度, `int` 大小) | `['field', 'fixedSize', 12]`
-`startWith` | 值(`string/array`)是以给定的字符串开始 | `['field', 'startWith', 'hell']`
-`endWith` | 值(`string/array`)是以给定的字符串结尾 | `['field', 'endWith', 'world']`
-`in/enum`  | 枚举验证包含 | `['status', 'in', [1,2,3]]`
-`notIn`    | 枚举验证不包含 | `['status', 'notIn', [4,5,6]]`
-`mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
-`notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
-`compare/same/equal` | 字段值相同比较 | `['passwd', 'compare', 'repasswd']`
-`notEqual` | 字段值不能相同比较 | `['userId', 'notEqual', 'targetId']`
-`requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
-`requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
-`requiredWith` | 指定的字段中的 _任意一个_ 有值且不为空，则此字段为 **必填** | `['city', 'requiredWith', ['myCity'] ]`
-`requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填** | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
-`requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填** | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
-`requiredWithoutAll` | 如果所有指定的字段 **都没有值**，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
-`date` | 验证是否是 date | `['publishedAt', 'date']`
-`dateFormat` | 验证是否是 date, 并且是指定的格式 | `['publishedAt', 'dateFormat', 'Y-m-d']`
-`dateEquals` | 验证是否是 date, 并且是否是等于给定日期 | `['publishedAt', 'dateEquals', '2017-05-12']`
-`beforeDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'beforeDate', '2017-05-12']`
-`beforeOrEqualDate` | 字段值必须是小于或等于给定日期的值 | `['publishedAt', 'beforeOrEqualDate', '2017-05-12']`
-`afterOrEqualDate` | 字段值必须是大于或等于给定日期的值 | `['publishedAt', 'afterOrEqualDate', '2017-05-12']`
-`afterDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'afterDate', '2017-05-12']`
-`json`   | 验证是否是json字符串(默认严格验证，必须以`{` `[` 开始) | `['goods', 'json']` `['somedata', 'json', false]` - 非严格，普通字符串`eg 'test'`也会通过
-`file`   | 验证是否是上传的文件 | `['upFile', 'file']`
-`image`   | 验证是否是上传的图片文件 | `['avatar', 'image']`, 限定后缀名 `['avatar', 'image', 'jpg,png']`
-`ip`    | 验证是否是 IP | `['ipAddr', 'ip']`
-`ipv4`    | 验证是否是 IPv4 | `['ipAddr', 'ipv4']`
-`ipv6`    | 验证是否是 IPv6 | `['ipAddr', 'ipv6']`
-`macAddress`    | 验证是否是 mac Address | `['field', 'macAddress']`
-`md5`    | 验证是否是 md5 格式的字符串 | `['passwd', 'md5']`
-`sha1`    | 验证是否是 sha1 格式的字符串 | `['passwd', 'sha1']`
-`color`    | 验证是否是html color | `['backgroundColor', 'color']`
-`regex/regexp` | 使用正则进行验证 | `['name', 'regexp', '/^\w+$/']`
-`safe`    | 用于标记字段是安全的，无需验证 | `['createdAt, updatedAt', 'safe']`
-
-### `safe` 验证器,标记属性/字段是安全的
-
-特殊验证器 用于标记字段是安全的，无需验证，直接加入到安全数据中。
-
-比如我们在写入数据库之前手动追加的字段: 创建时间，更新时间。
-
-```php
-['createdAt, updatedAt', 'safe']
-```
-
-### 关于文件验证
-
-文件验证时注意要设置文件信息源数据
-
-```php
-$v = Validation::make($_POST, [
-    // [...], 
-    // some rules ...
-])
-->setUploadedFiles($_FILES)
-->validate();
-
-// ...
-```
-
-### (注意)一些补充说明
-
-- **请将 `required*` 系列规则写在规则列表的最前面**
-- 关于布尔值验证
-    * 如果是 "1"、"true"、"on" 和 "yes"，则返回 TRUE
-    * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 FALSE
-- `size/range` `length` 可以只定义 `min` 或者  `max` 值
-- 支持对数组的子级值验证 
-
-```php
-[
-    'goods' => [
-        'apple' => 34,
-        'pear' => 50,
-    ],
-]
-```
-
-规则：
-
-```php
-    ['goods.pear', 'max', 30], //goods 下的 pear 值最大不能超过 30
-```
-
-- `required*` 系列规则参考自 laravel
-- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
 
 ## 代码示例
 

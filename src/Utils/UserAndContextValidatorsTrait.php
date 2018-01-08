@@ -422,6 +422,28 @@ trait UserAndContextValidatorsTrait
         return $compareField && ($val !== $this->get($compareField));
     }
 
+    /**
+     * alias of the 'notEqualValidator'
+     * @param mixed $val
+     * @param string $compareField
+     * @return bool
+     */
+    public function differentValidator($val, $compareField)
+    {
+        return $compareField && ($val !== $this->get($compareField));
+    }
+
+    /**
+     * 验证的字段必须存在于另一个字段（anotherField）的值中。
+     * @param mixed $val
+     * @param string $compareField
+     * @return bool
+     */
+    // public function inValueValidator($val, $anotherField)
+    // {
+    //     return $anotherField && ($val !== $this->get($anotherField));
+    // }
+
     /*******************************************************************************
      * getter/setter
      ******************************************************************************/
