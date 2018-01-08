@@ -607,11 +607,11 @@ $v = Validation::make($_POST, [
 ### (注意)一些补充说明
 
 - **请将 `required*` 系列规则写在规则列表的最前面**
-- 关于为空判断：字段符合下方任一条件时即为「空」<a name="#about-empty-value"></a>
+- 关于为空判断：字段符合下方任一条件时即为「空」<a name="about-empty-value"></a>
   - 该值为 `null`.
   - 该值为空字符串
   - 该值为空数组
-- 关于布尔值验证<a name="#about-bool-value"></a>
+- 关于布尔值验证<a name="about-bool-value"></a>
   * 如果是 "1"、"true"、"on" 和 "yes"，则返回 `TRUE`
   * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 `FALSE`
 - `size/range` `length` 可以只定义 `min` 或者  `max` 值
