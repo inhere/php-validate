@@ -194,6 +194,7 @@ trait ValidationTrait
                 }
 
                 $value = $this->getValue($field, $defValue);
+                // $hasWildcard = (bool)strpos($field, '*');
 
                 // mark field is safe. not need validate. like. 'created_at'
                 if ($validator === 'safe') {
@@ -236,13 +237,13 @@ trait ValidationTrait
             }
 
             // There is an error an immediate end to verify
-            if ($this->isStopOnError() && $this->hasError()) {
+            if ($this->isStopOnError() && $this->isFail()) {
                 break;
             }
         }
 
         // fix: has error, clear safe data.
-        if ($this->hasError()) {
+        if ($this->isFail()) {
             $this->_safeData = [];
         }
 
@@ -272,12 +273,12 @@ trait ValidationTrait
     {
         // required 检查
         if ($validator === 'required') {
-            $passed = $this->required($field);
+            $passed = $this->required($field, $value);
 
             // 其他 required* 方法
         } elseif (method_exists($this, $validator)) {
             $args = array_values($args);
-            $passed = $this->$validator($field, ...$args);
+            $passed = $this->$validator($field, $value, ...$args);
         } else {
             throw new \InvalidArgumentException("The validator [$validator] is not exists!");
         }

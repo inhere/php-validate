@@ -14,6 +14,10 @@ namespace Inhere\Validate\Utils;
  */
 class Helper
 {
+    const IS_TRUE = '|yes|on|1|true|';
+    const IS_FALSE = '|no|off|0|false|';
+    const IS_BOOL = '|yes|on|1|true|no|off|0|false|';
+
     /**
      * known image mime types
      * @link https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types

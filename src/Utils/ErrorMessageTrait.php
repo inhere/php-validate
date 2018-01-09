@@ -121,9 +121,8 @@ trait ErrorMessageTrait
      * 保存所有的验证错误信息
      * @var array[]
      * [
-     *     [ field => errorMessage1 ],
-     *     [ field => errorMessage2 ],
-     *     [ field2 => errorMessage3 ],
+     *     ['name' => 'field', 'msg' => 'error Message1' ],
+     *     ['name' => 'field2', 'msg' => 'error Message2' ],
      * ]
      */
     private $_errors = [];
@@ -198,19 +197,51 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @param string $attr
-     * @param string $msg
+     * check field whether in the errors
+     * @param string $field
+     * @return bool
      */
-    public function addError(string $attr, string $msg)
+    public function inError(string $field): bool
     {
-        $this->_errors[] = [$attr => $msg];
+        foreach ($this->_errors as $item) {
+            if ($field === $item['name']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
+     * @param string $field
+     * @param string $msg
+     */
+    public function addError(string $field, string $msg)
+    {
+        $this->_errors[] = [
+            'name' => $field,
+            'msg' => $msg,
+        ];
+    }
+
+    /**
+     * @param string|null $field Only get errors of the field.
      * @return array
      */
-    public function getErrors(): array
+    public function getErrors(string $field = null): array
     {
+        if ($field) {
+            $errors = [];
+
+            foreach ($this->_errors as $item) {
+                if ($field === $item['name']) {
+                    $errors[] = $item['msg'];
+                }
+            }
+
+            return $errors;
+        }
+
         return $this->_errors;
     }
 
@@ -235,7 +266,7 @@ trait ErrorMessageTrait
         $e = $this->_errors;
         $first = array_shift($e);
 
-        return $onlyMsg ? array_values($first)[0] : $first;
+        return $onlyMsg ? array_values($first)['msg'] : $first;
     }
 
     /**
@@ -249,7 +280,7 @@ trait ErrorMessageTrait
         $e = $this->_errors;
         $last = array_pop($e);
 
-        return $onlyMsg ? array_values($last)[0] : $last;
+        return $onlyMsg ? array_values($last)['msg'] : $last;
     }
 
     /**
@@ -373,12 +404,12 @@ trait ErrorMessageTrait
 
     /**
      * set the attrs translation data
-     * @param array $attrTrans
+     * @param array $fieldTrans
      * @return $this
      */
-    public function setTranslates(array $attrTrans)
+    public function setTranslates(array $fieldTrans)
     {
-        $this->_translates = $attrTrans;
+        $this->_translates = $fieldTrans;
 
         return $this;
     }
@@ -398,14 +429,14 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @param string $attr
+     * @param string $field
      * @return string
      */
-    public function getTranslate(string $attr): string
+    public function getTranslate(string $field): string
     {
         $trans = $this->getTranslates();
 
-        return $trans[$attr] ?? Helper::beautifyFieldName($attr);
+        return $trans[$field] ?? Helper::beautifyFieldName($field);
     }
 
     /**

@@ -12,9 +12,9 @@ class ValidatorListTest extends TestCase
     {
         $this->assertFalse(ValidatorList::isEmpty(1));
         $this->assertFalse(ValidatorList::isEmpty(0));
+        $this->assertFalse(ValidatorList::isEmpty(false));
 
         $this->assertTrue(ValidatorList::isEmpty(null));
-        $this->assertTrue(ValidatorList::isEmpty(false));
         $this->assertTrue(ValidatorList::isEmpty([]));
         $this->assertTrue(ValidatorList::isEmpty(''));
         $this->assertTrue(ValidatorList::isEmpty(' '));

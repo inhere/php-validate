@@ -69,7 +69,7 @@ trait DataFiltersTrait
     }
 
     /**
-     * @param $filter
+     * @param mixed $filter
      * @param array ...$args
      * @return mixed
      */

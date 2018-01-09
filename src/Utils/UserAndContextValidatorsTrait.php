@@ -8,6 +8,8 @@
 
 namespace Inhere\Validate\Utils;
 
+use Inhere\Validate\ValidatorList;
+
 /**
  * trait UserAndContextValidatorsTrait
  * - user custom validators
@@ -24,7 +26,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * @see $_FILES
-     * @var array
+     * @var array[]
      */
     private $uploadedFiles = [];
 
@@ -127,33 +129,38 @@ trait UserAndContextValidatorsTrait
      ******************************************************************************/
 
     /**
-     * 验证字段必须存在输入数据，且不为空。字段符合下方任一条件时即为「空」
-     * - 该值为 null.
-     * - 该值为空字符串。
-     * - 该值为空数组
-     * @param  string $field
+     * 验证字段必须存在，且输入数据不为空。
+     * @see ValidatorList::isEmpty() 如何鉴定为空
+     * @param string $field
+     * @param null|mixed $value
      * @return bool
      */
-    public function required($field)
+    public function required($field, $value = null)
     {
-        if (!isset($this->data[$field])) {
-            return false;
+        if (null !== $value) {
+            $val = $value;
+        } elseif (null !== ($val = $this->getValue($field))) {
+            // check uploaded files
+            if (!isset($this->uploadedFiles[$field])) {
+                return false;
+            }
+
+            $val = $this->uploadedFiles[$field];
         }
 
-        $val = $this->data[$field];
-
-        return $val !== '' && $val !== null && $val !== false && $val !== [];
+        return !ValidatorList::isEmpty($val);
     }
 
     /**
      * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 必填
      * @from laravel
-     * @param  string $field
-     * @param  string $anotherField
-     * @param  array|string $values
+     * @param string $field
+     * @param mixed $fieldVal
+     * @param string $anotherField
+     * @param array|string $values
      * @return bool
      */
-    public function requiredIf($field, $anotherField, $values)
+    public function requiredIf($field, $fieldVal, $anotherField, $values)
     {
         if (!isset($this->data[$anotherField])) {
             return false;
@@ -162,7 +169,7 @@ trait UserAndContextValidatorsTrait
         $val = $this->data[$anotherField];
 
         if (\in_array($val, (array)$values, true)) {
-            return $this->required($field);
+            return $this->required($field, $fieldVal);
         }
 
         return false;
@@ -171,12 +178,13 @@ trait UserAndContextValidatorsTrait
     /**
      * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
      * @from laravel
-     * @param  string $field
-     * @param  string $anotherField
-     * @param  array|string $values
+     * @param string $field
+     * @param mixed $fieldVal
+     * @param string $anotherField
+     * @param array|string $values
      * @return bool
      */
-    public function requiredUnless($field, $anotherField, $values)
+    public function requiredUnless($field, $fieldVal, $anotherField, $values)
     {
         if (!isset($this->data[$anotherField])) {
             return false;
@@ -186,21 +194,22 @@ trait UserAndContextValidatorsTrait
             return true;
         }
 
-        return $this->required($field);
+        return $this->required($field, $fieldVal);
     }
 
     /**
      * 如果指定的字段中的 任意一个 有值且不为空，则此字段为必填
      * @from laravel
-     * @param  string $field
-     * @param  array|string $fields
+     * @param string $field
+     * @param mixed $fieldVal
+     * @param array|string $fields
      * @return bool
      */
-    public function requiredWith($field, $fields)
+    public function requiredWith($field, $fieldVal, $fields)
     {
         foreach ((array)$fields as $name) {
             if ($this->required($name)) {
-                return $this->required($field);
+                return $this->required($field, $fieldVal);
             }
         }
 
@@ -210,11 +219,12 @@ trait UserAndContextValidatorsTrait
     /**
      * 如果指定的 所有字段 都有值，则此字段为必填。
      * @from laravel
-     * @param  string $field
-     * @param  array|string $fields
+     * @param string $field
+     * @param mixed $fieldVal
+     * @param array|string $fields
      * @return bool
      */
-    public function requiredWithAll($field, $fields)
+    public function requiredWithAll($field, $fieldVal, $fields)
     {
         $allHasValue = true;
 
@@ -225,17 +235,18 @@ trait UserAndContextValidatorsTrait
             }
         }
 
-        return $allHasValue ? $this->required($field) : true;
+        return $allHasValue ? $this->required($field, $fieldVal) : true;
     }
 
     /**
      * 如果缺少 任意一个 指定的字段值，则此字段为必填。
      * @from laravel
-     * @param  string $field
-     * @param  array|string $fields
+     * @param string $field
+     * @param mixed $fieldVal
+     * @param array|string $fields
      * @return bool
      */
-    public function requiredWithout($field, $fields)
+    public function requiredWithout($field, $fieldVal, $fields)
     {
         $allHasValue = true;
 
@@ -246,17 +257,18 @@ trait UserAndContextValidatorsTrait
             }
         }
 
-        return $allHasValue ? true : $this->required($field);
+        return $allHasValue ? true : $this->required($field, $fieldVal);
     }
 
     /**
      * 如果所有指定的字段 都没有 值，则此字段为必填。
      * @from laravel
-     * @param  string $field
-     * @param  array|string $fields
+     * @param string $field
+     * @param mixed $fieldVal
+     * @param array|string $fields
      * @return bool
      */
-    public function requiredWithoutAll($field, $fields)
+    public function requiredWithoutAll($field, $fieldVal, $fields)
     {
         $allNoValue = true;
 
@@ -267,7 +279,7 @@ trait UserAndContextValidatorsTrait
             }
         }
 
-        return $allNoValue ? $this->required($field) : true;
+        return $allNoValue ? $this->required($field, $fieldVal) : true;
     }
 
     /**
@@ -378,6 +390,7 @@ trait UserAndContextValidatorsTrait
     /**
      * 验证的文件必须具有与列出的其中一个扩展名相对应的 MIME 类型
      * ['photo', 'mimes', 'jpeg,bmp,png']
+     * @todo
      * @param string $field
      * @param string|array $types
      * return bool
@@ -434,19 +447,45 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 验证的字段必须存在于另一个字段（anotherField）的值中。
+     * 验证的 字段值 必须存在于另一个字段（anotherField）的值中。
      * @param mixed $val
-     * @param string $compareField
+     * @param string $anotherField
      * @return bool
      */
-    // public function inValueValidator($val, $anotherField)
-    // {
-    //     return $anotherField && ($val !== $this->get($anotherField));
-    // }
+    public function inFieldValidator($val, $anotherField)
+    {
+        if ($anotherField && $dict = $this->get($anotherField)) {
+            return ValidatorList::in($val, $dict);
+        }
+
+        return false;
+    }
+
+    /**
+     * 比较两个日期字段的 间隔天数 是否符合要求
+     * @todo
+     * @param string $val
+     * @param string $compareField
+     * @param int $expected
+     * @param string $op
+     */
+    public function intervalDayValidator($val, $compareField, $expected, $op = '>=')
+    {
+
+    }
 
     /*******************************************************************************
      * getter/setter
      ******************************************************************************/
+
+    /**
+     * @param string $field
+     * @return array|null
+     */
+    public function getUploadedFile($field)
+    {
+        return $this->uploadedFiles[$field] ?? null;
+    }
 
     /**
      * @return array

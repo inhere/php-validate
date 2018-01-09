@@ -17,16 +17,18 @@ use Inhere\Validate\Utils\Helper;
  */
 final class ValidatorList
 {
-    const IS_TRUE = '|yes|on|1|true|';
-    const IS_FALSE = '|no|off|0|false|';
-    const IS_BOOL = '|yes|on|1|true|no|off|0|false|';
-
     /*******************************************************************************
      * Validators
      ******************************************************************************/
 
     /**
-     * 值是否为空判断
+     * 判断值是否为空
+     * 值符合下方任一条件时即为「空」
+     * - 该值为 null.
+     * - 该值为空字符串。
+     * - 该值为空数组
+     * - 该值为空对象 -- 空的 `可数` 对象
+     * - 该值为没有路径的上传文件(这里不做判断)
      * @param mixed $val
      * @return bool
      */
@@ -34,9 +36,12 @@ final class ValidatorList
     {
         if (\is_string($val)) {
             $val = trim($val);
+
+        } elseif (\is_object($val)) {
+            $val = get_object_vars($val);
         }
 
-        return $val === '' || $val === null || $val === false || $val === [];
+        return $val === '' || $val === null || $val === [];
     }
 
     /*******************************************************************************
@@ -64,7 +69,7 @@ final class ValidatorList
             return true;
         }
 
-        return false !== stripos(self::IS_BOOL, '|' . $val . '|');
+        return false !== stripos(Helper::IS_BOOL, '|' . $val . '|');
     }
 
     /**
@@ -248,7 +253,7 @@ final class ValidatorList
             return false;
         }
 
-        return false !== stripos(self::IS_TRUE, (string)$val);
+        return false !== stripos(Helper::IS_TRUE, (string)$val);
     }
 
     /**
@@ -780,9 +785,9 @@ final class ValidatorList
      */
     public static function in($val, $dict, $strict = false)
     {
-        if (\is_string($dict) && strpos($dict, ',')) {
-            $val = (string)$val;// fixed: data type
-            $dict = array_map('trim', explode(',', $dict));
+        if (\is_string($dict)) {
+            // $dict = array_map('trim', explode(',', $dict));
+            return false !== ($strict ? strpos($dict, (string)$val) : stripos($dict, (string)$val));
         }
 
         return \in_array($val, (array)$dict, $strict);
@@ -885,7 +890,7 @@ final class ValidatorList
      */
     public static function notBe($val, $excepted, $strict = true)
     {
-        return $strict ? $val !== $excepted : $val == $excepted;
+        return $strict ? $val !== $excepted : $val != $excepted;
     }
 
     /*******************************************************************************
@@ -1014,6 +1019,18 @@ final class ValidatorList
     public static function afterOrEqualDate($val, $afterDate)
     {
         return self::afterDate($val, $afterDate, '>=');
+    }
+
+    /**
+     * @todo
+     * @param string $val
+     * @param string $compareDate
+     * @param int $expected
+     * @param string $op
+     */
+    public static function diffDate($val, $compareDate, $expected, $op = '>=')
+    {
+
     }
 
     /**

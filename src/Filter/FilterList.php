@@ -15,10 +15,39 @@ use Inhere\Validate\Utils\Helper;
 final class FilterList
 {
     /**
+     * 布尔值验证，转换成字符串后是下列的一个，就认为他是个bool值
+     *   - "1"、"true"、"on" 和 "yes" (equal TRUE)
+     *   - "0"、"false"、"off"、"no" 和 ""(equal FALSE)
+     * 注意： NULL 不是标量类型
+     * @param  mixed $val
+     * @param bool $nullAsFalse
+     * @return bool
+     */
+    public static function boolean($val, $nullAsFalse = false)
+    {
+        if ($val !== null && !is_scalar($val)) {
+            return (bool)$val;
+        }
+
+        return filter_var($val, FILTER_VALIDATE_BOOLEAN, [
+            'flags' => $nullAsFalse ? FILTER_NULL_ON_FAILURE : 0
+        ]);
+    }
+
+    /**
+     * @see ValidatorList::boolean()
+     * {@inheritdoc}
+     */
+    public static function bool($val, $nullAsFalse = false)
+    {
+        return self::boolean($val, $nullAsFalse);
+    }
+
+    /**
      * 过滤器删除数字中所有非法的字符。
      * @note 该过滤器允许所有数字以及 . + -
      * @param  mixed $val 要过滤的变量
-     * @return mixed $string
+     * @return int
      */
     public static function integer($val)
     {

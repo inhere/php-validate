@@ -495,6 +495,7 @@ $v = Validation::make($_POST,[
 -------|-------------|------------
 `abs` | 返回绝对值 | `['field', 'int', 'filter' => 'abs'],`
 `int/integer` | 过滤非法字符并转换为`int`类型 **支持数组** | `['userId', 'number', 'filter' => 'int'],`
+`bool/boolean` | 转换为 `bool`  [关于bool值](#about-bool-value) | `['argee', 'bool']`
 `float` | 过滤非法字符,保留`float`格式的数据 | `['price', 'float', 'filter' => 'float'],`
 `string` | 过滤非法字符并转换为`string`类型 | `['userId', 'number', 'filter' => 'string'],`
 `trim` | 去除首尾空白字符，支持数组。 | `['username', 'min', 4, 'filter' => 'trim'],`
@@ -547,8 +548,9 @@ $v = Validation::make($_POST,[
 `fixedSize/sizeEq/lengthEq` | 固定的长度/大小(验证 `string`, `array` 长度, `int` 大小) | `['field', 'fixedSize', 12]`
 `startWith` | 值(`string/array`)是以给定的字符串开始 | `['field', 'startWith', 'hell']`
 `endWith` | 值(`string/array`)是以给定的字符串结尾 | `['field', 'endWith', 'world']`
-`in/enum`  | 枚举验证包含 | `['status', 'in', [1,2,3]]`
-`notIn`    | 枚举验证不包含 | `['status', 'notIn', [4,5,6]]`
+`in/enum`  | 枚举验证: 包含 | `['status', 'in', [1,2,3]]`
+`notIn`    | 枚举验证: 不包含 | `['status', 'notIn', [4,5,6]]`
+`inField`    | 枚举验证: 字段值 存在于 另一个字段（anotherField）的值中 | `['field', 'inField', 'anotherField']`
 `mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
 `notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
 `compare/same/equal` | 字段值相同比较 | `['passwd', 'compare', 'repasswd']`
@@ -609,11 +611,13 @@ $v = Validation::make($_POST, [
 - **请将 `required*` 系列规则写在规则列表的最前面**
 - 关于为空判断：字段符合下方任一条件时即为「空」<a name="about-empty-value"></a>
   - 该值为 `null`.
-  - 该值为空字符串
-  - 该值为空数组
-- 关于布尔值验证<a name="about-bool-value"></a>
-  * 如果是 "1"、"true"、"on" 和 "yes"，则返回 `TRUE`
-  * 如果是 "0"、"false"、"off"、"no" 和 ""，则返回 `FALSE`
+  - 该值为空字符串 `''`
+  - 该值为空数组 `[]`
+  - 该值为空对象 -- 空的 `可数` 对象
+  - 该值为没有路径的上传文件
+- 关于布尔值: 值符合下列的任意一项即认为是为bool值<a name="about-bool-value"></a>
+  - 是 "1"、"true"、"on" 和 "yes" (`TRUE`)
+  - 是 "0"、"false"、"off"、"no" 和 "" (`FALSE`)
 - `size/range` `length` 可以只定义 `min` 或者  `max` 值
 - 支持对数组的子级值验证 
 
@@ -695,9 +699,9 @@ public function getErrors(): array
 
 ```php 
 [
-    [ attr1 => 'error message 1'],
-    [ attr1 => 'error message 2'],
-    [ attr2 => 'error message 3'],
+    ['name' => 'field1', 'msg' => 'error Message1' ],
+    ['name' => 'field2', 'msg' => 'error Message2' ],
+    ...
 ]
 ```
 
