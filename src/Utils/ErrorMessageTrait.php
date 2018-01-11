@@ -183,6 +183,15 @@ trait ErrorMessageTrait
     /**
      * @return bool
      */
+    public function isOk(): bool
+    {
+        return !$this->isFail();
+    }
+
+    /**
+     * @deprecated will delete
+     * @return bool
+     */
     public function passed(): bool
     {
         return !$this->isFail();

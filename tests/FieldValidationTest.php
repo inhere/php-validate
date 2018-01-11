@@ -42,7 +42,7 @@ class FieldValidationTest extends TestCase
             ])
            ->validate([], false);
 
-        $this->assertFalse($v->passed());
+        $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());
 
         $errors = $v->getErrors();

@@ -27,6 +27,136 @@ class RuleValidationTest extends TestCase
         $this->assertCount(0, $v->getErrors());
     }
 
+    /**
+     * 如果指定的其它字段（ anotherField ）等于任何一个 value 时，被验证的字段必须存在且不为空。
+     */
+    public function testRequiredIf()
+    {
+        $data = [
+            'userId' => 0,
+            'targetId' => null,
+            'status' => 10,
+        ];
+
+        $v = RuleValidation::makeAndValidate($data, [
+            ['userId, targetId', 'requiredIf', 'status', [10]]
+        ]);
+
+        $this->assertCount(1, $v->getErrors());
+        $this->assertFalse($v->inError('userId'));
+        $this->assertTrue($v->inError('targetId'));
+    }
+
+    public function testRequiredUnless()
+    {
+        $data = [
+            'userId' => null,
+            'targetId' => null,
+            'status' => 10,
+        ];
+
+        $v = RuleValidation::makeAndValidate($data, [
+            ['targetId', 'requiredUnless', 'status', [10]],
+            ['userId', 'requiredUnless', 'status', [11]],
+        ]);
+
+        $this->assertCount(1, $v->getErrors());
+        $this->assertFalse($v->inError('targetId'));
+        $this->assertTrue($v->inError('userId'));
+    }
+
+    /**
+     * 只要在指定的其他字段中有任意一个字段存在时，被验证的字段就必须存在并且不能为空。
+     */
+    public function testRequiredWith()
+    {
+        $data = [
+            'userId' => null,
+            'targetId' => 2,
+            'status' => 10,
+        ];
+
+        $v = RuleValidation::makeAndValidate($data, [
+            ['targetId', 'requiredWith', 'status'],
+            ['userId', 'requiredWith', ['status', 'someField']],
+        ]);
+
+        // var_dump($v->getErrors());
+
+        $this->assertCount(1, $v->getErrors());
+        $this->assertFalse($v->inError('targetId'));
+        $this->assertTrue($v->inError('userId'));
+    }
+
+    /**
+     * 只有当所有的 其他指定字段 全部存在时，被验证的字段才 必须存在并且不能为空。
+     */
+    public function testRequiredWithAll()
+    {
+        $data = [
+            'userId' => null,
+            'targetId' => null,
+            'status' => 10,
+        ];
+
+        $v = RuleValidation::makeAndValidate($data, [
+            ['targetId', 'requiredWithAll', 'status'],
+            ['userId', 'requiredWithAll', ['status', 'someField']],
+        ]);
+
+        // var_dump($v->getErrors());
+
+        $this->assertCount(1, $v->getErrors());
+        $this->assertTrue($v->inError('targetId'));
+        $this->assertFalse($v->inError('userId'));
+    }
+
+    /**
+     * 只要在其他指定的字段中 有任意一个字段不存在，被验证的字段就 必须存在且不为空。
+     */
+    public function testRequiredWithout()
+    {
+        $data = [
+            'userId' => null,
+            'targetId' => null,
+            'status' => 10,
+        ];
+
+        $v = RuleValidation::makeAndValidate($data, [
+            ['targetId', 'requiredWithout', 'status'],
+            ['userId', 'requiredWithout', ['status', 'someField']],
+        ]);
+
+        // var_dump($v->getErrors());
+
+        $this->assertCount(1, $v->getErrors());
+        $this->assertTrue($v->inError('userId'));
+        $this->assertFalse($v->inError('targetId'));
+    }
+
+    /**
+     * 只有当所有的 其他指定的字段 都不存在时，被验证的字段才 必须存在且不为空。
+     */
+    public function testRequiredWithoutAll()
+    {
+        $data = [
+            'userId' => null,
+            'targetId' => null,
+            'status' => 10,
+        ];
+
+        $v = RuleValidation::makeAndValidate($data, [
+            ['targetId', 'requiredWithoutAll', 'someField'],
+            ['userId', 'requiredWithoutAll', ['status', 'someField']],
+        ]);
+
+        // var_dump($v->getErrors());
+
+        $this->assertCount(1, $v->getErrors());
+        $this->assertTrue($v->inError('targetId'));
+        $this->assertFalse($v->inError('userId'));
+    }
+
     public function testCollectRules()
     {
         $data = [
@@ -52,17 +182,17 @@ class RuleValidationTest extends TestCase
 
         $v = RuleValidation::make($data, $rules)->validate();
 
-        $this->assertTrue($v->passed());
+        $this->assertTrue($v->isOk());
         $this->assertCount(2, $v->getUsedRules());
 
         $v = RuleValidation::make($data, $rules)->atScene('s1')->validate();
 
-        $this->assertTrue($v->passed());
+        $this->assertTrue($v->isOk());
         $this->assertCount(3, $v->getUsedRules());
 
         $v = RuleValidation::make($data, $rules)->atScene('s2')->validate();
 
-        $this->assertTrue($v->passed());
+        $this->assertTrue($v->isOk());
         $this->assertCount(4, $v->getUsedRules());
     }
 
@@ -104,7 +234,7 @@ class RuleValidationTest extends TestCase
             ])
            ->validate([], false);
 
-        $this->assertTrue($v->passed());
+        $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
         $this->assertEmpty($v->getErrors());
 
@@ -124,7 +254,7 @@ class RuleValidationTest extends TestCase
             ])
            ->validate([], false);
 
-        $this->assertFalse($v->passed());
+        $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());
 
         $errors = $v->getErrors();
@@ -143,7 +273,7 @@ class RuleValidationTest extends TestCase
             ['user_name', 'string', 'max' => 17],
         ])->validate();
 
-        $this->assertTrue($v->passed());
+        $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
 
         $errors = $v->getErrors();
@@ -166,7 +296,7 @@ class RuleValidationTest extends TestCase
         ])->validate();
 
         // var_dump($v->getErrors());
-        $this->assertTrue($v->passed());
+        $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
 
         $errors = $v->getErrors();
@@ -239,7 +369,7 @@ class RuleValidationTest extends TestCase
         ]);
         // var_dump($v->getErrors());die;
 
-        $this->assertTrue($v->passed());
+        $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
     }
 }

@@ -23,21 +23,6 @@ trait ValidationTrait
     use DataFiltersTrait, ErrorMessageTrait, UserAndContextValidatorsTrait;
 
     /**
-     * current scenario name
-     * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
-     * (
-     * e.g: 在MVC框架中，
-     * - 通常可以根据控制器的 action name(add, edit, register) 来区分。
-     * - 或者根据模型的场景(create, update, delete) 来区分。
-     * )
-     * @var string
-     */
-    protected $scene = '';
-
-    /** @var array used rules at current scene */
-    protected $_usedRules = [];
-
-    /**
      * the rules is by setRules()
      * @var array
      */
@@ -57,6 +42,21 @@ trait ValidationTrait
 
     /** @var \Closure after validate handler */
     private $_afterHandler;
+
+    /**
+     * current scenario name
+     * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
+     * (
+     * e.g: 在MVC框架中，
+     * - 通常可以根据控制器的 action name(add, edit, register) 来区分。
+     * - 或者根据模型的场景(create, update, delete) 来区分。
+     * )
+     * @var string
+     */
+    protected $scene = '';
+
+    /** @var array used rules at current scene */
+    protected $_usedRules = [];
 
     /**
      * @return array
@@ -91,6 +91,18 @@ trait ValidationTrait
             // 'username.required' => '用户名 是必填项。',
         ];
     }
+
+    /**
+     * 当前场景需要收集的字段
+     */
+    // public function scenarios()
+    // {
+    //     return [
+    //         // scene name => needed fields ...
+    //         // 'scene' => ['filed1', 'field2'],
+    //         // 'create' => ['filed1', 'field2'],
+    //     ];
+    // }
 
     /**
      * before validate handler
@@ -193,12 +205,12 @@ trait ValidationTrait
                     continue;
                 }
 
-                $value = $this->getValue($field, $defValue);
+                $value = $this->getByPath($field, $defValue);
                 // $hasWildcard = (bool)strpos($field, '*');
 
                 // mark field is safe. not need validate. like. 'created_at'
                 if ($validator === 'safe') {
-                    $this->_safeData[$field] = $value;
+                    $this->setSafe($field, $value);
                     continue;
                 }
 
@@ -360,11 +372,12 @@ trait ValidationTrait
     {
         // 进行的是子级属性检查 eg: 'goods.apple'
         if ($pos = strpos($field, '.')) {
-            $firstLevelKey = substr($field, 0, $pos);
-            $this->_safeData[$firstLevelKey] = $this->data[$firstLevelKey];
-        } else {
-            $this->_safeData[$field] = $value;
+            $field = (string)substr($field, 0, $pos);
+            $value = $this->data[$field];
         }
+
+        // set
+        $this->_safeData[$field] = $value;
     }
 
     /**
@@ -608,9 +621,31 @@ trait ValidationTrait
      * @param mixed $default The default value
      * @return mixed The key's value, or the default value
      */
-    public function getValue(string $key, $default = null)
+    public function getByPath(string $key, $default = null)
     {
         return Helper::getValueOfArray($this->data, $key, $default);
+    }
+
+    /**
+     * alias of the 'getSafe()'
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function val(string $key, $default = null)
+    {
+        return $this->getSafe($key, $default);
+    }
+
+    /**
+     * alias of the 'getSafe()'
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getValid(string $key, $default = null)
+    {
+        return $this->getSafe($key, $default);
     }
 
     /**
@@ -621,18 +656,7 @@ trait ValidationTrait
      */
     public function getSafe(string $key, $default = null)
     {
-        return $this->getValid($key, $default);
-    }
-
-    /**
-     * get safe field value
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
-     */
-    public function getValid(string $key, $default = null)
-    {
-        return array_key_exists($key, $this->_safeData) ? $this->_safeData[$key] : $default;
+        return $this->_safeData[$key] ?? $default;
     }
 
     /**
@@ -645,11 +669,21 @@ trait ValidationTrait
     }
 
     /**
-     * @return array
+     * @param bool $asObject
+     * @return array|\stdClass
      */
-    public function getSafeData(): array
+    public function safeData($asObject = false)
     {
-        return $this->_safeData;
+        return $this->getSafeData($asObject);
+    }
+
+    /**
+     * @param bool $asObject
+     * @return array|\stdClass
+     */
+    public function getSafeData($asObject = false)
+    {
+        return $asObject ? (object)$this->_safeData : $this->_safeData;
     }
 
     /**
@@ -666,9 +700,10 @@ trait ValidationTrait
     }
 
     /**
+     * Through the validation of the data keys
      * @return array
      */
-    public function getSafeFields(): array
+    public function getSafeKeys(): array
     {
         return array_keys($this->_safeData);
     }

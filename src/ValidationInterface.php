@@ -57,7 +57,12 @@ interface ValidationInterface
     /**
      * @return bool
      */
-    public function passed(): bool;
+    public function ok(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isPassed(): bool;
 
     /**
      * @return array
@@ -86,7 +91,7 @@ interface ValidationInterface
     public function getMessages(): array;
 
     /**
-     * @return array
+     * @return array|\stdClass
      */
-    public function getSafeData(): array;
+    public function getSafeData();
 }

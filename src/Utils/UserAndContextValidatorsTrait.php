@@ -139,7 +139,7 @@ trait UserAndContextValidatorsTrait
     {
         if (null !== $value) {
             $val = $value;
-        } elseif (null !== ($val = $this->getValue($field))) {
+        } elseif (null === ($val = $this->getByPath($field))) {
             // check uploaded files
             if (!isset($this->uploadedFiles[$field])) {
                 return false;
@@ -198,7 +198,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 如果指定的字段中的 任意一个 有值且不为空，则此字段为必填
+     * 如果指定的其他字段中的 任意一个 有值且不为空，则此字段为 必填
      * @from laravel
      * @param string $field
      * @param mixed $fieldVal
@@ -411,7 +411,7 @@ trait UserAndContextValidatorsTrait
      */
     public function compareValidator($val, $compareField)
     {
-        return $compareField && ($val === $this->get($compareField));
+        return $compareField && ($val === $this->getByPath($compareField));
     }
 
     public function sameValidator($val, $compareField)
@@ -432,7 +432,7 @@ trait UserAndContextValidatorsTrait
      */
     public function notEqualValidator($val, $compareField)
     {
-        return $compareField && ($val !== $this->get($compareField));
+        return $compareField && ($val !== $this->getByPath($compareField));
     }
 
     /**
@@ -443,7 +443,7 @@ trait UserAndContextValidatorsTrait
      */
     public function differentValidator($val, $compareField)
     {
-        return $compareField && ($val !== $this->get($compareField));
+        return $compareField && ($val !== $this->getByPath($compareField));
     }
 
     /**
@@ -454,7 +454,7 @@ trait UserAndContextValidatorsTrait
      */
     public function inFieldValidator($val, $anotherField)
     {
-        if ($anotherField && $dict = $this->get($anotherField)) {
+        if ($anotherField && $dict = $this->getByPath($anotherField)) {
             return ValidatorList::in($val, $dict);
         }
 

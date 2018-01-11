@@ -16,6 +16,7 @@ class ValidatorListTest extends TestCase
 
         $this->assertTrue(ValidatorList::isEmpty(null));
         $this->assertTrue(ValidatorList::isEmpty([]));
+        $this->assertTrue(ValidatorList::isEmpty(new \stdClass()));
         $this->assertTrue(ValidatorList::isEmpty(''));
         $this->assertTrue(ValidatorList::isEmpty(' '));
     }

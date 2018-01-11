@@ -677,14 +677,15 @@ public function addValidator(string $name, \Closure $callback, string $msg = '')
 
 ```
 // 验证失败
-public function hasError()
-public function isFail() // hasError() 的别名方法
-public function fail() // hasError() 的别名方法
+public function isFail()
+public function fail() // isFail() 的别名方法
+public function failed() // isFail() 的别名方法
+public function hasError() // isFail() 的别名方法
 
 // 成功通过验证
 public function ok() 
-public function passed() 
-public function isPassed() // passed() 的别名方法
+public function isOk() 
+public function isPassed()
 ```
 
 获取验证是否通过(是否有验证失败)。
@@ -713,7 +714,7 @@ public function getErrors(): array
 public function firstError($onlyMsg = true)
 ```
 
-- `$onlyMsg` 是否只返回消息字符串。当为 false，返回的则是数组 eg: `[ attr => 'error message']`
+- `$onlyMsg` 是否只返回消息字符串。当为 false，返回的则是数组 eg: `['name' => 'field', 'msg' => 'error message']`
 
 ### 得到最后一个错误信息
 
@@ -721,12 +722,12 @@ public function firstError($onlyMsg = true)
 public function lastError($onlyMsg = true)
 ```
 
-- `$onlyMsg` 是否只返回消息字符串。当为 false，返回的则是数组 eg: `[ attr => 'error message']`
+- `$onlyMsg` 是否只返回消息字符串。当为 false，返回的则是数组 eg: `['name' => 'field', 'msg' => 'error message']`
 
 ### 获取所有验证通过的数据
 
 ```php
-public function getSafeData(): array
+public function getSafeData(): array|\stdClass
 ```
 
 获取所有 **验证通过** 的安全数据. 
@@ -739,8 +740,9 @@ public function getSafeData(): array
 ### 根据字段名获取安全值
 
 ```php
-public function getSafe(string $key, $default = null)
+public function val(string $key, $default = null) // getSafe() 的别名方法
 public function getValid(string $key, $default = null) // getSafe() 的别名方法
+public function getSafe(string $key, $default = null) 
 ```
 
 从 **验证通过** 的数据中取出对应 key 的值
@@ -756,7 +758,7 @@ public function all(): array
 ### 根据字段名获取原始数据的值
 
 ```php
-public function get(string $key, $default = null)
+public function getRaw(string $key, $default = null)
 ```
 
 从验证时传入的数据中取出对应 key 的值
