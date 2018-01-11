@@ -1,11 +1,10 @@
 <?php
 
-use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
 use Inhere\Validate\RuleValidation;
 
 /**
- * @covers Validation
+ * @covers \Inhere\Validate\RuleValidation
  */
 class RuleValidationTest extends TestCase
 {
@@ -266,7 +265,7 @@ class RuleValidationTest extends TestCase
     public function testValidateString()
     {
         $val = '123482';
-        $v = Validation::make([
+        $v = RuleValidation::make([
             'user_name' => $val
         ], [
             ['user_name', 'string', 'min' => 6],
@@ -284,7 +283,7 @@ class RuleValidationTest extends TestCase
 
     public function testValidateJson()
     {
-        $v = Validation::make([
+        $v = RuleValidation::make([
             'log_level' => 'debug',
             'log_data' => '[23]',
             'log_data1' => '234',
@@ -356,7 +355,7 @@ class RuleValidationTest extends TestCase
             'key3' => ['23', 'str'],
         ];
 
-        $v = Validation::makeAndValidate($data, [
+        $v = RuleValidation::makeAndValidate($data, [
             ['options, key1, key2, key3', 'isArray'],
             ['options', 'isMap'],
             ['key1', 'isList'],

@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Inhere\Validate\Filter\FilterList;
 
 /**
- * @covers FilterList
+ * @covers \Inhere\Validate\Filter\FilterList
  */
 class FilterListTest extends TestCase
 {

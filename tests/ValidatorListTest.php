@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Inhere\Validate\ValidatorList;
 
 /**
- * @covers ValidatorListTest
+ * @covers \Inhere\Validate\ValidatorList
  */
 class ValidatorListTest extends TestCase
 {

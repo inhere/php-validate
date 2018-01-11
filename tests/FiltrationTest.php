@@ -11,6 +11,7 @@ use Inhere\Validate\Filter\Filtration;
 
 /**
  * Class FiltrationTest
+ * @covers \Inhere\Validate\Filter\Filtration
  */
 class FiltrationTest extends TestCase
 {

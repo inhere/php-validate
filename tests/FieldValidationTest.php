@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Inhere\Validate\FieldValidation;
 
 /**
- * @covers FieldValidation
+ * @covers \Inhere\Validate\FieldValidation
  */
 class FieldValidationTest extends TestCase
 {
