@@ -778,6 +778,20 @@ final class ValidatorList
     }
 
     /**
+     * 数组里面的值是唯一，不重复的
+     * @param mixed $val
+     * @return bool
+     */
+    public static function distinct($val)
+    {
+        if (!$val || !\is_array($val)) {
+            return false;
+        }
+
+        return array_unique($val) === $val;
+    }
+
+    /**
      * @param mixed $val
      * @param array|string $dict
      * @param bool $strict Use strict check, will check data type.

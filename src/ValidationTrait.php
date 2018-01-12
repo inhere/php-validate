@@ -170,8 +170,6 @@ trait ValidationTrait
             $cb($this);
         }
 
-        $data = $this->data;
-
         foreach ($this->collectRules() as $fields => $rule) {
             $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
             $validator = $rule[0];
@@ -184,7 +182,7 @@ trait ValidationTrait
 
             // 验证的前置条件 -- 不满足条件,跳过此条规则
             $when = $rule['when'] ?? null;
-            if ($when && ($when instanceof \Closure) && $when($data, $this) !== true) {
+            if ($when && ($when instanceof \Closure) && $when($this->data, $this) !== true) {
                 continue;
             }
 
@@ -214,8 +212,8 @@ trait ValidationTrait
                     continue;
                 }
 
-                // required* 系列字段检查器
-                if (\is_string($validator) && 0 === strpos($validator, 'required')) {
+                // required* 系列字段检查器 || 文件资源检查
+                if (\is_string($validator) && (self::isCheckRequired($validator) || self::isCheckFile($validator))) {
                     if (!$this->fieldValidate($field, $value, $validator, $args)) {
                         $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
 
@@ -239,7 +237,7 @@ trait ValidationTrait
                 }
 
                 // 字段值验证检查
-                if (!$this->valueValidate($data, $field, $value, $validator, $args)) {
+                if (!$this->valueValidate($field, $value, $validator, $args)) {
                     $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
 
                     if ($this->isStopOnError()) {
@@ -273,7 +271,7 @@ trait ValidationTrait
     }
 
     /**
-     * field required Validate 字段存在检查
+     * field require Validate 字段存在检查
      * @param string $field 属性名称
      * @param mixed $value 属性值
      * @param string $validator required* 验证器
@@ -281,11 +279,16 @@ trait ValidationTrait
      * @return bool
      * @throws \InvalidArgumentException
      */
-    protected function fieldValidate($field, $value, $validator, $args)
+    protected function fieldValidate(string $field, $value, string $validator, array $args)
     {
         // required 检查
         if ($validator === 'required') {
             $passed = $this->required($field, $value);
+
+            // 文件资源检查 方法
+        } elseif (self::isCheckFile($validator)) {
+            $args = array_values($args);
+            $passed = $this->$validator($field, ...$args);
 
             // 其他 required* 方法
         } elseif (method_exists($this, $validator)) {
@@ -307,7 +310,6 @@ trait ValidationTrait
 
     /**
      * value Validate 字段值验证
-     * @param array $data 原始数据列表
      * @param string $field 属性名称
      * @param mixed $value 属性值
      * @param \Closure|string $validator 验证器
@@ -315,7 +317,7 @@ trait ValidationTrait
      * @return bool
      * @throws \InvalidArgumentException
      */
-    protected function valueValidate($data, $field, $value, $validator, $args)
+    protected function valueValidate(string $field, $value, $validator, array $args)
     {
         // if field don't exists.
         if (null === $value) {
@@ -326,7 +328,7 @@ trait ValidationTrait
 
         // if $validator is a closure OR a object has method '__invoke'
         if (\is_object($validator) && method_exists($validator, '__invoke')) {
-            $args[] = $data;
+            $args[] = $this->data;
             $passed = $validator($value, ...$args);
         } elseif (\is_string($validator)) {
             // if $validator is a custom add callback in the property {@see $_validators}.
@@ -368,7 +370,7 @@ trait ValidationTrait
      * @param string $field
      * @param mixed $value
      */
-    protected function collectSafeValue($field, $value)
+    protected function collectSafeValue(string $field, $value)
     {
         // 进行的是子级属性检查 eg: 'goods.apple'
         if ($pos = strpos($field, '.')) {
@@ -476,8 +478,27 @@ trait ValidationTrait
     }
 
     /*******************************************************************************
-     * getter/setter
+     * getter/setter/helper
      ******************************************************************************/
+
+    /**
+     * @param string $path 'users.*.id'
+     * @return mixed
+     */
+    protected function getByWildcard(string $path)
+    {
+        $result = [];
+
+    }
+
+    /**
+     * @param string $path 'users.*.id'
+     * @return bool
+     */
+    protected function hasWildcard(string $path): bool
+    {
+        return strpos($path, '.*') > 0;
+    }
 
     /**
      * @return bool
@@ -623,6 +644,10 @@ trait ValidationTrait
      */
     public function getByPath(string $key, $default = null)
     {
+        if ($this->hasWildcard($key)) {
+            return $this->getByWildcard($key);
+        }
+
         return Helper::getValueOfArray($this->data, $key, $default);
     }
 

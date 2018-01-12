@@ -24,6 +24,9 @@ trait UserAndContextValidatorsTrait
      */
     protected static $_validators = [];
 
+    /** @var string */
+    protected static $_fileValidators = '|file|image|mimeTypes|mimes|';
+
     /**
      * @see $_FILES
      * @var array[]
@@ -74,7 +77,7 @@ trait UserAndContextValidatorsTrait
      * @param string $name
      * @return null|callable
      */
-    public static function getValidator($name)
+    public static function getValidator(string $name)
     {
         if (isset(self::$_validators[$name])) {
             return self::$_validators[$name];
@@ -87,7 +90,7 @@ trait UserAndContextValidatorsTrait
      * @param string $name
      * @return bool|callable
      */
-    public static function delValidator($name)
+    public static function delValidator(string $name)
     {
         $cb = false;
 
@@ -135,7 +138,7 @@ trait UserAndContextValidatorsTrait
      * @param null|mixed $value
      * @return bool
      */
-    public function required($field, $value = null)
+    public function required(string $field, $value = null)
     {
         if (null !== $value) {
             $val = $value;
@@ -160,7 +163,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $values
      * @return bool
      */
-    public function requiredIf($field, $fieldVal, $anotherField, $values)
+    public function requiredIf(string $field, $fieldVal, $anotherField, $values)
     {
         if (!isset($this->data[$anotherField])) {
             return false;
@@ -184,7 +187,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $values
      * @return bool
      */
-    public function requiredUnless($field, $fieldVal, $anotherField, $values)
+    public function requiredUnless(string $field, $fieldVal, $anotherField, $values)
     {
         if (!isset($this->data[$anotherField])) {
             return false;
@@ -205,7 +208,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $fields
      * @return bool
      */
-    public function requiredWith($field, $fieldVal, $fields)
+    public function requiredWith(string $field, $fieldVal, $fields)
     {
         foreach ((array)$fields as $name) {
             if ($this->required($name)) {
@@ -224,7 +227,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $fields
      * @return bool
      */
-    public function requiredWithAll($field, $fieldVal, $fields)
+    public function requiredWithAll(string $field, $fieldVal, $fields)
     {
         $allHasValue = true;
 
@@ -246,7 +249,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $fields
      * @return bool
      */
-    public function requiredWithout($field, $fieldVal, $fields)
+    public function requiredWithout(string $field, $fieldVal, $fields)
     {
         $allHasValue = true;
 
@@ -268,7 +271,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $fields
      * @return bool
      */
-    public function requiredWithoutAll($field, $fieldVal, $fields)
+    public function requiredWithoutAll(string $field, $fieldVal, $fields)
     {
         $allNoValue = true;
 
@@ -288,7 +291,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      * @return bool
      */
-    public function fileValidator($field, $suffixes = null)
+    public function fileValidator(string $field, $suffixes = null)
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -320,7 +323,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      * @return bool
      */
-    public function imageValidator($field, $suffixes = null)
+    public function imageValidator(string $field, $suffixes = null)
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -367,7 +370,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $types
      * @return bool
      */
-    public function mimeTypesValidator($field, $types)
+    public function mimeTypesValidator(string $field, $types)
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -395,7 +398,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $types
      * return bool
      */
-    public function mimesValidator($field, $types = null)
+    public function mimesValidator(string $field, $types = null)
     {
     }
 
@@ -409,17 +412,17 @@ trait UserAndContextValidatorsTrait
      * @param string $compareField
      * @return bool
      */
-    public function compareValidator($val, $compareField)
+    public function compareValidator($val, string $compareField)
     {
         return $compareField && ($val === $this->getByPath($compareField));
     }
 
-    public function sameValidator($val, $compareField)
+    public function sameValidator($val, string $compareField)
     {
         return $this->compareValidator($val, $compareField);
     }
 
-    public function equalValidator($val, $compareField)
+    public function equalValidator($val, string $compareField)
     {
         return $this->compareValidator($val, $compareField);
     }
@@ -430,7 +433,7 @@ trait UserAndContextValidatorsTrait
      * @param string $compareField
      * @return bool
      */
-    public function notEqualValidator($val, $compareField)
+    public function notEqualValidator($val, string $compareField)
     {
         return $compareField && ($val !== $this->getByPath($compareField));
     }
@@ -441,7 +444,7 @@ trait UserAndContextValidatorsTrait
      * @param string $compareField
      * @return bool
      */
-    public function differentValidator($val, $compareField)
+    public function differentValidator($val, string $compareField)
     {
         return $compareField && ($val !== $this->getByPath($compareField));
     }
@@ -452,13 +455,24 @@ trait UserAndContextValidatorsTrait
      * @param string $anotherField
      * @return bool
      */
-    public function inFieldValidator($val, $anotherField)
+    public function inFieldValidator($val, string $anotherField)
     {
         if ($anotherField && $dict = $this->getByPath($anotherField)) {
             return ValidatorList::in($val, $dict);
         }
 
         return false;
+    }
+
+    /**
+     * 验证数组时，指定的字段不能有任何重复值。
+     * `['foo.*.id', 'distinct']`
+     * @param mixed $val
+     * @return bool
+     */
+    public function distinctValidator($val)
+    {
+        return ValidatorList::distinct($val);
     }
 
     /**
@@ -475,8 +489,26 @@ trait UserAndContextValidatorsTrait
     }
 
     /*******************************************************************************
-     * getter/setter
+     * getter/setter/helper
      ******************************************************************************/
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public static function isCheckFile(string $name)
+    {
+        return false !== strpos(self::$_fileValidators, '|' . $name . '|');
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public static function isCheckRequired(string $name)
+    {
+        return 0 === strpos($name, 'required');
+    }
 
     /**
      * @param string $field
