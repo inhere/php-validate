@@ -537,7 +537,7 @@ $v = Validation::make($_POST,[
 `isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
 `isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
 `isArray`   | 验证是否是数组 | `['goods', 'isArray']`
-`each` | 对数组中的每个值都应用给定的验证器(这里的绝大多数验证器都可以使用)，并且要全部通过 | `['goods.*','each','string']`, `['goods.*','each','string','min'=>3]`
+`each` | 对数组中的每个值都应用**给定的验证器**(这里的绝大多数验证器都可以使用)，并且要**全部通过** | `['goods.*','each','string']`, `['goods.*','each','string','min'=>3]`
 `hasKey`   | 验证数组存在给定的key(s) | `['goods', 'hasKey', 'pear']` `['goods', 'hasKey', ['pear', 'banana']]`
 `distinct`   | 数组中的值必须是唯一的 | `['goods', 'distinct']`, `['users.*.id', 'distinct']`
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
@@ -556,8 +556,8 @@ $v = Validation::make($_POST,[
 `inField`    | 枚举验证: 字段值 存在于 另一个字段（anotherField）的值中 | `['field', 'inField', 'anotherField']`
 `mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
 `notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
-`compare/same/equal` | 字段值相同比较 | `['passwd', 'compare', 'repasswd']`
-`different/notEqual` | 字段值不能相同比较 | `['userId', 'notEqual', 'targetId']`
+`compare/same/equal` | 字段值比较: 相同 | `['passwd', 'compare', 'repasswd']`
+`different/notEqual` | 字段值比较: 不能相同 | `['userId', 'notEqual', 'targetId']`
 `requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
 `requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
 `requiredWith` | 指定的字段中的 _任意一个_ 有值且不为空，则此字段为 **必填** | `['city', 'requiredWith', ['myCity'] ]`
