@@ -537,7 +537,7 @@ $v = Validation::make($_POST,[
 `isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
 `isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
 `isArray`   | 验证是否是数组 | `['goods', 'isArray']`
-`each` | 对数组中的每个值都应用给的验证器(这里的绝大多数都可以使用)，并且要全部通过 | `['goods.*', 'each', 'string']`, `['goods.*', 'each', 'string', 'min' => 3]`
+`each` | 对数组中的每个值都应用给定的验证器(这里的绝大多数验证器都可以使用)，并且要全部通过 | `['goods.*','each','string']`, `['goods.*','each','string','min'=>3]`
 `hasKey`   | 验证数组存在给定的key(s) | `['goods', 'hasKey', 'pear']` `['goods', 'hasKey', ['pear', 'banana']]`
 `distinct`   | 数组中的值必须是唯一的 | `['goods', 'distinct']`, `['users.*.id', 'distinct']`
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`

@@ -490,7 +490,7 @@ trait UserAndContextValidatorsTrait
                 if ('required' === $validator) {
                     $passed = !ValidatorList::isEmpty($value);
 
-                }  elseif (isset(self::$_validators[$validator])) {
+                } elseif (isset(self::$_validators[$validator])) {
                     $callback = self::$_validators[$validator];
                     $passed = $callback($value, ...$args);
 
