@@ -275,6 +275,32 @@ class ValidatorListTest extends TestCase
         $this->assertTrue(ValidatorList::strList(['abc', 'efg']));
     }
 
+    public function testArrList()
+    {
+        $this->assertFalse(ValidatorList::arrList('test'));
+        $this->assertFalse(ValidatorList::arrList([]));
+        $this->assertFalse(ValidatorList::arrList(['a' => 'v']));
+        $this->assertFalse(ValidatorList::arrList(['value', 'a' => 'v']));
+        $this->assertFalse(ValidatorList::arrList(['abc', 565]));
+        $this->assertFalse(ValidatorList::arrList([
+            ['abc'], 'efg'
+        ]));
+
+        $this->assertTrue(ValidatorList::arrList([
+            ['abc'], ['efg']
+        ]));
+    }
+
+    public function testDistinct()
+    {
+        $this->assertFalse(ValidatorList::distinct([1,2,2]));
+        $this->assertFalse(ValidatorList::distinct([1,2,'2']));
+        $this->assertFalse(ValidatorList::distinct(['a','b','b']));
+
+        $this->assertTrue(ValidatorList::distinct([1,2,3]));
+        $this->assertTrue(ValidatorList::distinct(['a','b','c']));
+    }
+
     public function testJson()
     {
         $this->assertFalse(ValidatorList::json('test'));

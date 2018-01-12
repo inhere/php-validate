@@ -12,11 +12,11 @@
 - 支持将规则按场景进行分组设置。或者部分验证
 - 支持在进行验证前对值使用过滤器进行净化过滤[内置过滤器](#built-in-filters)
 - 支持自定义每个验证的错误消息，字段翻译，消息翻译，支持默认值
-- 支持基本的数组检查，数组的子级值检查
-- 方便的获取错误信息，验证后的安全数据获取
+- 支持基本的数组检查，数组的子级(`'goods.apple'`)值检查, 通配符的子级检查 (`'users.*.id' 'goods.*'`)
+- 方便的获取错误信息，验证后的安全数据获取(只会收集有规则检查过的数据)
 - 已经内置了50多个常用的验证器[内置验证器](#built-in-validators)
 - 规则设置参考 yii. 部分规则参考自 laravel, Respect/Validation
-- 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration` 用于数据过滤
+- 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration`，可单独用于数据过滤
 
 支持两种规则配置方式：
 
@@ -537,10 +537,13 @@ $v = Validation::make($_POST,[
 `isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
 `isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
 `isArray`   | 验证是否是数组 | `['goods', 'isArray']`
+`each` | 对数组中的每个值都应用给的验证器(这里的绝大多数都可以使用)，并且要全部通过 | `['goods.*', 'each', 'string']`, `['goods.*', 'each', 'string', 'min' => 3]`
 `hasKey`   | 验证数组存在给定的key(s) | `['goods', 'hasKey', 'pear']` `['goods', 'hasKey', ['pear', 'banana']]`
+`distinct`   | 数组中的值必须是唯一的 | `['goods', 'distinct']`, `['users.*.id', 'distinct']`
 `intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
 `numList`   | 验证字段值是否是一个 number list | `['tagIds', 'numList']`
 `strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
+`arrList`   | 验证字段值是否是一个 array list(多维数组) | `['tags', 'arrList']`
 `min`   | 最小边界值验证 | `['title', 'min', 40]`
 `max`   | 最大边界值验证 | `['title', 'max', 40]`
 `size/range/between`  | 验证大小范围, 可以支持验证 `int`, `string`, `array` 数据类型 | `['tagId', 'size', 'min'=>4, 'max'=>567]`

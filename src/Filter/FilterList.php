@@ -107,7 +107,7 @@ final class FilterList
 
     /**
      * 去除标签，去除或编码特殊字符。
-     * @param  string $val
+     * @param  string|array $val
      * @param  int $flags 标志
      *                    FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
      *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
@@ -119,6 +119,10 @@ final class FilterList
      */
     public static function string($val, $flags = 0)
     {
+        if (\is_array($val)) {
+            return array_map(self::class . '::string', $val);
+        }
+
         $settings = [];
 
         if ((int)$flags !== 0) {
@@ -438,7 +442,7 @@ final class FilterList
      * @param  string $string 字符串
      * @param  integer $start 起始长度
      * @param  int $end 结束位置
-     * @return mixed
+     * @return string
      */
     public static function stringCute($string, $start = 0, $end = null)
     {
@@ -448,6 +452,17 @@ final class FilterList
 
         // $length    = Helper::strlen($string);
         return Helper::subStr($string, $start, $end);
+    }
+
+    /**
+     * @param string $string
+     * @param int $start
+     * @param null $end
+     * @return string
+     */
+    public static function cut($string, $start = 0, $end = null)
+    {
+        return self::stringCute($string, $start, $end);
     }
 
     /**

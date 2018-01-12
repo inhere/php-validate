@@ -214,12 +214,8 @@ trait ValidationTrait
 
                 // required* 系列字段检查器 || 文件资源检查
                 if (\is_string($validator) && (self::isCheckRequired($validator) || self::isCheckFile($validator))) {
-                    if (!$this->fieldValidate($field, $value, $validator, $args)) {
-                        $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
-
-                        if ($this->isStopOnError()) {
-                            break;
-                        }
+                    if (!$this->fieldValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
+                        break;
                     }
 
                     continue;
@@ -237,12 +233,8 @@ trait ValidationTrait
                 }
 
                 // 字段值验证检查
-                if (!$this->valueValidate($field, $value, $validator, $args)) {
-                    $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
-
-                    if ($this->isStopOnError()) {
-                        break;
-                    }
+                if (!$this->valueValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
+                    break;
                 }
             }
 
@@ -276,10 +268,11 @@ trait ValidationTrait
      * @param mixed $value 属性值
      * @param string $validator required* 验证器
      * @param array $args 验证需要的参数
+     * @param string $defMsg
      * @return bool
      * @throws \InvalidArgumentException
      */
-    protected function fieldValidate(string $field, $value, string $validator, array $args)
+    protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg)
     {
         // required 检查
         if ($validator === 'required') {
@@ -305,6 +298,8 @@ trait ValidationTrait
             return true;
         }
 
+        $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
+
         return false;
     }
 
@@ -314,10 +309,10 @@ trait ValidationTrait
      * @param mixed $value 属性值
      * @param \Closure|string $validator 验证器
      * @param array $args 验证需要的参数
+     * @param string $defMsg
      * @return bool
-     * @throws \InvalidArgumentException
      */
-    protected function valueValidate(string $field, $value, $validator, array $args)
+    protected function valueValidate(string $field, $value, $validator, array $args, $defMsg)
     {
         // if field don't exists.
         if (null === $value) {
@@ -340,7 +335,6 @@ trait ValidationTrait
             } elseif (method_exists($this, $method = $validator . 'Validator')) {
                 $passed = $this->$method($value, ...$args);
 
-                // $validator is a method of the class 'ValidatorList'
             } elseif (method_exists(ValidatorList::class, $validator)) {
                 $passed = ValidatorList::$validator($value, ...$args);
 
@@ -352,7 +346,6 @@ trait ValidationTrait
             }
         } else {
             $passed = Helper::call($validator, $value, ...$args);
-            // throw new \InvalidArgumentException('Validator type is error, must is String or Closure!');
         }
 
         // validate success, save value to safeData
@@ -361,6 +354,8 @@ trait ValidationTrait
 
             return true;
         }
+
+        $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
 
         return false;
     }
@@ -482,13 +477,32 @@ trait ValidationTrait
      ******************************************************************************/
 
     /**
-     * @param string $path 'users.*.id'
+     * @param string $path 'users.*.id' 'goods.*' 'foo.bar.*.id'
+     * @param null|mixed $default
      * @return mixed
      */
-    protected function getByWildcard(string $path)
+    protected function getByWildcard(string $path, $default = null)
     {
+        list($first, $last) = explode('.*', $path, 2);
+        $recently = Helper::getValueOfArray($this->data, $first, $default);
+
+        // 'goods.*'
+        if ('' === $last) {
+            return $recently;
+        }
+
+        if (!$recently || !\is_array($recently)) {
+            return $default;
+        }
+
+        $last = trim($last, '.');
         $result = [];
 
+        foreach ($recently as $item) {
+            $result[] = $item[$last];
+        }
+
+        return $result;
     }
 
     /**

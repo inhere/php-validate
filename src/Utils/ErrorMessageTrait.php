@@ -101,6 +101,11 @@ trait ErrorMessageTrait
         'intList' => '{attr} must be an array and value is all integers',
         'numList' => '{attr} must be an array and value is all numbers',
         'strList' => '{attr} must be an array and value is all strings',
+        'arrList' => '{attr} must be an array and value is all arrays',
+
+        'each' => '{attr} must be through the {value0} verify',
+        'hasKey' => '{attr} must be contains the key {value0}',
+        'distinct' => 'there should not be duplicate keys in the {attr}',
 
         'json' => '{attr} must be an json string',
 

@@ -754,6 +754,27 @@ final class ValidatorList
     }
 
     /**
+     * 验证字段值是否是一个 array list, 多维数组
+     * @param $val
+     * @return bool
+     */
+    public static function arrList($val)
+    {
+        if (!$val || !\is_array($val)) {
+            return false;
+        }
+
+        /** @var array $val */
+        foreach ($val as $k => $v) {
+            if (!\is_array($v)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @param array|mixed $val
      * @param string|int|array $key
      * @return bool
@@ -778,7 +799,8 @@ final class ValidatorList
     }
 
     /**
-     * 数组里面的值是唯一，不重复的
+     * 验证数组时，指定的字段不能有任何重复值。
+     * `['foo.*.id', 'distinct']`
      * @param mixed $val
      * @return bool
      */

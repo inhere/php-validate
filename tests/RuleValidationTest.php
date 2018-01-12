@@ -371,4 +371,67 @@ class RuleValidationTest extends TestCase
         $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
     }
+
+    /**
+     * 验证的 字段值 必须存在于另一个字段（anotherField）的值中。
+     */
+    public function testInField()
+    {
+        $v = RuleValidation::makeAndValidate([
+            'status' => 3,
+            'some' => 30,
+            'allowed' => [3, 4, 5],
+        ], [
+            ['status', 'inField', 'allowed'],
+            ['some', 'inField', 'allowed'],
+        ]);
+
+        $this->assertFalse($v->isOk());
+        $this->assertCount(1, $v->getErrors());
+        $this->assertTrue($v->inError('some'));
+    }
+
+    public function testDistinct()
+    {
+        $v = RuleValidation::makeAndValidate([
+            'tags' => [3, 4, 4],
+            'goods' => ['apple', 'pear'],
+            'users' => [
+                ['id' => 34, 'name' => 'tom'],
+                ['id' => 89, 'name' => 'john'],
+            ],
+        ], [
+            ['tags', 'distinct'],
+            ['goods.*', 'distinct'],
+            ['users.*.id', 'distinct'],
+        ]);
+
+        // var_dump($v->getErrors());
+        $this->assertFalse($v->isOk());
+        $this->assertCount(1, $v->getErrors());
+        $this->assertTrue($v->inError('tags'));
+    }
+
+    public function testEach()
+    {
+        $v = RuleValidation::makeAndValidate([
+            'tags' => [3, 4, 5],
+            'goods' => ['apple', 'pear'],
+            'users' => [
+                ['id' => 34, 'name' => 'tom'],
+                ['id' => 89, 'name' => 'john'],
+            ],
+        ], [
+            ['tags', 'each', 'number'],
+            ['goods.*', 'each', 'string', 'min' => 4],
+            ['users.*.id', 'each', 'required'],
+            ['users.*.id', 'each', 'number', 'min' => 34],
+            ['users.*.name', 'each', 'string', 'min' => 5],
+        ]);
+
+        // var_dump($v->getErrors());
+        $this->assertFalse($v->isOk());
+        $this->assertCount(1, $v->getErrors());
+        $this->assertTrue($v->inError('users.*.name'));
+    }
 }

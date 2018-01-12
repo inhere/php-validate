@@ -465,14 +465,55 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 验证数组时，指定的字段不能有任何重复值。
-     * `['foo.*.id', 'distinct']`
-     * @param mixed $val
+     * 对数组中的每个值都应用给定的验证器，并且要全部通过
+     * `['foo.*.id', 'each', 'number']`
+     * `['goods.*', 'each', 'string']`
+     * @param array $values
+     * @param array ...$args
+     *  - string|\Closure $validator
+     *  - ... args for $validator
      * @return bool
      */
-    public function distinctValidator($val)
+    public function eachValidator(array $values, ...$args)
     {
-        return ValidatorList::distinct($val);
+        if (!$validator = array_shift($args)) {
+            throw new \InvalidArgumentException('must setting a validator for each validate.');
+        }
+
+        foreach ($values as $value) {
+            $passed = false;
+
+            if (\is_object($validator) && method_exists($validator, '__invoke')) {
+                $passed = $validator($value, ...$args);
+            } elseif (\is_string($validator)) {
+                // special for required
+                if ('required' === $validator) {
+                    $passed = !ValidatorList::isEmpty($value);
+
+                }  elseif (isset(self::$_validators[$validator])) {
+                    $callback = self::$_validators[$validator];
+                    $passed = $callback($value, ...$args);
+
+                } elseif (method_exists($this, $method = $validator . 'Validator')) {
+                    $passed = $this->$method($value, ...$args);
+
+                } elseif (method_exists(ValidatorList::class, $validator)) {
+                    $passed = ValidatorList::$validator($value, ...$args);
+
+                    // it is function name
+                } elseif (\function_exists($validator)) {
+                    $passed = $validator($value, ...$args);
+                } else {
+                    throw new \InvalidArgumentException("The validator [$validator] don't exists!");
+                }
+            }
+
+            if (!$passed) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -483,7 +524,7 @@ trait UserAndContextValidatorsTrait
      * @param int $expected
      * @param string $op
      */
-    public function intervalDayValidator($val, $compareField, $expected, $op = '>=')
+    public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>=')
     {
 
     }
