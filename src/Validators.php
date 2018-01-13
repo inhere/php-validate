@@ -12,7 +12,7 @@ namespace Inhere\Validate;
 use Inhere\Validate\Utils\Helper;
 
 /**
- * Class ValidatorList
+ * Class Validators
  * @package Inhere\Validate
  */
 class Validators
@@ -983,11 +983,7 @@ class Validators
         }
 
         // 校验日期的格式有效性
-        if (date($format, $unixTime) === $val) {
-            return true;
-        }
-
-        return false;
+        return date($format, $unixTime) === $val;
     }
 
     /**

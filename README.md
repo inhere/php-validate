@@ -445,7 +445,7 @@ $v = Validation::make($_POST,[
 
 ### `isEmpty` -- 是否为空判断
 
-是否为空判断, 这个判断作为 `skipOnEmpty` 的依据. 默认使用 `ValidatorList::isEmpty` 来判断.
+是否为空判断, 这个判断作为 `skipOnEmpty` 的依据. 默认使用 `Validators::isEmpty` 来判断.
 
 你也可以自定义判断规则:
 
@@ -634,6 +634,7 @@ $v = Validation::make($_POST, [
 #### 提示和注意
 
 - **请将 `required*` 系列规则写在规则列表的最前面**
+- 规则上都支持添加过滤器
 - 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
 - `size/range` `length` 可以只定义 `min` 或者  `max` 值
 - 支持对数组的子级值验证 
@@ -679,7 +680,7 @@ $v = Validation::make($_POST, [
     ['users.*.name', 'each', 'string', 'min' => 5],
 ```
 
-> 对于带有通配符`*`的字段, 添加过滤器是无效的
+- 对于带有通配符`*`的字段, 添加过滤器是无效的
 
 ## 一些关键方法API
 

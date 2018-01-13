@@ -358,4 +358,13 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::date(170526));
         $this->assertTrue(Validators::date('20170526'));
     }
+
+    public function testDateFormat()
+    {
+        $this->assertFalse(Validators::dateFormat('hello'));
+        // $t = strtotime('20170526');
+// var_dump($t, time(), date('ymd', $t));
+        $this->assertFalse(Validators::dateFormat('170526', 'ymd'));
+        $this->assertTrue(Validators::dateFormat('20170526', 'Ymd'));
+    }
 }

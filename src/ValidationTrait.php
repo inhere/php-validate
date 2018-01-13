@@ -174,7 +174,7 @@ trait ValidationTrait
             $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
             $validator = $rule[0];
 
-            // 如何判断属性为空 默认使用 ValidatorList::isEmpty(). 也可自定义
+            // 如何判断属性为空 默认使用 Validators::isEmpty(). 也可自定义
             $isEmpty = [Validators::class, 'isEmpty'];
             if (!empty($rule['isEmpty']) && (\is_string($rule['isEmpty']) || $rule['isEmpty'] instanceof \Closure)) {
                 $isEmpty = $rule['isEmpty'];
