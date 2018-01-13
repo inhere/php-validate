@@ -204,21 +204,21 @@ trait ValidationTrait
                 }
 
                 $value = $this->getByPath($field, $defValue);
-                // $hasWildcard = (bool)strpos($field, '*');
 
-                // mark field is safe. not need validate. like. 'created_at'
-                if ($validator === 'safe') {
-                    $this->setSafe($field, $value);
-                    continue;
-                }
-
-                // required* 系列字段检查器 || 文件资源检查
-                if (\is_string($validator) && (self::isCheckRequired($validator) || self::isCheckFile($validator))) {
-                    if (!$this->fieldValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
-                        break;
+                if (\is_string($validator)) {
+                    if ($validator === 'safe') {
+                        $this->setSafe($field, $value);
+                        continue;
                     }
 
-                    continue;
+                    // required*系列字段检查 || 文件资源检查
+                    if (self::isCheckRequired($validator) || self::isCheckFile($validator)) {
+                        if (!$this->fieldValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
+                            break;
+                        }
+
+                        continue;
+                    }
                 }
 
                 // 设定了为空跳过 并且 值为空
@@ -226,8 +226,8 @@ trait ValidationTrait
                     continue;
                 }
 
-                // 字段值过滤
-                if ($filters) {
+                // 字段值过滤(有通配符`*`的字段, 不应用过滤器)
+                if ($filters && !strpos($field, '.*')) {
                     $value = $this->valueFiltering($value, $filters);
                     $this->data[$field] = $value;
                 }

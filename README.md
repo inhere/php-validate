@@ -657,14 +657,14 @@ $v = Validation::make($_POST, [
 
 ```php
 [
-'goods' => [
-     'apple' => 34,
-     'pear' => 50,
- ],
-'users' => [
-     ['id' => 34, 'name' => 'tom'],
-     ['id' => 89, 'name' => 'john'],
- ]
+  'goods' => [
+       'apple' => 34,
+       'pear' => 50,
+   ],
+  'users' => [
+       ['id' => 34, 'name' => 'tom'],
+       ['id' => 89, 'name' => 'john'],
+   ]
 ]
 ```
 
@@ -678,6 +678,8 @@ $v = Validation::make($_POST, [
     ['users.*.id', 'each', 'number', 'min' => 34],
     ['users.*.name', 'each', 'string', 'min' => 5],
 ```
+
+> 对于带有通配符`*`的字段, 添加过滤器是无效的
 
 ## 一些关键方法API
 
