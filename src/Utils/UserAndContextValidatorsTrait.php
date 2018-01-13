@@ -8,7 +8,7 @@
 
 namespace Inhere\Validate\Utils;
 
-use Inhere\Validate\ValidatorList;
+use Inhere\Validate\Validators;
 
 /**
  * trait UserAndContextValidatorsTrait
@@ -133,7 +133,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 验证字段必须存在，且输入数据不为空。
-     * @see ValidatorList::isEmpty() 如何鉴定为空
+     * @see Validators::isEmpty() 如何鉴定为空
      * @param string $field
      * @param null|mixed $value
      * @return bool
@@ -151,7 +151,7 @@ trait UserAndContextValidatorsTrait
             $val = $this->uploadedFiles[$field];
         }
 
-        return !ValidatorList::isEmpty($val);
+        return !Validators::isEmpty($val);
     }
 
     /**
@@ -458,7 +458,7 @@ trait UserAndContextValidatorsTrait
     public function inFieldValidator($val, string $anotherField)
     {
         if ($anotherField && $dict = $this->getByPath($anotherField)) {
-            return ValidatorList::in($val, $dict);
+            return Validators::in($val, $dict);
         }
 
         return false;
@@ -477,7 +477,7 @@ trait UserAndContextValidatorsTrait
     public function eachValidator(array $values, ...$args)
     {
         if (!$validator = array_shift($args)) {
-            throw new \InvalidArgumentException('must setting a validator for each validate.');
+            throw new \InvalidArgumentException('must setting a validator for \'each\' validate.');
         }
 
         foreach ($values as $value) {
@@ -488,7 +488,7 @@ trait UserAndContextValidatorsTrait
             } elseif (\is_string($validator)) {
                 // special for required
                 if ('required' === $validator) {
-                    $passed = !ValidatorList::isEmpty($value);
+                    $passed = !Validators::isEmpty($value);
 
                 } elseif (isset(self::$_validators[$validator])) {
                     $callback = self::$_validators[$validator];
@@ -497,8 +497,8 @@ trait UserAndContextValidatorsTrait
                 } elseif (method_exists($this, $method = $validator . 'Validator')) {
                     $passed = $this->$method($value, ...$args);
 
-                } elseif (method_exists(ValidatorList::class, $validator)) {
-                    $passed = ValidatorList::$validator($value, ...$args);
+                } elseif (method_exists(Validators::class, $validator)) {
+                    $passed = Validators::$validator($value, ...$args);
 
                     // it is function name
                 } elseif (\function_exists($validator)) {

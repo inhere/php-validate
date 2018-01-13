@@ -8,7 +8,7 @@
 
 namespace Inhere\Validate\Utils;
 
-use Inhere\Validate\Filter\FilterList;
+use Inhere\Validate\Filter\Filters;
 
 /**
  * Trait DataFiltersTrait
@@ -86,8 +86,8 @@ trait DataFiltersTrait
             $value = $this->$filter(...$args);
 
             // $filter is a method of the class 'FilterList'
-        } elseif (method_exists(FilterList::class, $filter)) {
-            $value = FilterList::$filter(...$args);
+        } elseif (method_exists(Filters::class, $filter)) {
+            $value = Filters::$filter(...$args);
 
             // it is function name
         } elseif (\function_exists($filter)) {

@@ -175,7 +175,7 @@ trait ValidationTrait
             $validator = $rule[0];
 
             // 如何判断属性为空 默认使用 ValidatorList::isEmpty(). 也可自定义
-            $isEmpty = [ValidatorList::class, 'isEmpty'];
+            $isEmpty = [Validators::class, 'isEmpty'];
             if (!empty($rule['isEmpty']) && (\is_string($rule['isEmpty']) || $rule['isEmpty'] instanceof \Closure)) {
                 $isEmpty = $rule['isEmpty'];
             }
@@ -258,7 +258,6 @@ trait ValidationTrait
         // fix : deny repeat validate
         $this->_validated = true;
 
-        unset($data);
         return $this;
     }
 
@@ -335,8 +334,8 @@ trait ValidationTrait
             } elseif (method_exists($this, $method = $validator . 'Validator')) {
                 $passed = $this->$method($value, ...$args);
 
-            } elseif (method_exists(ValidatorList::class, $validator)) {
-                $passed = ValidatorList::$validator($value, ...$args);
+            } elseif (method_exists(Validators::class, $validator)) {
+                $passed = Validators::$validator($value, ...$args);
 
                 // it is function name
             } elseif (\function_exists($validator)) {

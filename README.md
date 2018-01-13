@@ -489,7 +489,7 @@ $v = Validation::make($_POST,[
 <a name="built-in-filters"></a>
 ## 内置的过滤器
 
-> 一些 php 内置的函数可直接使用。 e.g `trim|ucfirst` `json_decode`
+> 一些 php 内置的函数可直接使用。 e.g `trim|ucfirst` `json_decode` `md5`
 
 过滤器 | 说明 | 示例
 -------|-------------|------------
@@ -507,6 +507,7 @@ $v = Validation::make($_POST,[
 `timestamp/strToTime` | 字符串日期转换时间戳 | `['pulishedAt', 'number', 'filter' => 'strToTime'],`
 `url` | URL 过滤,移除所有不符合 URL 的字符 | `['field', 'url', 'filter' => 'url'],`
 `str2list/str2array` | 字符串转数组 `'tag0,tag1' -> ['tag0', 'tag1']` | `['tags', 'strList', 'filter' => 'str2array'],`
+`unique` | 去除数组中的重复值(by `array_unique()`) | `['tagIds', 'intList', 'filter' => 'unique'],`
 `email` | email 过滤,移除所有不符合 email 的字符 | `['field', 'email', 'filter' => 'email'],`
 `encoded` | 去除 URL 编码不需要的字符,与 `urlencode()` 函数很类似 | `['imgUrl', 'url', 'filter' => 'encoded'],`
 `clearSpace` | 清理空格 | `['title', 'string', 'filter' => 'clearSpace'],`
@@ -528,7 +529,7 @@ $v = Validation::make($_POST,[
 `bool/boolean`  | 验证是否是 bool. [关于bool值](#about-bool-value) | `['open', 'bool']`
 `float` | 验证是否是 float | `['price', 'float']`
 `string`    | 验证是否是 string. **支持长度检查** | `['name', 'string']`, `['name', 'string', 'min'=>4, 'max'=>16]`
-`accepted`  | 验证的字段必须为 `yes/on/1/true` 这在确认「服务条款」是否同意时有用(from laravel) | `['agree', 'accepted']`
+`accepted`  | 验证的字段必须为 `yes/on/1/true` 这在确认「服务条款」是否同意时有用(ref laravel) | `['agree', 'accepted']`
 `url`   | 验证是否是 url | `['myUrl', 'url']`
 `email` | 验证是否是 email | `['userEmail', 'email']`
 `alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
@@ -558,18 +559,18 @@ $v = Validation::make($_POST,[
 `notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
 `compare/same/equal` | 字段值比较: 相同 | `['passwd', 'compare', 'repasswd']`
 `different/notEqual` | 字段值比较: 不能相同 | `['userId', 'notEqual', 'targetId']`
-`requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **必填** | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
-`requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **不必填** | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
-`requiredWith` | 指定的字段中的 _任意一个_ 有值且不为空，则此字段为 **必填** | `['city', 'requiredWith', ['myCity'] ]`
-`requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填** | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
-`requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填** | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
-`requiredWithoutAll` | 如果所有指定的字段 **都没有值**，则此字段为 **必填** | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
+`requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **必填**(ref laravel) | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
+`requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **不必填**(ref laravel) | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
+`requiredWith` | 指定的字段中的 _任意一个_ 有值且不为空，则此字段为 **必填**(ref laravel) | `['city', 'requiredWith', ['myCity'] ]`
+`requiredWithAll` | 如果指定的 _所有字段_ 都有值，则此字段为 **必填**(ref laravel) | `['city', 'requiredWithAll', ['myCity', 'myCity1'] ]`
+`requiredWithout` | 如果缺少 _任意一个_ 指定的字段值，则此字段为 **必填**(ref laravel) | `['city', 'requiredWithout', ['myCity', 'myCity1'] ]`
+`requiredWithoutAll` | 如果所有指定的字段 **都没有值**，则此字段为 **必填**(ref laravel) | `['city', 'requiredWithoutAll', ['myCity', 'myCity1'] ]`
 `date` | 验证是否是 date | `['publishedAt', 'date']`
 `dateFormat` | 验证是否是 date, 并且是指定的格式 | `['publishedAt', 'dateFormat', 'Y-m-d']`
 `dateEquals` | 验证是否是 date, 并且是否是等于给定日期 | `['publishedAt', 'dateEquals', '2017-05-12']`
-`beforeDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'beforeDate', '2017-05-12']`
-`beforeOrEqualDate` | 字段值必须是小于或等于给定日期的值 | `['publishedAt', 'beforeOrEqualDate', '2017-05-12']`
-`afterOrEqualDate` | 字段值必须是大于或等于给定日期的值 | `['publishedAt', 'afterOrEqualDate', '2017-05-12']`
+`beforeDate` | 验证字段值必须是给定日期之前的值(ref laravel) | `['publishedAt', 'beforeDate', '2017-05-12']`
+`beforeOrEqualDate` | 字段值必须是小于或等于给定日期的值(ref laravel) | `['publishedAt', 'beforeOrEqualDate', '2017-05-12']`
+`afterOrEqualDate` | 字段值必须是大于或等于给定日期的值(ref laravel) | `['publishedAt', 'afterOrEqualDate', '2017-05-12']`
 `afterDate` | 验证字段值必须是给定日期之前的值 | `['publishedAt', 'afterDate', '2017-05-12']`
 `json`   | 验证是否是json字符串(默认严格验证，必须以`{` `[` 开始) | `['goods', 'json']` `['somedata', 'json', false]` - 非严格，普通字符串`eg 'test'`也会通过
 `file`   | 验证是否是上传的文件 | `['upFile', 'file']`
@@ -594,7 +595,28 @@ $v = Validation::make($_POST,[
 ['createdAt, updatedAt', 'safe']
 ```
 
-### 关于文件验证
+### 一些补充说明
+
+<a name="about-empty-value"></a>
+#### 关于为空判断
+
+字段符合下方任一条件时即为「空」
+
+- 该值为 `null`.
+- 该值为空字符串 `''`
+- 该值为空数组 `[]`
+- 该值为空对象 -- 空的 `可数` 对象
+- 该值为没有路径的上传文件
+
+<a name="about-bool-value"></a>
+#### 关于布尔值
+
+值符合下列的任意一项即认为是为bool值(不区分大小写)
+
+- 是 "1"、"true"、"on" 和 "yes" (`TRUE`)
+- 是 "0"、"false"、"off"、"no" 和 "" (`FALSE`)
+
+#### 关于文件验证
 
 文件验证时注意要设置文件信息源数据
 
@@ -609,18 +631,10 @@ $v = Validation::make($_POST, [
 // ...
 ```
 
-### (注意)一些补充说明
+#### 提示和注意
 
 - **请将 `required*` 系列规则写在规则列表的最前面**
-- 关于为空判断：字段符合下方任一条件时即为「空」<a name="about-empty-value"></a>
-  - 该值为 `null`.
-  - 该值为空字符串 `''`
-  - 该值为空数组 `[]`
-  - 该值为空对象 -- 空的 `可数` 对象
-  - 该值为没有路径的上传文件
-- 关于布尔值: 值符合下列的任意一项即认为是为bool值<a name="about-bool-value"></a>
-  - 是 "1"、"true"、"on" 和 "yes" (`TRUE`)
-  - 是 "0"、"false"、"off"、"no" 和 "" (`FALSE`)
+- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
 - `size/range` `length` 可以只定义 `min` 或者  `max` 值
 - 支持对数组的子级值验证 
 
@@ -639,8 +653,31 @@ $v = Validation::make($_POST, [
     ['goods.pear', 'max', 30], //goods 下的 pear 值最大不能超过 30
 ```
 
-- `required*` 系列规则参考自 laravel
-- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
+- 支持对数组的子级值进行遍历验证 
+
+```php
+[
+'goods' => [
+     'apple' => 34,
+     'pear' => 50,
+ ],
+'users' => [
+     ['id' => 34, 'name' => 'tom'],
+     ['id' => 89, 'name' => 'john'],
+ ]
+]
+```
+
+```php
+    ['goods.*', 'each', 'number'], //goods 下的 每个值 都必须为大于0 的整数
+    // 写法是等效的
+    // ['goods', 'each', 'number'], //goods 下的 每个值 都必须为大于0 的整数
+    
+    // 多维数组
+    ['users.*.id', 'each', 'required'],
+    ['users.*.id', 'each', 'number', 'min' => 34],
+    ['users.*.name', 'each', 'string', 'min' => 5],
+```
 
 ## 一些关键方法API
 

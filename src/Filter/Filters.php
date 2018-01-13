@@ -9,11 +9,18 @@ namespace Inhere\Validate\Filter;
 use Inhere\Validate\Utils\Helper;
 
 /**
- * Class FilterList
+ * Class Filters
  * @package Inhere\Validate\Filter
  */
-final class FilterList
+final class Filters
 {
+    /**
+     * don't allow create instance.
+     */
+    private function __construct()
+    {
+    }
+
     /**
      * 布尔值验证，转换成字符串后是下列的一个，就认为他是个bool值
      *   - "1"、"true"、"on" 和 "yes" (equal TRUE)
@@ -35,7 +42,7 @@ final class FilterList
     }
 
     /**
-     * @see ValidatorList::boolean()
+     * @see Validators::boolean()
      * {@inheritdoc}
      */
     public static function bool($val, $nullAsFalse = false)
@@ -59,7 +66,7 @@ final class FilterList
     }
 
     /**
-     * @see FilterList::integer()
+     * @see Filters::integer()
      * {@inheritdoc}
      */
     public static function int($val)
@@ -133,7 +140,7 @@ final class FilterList
     }
 
     /**
-     * @see FilterList::string()
+     * @see Filters::string()
      * {@inheritdoc}
      */
     public static function stripped($val, $flags = 0)
@@ -519,5 +526,19 @@ final class FilterList
     public static function callback($val, $callback)
     {
         return filter_var($val, FILTER_CALLBACK, ['options' => $callback]);
+    }
+
+    /**
+     * 去除数组中的重复值
+     * @param mixed $val
+     * @return array
+     */
+    public static function unique($val)
+    {
+        if (!$val || \is_array($val)) {
+            return $val;
+        }
+
+        return array_unique($val);
     }
 }
