@@ -280,7 +280,7 @@ trait ErrorMessageTrait
         $e = $this->_errors;
         $first = array_shift($e);
 
-        return $onlyMsg ? array_values($first)['msg'] : $first;
+        return $onlyMsg ? $first['msg'] : $first;
     }
 
     /**
@@ -294,7 +294,7 @@ trait ErrorMessageTrait
         $e = $this->_errors;
         $last = array_pop($e);
 
-        return $onlyMsg ? array_values($last)['msg'] : $last;
+        return $onlyMsg ? $last['msg'] : $last;
     }
 
     /**
@@ -374,23 +374,26 @@ trait ErrorMessageTrait
      */
     public function getMessage($validator, $field, array $args = [], $message = null)
     {
-        $validator = self::getValidatorName(\is_string($validator) ? $validator : 'callback');
+        $rawName = \is_string($validator) ? $validator : 'callback';
+        $validator = self::getValidatorName($rawName);
 
         // get message from default dict.
         if (!$message) {
             // allow define a message for a validator. eg: 'username.required' => 'some message ...'
-            $fullKey = $field . '.' . $validator;
+            $fullKey = $field . '.' . $rawName;
             $messages = $this->getMessages();
 
             if (isset($messages[$fullKey])) {
                 $message = $messages[$fullKey];
+            } elseif (isset($messages[$rawName])) {
+                $message = $messages[$rawName];
             } else {
                 $message = $messages[$validator] ?? $messages['_'];
             }
 
             // is array. It's defined multi error messages
-        } elseif (\is_array($message) && isset($message[$validator])) {
-            $message = $message[$validator];
+        } elseif (\is_array($message) && isset($message[$rawName])) {
+            $message = $message[$rawName];
         }
 
         if (\is_string($message) && false === strpos($message, '{')) {

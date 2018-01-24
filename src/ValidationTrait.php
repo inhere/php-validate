@@ -271,7 +271,7 @@ trait ValidationTrait
      * @return bool
      * @throws \InvalidArgumentException
      */
-    protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg)
+    protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg): bool
     {
         // required 检查
         if ($validator === 'required') {
@@ -279,13 +279,11 @@ trait ValidationTrait
 
             // 文件资源检查 方法
         } elseif (self::isCheckFile($validator)) {
-            $args = array_values($args);
-            $passed = $this->$validator($field, ...$args);
+            $passed = $this->$validator($field, ...array_values($args));
 
             // 其他 required* 方法
         } elseif (method_exists($this, $validator)) {
-            $args = array_values($args);
-            $passed = $this->$validator($field, $value, ...$args);
+            $passed = $this->$validator($field, $value, ...array_values($args));
         } else {
             throw new \InvalidArgumentException("The validator [$validator] is not exists!");
         }
@@ -311,13 +309,14 @@ trait ValidationTrait
      * @param string $defMsg
      * @return bool
      */
-    protected function valueValidate(string $field, $value, $validator, array $args, $defMsg)
+    protected function valueValidate(string $field, $value, $validator, array $args, $defMsg): bool
     {
         // if field don't exists.
         if (null === $value) {
             return false;
         }
 
+        $rawArgs = $args;
         $args = array_values($args);
 
         // if $validator is a closure OR a object has method '__invoke'
@@ -351,10 +350,11 @@ trait ValidationTrait
         if ($passed) {
             $this->collectSafeValue($field, $value);
 
+            unset($rawArgs);
             return true;
         }
 
-        $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
+        $this->addError($field, $this->getMessage($validator, $field, $rawArgs, $defMsg));
 
         return false;
     }

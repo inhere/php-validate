@@ -1,7 +1,7 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Inhere\Validate\RuleValidation;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Inhere\Validate\RuleValidation
@@ -174,7 +174,7 @@ class RuleValidationTest extends TestCase
         $rules = [
             ['tagId,userId,freeTime', 'required'],
             ['tagId,userId,freeTime', 'number', 'on' => 's1'],
-            ['tagId', 'size', 'max'=> 567, 'min'=> 4, 'on' => 's2'],
+            ['tagId', 'size', 'max' => 567, 'min' => 4, 'on' => 's2'],
             ['name', 'string', 'on' => 's2'],
             ['goods.pear', 'max', 60],
         ];
@@ -220,7 +220,7 @@ class RuleValidationTest extends TestCase
         $rules = [
             // ['tagId,userId,freeTime', 'required'],// set message
             ['tagId,userId,freeTime', 'number', 'filter' => 'int'],
-            ['tagId', 'size', 'max'=> 567, 'min'=> 4, 'filter' => 'int'], // 4<= tagId <=567
+            ['tagId', 'size', 'max' => 567, 'min' => 4, 'filter' => 'int'], // 4<= tagId <=567
             // ['goods', 'isList'],
             ['goods.pear', 'max', 60],
         ];
@@ -231,7 +231,7 @@ class RuleValidationTest extends TestCase
             ->setMessages([
                 'freeTime.required' => 'freeTime is required!!!!'
             ])
-           ->validate([], false);
+            ->validate([], false);
 
         $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
@@ -251,7 +251,7 @@ class RuleValidationTest extends TestCase
             ->setMessages([
                 'freeTime.required' => 'freeTime is required!!!!'
             ])
-           ->validate([], false);
+            ->validate([], false);
 
         $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());
@@ -309,35 +309,45 @@ class RuleValidationTest extends TestCase
             ['tagId,userId,freeTime', 'required'],// set message
             ['tagId,userId,freeTime', 'number'],
             ['note', 'email', 'skipOnEmpty' => false], // set skipOnEmpty is false.
-            ['insertTime', 'email', 'scene' => 'otherScene' ],// set scene. will is not validate it on default.
-            ['tagId', 'size', 'max'=> 567, 'min'=> 4, ], // 4<= tagId <=567
+            ['insertTime', 'email', 'scene' => 'otherScene'],// set scene. will is not validate it on default.
+            ['tagId', 'size', 'max' => 567, 'min' => 4,], // 4<= tagId <=567
             ['passwd', 'compare', 'repasswd'], //
 
-            ['name', 'regexp' ,'/^[a-z]\w{2,12}$/'],
+            ['name', 'regexp', '/^[a-z]\w{2,12}$/'],
 
             ['goods.pear', 'max', 30], //
 
             ['goods', 'isList'], //
 
-             ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
-        //    ['notExistsField1', 'requiredWithout', 'existsField'], //
+            ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
+            //    ['notExistsField1', 'requiredWithout', 'existsField'], //
 
-            ['freeTime', 'size', 'min'=>4, 'max'=>567, 'when' => function() {
-                echo "  use when pre-check\n";
+            [
+                'freeTime',
+                'size',
+                'min' => 4,
+                'max' => 567,
+                'when' => function () {
+                    echo "  use when pre-check\n";
 
-                // $valid is current validation instance.
+                    // $valid is current validation instance.
 
-                return true;
-            }], // 4<= tagId <=567
+                    return true;
+                }
+            ], // 4<= tagId <=567
 
-            ['userId', function(){
-                echo "  use custom validate to check userId \n";
+            [
+                'userId',
+                function () {
+                    echo "  use custom validate to check userId \n";
 
-                // var_dump($value, $data);
-                // echo __LINE__ . "\n";
+                    // var_dump($value, $data);
+                    // echo __LINE__ . "\n";
 
-                return false;
-            }, 'msg' => 'userId check failure by closure!'],
+                    return false;
+                },
+                'msg' => 'userId check failure by closure!'
+            ],
         ];
     }
 
@@ -389,6 +399,29 @@ class RuleValidationTest extends TestCase
         $this->assertFalse($v->isOk());
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('some'));
+    }
+
+    /**
+     * 验证的 字段值 必须存在于另一个字段（anotherField）的值中。
+     */
+    public function testRange()
+    {
+        $v = RuleValidation::make([
+            'num' => 3,
+            'id' => 300,
+        ], [
+            ['num', 'range', 'min' => 1, 'max' => 100],
+            ['id', 'range', 'min' => 1, 'max' => 100],
+        ])
+            ->setMessages([
+                'id.range' => 'error message',
+            ])
+            ->validate();
+
+        $this->assertFalse($v->isOk());
+        $this->assertCount(1, $v->getErrors());
+        $this->assertTrue($v->inError('id'));
+        $this->assertStringEndsWith('message', $v->firstError());
     }
 
     public function testDistinct()
