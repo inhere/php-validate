@@ -44,8 +44,8 @@ abstract class AbstractValidation implements ValidationInterface
     {
         $this->data = $data;
         $this
+            ->atScene($scene)
             ->setRules($rules)
-            ->setScene($scene)
             ->setTranslates($translates);
 
         if ($startValidate) {
@@ -73,7 +73,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @param array $data
      * @param array $rules
      * @param array $translates
-     * @param string $scene    
+     * @param string $scene
      * @return static
      * @throws \InvalidArgumentException
      * @throws \RuntimeException

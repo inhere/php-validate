@@ -568,7 +568,7 @@ trait ValidationTrait
      * @param string $scene
      * @return static
      */
-    public function setScene(string $scene)
+    public function atScene(string $scene)
     {
         $this->scene = trim($scene);
 
@@ -580,9 +580,9 @@ trait ValidationTrait
      * @param string $scene
      * @return static
      */
-    public function atScene(string $scene)
+    public function setScene(string $scene)
     {
-        return $this->setScene($scene);
+        return $this->atScene($scene);
     }
 
     /**
@@ -592,7 +592,7 @@ trait ValidationTrait
      */
     public function onScene(string $scene)
     {
-        return $this->setScene($scene);
+        return $this->atScene($scene);
     }
 
     /**
@@ -681,7 +681,7 @@ trait ValidationTrait
      * @param mixed $default
      * @return mixed
      */
-    public function getValid(string $key, $default = null)
+    public function safe(string $key, $default = null)
     {
         return $this->getSafe($key, $default);
     }
