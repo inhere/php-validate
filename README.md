@@ -808,7 +808,7 @@ public function getRaw(string $key, $default = null)
 
 ## 代码示例
 
-可运行示例请看 `examples` 
+可运行示例请看 `example` 
 
 ## 单元测试
 

@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(E_ALL);
-date_default_timezone_set("Asia/Shanghai");
+date_default_timezone_set('Asia/Shanghai');
 
 spl_autoload_register(function($class)
 {
