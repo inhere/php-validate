@@ -332,7 +332,7 @@ trait ErrorMessageTrait
 
     /**
      * @param string $key
-     * @param string $msg
+     * @param string|array $msg
      */
     public static function setDefaultMessage(string $key, $msg)
     {
@@ -372,7 +372,7 @@ trait ErrorMessageTrait
      * @param  string|array $message 自定义提示消息
      * @return string
      */
-    public function getMessage($validator, $field, array $args = [], $message = null)
+    public function getMessage($validator, string $field, array $args = [], $message = null): string
     {
         $rawName = \is_string($validator) ? $validator : 'callback';
         $validator = self::getValidatorName($rawName);

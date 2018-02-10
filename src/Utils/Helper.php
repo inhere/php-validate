@@ -45,7 +45,7 @@ class Helper
      * @param string $ext
      * @return mixed|null
      */
-    public static function getImageMime($ext)
+    public static function getImageMime(string $ext)
     {
         return self::$imgMimeTypes[$ext] ?? null;
     }
@@ -54,7 +54,7 @@ class Helper
      * @param string $mime
      * @return mixed|null
      */
-    public static function getImageExtByMime($mime)
+    public static function getImageExtByMime(string $mime)
     {
         $key = array_search($mime, self::$imgMimeTypes, true);
 
@@ -65,19 +65,19 @@ class Helper
      * @param string $file
      * @return string eg: 'image/gif'
      */
-    public static function getMimeType($file)
+    public static function getMimeType(string $file)
     {
         // return mime_content_type($file);
         return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @param string $delimiter
      * @param bool $filterEmpty
      * @return array
      */
-    public static function explode($string, $delimiter = ',', $filterEmpty = true)
+    public static function explode(string $string, string $delimiter = ',', $filterEmpty = true)
     {
         $string = trim($string, $delimiter);
 
@@ -95,7 +95,7 @@ class Helper
      * @param string $encoding
      * @return int
      */
-    public static function strlen($str, $encoding = 'UTF-8')
+    public static function strlen(string $str, $encoding = 'UTF-8')
     {
         $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
 
@@ -108,12 +108,12 @@ class Helper
 
     /**
      * @param $str
-     * @return bool|string
+     * @return string
      */
     public static function strToLower($str)
     {
         if (\is_array($str)) {
-            return false;
+            return '';
         }
 
         if (\function_exists('mb_strtolower')) {
@@ -124,15 +124,11 @@ class Helper
     }
 
     /**
-     * @param $str
-     * @return bool|string
+     * @param string $str
+     * @return string
      */
-    public static function strToUpper($str)
+    public static function strToUpper(string $str)
     {
-        if (\is_array($str)) {
-            return false;
-        }
-
         if (\function_exists('mb_strtoupper')) {
             return mb_strtoupper($str, 'utf-8');
         }
@@ -193,19 +189,19 @@ class Helper
     }
 
     /**
-     * @param $str
+     * @param string $str
      * @return string
      */
-    public static function ucfirst($str)
+    public static function ucfirst(string $str)
     {
         return self::strToUpper(self::subStr($str, 0, 1)) . self::subStr($str, 1);
     }
 
     /**
-     * @param $str
+     * @param string $str
      * @return string
      */
-    public static function ucwords($str)
+    public static function ucwords(string $str)
     {
         if (\function_exists('mb_convert_case')) {
             return mb_convert_case($str, MB_CASE_TITLE);
@@ -221,7 +217,7 @@ class Helper
      * @param bool $upperCaseFirstChar
      * @return mixed
      */
-    public static function toCamelCase($str, $upperCaseFirstChar = false)
+    public static function toCamelCase(string $str, $upperCaseFirstChar = false)
     {
         $str = self::strToLower($str);
 
@@ -240,7 +236,7 @@ class Helper
      * @param string $sep
      * @return string
      */
-    public static function toSnakeCase($string, $sep = '_')
+    public static function toSnakeCase(string $string, string $sep = '_')
     {
         // 'CMSCategories' => 'cms_categories'
         // 'RangePrice' => 'range_price'
@@ -251,7 +247,7 @@ class Helper
      * @param string $field
      * @return mixed|string
      */
-    public static function beautifyFieldName($field)
+    public static function beautifyFieldName(string $field)
     {
         $str = self::toSnakeCase($field, ' ');
 

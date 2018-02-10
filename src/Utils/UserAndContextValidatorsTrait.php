@@ -163,7 +163,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $values
      * @return bool
      */
-    public function requiredIf(string $field, $fieldVal, $anotherField, $values)
+    public function requiredIf(string $field, $fieldVal, string $anotherField, $values)
     {
         if (!isset($this->data[$anotherField])) {
             return false;
@@ -187,7 +187,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $values
      * @return bool
      */
-    public function requiredUnless(string $field, $fieldVal, $anotherField, $values)
+    public function requiredUnless(string $field, $fieldVal, string $anotherField, $values)
     {
         if (!isset($this->data[$anotherField])) {
             return false;
