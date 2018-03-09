@@ -176,6 +176,7 @@ class ValidatorsTest extends TestCase
         $this->assertFalse(Validators::regexp('test', '/^\d+$/'));
         $this->assertFalse(Validators::regexp('test-dd', '/^\w+$/'));
 
+        $this->assertTrue(Validators::regexp('compose启动服务', '/[\x{4e00}-\x{9fa5}]+/u'));
         $this->assertTrue(Validators::regexp('test56', '/^\w+$/'));
     }
 

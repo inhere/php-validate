@@ -23,14 +23,12 @@ trait ValidationTrait
     use DataFiltersTrait, ErrorMessageTrait, UserAndContextValidatorsTrait;
 
     /**
-     * the rules is by setRules()
-     * @var array
+     * @var array The rules is by setRules()
      */
     private $_rules = [];
 
     /**
-     * Through the validation of the data
-     * @var array
+     * @var array Through the validation of the data
      */
     private $_safeData = [];
 
@@ -55,7 +53,9 @@ trait ValidationTrait
      */
     protected $scene = '';
 
-    /** @var array used rules at current scene */
+    /**
+     * @var array Used rules at current scene
+     */
     protected $_usedRules = [];
 
     /**
@@ -152,7 +152,7 @@ trait ValidationTrait
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function validate(array $onlyChecked = null, $stopOnError = null)
+    public function validate(array $onlyChecked = null, bool $stopOnError = null)
     {
         if (!property_exists($this, 'data')) {
             throw new \InvalidArgumentException('Must be defined property "data"(array) in the sub-class used.');

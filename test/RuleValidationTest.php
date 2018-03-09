@@ -262,6 +262,27 @@ class RuleValidationTest extends TestCase
         $this->assertEquals($v->getSafe('tagId'), null);
     }
 
+    public function testValidateRegex()
+    {
+        $v = RuleValidation::check([
+            'text1' => 'hello-world',
+            'text2' => 'hello world中文',
+        ],[
+            ['text1, text2', 'string'],
+            ['text1', 'regex', '/^[\w-]+$/'],
+            ['text2', 'regex', '/[\x{4e00}-\x{9fa5}]+/u'],
+        ]);
+
+        $this->assertTrue($v->isOk());
+        $this->assertFalse($v->isFail());
+
+        $errors = $v->getErrors();
+        $this->assertEmpty($errors);
+
+        $safeData = $v->getSafeData();
+        $this->assertArrayHasKey('text2', $safeData);
+    }
+
     public function testValidateString()
     {
         $val = '123482';
