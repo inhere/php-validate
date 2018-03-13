@@ -41,7 +41,7 @@ interface ValidationInterface
      * @return static
      * @throws \RuntimeException
      */
-    public function validate(array $onlyChecked = [], $stopOnError = null);
+    public function validate(array $onlyChecked = [], bool $stopOnError = null);
 
     /**
      * @return bool

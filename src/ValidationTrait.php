@@ -152,7 +152,7 @@ trait ValidationTrait
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function validate(array $onlyChecked = null, bool $stopOnError = null)
+    public function validate(array $onlyChecked = [], bool $stopOnError = null)
     {
         if (!property_exists($this, 'data')) {
             throw new \InvalidArgumentException('Must be defined property "data"(array) in the sub-class used.');
