@@ -42,7 +42,7 @@ class Filtration
      * @param array $rules
      * @return Filtration
      */
-    public static function make(array $data = [], array $rules = [])
+    public static function make(array $data = [], array $rules = []): self
     {
         return new self($data, $rules);
     }
@@ -62,7 +62,7 @@ class Filtration
      * @param array $data
      * @return $this
      */
-    public function load(array $data)
+    public function load(array $data): self
     {
         $this->_data = $data;
 
@@ -74,7 +74,7 @@ class Filtration
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function filtering(array $rules = [])
+    public function filtering(array $rules = []): array
     {
         return $this->applyRules($rules);
     }
@@ -86,7 +86,7 @@ class Filtration
      * @return array 返回过滤后的数据
      * @throws \InvalidArgumentException
      */
-    public function applyRules(array $rules = [], array $data = [])
+    public function applyRules(array $rules = [], array $data = []): array
     {
         $data = $data ?: $this->_data;
         $rules = $rules ?: $this->_rules;
@@ -154,7 +154,7 @@ class Filtration
      * @param bool $clearFilters
      * @return $this
      */
-    public function reset($clearFilters = false)
+    public function reset(bool $clearFilters = false): self
     {
         $this->_data = $this->_rules = [];
 
@@ -185,7 +185,7 @@ class Filtration
      * @param array $rules
      * @return self
      */
-    public function setRules(array $rules)
+    public function setRules(array $rules): self
     {
         $this->_rules = $rules;
 

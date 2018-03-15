@@ -262,7 +262,7 @@ trait ErrorMessageTrait
     /**
      * @return $this
      */
-    public function clearErrors()
+    public function clearErrors(): self
     {
         $this->_errors = [];
 
@@ -278,7 +278,7 @@ trait ErrorMessageTrait
     public function firstError($onlyMsg = true)
     {
         $e = $this->_errors;
-        $first = array_shift($e);
+        $first = \array_shift($e);
 
         return $onlyMsg ? $first['msg'] : $first;
     }
@@ -292,7 +292,7 @@ trait ErrorMessageTrait
     public function lastError($onlyMsg = true)
     {
         $e = $this->_errors;
-        $last = array_pop($e);
+        $last = \array_pop($e);
 
         return $onlyMsg ? $last['msg'] : $last;
     }
@@ -301,7 +301,7 @@ trait ErrorMessageTrait
      * @param bool|null $stopOnError
      * @return $this
      */
-    public function setStopOnError($stopOnError = null)
+    public function setStopOnError($stopOnError = null): self
     {
         if (null !== $stopOnError) {
             $this->_stopOnError = (bool)$stopOnError;
@@ -346,14 +346,14 @@ trait ErrorMessageTrait
      */
     public function getMessages(): array
     {
-        return array_merge(self::getDefaultMessages(), $this->messages());
+        return \array_merge(self::getDefaultMessages(), $this->messages());
     }
 
     /**
      * @param array $messages
      * @return $this
      */
-    public function setMessages(array $messages)
+    public function setMessages(array $messages): self
     {
         foreach ($messages as $key => $value) {
             self::setDefaultMessage($key, $value);
@@ -396,7 +396,7 @@ trait ErrorMessageTrait
             $message = $message[$rawName];
         }
 
-        if (\is_string($message) && false === strpos($message, '{')) {
+        if (\is_string($message) && false === \strpos($message, '{')) {
             return $message;
         }
 
@@ -406,7 +406,7 @@ trait ErrorMessageTrait
 
         foreach ($args as $key => $value) {
             $key = \is_int($key) ? "value{$key}" : $key;
-            $params['{' . $key . '}'] = \is_array($value) ? implode(',', $value) : $value;
+            $params['{' . $key . '}'] = \is_array($value) ? \implode(',', $value) : $value;
         }
 
         // @see self::$messages['size']
@@ -415,7 +415,7 @@ trait ErrorMessageTrait
             $message = $message[$msgKey] ?? $message[0];
         }
 
-        return strtr($message, $params);
+        return \strtr($message, $params);
     }
 
 
@@ -424,7 +424,7 @@ trait ErrorMessageTrait
      * @param array $fieldTrans
      * @return $this
      */
-    public function setTranslates(array $fieldTrans)
+    public function setTranslates(array $fieldTrans): self
     {
         $this->_translates = $fieldTrans;
 
@@ -439,7 +439,7 @@ trait ErrorMessageTrait
         static $translates;
 
         if (!$translates) {
-            $translates = array_merge($this->translates(), $this->_translates);
+            $translates = \array_merge($this->translates(), $this->_translates);
         }
 
         return $translates;
@@ -460,7 +460,7 @@ trait ErrorMessageTrait
      * @param string $validator
      * @return string
      */
-    public static function getValidatorName(string $validator)
+    public static function getValidatorName(string $validator): string
     {
         return self::$validatorAliases[$validator] ?? $validator;
     }

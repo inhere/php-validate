@@ -154,7 +154,7 @@ trait ValidationTrait
      */
     public function validate(array $onlyChecked = [], bool $stopOnError = null)
     {
-        if (!property_exists($this, 'data')) {
+        if (!\property_exists($this, 'data')) {
             throw new \InvalidArgumentException('Must be defined property "data"(array) in the sub-class used.');
         }
 
@@ -282,7 +282,7 @@ trait ValidationTrait
             $passed = $this->$validator($field, ...array_values($args));
 
             // 其他 required* 方法
-        } elseif (method_exists($this, $validator)) {
+        } elseif (\method_exists($this, $validator)) {
             $passed = $this->$validator($field, $value, ...array_values($args));
         } else {
             throw new \InvalidArgumentException("The validator [$validator] is not exists!");
@@ -304,10 +304,11 @@ trait ValidationTrait
      * value Validate 字段值验证
      * @param string $field 属性名称
      * @param mixed $value 属性值
-     * @param \Closure|string $validator 验证器
+     * @param \Closure|string|mixed $validator 验证器
      * @param array $args 验证需要的参数
      * @param string $defMsg
      * @return bool
+     * @throws \InvalidArgumentException
      */
     protected function valueValidate(string $field, $value, $validator, array $args, $defMsg): bool
     {
@@ -317,10 +318,10 @@ trait ValidationTrait
         }
 
         $rawArgs = $args;
-        $args = array_values($args);
+        $args = \array_values($args);
 
         // if $validator is a closure OR a object has method '__invoke'
-        if (\is_object($validator) && method_exists($validator, '__invoke')) {
+        if (\is_object($validator) && \method_exists($validator, '__invoke')) {
             $args[] = $this->data;
             $passed = $validator($value, ...$args);
         } elseif (\is_string($validator)) {
@@ -330,10 +331,10 @@ trait ValidationTrait
                 $passed = $callback($value, ...$args);
 
                 // if $validator is a custom method of the subclass.
-            } elseif (method_exists($this, $method = $validator . 'Validator')) {
+            } elseif (\method_exists($this, $method = $validator . 'Validator')) {
                 $passed = $this->$method($value, ...$args);
 
-            } elseif (method_exists(Validators::class, $validator)) {
+            } elseif (\method_exists(Validators::class, $validator)) {
                 $passed = Validators::$validator($value, ...$args);
 
                 // it is function name
@@ -367,9 +368,9 @@ trait ValidationTrait
     protected function collectSafeValue(string $field, $value)
     {
         // 进行的是子级属性检查 eg: 'goods.apple'
-        if ($pos = strpos($field, '.')) {
-            $field = (string)substr($field, 0, $pos);
-            $value = $this->data[$field];
+        if ($pos = \strpos($field, '.')) {
+            $field = (string)\substr($field, 0, $pos);
+            $value = $this->getRaw($field, []);
         }
 
         // set
@@ -380,7 +381,7 @@ trait ValidationTrait
      * @param bool|false $clearErrors
      * @return $this
      */
-    protected function resetValidation($clearErrors = false)
+    protected function resetValidation($clearErrors = false): self
     {
         $this->_validated = false;
         $this->_safeData = $this->_usedRules = [];
@@ -541,7 +542,7 @@ trait ValidationTrait
      * @param array $rules
      * @return $this
      */
-    public function setRules(array $rules)
+    public function setRules(array $rules): self
     {
         $this->_rules = $rules;
 
@@ -566,11 +567,11 @@ trait ValidationTrait
 
     /**
      * @param string $scene
-     * @return static
+     * @return self
      */
-    public function atScene(string $scene)
+    public function atScene(string $scene): self
     {
-        $this->scene = trim($scene);
+        $this->scene = \trim($scene);
 
         return $this;
     }
@@ -611,7 +612,7 @@ trait ValidationTrait
      */
     public function has(string $key): bool
     {
-        return array_key_exists($key, $this->data);
+        return \array_key_exists($key, $this->data);
     }
 
     /**
@@ -620,7 +621,7 @@ trait ValidationTrait
      * @param mixed $value The data value
      * @return $this
      */
-    public function setValue($key, $value)
+    public function setValue($key, $value): self
     {
         $this->data[$key] = $value;
 
@@ -734,7 +735,7 @@ trait ValidationTrait
             $this->_safeData = [];
         }
 
-        $this->_safeData = array_merge($this->_safeData, $safeData);
+        $this->_safeData = \array_merge($this->_safeData, $safeData);
     }
 
     /**
@@ -743,6 +744,6 @@ trait ValidationTrait
      */
     public function getSafeKeys(): array
     {
-        return array_keys($this->_safeData);
+        return \array_keys($this->_safeData);
     }
 }

@@ -36,7 +36,7 @@ final class Filters
             return (bool)$val;
         }
 
-        return filter_var($val, FILTER_VALIDATE_BOOLEAN, [
+        return \filter_var($val, FILTER_VALIDATE_BOOLEAN, [
             'flags' => $nullAsFalse ? FILTER_NULL_ON_FAILURE : 0
         ]);
     }
@@ -54,7 +54,7 @@ final class Filters
      * 过滤器删除数字中所有非法的字符。
      * @note 该过滤器允许所有数字以及 . + -
      * @param  mixed $val 要过滤的变量
-     * @return int
+     * @return int|array
      */
     public static function integer($val)
     {
@@ -76,11 +76,11 @@ final class Filters
 
     /**
      * @param mixed $val
-     * @return number
+     * @return int
      */
-    public static function abs($val)
+    public static function abs($val): int
     {
-        return abs((int)$val);
+        return \abs((int)$val);
     }
 
     /**
@@ -122,7 +122,7 @@ final class Filters
      *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 127 以上的字符
      *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
-     * @return string
+     * @return string|array
      */
     public static function string($val, $flags = 0)
     {
@@ -136,7 +136,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+        return (string)\filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -153,9 +153,9 @@ final class Filters
      * @param string $str String to transform
      * @return string New string
      */
-    public static function nl2br($str)
+    public static function nl2br($str): string
     {
-        return str_replace(["\r\n", "\r", "\n"], '<br/>', $str);
+        return \str_replace(["\r\n", "\r", "\n"], '<br/>', (string)$str);
     }
 
     /**
@@ -195,7 +195,7 @@ final class Filters
      * @param string $val
      * @return string
      */
-    public static function lower($val)
+    public static function lower($val): string
     {
         return self::lowercase($val);
     }
@@ -205,7 +205,7 @@ final class Filters
      * @param string $val
      * @return string
      */
-    public static function lowercase($val)
+    public static function lowercase($val): string
     {
         if (!$val || !\is_string($val)) {
             return \is_numeric($val) ? $val : '';
@@ -219,7 +219,7 @@ final class Filters
      * @param string $val
      * @return string
      */
-    public static function upper($val)
+    public static function upper($val): string
     {
         return self::uppercase($val);
     }
@@ -229,7 +229,7 @@ final class Filters
      * @param string $val
      * @return string
      */
-    public static function uppercase($val)
+    public static function uppercase($val): string
     {
         if (!$val || !\is_string($val)) {
             return \is_numeric($val) ? $val : '';
@@ -244,7 +244,7 @@ final class Filters
      * @param string $sep
      * @return string
      */
-    public static function snake($val, $sep = '_')
+    public static function snake($val, $sep = '_'): string
     {
         return self::snakeCase($val, $sep);
     }
@@ -255,7 +255,7 @@ final class Filters
      * @param string $sep
      * @return string
      */
-    public static function snakeCase($val, $sep = '_')
+    public static function snakeCase($val, $sep = '_'): string
     {
         if (!$val || !\is_string($val)) {
             return '';
@@ -270,7 +270,7 @@ final class Filters
      * @param bool $ucFirst
      * @return string
      */
-    public static function camel($val, $ucFirst = false)
+    public static function camel($val, $ucFirst = false): string
     {
         return self::camelCase($val, $ucFirst);
     }
@@ -281,7 +281,7 @@ final class Filters
      * @param bool $ucFirst
      * @return string
      */
-    public static function camelCase($val, $ucFirst = false)
+    public static function camelCase($val, $ucFirst = false): string
     {
         if (!$val || !\is_string($val)) {
             return '';
@@ -295,7 +295,7 @@ final class Filters
      * @param string $val
      * @return int
      */
-    public static function timestamp($val)
+    public static function timestamp($val): int
     {
         return self::strToTime($val);
     }
@@ -305,7 +305,7 @@ final class Filters
      * @param string $val
      * @return int
      */
-    public static function strToTime($val)
+    public static function strToTime($val): int
     {
         if (!$val || !\is_string($val)) {
             return 0;
@@ -319,7 +319,7 @@ final class Filters
      * @param string $sep
      * @return array
      */
-    public static function str2list($str, $sep = ',')
+    public static function str2list($str, $sep = ','): array
     {
         return self::str2array($str, $sep);
     }
@@ -330,7 +330,7 @@ final class Filters
      * @param string $sep
      * @return array
      */
-    public static function str2array($str, $sep = ',')
+    public static function str2array($str, $sep = ','): array
     {
         $str = trim($str, "$sep ");
 
@@ -338,7 +338,7 @@ final class Filters
             return [];
         }
 
-        return preg_split("/\s*$sep\s*/", $str, -1, PREG_SPLIT_NO_EMPTY);
+        return (array)\preg_split("/\s*$sep\s*/", $str, -1, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -346,7 +346,7 @@ final class Filters
      * @param null|string $allowedTags
      * @return string
      */
-    public static function clearTags($val, $allowedTags = null)
+    public static function clearTags($val, $allowedTags = null): string
     {
         return self::stripTags($val, $allowedTags);
     }
@@ -356,13 +356,13 @@ final class Filters
      * @param null|string $allowedTags e.g '<p><a>' 允许 <p> 和 <a>
      * @return string
      */
-    public static function stripTags($val, $allowedTags = null)
+    public static function stripTags($val, $allowedTags = null): string
     {
         if (!$val || !\is_string($val)) {
             return '';
         }
 
-        return $allowedTags ? strip_tags($val, $allowedTags) : strip_tags($val);
+        return $allowedTags ? \strip_tags($val, $allowedTags) : \strip_tags($val);
     }
 
     /**
@@ -374,9 +374,9 @@ final class Filters
      *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
      *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
-     * @return mixed
+     * @return string
      */
-    public static function encoded($val, $flags = 0)
+    public static function encoded($val, $flags = 0): string
     {
         $settings = [];
 
@@ -384,7 +384,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return filter_var($val, FILTER_SANITIZE_ENCODED, $settings);
+        return (string)\filter_var($val, FILTER_SANITIZE_ENCODED, $settings);
     }
 
     /**
@@ -392,9 +392,9 @@ final class Filters
      * @param  string $val
      * @return string
      */
-    public static function quotes($val)
+    public static function quotes($val): string
     {
-        return filter_var($val, FILTER_SANITIZE_MAGIC_QUOTES);
+        return (string)\filter_var($val, FILTER_SANITIZE_MAGIC_QUOTES);
     }
 
     /**
@@ -406,7 +406,7 @@ final class Filters
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
      * @return string
      */
-    public static function specialChars($val, $flags = 0)
+    public static function specialChars($val, $flags = 0): string
     {
         $settings = [];
 
@@ -414,7 +414,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return filter_var($val, FILTER_SANITIZE_SPECIAL_CHARS, $settings);
+        return (string)\filter_var($val, FILTER_SANITIZE_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -422,7 +422,7 @@ final class Filters
      * @param int $flags
      * @return string
      */
-    public static function escape($val, $flags = 0)
+    public static function escape($val, $flags = 0): string
     {
         return self::specialChars($val, $flags);
     }
@@ -433,7 +433,7 @@ final class Filters
      * @param  int $flags 标志 FILTER_FLAG_NO_ENCODE_QUOTES
      * @return string
      */
-    public static function fullSpecialChars($val, $flags = 0)
+    public static function fullSpecialChars($val, $flags = 0): string
     {
         $settings = [];
 
@@ -441,7 +441,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+        return (string)\filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -451,7 +451,7 @@ final class Filters
      * @param  int $end 结束位置
      * @return string
      */
-    public static function stringCute($string, $start = 0, $end = null)
+    public static function stringCute($string, $start = 0, $end = null): string
     {
         if (!\is_string($string)) {
             return '';
@@ -467,7 +467,7 @@ final class Filters
      * @param null $end
      * @return string
      */
-    public static function cut($string, $start = 0, $end = null)
+    public static function cut($string, $start = 0, $end = null): string
     {
         return self::stringCute($string, $start, $end);
     }
@@ -476,21 +476,21 @@ final class Filters
      * url地址过滤 移除所有不符合 url 的字符
      * @note 该过滤器允许所有的字母、数字以及 $-_.+!*'(),{}|\^~[]`"><#%;/?:@&=
      * @param  string $val 要过滤的数据
-     * @return mixed
+     * @return string
      */
-    public static function url($val)
+    public static function url($val): string
     {
-        return filter_var($val, FILTER_SANITIZE_URL);
+        return (string)\filter_var($val, FILTER_SANITIZE_URL);
     }
 
     /**
      * email 地址过滤 移除所有不符合 email 的字符
      * @param  string $val 要过滤的数据
-     * @return mixed
+     * @return string
      */
-    public static function email($val)
+    public static function email($val): string
     {
-        return filter_var($val, FILTER_SANITIZE_EMAIL);
+        return (string)\filter_var($val, FILTER_SANITIZE_EMAIL);
     }
 
     /**
@@ -504,7 +504,7 @@ final class Filters
      *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
      *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
-     * @return string
+     * @return string|mixed
      */
     public static function unsafeRaw($string, $flags = 0)
     {
@@ -521,11 +521,11 @@ final class Filters
      * 自定义回调过滤
      * @param  mixed $val
      * @param  callable $callback
-     * @return bool
+     * @return bool|mixed
      */
     public static function callback($val, $callback)
     {
-        return filter_var($val, FILTER_CALLBACK, ['options' => $callback]);
+        return \filter_var($val, FILTER_CALLBACK, ['options' => $callback]);
     }
 
     /**
@@ -533,12 +533,12 @@ final class Filters
      * @param mixed $val
      * @return array
      */
-    public static function unique($val)
+    public static function unique($val): array
     {
-        if (!$val || \is_array($val)) {
-            return $val;
+        if (!$val || !\is_array($val)) {
+            return (array)$val;
         }
 
-        return array_unique($val);
+        return \array_unique($val);
     }
 }

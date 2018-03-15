@@ -24,15 +24,15 @@ class FieldValidation extends AbstractValidation
     /**
      * @return array
      */
-    public function rules()
-    {
-        return [
+    // public function rules()
+    // {
+        // return [
             // ['field', 'required|string:5,10|...', ...],
             // ['field0', ['required', 'string:5,10'], ...],
             // ['field1', 'rule1|rule2|...', ...],
             // ['field2', 'rule1|rule3|...', ...],
-        ];
-    }
+        // ];
+    // }
 
     /**
      * @return \Generator
@@ -70,14 +70,14 @@ class FieldValidation extends AbstractValidation
             }
 
             $this->_usedRules[] = $rule;
-            $field = array_shift($rule);
+            $field = \array_shift($rule);
 
             // if is a Closure
             if (\is_object($rule[0])) {
                 yield $field => $rule;
             } else {
                 // 'required|string:5,10;' OR 'required|in:5,10'
-                $rules = \is_array($rule[0]) ? $rule[0] : array_map('trim', explode('|', $rule[0]));
+                $rules = \is_array($rule[0]) ? $rule[0] : \array_map('trim', \explode('|', $rule[0]));
 
                 foreach ($rules as $aRule) {
                     $rule = $this->parseRule($aRule, $rule);
@@ -93,16 +93,16 @@ class FieldValidation extends AbstractValidation
      * @param array $row
      * @return array
      */
-    protected function parseRule($rule, $row)
+    protected function parseRule(string $rule, array $row): array
     {
         $rule = trim($rule, ': ');
 
-        if (false === strpos($rule, ':')) {
+        if (false === \strpos($rule, ':')) {
             $row[0] = $rule;
             return $row;
         }
 
-        list($name, $args) = explode(':', $rule, 2);
+        list($name, $args) = \explode(':', $rule, 2);
         $args = trim($args, ', ');
         $row[0] = $name;
 
@@ -110,7 +110,7 @@ class FieldValidation extends AbstractValidation
             case 'in':
             case 'enum':
             case 'ontIn':
-                $row[] = array_map('trim', explode(',', $args));
+                $row[] = \array_map('trim', explode(',', $args));
                 break;
 
             case 'size':
@@ -118,13 +118,13 @@ class FieldValidation extends AbstractValidation
             case 'string':
             case 'between':
                 if (strpos($args, ',')) {
-                    list($row['min'], $row['max']) = array_map('trim', explode(',', $args, 2));
+                    list($row['min'], $row['max']) = \array_map('trim', explode(',', $args, 2));
                 } else {
                     $row['min'] = $args;
                 }
                 break;
             default:
-                $args = strpos($args, ',') ? array_map('trim', explode(',', $args)) : [$args];
+                $args = strpos($args, ',') ? \array_map('trim', explode(',', $args)) : [$args];
                 $row = array_merge($row, $args);
                 break;
         }

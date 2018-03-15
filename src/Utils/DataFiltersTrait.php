@@ -72,6 +72,7 @@ trait DataFiltersTrait
      * @param mixed $filter
      * @param array ...$args
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     protected function callStringCallback($filter, ...$args)
     {
@@ -108,7 +109,7 @@ trait DataFiltersTrait
      * @param callable $filter
      * @return $this
      */
-    public function addFilter(string $name, callable $filter)
+    public function addFilter(string $name, callable $filter): self
     {
         self::$_filters[$name] = $filter;
 
@@ -128,7 +129,7 @@ trait DataFiltersTrait
      * @param string $name
      * @return $this
      */
-    public function delFilter(string $name)
+    public function delFilter(string $name): self
     {
         if (isset(self::$_filters[$name])) {
             unset(self::$_filters[$name]);

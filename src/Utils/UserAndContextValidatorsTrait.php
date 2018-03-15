@@ -51,7 +51,7 @@ trait UserAndContextValidatorsTrait
      * @param string $msg
      * @return $this
      */
-    public function addValidator(string $name, callable $callback, string $msg = '')
+    public function addValidator(string $name, callable $callback, string $msg = ''): self
     {
         self::setValidator($name, $callback, $msg);
 
@@ -138,7 +138,7 @@ trait UserAndContextValidatorsTrait
      * @param null|mixed $value
      * @return bool
      */
-    public function required(string $field, $value = null)
+    public function required(string $field, $value = null): bool
     {
         if (null !== $value) {
             $val = $value;
@@ -163,7 +163,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $values
      * @return bool
      */
-    public function requiredIf(string $field, $fieldVal, string $anotherField, $values)
+    public function requiredIf(string $field, $fieldVal, string $anotherField, $values): bool
     {
         if (!isset($this->data[$anotherField])) {
             return false;
@@ -187,7 +187,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $values
      * @return bool
      */
-    public function requiredUnless(string $field, $fieldVal, string $anotherField, $values)
+    public function requiredUnless(string $field, $fieldVal, string $anotherField, $values): bool
     {
         if (!isset($this->data[$anotherField])) {
             return false;
@@ -208,7 +208,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $fields
      * @return bool
      */
-    public function requiredWith(string $field, $fieldVal, $fields)
+    public function requiredWith(string $field, $fieldVal, $fields): bool
     {
         foreach ((array)$fields as $name) {
             if ($this->required($name)) {
@@ -227,7 +227,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $fields
      * @return bool
      */
-    public function requiredWithAll(string $field, $fieldVal, $fields)
+    public function requiredWithAll(string $field, $fieldVal, $fields): bool
     {
         $allHasValue = true;
 
@@ -249,7 +249,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $fields
      * @return bool
      */
-    public function requiredWithout(string $field, $fieldVal, $fields)
+    public function requiredWithout(string $field, $fieldVal, $fields): bool
     {
         $allHasValue = true;
 
@@ -271,7 +271,7 @@ trait UserAndContextValidatorsTrait
      * @param array|string $fields
      * @return bool
      */
-    public function requiredWithoutAll(string $field, $fieldVal, $fields)
+    public function requiredWithoutAll(string $field, $fieldVal, $fields): bool
     {
         $allNoValue = true;
 
@@ -291,7 +291,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      * @return bool
      */
-    public function fileValidator(string $field, $suffixes = null)
+    public function fileValidator(string $field, $suffixes = null): bool
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -305,13 +305,13 @@ trait UserAndContextValidatorsTrait
             return true;
         }
 
-        $suffix = trim(strrchr($file['name'], '.'), '.');
+        $suffix = trim(\strrchr($file['name'], '.'), '.');
 
         if (!$suffix) {
             return false;
         }
 
-        $suffix = strtolower($suffix);
+        $suffix = \strtolower($suffix);
         $suffixes = \is_string($suffixes) ? Helper::explode($suffixes) : (array)$suffixes;
 
         return \in_array($suffix, $suffixes, true);
@@ -323,7 +323,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      * @return bool
      */
-    public function imageValidator(string $field, $suffixes = null)
+    public function imageValidator(string $field, $suffixes = null): bool
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -340,10 +340,10 @@ trait UserAndContextValidatorsTrait
         // getimagesize() 判定某个文件是否为图片的有效手段, 常用在文件上传验证
         // Note: 本函数不需要 GD 图像库
         // list($width, $height, $type, $attr) = getimagesize("img/flag.jpg");
-        $imgInfo = @getimagesize($tmpFile);
+        $imgInfo = @\getimagesize($tmpFile);
 
         if ($imgInfo && $imgInfo[2]) {
-            $mime = strtolower($imgInfo['mime']); // 支持不标准扩展名
+            $mime = \strtolower($imgInfo['mime']); // 支持不标准扩展名
 
             // 是否是图片
             if (!\in_array($mime, Helper::$imgMimeTypes, true)) {
@@ -370,7 +370,7 @@ trait UserAndContextValidatorsTrait
      * @param string|array $types
      * @return bool
      */
-    public function mimeTypesValidator(string $field, $types)
+    public function mimeTypesValidator(string $field, $types): bool
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -412,17 +412,17 @@ trait UserAndContextValidatorsTrait
      * @param string $compareField
      * @return bool
      */
-    public function compareValidator($val, string $compareField)
+    public function compareValidator($val, string $compareField): bool
     {
         return $compareField && ($val === $this->getByPath($compareField));
     }
 
-    public function sameValidator($val, string $compareField)
+    public function sameValidator($val, string $compareField): bool
     {
         return $this->compareValidator($val, $compareField);
     }
 
-    public function equalValidator($val, string $compareField)
+    public function equalValidator($val, string $compareField): bool
     {
         return $this->compareValidator($val, $compareField);
     }
@@ -433,7 +433,7 @@ trait UserAndContextValidatorsTrait
      * @param string $compareField
      * @return bool
      */
-    public function notEqualValidator($val, string $compareField)
+    public function notEqualValidator($val, string $compareField): bool
     {
         return $compareField && ($val !== $this->getByPath($compareField));
     }
@@ -444,7 +444,7 @@ trait UserAndContextValidatorsTrait
      * @param string $compareField
      * @return bool
      */
-    public function differentValidator($val, string $compareField)
+    public function differentValidator($val, string $compareField): bool
     {
         return $compareField && ($val !== $this->getByPath($compareField));
     }
@@ -455,7 +455,7 @@ trait UserAndContextValidatorsTrait
      * @param string $anotherField
      * @return bool
      */
-    public function inFieldValidator($val, string $anotherField)
+    public function inFieldValidator($val, string $anotherField): bool
     {
         if ($anotherField && $dict = $this->getByPath($anotherField)) {
             return Validators::in($val, $dict);
@@ -473,8 +473,9 @@ trait UserAndContextValidatorsTrait
      *  - string|\Closure $validator
      *  - ... args for $validator
      * @return bool
+     * @throws \InvalidArgumentException
      */
-    public function eachValidator(array $values, ...$args)
+    public function eachValidator(array $values, ...$args): bool
     {
         if (!$validator = array_shift($args)) {
             throw new \InvalidArgumentException('must setting a validator for \'each\' validate.');
@@ -483,7 +484,7 @@ trait UserAndContextValidatorsTrait
         foreach ($values as $value) {
             $passed = false;
 
-            if (\is_object($validator) && method_exists($validator, '__invoke')) {
+            if (\is_object($validator) && \method_exists($validator, '__invoke')) {
                 $passed = $validator($value, ...$args);
             } elseif (\is_string($validator)) {
                 // special for required
@@ -494,10 +495,10 @@ trait UserAndContextValidatorsTrait
                     $callback = self::$_validators[$validator];
                     $passed = $callback($value, ...$args);
 
-                } elseif (method_exists($this, $method = $validator . 'Validator')) {
+                } elseif (\method_exists($this, $method = $validator . 'Validator')) {
                     $passed = $this->$method($value, ...$args);
 
-                } elseif (method_exists(Validators::class, $validator)) {
+                } elseif (\method_exists(Validators::class, $validator)) {
                     $passed = Validators::$validator($value, ...$args);
 
                     // it is function name
@@ -537,7 +538,7 @@ trait UserAndContextValidatorsTrait
      * @param string $name
      * @return bool
      */
-    public static function isCheckFile(string $name)
+    public static function isCheckFile(string $name): bool
     {
         return false !== strpos(self::$_fileValidators, '|' . $name . '|');
     }
@@ -546,7 +547,7 @@ trait UserAndContextValidatorsTrait
      * @param string $name
      * @return bool
      */
-    public static function isCheckRequired(string $name)
+    public static function isCheckRequired(string $name): bool
     {
         return 0 === strpos($name, 'required');
     }
@@ -572,7 +573,7 @@ trait UserAndContextValidatorsTrait
      * @param array $uploadedFiles
      * @return $this
      */
-    public function setUploadedFiles($uploadedFiles)
+    public function setUploadedFiles($uploadedFiles): self
     {
         $this->uploadedFiles = (array)$uploadedFiles;
 

@@ -56,7 +56,7 @@ class Helper
      */
     public static function getImageExtByMime(string $mime)
     {
-        $key = array_search($mime, self::$imgMimeTypes, true);
+        $key = \array_search($mime, self::$imgMimeTypes, true);
 
         return false !== $key ? self::$imgMimeTypes[$key] : null;
     }
@@ -65,10 +65,10 @@ class Helper
      * @param string $file
      * @return string eg: 'image/gif'
      */
-    public static function getMimeType(string $file)
+    public static function getMimeType(string $file): string
     {
         // return mime_content_type($file);
-        return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
+        return (string)\finfo_file(\finfo_open(FILEINFO_MIME_TYPE), $file);
     }
 
     /**
@@ -77,17 +77,17 @@ class Helper
      * @param bool $filterEmpty
      * @return array
      */
-    public static function explode(string $string, string $delimiter = ',', $filterEmpty = true)
+    public static function explode(string $string, string $delimiter = ',', $filterEmpty = true): array
     {
-        $string = trim($string, $delimiter);
+        $string = \trim($string, $delimiter);
 
-        if (!strpos($string, $delimiter)) {
+        if (!\strpos($string, $delimiter)) {
             return [$string];
         }
 
-        $list = array_map('trim', explode($delimiter, $string));
+        $list = \array_map('trim', \explode($delimiter, $string));
 
-        return $filterEmpty ? array_filter($list) : $list;
+        return $filterEmpty ? \array_filter($list) : $list;
     }
 
     /**
@@ -95,12 +95,12 @@ class Helper
      * @param string $encoding
      * @return int
      */
-    public static function strlen(string $str, $encoding = 'UTF-8')
+    public static function strlen(string $str, string $encoding = 'UTF-8'): int
     {
-        $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
+        $str = \html_entity_decode($str, ENT_COMPAT, 'UTF-8');
 
         if (\function_exists('mb_strlen')) {
-            return mb_strlen($str, $encoding);
+            return \mb_strlen($str, $encoding);
         }
 
         return \strlen($str);
@@ -110,30 +110,30 @@ class Helper
      * @param $str
      * @return string
      */
-    public static function strToLower($str)
+    public static function strToLower($str): string
     {
         if (\is_array($str)) {
             return '';
         }
 
         if (\function_exists('mb_strtolower')) {
-            return mb_strtolower($str, 'utf-8');
+            return \mb_strtolower($str, 'utf-8');
         }
 
-        return strtolower($str);
+        return \strtolower($str);
     }
 
     /**
      * @param string $str
      * @return string
      */
-    public static function strToUpper(string $str)
+    public static function strToUpper(string $str): string
     {
         if (\function_exists('mb_strtoupper')) {
-            return mb_strtoupper($str, 'utf-8');
+            return \mb_strtoupper($str, 'utf-8');
         }
 
-        return strtoupper($str);
+        return \strtoupper($str);
     }
 
     /**
@@ -146,14 +146,14 @@ class Helper
     public static function subStr($str, $start, $length = false, $encoding = 'utf-8')
     {
         if (\is_array($str)) {
-            return false;
+            return '';
         }
 
         if (\function_exists('mb_substr')) {
-            return mb_substr($str, (int)$start, ($length === false ? self::strlen($str) : (int)$length), $encoding);
+            return \mb_substr($str, (int)$start, ($length === false ? self::strlen($str) : (int)$length), $encoding);
         }
 
-        return substr($str, $start, ($length === false ? self::strlen($str) : (int)$length));
+        return \substr($str, $start, ($length === false ? self::strlen($str) : (int)$length));
     }
 
     /**
@@ -163,13 +163,13 @@ class Helper
      * @param string $encoding
      * @return bool|int
      */
-    public static function strPos($str, $find, $offset = 0, $encoding = 'UTF-8')
+    public static function strPos(string $str, $find, $offset = 0, $encoding = 'UTF-8')
     {
         if (\function_exists('mb_strpos')) {
-            return mb_strpos($str, $find, $offset, $encoding);
+            return \mb_strpos($str, $find, $offset, $encoding);
         }
 
-        return strpos($str, $find, $offset);
+        return \strpos($str, $find, $offset);
     }
 
     /**
@@ -179,20 +179,20 @@ class Helper
      * @param string $encoding
      * @return bool|int
      */
-    public static function strrpos($str, $find, $offset = 0, $encoding = 'utf-8')
+    public static function strrpos(string $str, $find, $offset = 0, $encoding = 'utf-8')
     {
         if (\function_exists('mb_strrpos')) {
-            return mb_strrpos($str, $find, $offset, $encoding);
+            return \mb_strrpos($str, $find, $offset, $encoding);
         }
 
-        return strrpos($str, $find, $offset);
+        return \strrpos($str, $find, $offset);
     }
 
     /**
      * @param string $str
      * @return string
      */
-    public static function ucfirst(string $str)
+    public static function ucfirst(string $str): string
     {
         return self::strToUpper(self::subStr($str, 0, 1)) . self::subStr($str, 1);
     }
@@ -201,13 +201,13 @@ class Helper
      * @param string $str
      * @return string
      */
-    public static function ucwords(string $str)
+    public static function ucwords(string $str): string
     {
         if (\function_exists('mb_convert_case')) {
-            return mb_convert_case($str, MB_CASE_TITLE);
+            return \mb_convert_case($str, MB_CASE_TITLE);
         }
 
-        return ucwords(self::strToLower($str));
+        return \ucwords(self::strToLower($str));
     }
 
     /**
@@ -225,8 +225,8 @@ class Helper
             $str = self::ucfirst($str);
         }
 
-        return preg_replace_callback('/_+([a-z])/', function ($c) {
-            return strtoupper($c[1]);
+        return \preg_replace_callback('/_+([a-z])/', function ($c) {
+            return \strtoupper($c[1]);
         }, $str);
     }
 
@@ -236,22 +236,22 @@ class Helper
      * @param string $sep
      * @return string
      */
-    public static function toSnakeCase(string $string, string $sep = '_')
+    public static function toSnakeCase(string $string, string $sep = '_'): string
     {
         // 'CMSCategories' => 'cms_categories'
         // 'RangePrice' => 'range_price'
-        return self::strToLower(trim(preg_replace('/([A-Z][a-z])/', $sep . '$1', $string), $sep));
+        return self::strToLower(trim(\preg_replace('/([A-Z][a-z])/', $sep . '$1', $string), $sep));
     }
 
     /**
      * @param string $field
-     * @return mixed|string
+     * @return string
      */
-    public static function beautifyFieldName(string $field)
+    public static function beautifyFieldName(string $field): string
     {
         $str = self::toSnakeCase($field, ' ');
 
-        return strpos($str, '_') ? str_replace('_', ' ', $str) : $str;
+        return \strpos($str, '_') ? \str_replace('_', ' ', $str) : $str;
     }
 
     /**
@@ -267,16 +267,16 @@ class Helper
             return $array;
         }
 
-        if (array_key_exists($key, $array)) {
+        if (\array_key_exists($key, $array)) {
             return $array[$key];
         }
 
-        if (!strpos($key, '.')) {
+        if (!\strpos($key, '.')) {
             return $default;
         }
 
-        foreach (explode('.', $key) as $segment) {
-            if (\is_array($array) && array_key_exists($segment, $array)) {
+        foreach (\explode('.', $key) as $segment) {
+            if (\is_array($array) && \array_key_exists($segment, $array)) {
                 $array = $array[$segment];
             } else {
                 return $default;
@@ -287,7 +287,7 @@ class Helper
     }
 
     /**
-     * @param callable $cb
+     * @param callable|mixed $cb
      * @param array $args
      * @return mixed
      * @throws \InvalidArgumentException
@@ -296,13 +296,13 @@ class Helper
     {
         if (\is_string($cb)) {
             // function
-            if (strpos($cb, '::') === false) {
+            if (\strpos($cb, '::') === false) {
                 return $cb(...$args);
             }
 
             // ClassName/Service::method
             $cb = explode('::', $cb, 2);
-        } elseif (\is_object($cb) && method_exists($cb, '__invoke')) {
+        } elseif (\is_object($cb) && \method_exists($cb, '__invoke')) {
             return $cb(...$args);
         }
 
