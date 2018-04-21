@@ -40,8 +40,13 @@ abstract class AbstractValidation implements ValidationInterface
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function __construct(array $data = [], array $rules = [], array $translates = [], $scene = '', $startValidate = false)
-    {
+    public function __construct(
+        array $data = [],
+        array $rules = [],
+        array $translates = [],
+        string $scene = '',
+        $startValidate = false
+    ) {
         $this->data = $data;
         $this
             ->atScene($scene)
@@ -63,13 +68,18 @@ abstract class AbstractValidation implements ValidationInterface
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public static function make(array $data, array $rules = [], array $translates = [], $scene = '', $startValidate = false)
-    {
+    public static function make(
+        array $data,
+        array $rules = [],
+        array $translates = [],
+        string $scene = '',
+        $startValidate = false
+    ) {
         return new static($data, $rules, $translates, $scene, $startValidate);
     }
 
     /**
-     * 创建并且立即开始验证
+     * Create and start verification immediately
      * @param array $data
      * @param array $rules
      * @param array $translates
@@ -78,13 +88,13 @@ abstract class AbstractValidation implements ValidationInterface
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public static function makeAndValidate(array $data, array $rules = [], array $translates = [], $scene = '')
+    public static function makeAndValidate(array $data, array $rules = [], array $translates = [], string $scene = '')
     {
         return new static($data, $rules, $translates, $scene, true);
     }
 
     /**
-     * 创建并且立即开始验证
+     * Create and start verification immediately
      * @param array $data
      * @param array $rules
      * @param array $translates
@@ -93,7 +103,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public static function check(array $data, array $rules = [], array $translates = [], $scene = '')
+    public static function check(array $data, array $rules = [], array $translates = [], string $scene = '')
     {
         return new static($data, $rules, $translates, $scene, true);
     }

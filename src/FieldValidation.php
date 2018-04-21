@@ -21,18 +21,17 @@ use Inhere\Validate\Utils\Helper;
  */
 class FieldValidation extends AbstractValidation
 {
-    /**
-     * @return array
-     */
-    // public function rules()
-    // {
-        // return [
-            // ['field', 'required|string:5,10|...', ...],
-            // ['field0', ['required', 'string:5,10'], ...],
-            // ['field1', 'rule1|rule2|...', ...],
-            // ['field2', 'rule1|rule3|...', ...],
-        // ];
-    // }
+    /*
+    public function rules()
+    {
+        return [
+            ['field', 'required|string:5,10|...', ...],
+            ['field0', ['required', 'string:5,10'], ...],
+            ['field1', 'rule1|rule2|...', ...],
+            ['field2', 'rule1|rule3|...', ...],
+        ];
+    }
+    */
 
     /**
      * @return \Generator
@@ -95,7 +94,7 @@ class FieldValidation extends AbstractValidation
      */
     protected function parseRule(string $rule, array $row): array
     {
-        $rule = trim($rule, ': ');
+        $rule = \trim($rule, ': ');
 
         if (false === \strpos($rule, ':')) {
             $row[0] = $rule;
@@ -103,29 +102,29 @@ class FieldValidation extends AbstractValidation
         }
 
         list($name, $args) = \explode(':', $rule, 2);
-        $args = trim($args, ', ');
+        $args = \trim($args, ', ');
         $row[0] = $name;
 
         switch ($name) {
             case 'in':
             case 'enum':
             case 'ontIn':
-                $row[] = \array_map('trim', explode(',', $args));
+                $row[] = \array_map('trim', \explode(',', $args));
                 break;
 
             case 'size':
             case 'range':
             case 'string':
             case 'between':
-                if (strpos($args, ',')) {
-                    list($row['min'], $row['max']) = \array_map('trim', explode(',', $args, 2));
+                if (\strpos($args, ',')) {
+                    list($row['min'], $row['max']) = \array_map('trim', \explode(',', $args, 2));
                 } else {
                     $row['min'] = $args;
                 }
                 break;
             default:
-                $args = strpos($args, ',') ? \array_map('trim', explode(',', $args)) : [$args];
-                $row = array_merge($row, $args);
+                $args = \strpos($args, ',') ? \array_map('trim', \explode(',', $args)) : [$args];
+                $row = \array_merge($row, $args);
                 break;
         }
 

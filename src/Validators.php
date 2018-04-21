@@ -42,10 +42,10 @@ class Validators
     public static function isEmpty($val): bool
     {
         if (\is_string($val)) {
-            $val = trim($val);
+            $val = \trim($val);
 
         } elseif (\is_object($val)) {
-            $val = get_object_vars($val);
+            $val = \get_object_vars($val);
         }
 
         return $val === '' || $val === null || $val === [];
@@ -65,7 +65,7 @@ class Validators
      */
     public static function boolean($val): bool
     {
-        if (!is_scalar($val)) {
+        if (!\is_scalar($val)) {
             return false;
         }
 
@@ -76,7 +76,7 @@ class Validators
             return true;
         }
 
-        return false !== stripos(Helper::IS_BOOL, '|' . $val . '|');
+        return false !== \stripos(Helper::IS_BOOL, '|' . $val . '|');
     }
 
     /**
@@ -107,12 +107,12 @@ class Validators
             $settings['flags'] = $flags;
         }
 
-        if (filter_var($val, FILTER_VALIDATE_FLOAT, $settings) === false) {
+        if (\filter_var($val, FILTER_VALIDATE_FLOAT, $settings) === false) {
             return false;
         }
 
-        $minIsNum = is_numeric($min);
-        $maxIsNum = is_numeric($max);
+        $minIsNum = \is_numeric($min);
+        $maxIsNum = \is_numeric($max);
 
         if ($minIsNum && $maxIsNum) {
             if ($max > $min) {
@@ -155,13 +155,13 @@ class Validators
      */
     public static function integer($val, $min = null, $max = null, $flags = 0): bool
     {
-        if (!is_numeric($val)) {
+        if (!\is_numeric($val)) {
             return false;
         }
 
         $options = $settings = [];
-        $minIsNum = is_numeric($min);
-        $maxIsNum = is_numeric($max);
+        $minIsNum = \is_numeric($min);
+        $maxIsNum = \is_numeric($max);
 
         if ($minIsNum && $maxIsNum) {
             if ($max > $min) {
@@ -207,7 +207,7 @@ class Validators
      */
     public static function number($val, $min = null, $max = null, $flags = 0): bool
     {
-        if (!is_numeric($val)) {
+        if (!\is_numeric($val)) {
             return false;
         }
 
@@ -256,11 +256,11 @@ class Validators
      */
     public static function accepted($val): bool
     {
-        if (!is_scalar($val)) {
+        if (!\is_scalar($val)) {
             return false;
         }
 
-        return false !== stripos(Helper::IS_TRUE, (string)$val);
+        return false !== \stripos(Helper::IS_TRUE, (string)$val);
     }
 
     /**
@@ -270,7 +270,7 @@ class Validators
      */
     public static function alpha($val): bool
     {
-        return \is_string($val) && preg_match('/^[a-zA-Z]+$/', $val);
+        return \is_string($val) && \preg_match('/^(?:[a-zA-Z]+)$/', $val);
     }
 
     /**
@@ -284,7 +284,7 @@ class Validators
             return false;
         }
 
-        return 1 === \preg_match('/^[a-zA-Z0-9]+$/', $val);
+        return 1 === \preg_match('/^(?:[a-zA-Z0-9]+)$/', $val);
     }
 
     /**
@@ -294,11 +294,11 @@ class Validators
      */
     public static function alphaDash($val): bool
     {
-        if (!\is_string($val) && !is_numeric($val)) {
+        if (!\is_string($val) && !\is_numeric($val)) {
             return false;
         }
 
-        return 1 === preg_match('/^[\w-]+$/', $val);
+        return 1 === \preg_match('/^(?:[\w-]+)$/', $val);
     }
 
     /*******************************************************************************
@@ -394,7 +394,7 @@ class Validators
     {
         if (!\is_int($val)) {
             if (\is_string($val)) {
-                $val = Helper::strlen(trim($val));
+                $val = Helper::strlen(\trim($val));
             } elseif (\is_array($val)) {
                 $val = \count($val);
             } else {
@@ -609,7 +609,7 @@ class Validators
      */
     public static function json($val, $strict = true): bool
     {
-        if (!$val || (!\is_string($val) && !method_exists($val, '__toString'))) {
+        if (!$val || (!\is_string($val) && !\method_exists($val, '__toString'))) {
             return false;
         }
 
@@ -721,7 +721,7 @@ class Validators
                 return false;
             }
 
-            if (!is_numeric($v) || $v <= 0) {
+            if (!\is_numeric($v) || $v <= 0) {
                 return false;
             }
 
@@ -857,7 +857,7 @@ class Validators
     public static function notIn($val, $dict, $strict = false): bool
     {
         if (\is_string($dict) && \strpos($dict, ',')) {
-            $dict = \array_map('trim', explode(',', $dict));
+            $dict = \array_map('trim', \explode(',', $dict));
         }
 
         return !\in_array($val, (array)$dict, $strict);
@@ -884,7 +884,7 @@ class Validators
         if (\is_array($val)) {
             $first = \array_shift($val);
 
-            return $strict ? $first === $start : $first == $start;
+            return $strict ? $first === $start : (string)$first === $start;
         }
 
         return false;
@@ -909,11 +909,11 @@ class Validators
             $last = \array_pop($val);
         }
 
-        return $strict ? $last === $end : $last == $end;
+        return $strict ? $last === $end : (string)$last === $end;
     }
 
     /**
-     * 必须是等于给定值
+     * Must be equal to the given value
      * @param  mixed $val
      * @param  mixed $excepted
      * @param bool $strict
@@ -925,7 +925,7 @@ class Validators
     }
 
     /**
-     * 不能等于给定值
+     * Cannot be equal to a given value
      * @param  mixed $val
      * @param  mixed $excepted
      * @param bool $strict
@@ -978,7 +978,7 @@ class Validators
      */
     public static function dateFormat($val, $format = 'Y-m-d'): bool
     {
-        if (!$val || !($unixTime = strtotime($val))) {
+        if (!$val || !($unixTime = \strtotime($val))) {
             return false;
         }
 
@@ -993,17 +993,17 @@ class Validators
      * @param string $symbol allow '<' '<='
      * @return bool
      */
-    public static function beforeDate($val, $beforeDate, $symbol = '<'): bool
+    public static function beforeDate($val, $beforeDate = '', $symbol = '<'): bool
     {
         if (!$val || !\is_string($val)) {
             return false;
         }
 
-        if (!$valueTime = strtotime($val)) {
+        if (!$valueTime = \strtotime($val)) {
             return false;
         }
 
-        $beforeTime = $beforeDate ? strtotime($beforeDate) : time();
+        $beforeTime = $beforeDate ? \strtotime($beforeDate) : \time();
 
         if ($symbol === '>') {
             return $beforeTime < $valueTime;

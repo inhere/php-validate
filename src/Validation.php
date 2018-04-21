@@ -27,14 +27,16 @@ class Validation extends AbstractValidation
     /**
      * @return array
      */
-    // public function rules()
-    // {
-        // return [
-            // ['fields', 'validator', arg0, arg1, something ...]
-            // ['tagId,userId,name,email,freeTime', 'required'],
-            // ['userId', 'number'],
-        // ];
-    // }
+    /*
+    public function rules()
+    {
+        return [
+            ['fields', 'validator', arg0, arg1, something ...]
+            ['tagId,userId,name,email,freeTime', 'required'],
+            ['userId', 'number'],
+        ];
+    }
+    */
 
     /**
      * @param string $key

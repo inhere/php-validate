@@ -82,12 +82,12 @@ trait DataFiltersTrait
             $value = $callback(...$args);
 
             // if $filter is a custom method of the subclass.
-        } elseif (method_exists($this, $filter . 'Filter')) {
+        } elseif (\method_exists($this, $filter . 'Filter')) {
             $filter .= 'Filter';
             $value = $this->$filter(...$args);
 
             // $filter is a method of the class 'FilterList'
-        } elseif (method_exists(Filters::class, $filter)) {
+        } elseif (\method_exists(Filters::class, $filter)) {
             $value = Filters::$filter(...$args);
 
             // it is function name

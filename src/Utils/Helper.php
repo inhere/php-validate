@@ -43,11 +43,11 @@ class Helper
 
     /**
      * @param string $ext
-     * @return mixed|null
+     * @return string
      */
-    public static function getImageMime(string $ext)
+    public static function getImageMime(string $ext): string
     {
-        return self::$imgMimeTypes[$ext] ?? null;
+        return self::$imgMimeTypes[$ext] ?? '';
     }
 
     /**
@@ -301,7 +301,7 @@ class Helper
             }
 
             // ClassName/Service::method
-            $cb = explode('::', $cb, 2);
+            $cb = \explode('::', $cb, 2);
         } elseif (\is_object($cb) && \method_exists($cb, '__invoke')) {
             return $cb(...$args);
         }

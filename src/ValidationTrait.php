@@ -22,14 +22,10 @@ trait ValidationTrait
 {
     use DataFiltersTrait, ErrorMessageTrait, UserAndContextValidatorsTrait;
 
-    /**
-     * @var array The rules is by setRules()
-     */
+    /** @var array The rules is by setRules() */
     private $_rules = [];
 
-    /**
-     * @var array Through the validation of the data
-     */
+    /** @var array Through the validation of the data */
     private $_safeData = [];
 
     /** @var bool */
@@ -53,9 +49,7 @@ trait ValidationTrait
      */
     protected $scene = '';
 
-    /**
-     * @var array Used rules at current scene
-     */
+    /** @var array Used rules at current scene */
     protected $_usedRules = [];
 
     /**
@@ -94,15 +88,16 @@ trait ValidationTrait
 
     /**
      * 当前场景需要收集的字段
+     * @todo un-complete
      */
-    // public function scenarios()
-    // {
-    //     return [
-    //         // scene name => needed fields ...
-    //         // 'scene' => ['filed1', 'field2'],
-    //         // 'create' => ['filed1', 'field2'],
-    //     ];
-    // }
+    public function scenarios(): array
+    {
+        return [
+            // scene name => needed fields ...
+            // 'scene' => ['filed1', 'field2'],
+            // 'create' => ['filed1', 'field2'],
+        ];
+    }
 
     /**
      * before validate handler
@@ -143,11 +138,9 @@ trait ValidationTrait
      ******************************************************************************/
 
     /**
-     * 进行数据验证
-     * @author inhere
-     * @date   2015-08-11
-     * @param  array $onlyChecked 可以设置此次需要验证的字段
-     * @param  bool|null $stopOnError 是否出现错误即停止验证
+     * Perform data validation
+     * @param  array $onlyChecked You can set this field that needs verification
+     * @param  bool|null $stopOnError Stop verification if there is an error
      * @return static
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -174,28 +167,28 @@ trait ValidationTrait
             $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
             $validator = $rule[0];
 
-            // 如何判断属性为空 默认使用 Validators::isEmpty(). 也可自定义
+            // How to determine the property is empty(default use the Validators::isEmpty)
             $isEmpty = [Validators::class, 'isEmpty'];
             if (!empty($rule['isEmpty']) && (\is_string($rule['isEmpty']) || $rule['isEmpty'] instanceof \Closure)) {
                 $isEmpty = $rule['isEmpty'];
             }
 
-            // 验证的前置条件 -- 不满足条件,跳过此条规则
+            // Preconditions for verification -- If do not meet the conditions, skip this rule
             $when = $rule['when'] ?? null;
             if ($when && ($when instanceof \Closure) && $when($this->data, $this) !== true) {
                 continue;
             }
 
-            // 为空时是否跳过(非 required 时). 参考自 yii2
+            // Whether to skip when empty(When not required). ref yii2
             $skipOnEmpty = $rule['skipOnEmpty'] ?? true;
-            $filters = $rule['filter'] ?? null;  // 使用过滤器
-            $defMsg = $rule['msg'] ?? null; // 自定义错误消息
-            $defValue = $rule['default'] ?? null;// 允许默认值
+            $filters = $rule['filter'] ?? null;  // filter
+            $defMsg = $rule['msg'] ?? null; // Custom error message
+            $defValue = $rule['default'] ?? null;// Allow default
 
             // clear all keywords options. 0 is the validator
             unset($rule[0], $rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
 
-            // 余下的都作为验证器参数, 有一些验证器需要参数。 e.g. size()
+            // The rest are validator parameters. Some validators require parameters. e.g. size()
             $args = $rule;
 
             foreach ($fields as $field) {
@@ -221,18 +214,18 @@ trait ValidationTrait
                     }
                 }
 
-                // 设定了为空跳过 并且 值为空
+                // skip On Empty && The value is empty
                 if ($skipOnEmpty && Helper::call($isEmpty, $value)) {
                     continue;
                 }
 
                 // 字段值过滤(有通配符`*`的字段, 不应用过滤器)
-                if ($filters && !strpos($field, '.*')) {
+                if ($filters && !\strpos($field, '.*')) {
                     $value = $this->valueFiltering($value, $filters);
                     $this->data[$field] = $value;
                 }
 
-                // 字段值验证检查
+                // Field value verification check
                 if (!$this->valueValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
                     break;
                 }
@@ -263,27 +256,27 @@ trait ValidationTrait
 
     /**
      * field require Validate 字段存在检查
-     * @param string $field 属性名称
-     * @param mixed $value 属性值
+     * @param string $field Attribute name
+     * @param mixed $value Attribute value
      * @param string $validator required* 验证器
-     * @param array $args 验证需要的参数
-     * @param string $defMsg
+     * @param array $args Verify the required parameters
+     * @param string|array $defMsg
      * @return bool
      * @throws \InvalidArgumentException
      */
     protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg): bool
     {
-        // required 检查
+        // required check
         if ($validator === 'required') {
             $passed = $this->required($field, $value);
 
-            // 文件资源检查 方法
+            // File resource check
         } elseif (self::isCheckFile($validator)) {
-            $passed = $this->$validator($field, ...array_values($args));
+            $passed = $this->$validator($field, ...\array_values($args));
 
             // 其他 required* 方法
         } elseif (\method_exists($this, $validator)) {
-            $passed = $this->$validator($field, $value, ...array_values($args));
+            $passed = $this->$validator($field, $value, ...\array_values($args));
         } else {
             throw new \InvalidArgumentException("The validator [$validator] is not exists!");
         }

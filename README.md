@@ -46,7 +46,7 @@ e.g
 ## 项目地址
 
 - **github** https://github.com/inhere/php-validate.git
-- **git@osc** https://gitee.com/inhere/php-validate.git
+- **gitee** https://gitee.com/inhere/php-validate.git
 
 **注意：**
 

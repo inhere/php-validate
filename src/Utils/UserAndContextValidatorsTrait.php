@@ -116,7 +116,7 @@ trait UserAndContextValidatorsTrait
      */
     public static function setValidators(array $validators)
     {
-        self::$_validators = array_merge(self::$_validators, $validators);
+        self::$_validators = \array_merge(self::$_validators, $validators);
     }
 
     /**
@@ -305,7 +305,7 @@ trait UserAndContextValidatorsTrait
             return true;
         }
 
-        $suffix = trim(\strrchr($file['name'], '.'), '.');
+        $suffix = \trim(\strrchr($file['name'], '.'), '.');
 
         if (!$suffix) {
             return false;
@@ -540,7 +540,7 @@ trait UserAndContextValidatorsTrait
      */
     public static function isCheckFile(string $name): bool
     {
-        return false !== strpos(self::$_fileValidators, '|' . $name . '|');
+        return false !== \strpos(self::$_fileValidators, '|' . $name . '|');
     }
 
     /**
@@ -549,7 +549,7 @@ trait UserAndContextValidatorsTrait
      */
     public static function isCheckRequired(string $name): bool
     {
-        return 0 === strpos($name, 'required');
+        return 0 === \strpos($name, 'required');
     }
 
     /**
