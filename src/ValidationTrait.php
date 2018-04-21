@@ -429,7 +429,7 @@ trait ValidationTrait
             }
 
             $this->_usedRules[] = $rule;
-            $fields = array_shift($rule);
+            $fields = \array_shift($rule);
             $this->prepareRule($rule);
 
             yield $fields => $rule;
@@ -483,7 +483,7 @@ trait ValidationTrait
      */
     protected function getByWildcard(string $path, $default = null)
     {
-        list($first, $last) = explode('.*', $path, 2);
+        list($first, $last) = \explode('.*', $path, 2);
         $recently = Helper::getValueOfArray($this->data, $first, $default);
 
         // 'goods.*'
@@ -495,7 +495,7 @@ trait ValidationTrait
             return $default;
         }
 
-        $last = trim($last, '.');
+        $last = \trim($last, '.');
         $result = [];
 
         foreach ($recently as $item) {
@@ -511,7 +511,7 @@ trait ValidationTrait
      */
     protected function hasWildcard(string $path): bool
     {
-        return strpos($path, '.*') > 0;
+        return \strpos($path, '.*') > 0;
     }
 
     /**
@@ -535,7 +535,7 @@ trait ValidationTrait
      */
     public function getRules(): array
     {
-        return array_merge($this->rules(), $this->_rules);
+        return \array_merge($this->rules(), $this->_rules);
     }
 
     /**
