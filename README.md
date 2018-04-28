@@ -6,7 +6,7 @@
 [![git branch](https://img.shields.io/badge/branch-master-yellow.svg)](https://github.com/inhere/php-validate)
 [![Build Status](https://travis-ci.org/inhere/php-validate.svg?branch=master)](https://travis-ci.org/inhere/php-validate)
 
-一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无依赖。
+一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无其它依赖。
 
 - 简单方便，支持添加自定义验证器
 - 支持前置验证检查, 自定义如何判断非空
@@ -16,14 +16,14 @@
 - 支持基本的数组检查，数组的子级(`'goods.apple'`)值检查, 通配符的子级检查 (`'users.*.id' 'goods.*'`)
 - 方便的获取错误信息，验证后的安全数据获取(只会收集有规则检查过的数据)
 - 已经内置了50多个常用的验证器[内置验证器](#built-in-validators)
-- 规则设置参考 yii. 部分规则参考自 laravel, Respect/Validation
-- 新增了独立的过滤器 `Inhere\Validate\Filter\Filtration`，可单独用于数据过滤
+- 规则设置参考 `yii`, `laravel`, `Respect/Validation`
+- 独立的过滤器 `Inhere\Validate\Filter\Filtration`，可单独用于数据过滤
 
-支持两种规则配置方式：
+**支持两种规则配置方式**：
 
 - `Validation/RuleValidation` 规则配置类似于Yii: 每条规则中，允许多个字段，但只能有一个验证器。
 
-e.g (下面的示例都是这种)
+e.g (本文档的示例都是这种)
 
 ```php
 [
@@ -77,7 +77,7 @@ composer require inhere/php-validate
 
 ```
 git clone https://github.com/inhere/php-validate.git // github
-git clone https://gitee.com/inhere/php-validate.git // git@osc
+git clone https://gitee.com/inhere/php-validate.git // gitee
 ```
 
 ## 使用
@@ -151,7 +151,7 @@ class PageRequest extends Validation
 
 ```php
 // 验证 POST 数据
-$v = PageRequest::make($_POST)->validate();
+$v = PageRequest::check($_POST);
 
 // 验证失败
 if ($v->fail()) {
@@ -178,11 +178,11 @@ class SomeController
 {
     public function demoAction()
     {
-        $v = Validation::make($_POST,[
+        $v = Validation::check($_POST,[
             // add rule
             ['title', 'min', 40],
             ['freeTime', 'number'],
-        ])->validate();
+        ]);
 
         if ($v->fail()) {
             var_dump($v->getErrors());
@@ -202,7 +202,7 @@ class SomeController
 
 创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中
 
-如下， 嵌入到一个数据模型类中, 实现一个简单的模型基类，添加数据库记录前自动进行验证
+如下，嵌入到一个数据模型类中, 实现一个简单的模型基类，添加数据库记录前自动进行验证
 
 ```php
 class DataModel
@@ -315,7 +315,7 @@ $v = Validation::make($_POST,[
 
 **注意：** 
 
-- 每条规则的第一个元素**必须**是 要验证的字段(可以同时配置多个，可以是数组. type:`string|array`)
+- 每条规则的第一个元素**必须**是 _要验证的字段_(可以同时配置多个，可以是数组. type:`string|array`)
 - 第二个元素**必须**是**一个**验证器(字符串，闭包，可回调的对象或数组. type:`string|Closure|callable`)
 - 后面紧跟着 是验证器可能需要的参数信息 (若验证器需要的**参数只有一个，则参数无需带key**)
 - 然后就是其他选项配置(`msg`, `on`, `filter`, ...)
