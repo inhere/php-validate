@@ -155,18 +155,21 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 必填
+     * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 必填
      * @from laravel
      * @param string $field
      * @param mixed $fieldVal
      * @param string $anotherField
      * @param array|string $values
-     * @return bool
+     * @return bool|null
+     * - TRUE  check successful
+     * - FALSE check failed
+     * - NULL  skip check
      */
-    public function requiredIf(string $field, $fieldVal, string $anotherField, $values): bool
+    public function requiredIf(string $field, $fieldVal, string $anotherField, $values)
     {
         if (!isset($this->data[$anotherField])) {
-            return false;
+            return null;
         }
 
         $val = $this->data[$anotherField];
@@ -175,26 +178,25 @@ trait UserAndContextValidatorsTrait
             return $this->required($field, $fieldVal);
         }
 
-        return false;
+        return null;
     }
 
     /**
-     * 如果指定的其它字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
-     * @from laravel
+     * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
      * @param string $field
      * @param mixed $fieldVal
      * @param string $anotherField
      * @param array|string $values
-     * @return bool
+     * @return bool|null @see self::requiredIf()
      */
-    public function requiredUnless(string $field, $fieldVal, string $anotherField, $values): bool
+    public function requiredUnless(string $field, $fieldVal, string $anotherField, $values)
     {
         if (!isset($this->data[$anotherField])) {
-            return false;
+            return $this->required($field, $fieldVal);
         }
 
         if (\in_array($this->data[$anotherField], (array)$values, true)) {
-            return true;
+            return null;
         }
 
         return $this->required($field, $fieldVal);
@@ -202,13 +204,12 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 如果指定的其他字段中的 任意一个 有值且不为空，则此字段为 必填
-     * @from laravel
      * @param string $field
      * @param mixed $fieldVal
      * @param array|string $fields
-     * @return bool
+     * @return bool|null @see self::requiredIf()
      */
-    public function requiredWith(string $field, $fieldVal, $fields): bool
+    public function requiredWith(string $field, $fieldVal, $fields)
     {
         foreach ((array)$fields as $name) {
             if ($this->required($name)) {
@@ -216,18 +217,17 @@ trait UserAndContextValidatorsTrait
             }
         }
 
-        return true;
+        return null;
     }
 
     /**
-     * 如果指定的 所有字段 都有值，则此字段为必填。
-     * @from laravel
+     * 如果指定的 所有字段 都有值且不为空，则此字段为 必填
      * @param string $field
      * @param mixed $fieldVal
      * @param array|string $fields
-     * @return bool
+     * @return bool|null @see self::requiredIf()
      */
-    public function requiredWithAll(string $field, $fieldVal, $fields): bool
+    public function requiredWithAll(string $field, $fieldVal, $fields)
     {
         $allHasValue = true;
 
@@ -238,18 +238,17 @@ trait UserAndContextValidatorsTrait
             }
         }
 
-        return $allHasValue ? $this->required($field, $fieldVal) : true;
+        return $allHasValue ? $this->required($field, $fieldVal) : null;
     }
 
     /**
-     * 如果缺少 任意一个 指定的字段值，则此字段为必填。
-     * @from laravel
+     * 如果缺少 任意一个 指定的字段值，则此字段为 必填
      * @param string $field
      * @param mixed $fieldVal
      * @param array|string $fields
-     * @return bool
+     * @return bool|null @see self::requiredIf()
      */
-    public function requiredWithout(string $field, $fieldVal, $fields): bool
+    public function requiredWithout(string $field, $fieldVal, $fields)
     {
         $allHasValue = true;
 
@@ -260,18 +259,18 @@ trait UserAndContextValidatorsTrait
             }
         }
 
-        return $allHasValue ? true : $this->required($field, $fieldVal);
+        return $allHasValue ? null : $this->required($field, $fieldVal);
     }
 
     /**
-     * 如果所有指定的字段 都没有 值，则此字段为必填。
+     * 如果所有指定的字段 都没有 值，则此字段为 必填
      * @from laravel
      * @param string $field
      * @param mixed $fieldVal
      * @param array|string $fields
-     * @return bool
+     * @return bool|null @see self::requiredIf()
      */
-    public function requiredWithoutAll(string $field, $fieldVal, $fields): bool
+    public function requiredWithoutAll(string $field, $fieldVal, $fields)
     {
         $allNoValue = true;
 
@@ -282,8 +281,12 @@ trait UserAndContextValidatorsTrait
             }
         }
 
-        return $allNoValue ? $this->required($field, $fieldVal) : true;
+        return $allNoValue ? $this->required($field, $fieldVal) : null;
     }
+
+    /*******************************************************************************
+     * Files validators(require context data)
+     ******************************************************************************/
 
     /**
      * 验证的字段必须是成功上传的文件
@@ -297,7 +300,7 @@ trait UserAndContextValidatorsTrait
             return false;
         }
 
-        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || ($file['error'] !== \UPLOAD_ERR_OK)) {
             return false;
         }
 
@@ -329,7 +332,7 @@ trait UserAndContextValidatorsTrait
             return false;
         }
 
-        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || ($file['error'] !== \UPLOAD_ERR_OK)) {
             return false;
         }
 
@@ -376,7 +379,7 @@ trait UserAndContextValidatorsTrait
             return false;
         }
 
-        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || ($file['error'] !== \UPLOAD_ERR_OK)) {
             return false;
         }
 
@@ -477,7 +480,7 @@ trait UserAndContextValidatorsTrait
      */
     public function eachValidator(array $values, ...$args): bool
     {
-        if (!$validator = array_shift($args)) {
+        if (!$validator = \array_shift($args)) {
             throw new \InvalidArgumentException('must setting a validator for \'each\' validate.');
         }
 

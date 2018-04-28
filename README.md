@@ -107,7 +107,8 @@ class PageRequest extends Validation
             ['userId', 'number', 'on' => 'scene1', 'filter' => 'int'],
             ['username', 'string', 'on' => 'scene2', 'filter' => 'trim'],
             ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
-            ['title', 'customValidator', 'msg' => '{attr} error msg!' ], // 指定当前规则的消息
+            // 自定义验证器，并指定当前规则的消息
+            ['title', 'custom', 'msg' => '{attr} error msg!' ], 
             ['status', function($status) { // 直接使用闭包验证
                 if (is_int($status) && $status > 3) {
                     return true;
@@ -316,8 +317,8 @@ $v = Validation::make($_POST,[
 
 - 每条规则的第一个元素**必须**是 要验证的字段(可以同时配置多个，可以是数组. type:`string|array`)
 - 第二个元素**必须**是**一个**验证器(字符串，闭包，可回调的对象或数组. type:`string|Closure|callable`)
-- 后面紧跟着 是验证器可能需要的参数信息 (若验证器需要的参数只有一个，则参数无需带key)
-- 然后就是其他选项配置(msg,filter...)
+- 后面紧跟着 是验证器可能需要的参数信息 (若验证器需要的**参数只有一个，则参数无需带key**)
+- 然后就是其他选项配置(`msg`, `on`, `filter`, ...)
 
 ```php
 // a full rule
@@ -336,7 +337,7 @@ $v = Validation::make($_POST,[
 ]
 ```
 
-> 字段验证器 `FieldValidation` 的配置类似，只是只有一个字段，而验证器允许有多个
+> 字段验证器 `FieldValidation` 的配置类似，只是 **只有一个字段，而验证器允许有多个**
 
 ## 规则关键词
 

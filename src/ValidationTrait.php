@@ -206,7 +206,9 @@ trait ValidationTrait
 
                     // required*系列字段检查 || 文件资源检查
                     if (self::isCheckRequired($validator) || self::isCheckFile($validator)) {
-                        if (!$this->fieldValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
+                        $result = $this->fieldValidate($field, $value, $validator, $args, $defMsg);
+
+                        if (false === $result && $this->isStopOnError()) {
                             break;
                         }
 
@@ -219,7 +221,7 @@ trait ValidationTrait
                     continue;
                 }
 
-                // 字段值过滤(有通配符`*`的字段, 不应用过滤器)
+                // Field value filtering(有通配符`*`的字段, 不应用过滤器)
                 if ($filters && !\strpos($field, '.*')) {
                     $value = $this->valueFiltering($value, $filters);
                     $this->data[$field] = $value;
@@ -261,10 +263,13 @@ trait ValidationTrait
      * @param string $validator required* 验证器
      * @param array $args Verify the required parameters
      * @param string|array $defMsg
-     * @return bool
+     * @return bool|null
+     * - TRUE  check successful
+     * - FALSE check failed
+     * - NULL  skip check(for `required*`)
      * @throws \InvalidArgumentException
      */
-    protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg): bool
+    protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg)
     {
         // required check
         if ($validator === 'required') {
@@ -288,9 +293,11 @@ trait ValidationTrait
             return true;
         }
 
-        $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
+        if ($passed === false) {
+            $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
+        }
 
-        return false;
+        return $passed;
     }
 
     /**

@@ -44,8 +44,18 @@ class RuleValidationTest extends TestCase
         $this->assertCount(1, $v->getErrors());
         $this->assertFalse($v->inError('userId'));
         $this->assertTrue($v->inError('targetId'));
+
+        $v = RuleValidation::check($data, [
+            ['userId, targetId', 'requiredIf', 'status', 5]
+        ]);
+
+        $this->assertCount(0, $v->getErrors());
+        $this->assertCount(0, $v->getSafeData());
     }
 
+    /**
+     * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
+     */
     public function testRequiredUnless()
     {
         $data = [
@@ -54,9 +64,10 @@ class RuleValidationTest extends TestCase
             'status' => 10,
         ];
 
-        $v = RuleValidation::makeAndValidate($data, [
+        $v = RuleValidation::check($data, [
             ['targetId', 'requiredUnless', 'status', [10]],
             ['userId', 'requiredUnless', 'status', [11]],
+            ['userId', 'requiredUnless', 'not-exists', [11]],
         ]);
 
         $this->assertCount(1, $v->getErrors());
