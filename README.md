@@ -67,7 +67,7 @@ composer require inhere/php-validate
 编辑 `composer.json`，在 `require` 添加
 
 ```
-"inhere/php-validate": "dev-master",
+"inhere/php-validate": "~2.0",
 // "inhere/php-validate": "dev-php5", // for php5
 ```
 
@@ -98,13 +98,17 @@ class PageRequest extends Validation
     {
         return [
             ['tagId,title,userId,freeTime', 'required'],
-            ['tagId', 'size', 'min'=>4, 'max'=>567, 'filter' => 'int'], // 4<= tagId <=567
-            ['title', 'min', 40, 'filter' => 'trim'],
-            ['freeTime', 'number'],
+            // 4<= tagId <=567
+            ['tagId', 'size', 'min'=>4, 'max'=>567, 'filter' => 'int'], 
+            // title length >= 40. 注意只需一个参数的验证，无需加 key, 如这里的 40
+            ['title', 'min', 40, 'filter' => 'trim'],
+            // 大于0
+            ['freeTime', 'number'],
             ['tagId', 'number', 'when' => function($data) {
                 return isset($data['status']) && $data['status'] > 2;
             }],
-            ['userId', 'number', 'on' => 'scene1', 'filter' => 'int'],
+            // 在验证前会先过滤转换为 int。 仅会在指明场景名为 'scene1' 时规则有效
+            ['userId', 'number', 'on' => 'scene1', 'filter' => 'int'],
             ['username', 'string', 'on' => 'scene2', 'filter' => 'trim'],
             ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
             // 自定义验证器，并指定当前规则的消息
@@ -115,7 +119,8 @@ class PageRequest extends Validation
                 }
                 return false;
             }],
-            ['createdAt, updatedAt', 'safe'], // 标记字段是安全可靠的。
+            // 标记字段是安全可靠的 无需验证
+            ['createdAt, updatedAt', 'safe'],
         ];
     }
     
