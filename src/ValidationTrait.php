@@ -257,10 +257,10 @@ trait ValidationTrait
     }
 
     /**
-     * field require Validate 字段存在检查
+     * field require/exists validate 字段存在检查
      * @param string $field Attribute name
      * @param mixed $value Attribute value
-     * @param string $validator required* 验证器
+     * @param string $validator required* Validator name
      * @param array $args Verify the required parameters
      * @param string|array $defMsg
      * @return bool|null
@@ -279,7 +279,7 @@ trait ValidationTrait
         } elseif (self::isCheckFile($validator)) {
             $passed = $this->$validator($field, ...\array_values($args));
 
-            // 其他 required* 方法
+            // other required* methods
         } elseif (\method_exists($this, $validator)) {
             $passed = $this->$validator($field, $value, ...\array_values($args));
         } else {
@@ -301,11 +301,11 @@ trait ValidationTrait
     }
 
     /**
-     * value Validate 字段值验证
-     * @param string $field 属性名称
-     * @param mixed $value 属性值
-     * @param \Closure|string|mixed $validator 验证器
-     * @param array $args 验证需要的参数
+     * field value validate 字段值验证
+     * @param string $field Field name
+     * @param mixed $value Field value
+     * @param \Closure|string|mixed $validator Validator
+     * @param array $args Arguments for validate
      * @param string $defMsg
      * @return bool
      * @throws \InvalidArgumentException
@@ -466,7 +466,7 @@ trait ValidationTrait
             case 'between':
                 // fixed: 当只有 max 时，自动补充一个 min
                 if (isset($rule['max']) && !isset($rule['min'])) {
-                    $rule['min'] = PHP_INT_MIN;
+                    $rule['min'] = \PHP_INT_MIN;
                 }
                 break;
         }
