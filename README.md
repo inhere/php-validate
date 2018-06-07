@@ -77,10 +77,10 @@ git clone https://github.com/inhere/php-validate.git // github
 git clone https://gitee.com/inhere/php-validate.git // gitee
 ```
 
-## 使用
+## 立即使用
 
 <a name="how-to-use1"></a>
-### 方式 1: 创建一个新的class，并继承Validation
+### 方式1: 继承类 `Validation`
 
 创建一个新的class，并继承 `Inhere\Validate\Validation`。用于一个（或一系列相关）请求的验证, 相当于 laravel 的 表单请求验证
 
@@ -151,7 +151,7 @@ class PageRequest extends Validation
 }
 ```
 
-使用
+- 使用
 
 ```php
 // 验证 POST 数据
@@ -171,7 +171,7 @@ $db->save($safeData);
 ```
 
 <a name="how-to-use2"></a>
-### 方式 2: 直接使用类 Validation
+### 方式2: 直接使用类 `Validation`
 
 需要快速简便的使用验证时，可直接使用 `Inhere\Validate\Validation`
 
@@ -202,7 +202,7 @@ class SomeController
 ```
 
 <a name="how-to-use3"></a>
-### 方式 3: 创建一个新的class，使用  ValidationTrait
+### 方式3: 使用trait `ValidationTrait`
 
 创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中
 
@@ -221,7 +221,7 @@ class DataModel
      * @param array $data
      * @return $this
      */
-    public function setData($data)
+    public function load(array $data)
     {
         $this->data = $data;
 
@@ -248,10 +248,10 @@ class UserModel extends DataModel
     public function rules()
     {
         return [
-            ['username, passwd', 'required', 'on' => 'create' ],
+            ['username, passwd', 'required'],
             ['passwd', 'compare', 'repasswd', 'on' => 'create']
             ['username', 'string', 'min' => 2, 'max' => 20, 'on' => 'create' ],
-            ['id', 'number', 'on' => 'update' ],
+            ['id', 'number', 'on' => 'update' ], // 仅作用于场景 update
             ['createdAt, updatedAt', 'safe'],
         ];
     }
@@ -265,7 +265,8 @@ class UserController
     public function addAction()
     {
         $model = new UserModel;
-        $model->setData($_POST)->atScene('create');
+        // 载入提交数据并设定场景为: create
+        $model->load($_POST)->atScene('create');
 
         if (!$ret = $model->create()) {
             exit($model->firstError());
@@ -273,20 +274,18 @@ class UserController
 
         echo "add success: userId = $ret";
     }
-
 }
 ```
 
 ## 添加自定义验证器
 
-- 在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use1)
+- **方式1**在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use1)
 
 > 注意： 写在当前类里的验证器方法必须带有后缀 `Validator`, 以防止对内部的其他的方法造成干扰
 
-- 通过 `Validation::addValidator()` 添加自定义验证器. e.g:
+- **方式2**通过 `Validation::addValidator()` 添加自定义验证器. e.g:
 
 ```php
-
 $v = Validation::make($_POST,[
         // add rule
         ['title', 'min', 40],
@@ -301,7 +300,7 @@ $v = Validation::make($_POST,[
     ->validate();
 ```
 
-- 直接写闭包进行验证 e.g:
+- **方式3**直接写闭包进行验证 e.g:
 
 ```php
     ['status', function($status) {
@@ -343,7 +342,7 @@ $v = Validation::make($_POST,[
 
 > 字段验证器 `FieldValidation` 的配置类似，只是 **只有一个字段，而验证器允许有多个**
 
-## 规则关键词
+## 规则选项设置
 
 除了可以添加字段的验证之外，还有一些特殊关键词可以设置使用，以适应各种需求。
 
@@ -396,7 +395,6 @@ $v = Validation::make($_POST,[
     // ...
     $valid = ValidationClass::make($_POST)->atScene('update')->validate();
     // ...
-
 ```
 
 ### `when` -- 规则的前置条件
