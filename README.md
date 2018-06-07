@@ -48,10 +48,7 @@ e.g
 - **github** https://github.com/inhere/php-validate.git
 - **gitee** https://gitee.com/inhere/php-validate.git
 
-**注意：**
-
-- master 分支是要求 `php >= 7` 的(推荐使用)。
-- php5 分支是支持 php 5 的代码分支 
+> **注意：** master 分支是要求 `php7+` 的(推荐使用)。php5 分支是支持php5的代码分支,基本上不再维护。
 
 ## 安装
 
@@ -104,12 +101,14 @@ class PageRequest extends Validation
             ['title', 'min', 40, 'filter' => 'trim'],
             // 大于0
             ['freeTime', 'number'],
+            // 含有前置条件
             ['tagId', 'number', 'when' => function($data) {
                 return isset($data['status']) && $data['status'] > 2;
             }],
-            // 在验证前会先过滤转换为 int。 仅会在指明场景名为 'scene1' 时规则有效
+            // 在验证前会先过滤转换为 int。并且仅会在指明场景名为 'scene1' 时规则有效
             ['userId', 'number', 'on' => 'scene1', 'filter' => 'int'],
             ['username', 'string', 'on' => 'scene2', 'filter' => 'trim'],
+            // 使用自定义正则表达式
             ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
             // 自定义验证器，并指定当前规则的消息
             ['title', 'custom', 'msg' => '{attr} error msg!' ], 
@@ -466,8 +465,6 @@ $v = Validation::make($_POST,[
 
 支持在进行验证前对值使用过滤器进行净化过滤[内置过滤器](#built-in-filters)
 
-**通过类 `Filtration`，可以独立使用过滤器**
-
 ```php
 ['tagId,userId,freeTime', 'number', 'filter' => 'int'],
 ['field', 'validator', 'filter' => 'filter0|filter1...'],
@@ -491,6 +488,7 @@ $v = Validation::make($_POST,[
 
 - 允许同时使用多个过滤器。字符串使用 `|` 分隔，或者配置为数组。
 - 注意： 写在当前类里的过滤器方法必须带有后缀 `Filter`, 以防止对内部的其他的方法造成干扰
+- 通过类 `Filtration`，可以独立使用过滤器功能
 - php内置过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
 
 <a name="built-in-filters"></a>
@@ -634,7 +632,6 @@ $v = Validation::make($_POST, [
 ])
 ->setUploadedFiles($_FILES)
 ->validate();
-
 // ...
 ```
 
