@@ -32,7 +32,7 @@ final class Filters
      */
     public static function boolean($val, $nullAsFalse = false)
     {
-        if ($val !== null && !is_scalar($val)) {
+        if ($val !== null && !\is_scalar($val)) {
             return (bool)$val;
         }
 
