@@ -14,14 +14,14 @@ class PageRequest extends \Inhere\Validate\Validation
     public function rules()
     {
         return [
-            ['tagId,userId,freeTime', 'required' ],
-            ['tagId', 'size', 'min'=>4, 'max'=>567], // 4<= tagId <=567
+            ['tagId,userId,freeTime', 'required'],
+            ['tagId', 'size', 'min' => 4, 'max' => 567], // 4<= tagId <=567
             ['title', 'min', 'min' => 40],
             ['freeTime', 'number', 'msg' => '{attr} is require number!'],
-            ['test', 'number', 'when' => function($data) {
+            ['test', 'number', 'when' => function ($data) {
                 return isset($data['status']) && $data['status'] > 2;
             }],
-            ['userId', 'number', 'on' => 'other' ],
+            ['userId', 'number', 'on' => 'other'],
 //            ['userId', function($value){ return false;}],
         ];
     }

@@ -46,7 +46,8 @@ abstract class AbstractValidation implements ValidationInterface
         array $translates = [],
         string $scene = '',
         $startValidate = false
-    ) {
+    )
+    {
         $this->data = $data;
         $this
             ->atScene($scene)
@@ -74,7 +75,8 @@ abstract class AbstractValidation implements ValidationInterface
         array $translates = [],
         string $scene = '',
         $startValidate = false
-    ) {
+    )
+    {
         return new static($data, $rules, $translates, $scene, $startValidate);
     }
 

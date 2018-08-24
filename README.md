@@ -538,13 +538,13 @@ $v = Validation::make($_POST,[
 `alpha`   | 验证值是否仅包含字母字符 | `['name', 'alpha']`
 `alphaNum`   | 验证是否仅包含字母、数字 | `['field', 'alphaNum']`
 `alphaDash`   | 验证是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ） | `['field', 'alphaDash']`
-`isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
-`isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
-`isArray`   | 验证是否是数组 | `['goods', 'isArray']`
+`map/isMap`   | 验证值是否是一个非自然数组 map (key - value 形式的) | `['goods', 'isMap']`
+`list/isList`   | 验证值是否是一个自然数组 list (key是从0自然增长的) | `['tags', 'isList']`
+`array/isArray`   | 验证是否是数组 | `['goods', 'isArray']`
 `each` | 对数组中的每个值都应用**给定的验证器**(这里的绝大多数验证器都可以使用)，并且要**全部通过** | `['goods.*','each','string']`, `['goods.*','each','string','min'=>3]`
 `hasKey`   | 验证数组存在给定的key(s) | `['goods', 'hasKey', 'pear']` `['goods', 'hasKey', ['pear', 'banana']]`
 `distinct`   | 数组中的值必须是唯一的 | `['goods', 'distinct']`, `['users.*.id', 'distinct']`
-`intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
+`ints/intList`   | 验证字段值是否是一个 int list | `['tagIds', 'intList']`
 `numList`   | 验证字段值是否是一个 number list | `['tagIds', 'numList']`
 `strList`   | 验证字段值是否是一个 string list | `['tags', 'strList']`
 `arrList`   | 验证字段值是否是一个 array list(多维数组) | `['tags', 'arrList']`

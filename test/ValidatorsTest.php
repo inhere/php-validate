@@ -1,7 +1,7 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Inhere\Validate\Validators;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Inhere\Validate\Validators
@@ -294,12 +294,12 @@ class ValidatorsTest extends TestCase
 
     public function testDistinct()
     {
-        $this->assertFalse(Validators::distinct([1,2,2]));
-        $this->assertFalse(Validators::distinct([1,2,'2']));
-        $this->assertFalse(Validators::distinct(['a','b','b']));
+        $this->assertFalse(Validators::distinct([1, 2, 2]));
+        $this->assertFalse(Validators::distinct([1, 2, '2']));
+        $this->assertFalse(Validators::distinct(['a', 'b', 'b']));
 
-        $this->assertTrue(Validators::distinct([1,2,3]));
-        $this->assertTrue(Validators::distinct(['a','b','c']));
+        $this->assertTrue(Validators::distinct([1, 2, 3]));
+        $this->assertTrue(Validators::distinct(['a', 'b', 'c']));
     }
 
     public function testJson()

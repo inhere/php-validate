@@ -1,6 +1,7 @@
 <?php
 
 use Inhere\Validate\RuleValidation;
+use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -255,6 +256,7 @@ class RuleValidationTest extends TestCase
     public function testValidateFailed()
     {
         $rules = $this->someRules();
+        ob_start();
         $v = RuleValidation::make($this->data, $rules)
             ->setTranslates([
                 'goods.pear' => '梨子'
@@ -263,6 +265,10 @@ class RuleValidationTest extends TestCase
                 'freeTime.required' => 'freeTime is required!!!!'
             ])
             ->validate([], false);
+        $out = ob_get_clean();
+
+        $this->assertContains('use when pre-check', $out);
+        $this->assertContains('use custom validate', $out);
 
         $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());
@@ -278,7 +284,7 @@ class RuleValidationTest extends TestCase
         $v = RuleValidation::check([
             'text1' => 'hello-world',
             'text2' => 'hello world中文',
-        ],[
+        ], [
             ['text1, text2', 'string'],
             ['text1', 'regex', '/^[\w-]+$/'],
             ['text2', 'regex', '/[\x{4e00}-\x{9fa5}]+/u'],
@@ -353,7 +359,6 @@ class RuleValidationTest extends TestCase
 
             ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
             //    ['notExistsField1', 'requiredWithout', 'existsField'], //
-
             [
                 'freeTime',
                 'size',
@@ -446,14 +451,14 @@ class RuleValidationTest extends TestCase
             ['id', 'range', 'min' => 1, 'max' => 100],
         ])
             ->setMessages([
-                'id.range' => 'error message',
+                'id.range' => 'range error message',
             ])
             ->validate();
 
         $this->assertFalse($v->isOk());
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('id'));
-        $this->assertStringEndsWith('message', $v->firstError());
+        $this->assertEquals('range error message', $v->firstError());
     }
 
     public function testDistinct()
@@ -498,5 +503,52 @@ class RuleValidationTest extends TestCase
         $this->assertFalse($v->isOk());
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('users.*.name'));
+    }
+
+    /**
+     * @covers \Inhere\Validate\RuleValidation::getMessage()
+     */
+    public function testGetMessage()
+    {
+        $v = Validation::makeAndValidate([
+            'inTest' => 3,
+        ], [
+            ['inTest', 'in', [1, 2]],
+        ]);
+
+        $this->assertFalse($v->ok());
+        $this->assertEquals('in test must in (1,2)', $v->firstError());
+    }
+
+    /**
+     * @covers \Inhere\Validate\RuleValidation::getValidatorName()
+     */
+    public function testValidatorAlias()
+    {
+        $v = Validation::makeAndValidate([
+            'arrTest' => [12, 23],
+        ], [
+            ['arrTest', 'list'],
+            ['arrTest', 'array'],
+        ]);
+
+        $this->assertTrue($v->ok());
+
+        $v = Validation::make([
+            'arrVal' => 'string',
+            'listVal' => 'string',
+        ], [
+            ['arrVal', 'list'],
+            ['listVal', 'array'],
+        ]);
+        $v->setStopOnError(false);
+        $v->validate();
+
+        $this->assertTrue($v->fail());
+        $this->assertFalse($v->isStopOnError());
+        $this->assertCount(2, $v->getErrors());
+        $this->assertTrue($v->inError('listVal'));
+        $this->assertEquals('arr val must be an array of nature', $v->firstError());
+        $this->assertEquals('list val must be an array', $v->lastError());
     }
 }

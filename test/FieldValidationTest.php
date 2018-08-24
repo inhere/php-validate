@@ -1,7 +1,7 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Inhere\Validate\FieldValidation;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Inhere\Validate\FieldValidation
@@ -40,7 +40,7 @@ class FieldValidationTest extends TestCase
             ->setMessages([
                 'freeTime.required' => 'freeTime is required!!!!'
             ])
-           ->validate([], false);
+            ->validate([], false);
 
         $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());

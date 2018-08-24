@@ -6,8 +6,8 @@
  * Time: 18:20
  */
 
-use PHPUnit\Framework\TestCase;
 use Inhere\Validate\Filter\Filtration;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class FiltrationTest

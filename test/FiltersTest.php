@@ -1,7 +1,7 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Inhere\Validate\Filter\Filters;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Inhere\Validate\Filter\Filters

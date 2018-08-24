@@ -247,7 +247,7 @@ class Helper
      * @param string $field
      * @return string
      */
-    public static function beautifyFieldName(string $field): string
+    public static function prettifyFieldName(string $field): string
     {
         $str = self::toSnakeCase($field, ' ');
 

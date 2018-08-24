@@ -23,20 +23,20 @@ $rules = [
     ['tagId,userId,freeTime', 'required'],// set message
     ['tagId,userId,freeTime', 'number'],
     ['note', 'email', 'skipOnEmpty' => false], // set skipOnEmpty is false.
-    ['insertTime', 'email', 'scene' => 'otherScene' ],// set scene. will is not validate it on default.
-    ['tagId', 'size', 'max'=> 567, 'min'=> 4, ], // 4<= tagId <=567
+    ['insertTime', 'email', 'scene' => 'otherScene'],// set scene. will is not validate it on default.
+    ['tagId', 'size', 'max' => 567, 'min' => 4,], // 4<= tagId <=567
     ['passwd', 'compare', 'repasswd'], //
 
-    ['name', 'regexp' ,'/^[a-z]\w{2,12}$/'],
+    ['name', 'regexp', '/^[a-z]\w{2,12}$/'],
 
     ['goods.pear', 'max', 30], //
 
     ['goods', 'isList'], //
 
-     ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
+    ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
 //    ['notExistsField1', 'requiredWithout', 'existsField'], //
 
-    ['freeTime', 'size', 'min'=>4, 'max'=>567, 'when' => function($data, $valid) {
+    ['freeTime', 'size', 'min' => 4, 'max' => 567, 'when' => function ($data, $valid) {
         echo "  use when pre-check\n";
 
         // $valid is current validation instance.
@@ -44,7 +44,7 @@ $rules = [
         return true;
     }], // 4<= tagId <=567
 
-    ['userId', function($value, $data){
+    ['userId', function ($value, $data) {
         echo "  use custom validate to check userId \n";
 
         // var_dump($value, $data);
@@ -73,13 +73,13 @@ print_r($model->getErrors());
 echo "\n----------------------------\n use Validation\n----------------------------\n\n";
 
 $v = \Inhere\Validate\Validation::make($data, $rules)
-        ->setTranslates([
-            'goods.pear' => '梨子'
-        ])
-        ->setMessages([
-            'freeTime.required' => 'freeTime is required!!!!'
-        ])
-       ->validate([], false);
+    ->setTranslates([
+        'goods.pear' => '梨子'
+    ])
+    ->setMessages([
+        'freeTime.required' => 'freeTime is required!!!!'
+    ])
+    ->validate([], false);
 
 print_r($v->getErrors());
 

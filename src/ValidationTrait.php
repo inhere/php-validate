@@ -9,8 +9,8 @@
 namespace Inhere\Validate;
 
 use Inhere\Validate\Utils\DataFiltersTrait;
-use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\ErrorMessageTrait;
+use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
 
 /**
@@ -165,7 +165,7 @@ trait ValidationTrait
 
         foreach ($this->collectRules() as $fields => $rule) {
             $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
-            $validator = $rule[0];
+            $validator = \array_shift($rule);
 
             // How to determine the property is empty(default use the Validators::isEmpty)
             $isEmpty = [Validators::class, 'isEmpty'];
@@ -186,7 +186,7 @@ trait ValidationTrait
             $defValue = $rule['default'] ?? null;// Allow default
 
             // clear all keywords options. 0 is the validator
-            unset($rule[0], $rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
+            unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
 
             // The rest are validator parameters. Some validators require parameters. e.g. size()
             $args = $rule;
@@ -325,6 +325,7 @@ trait ValidationTrait
             $args[] = $this->data;
             $passed = $validator($value, ...$args);
         } elseif (\is_string($validator)) {
+            $realName = self::getValidatorName($validator);
             // if $validator is a custom add callback in the property {@see $_validators}.
             if (isset(self::$_validators[$validator])) {
                 $callback = self::$_validators[$validator];
@@ -333,12 +334,9 @@ trait ValidationTrait
                 // if $validator is a custom method of the subclass.
             } elseif (\method_exists($this, $method = $validator . 'Validator')) {
                 $passed = $this->$method($value, ...$args);
-
-            } elseif (\method_exists(Validators::class, $validator)) {
-                $passed = Validators::$validator($value, ...$args);
-
-                // it is function name
-            } elseif (\function_exists($validator)) {
+            } elseif (\method_exists(Validators::class, $realName)) {
+                $passed = Validators::$realName($value, ...$args);
+            } elseif (\function_exists($validator)) { // it is function name
                 $passed = $validator($value, ...$args);
             } else {
                 throw new \InvalidArgumentException("The validator [$validator] don't exists!");

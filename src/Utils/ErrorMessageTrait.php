@@ -18,6 +18,7 @@ trait ErrorMessageTrait
      * @var array
      */
     private static $validatorAliases = [
+        // alias => real name.
         'int' => 'integer',
         'num' => 'number',
         'bool' => 'boolean',
@@ -27,6 +28,10 @@ trait ErrorMessageTrait
         'lengthEq' => 'fixedSize',
         'sizeEq' => 'fixedSize',
         'different' => 'notEqual',
+        'map' => 'isMap',
+        'list' => 'isList',
+        'array' => 'isArray',
+        // 'ints' => 'intList',
     ];
 
     /**
@@ -41,7 +46,7 @@ trait ErrorMessageTrait
             '{attr} must be an integer greater than 0!',
             '{attr} must be an integer and minimum value is {min}',
             '{attr} must be an integer and in the range {min} ~ {max}',
-       ],
+        ],
         // 'bool', 'boolean',
         'boolean' => '{attr} must be is boolean!',
         'float' => '{attr} must be is float!',
@@ -139,6 +144,12 @@ trait ErrorMessageTrait
      * @var boolean
      */
     private $_stopOnError = true;
+
+    /**
+     * prettify field name on get error message
+     * @var bool
+     */
+    private $_prettifyName = true;
 
     /*******************************************************************************
      * Errors Information
@@ -418,7 +429,6 @@ trait ErrorMessageTrait
         return \strtr($message, $params);
     }
 
-
     /**
      * set the attrs translation data
      * @param array $fieldTrans
@@ -446,17 +456,26 @@ trait ErrorMessageTrait
     }
 
     /**
+     * get field translate string.
      * @param string $field
      * @return string
      */
     public function getTranslate(string $field): string
     {
         $trans = $this->getTranslates();
+        if (isset($trans[$field])) {
+            return $trans[$field];
+        }
 
-        return $trans[$field] ?? Helper::beautifyFieldName($field);
+        if ($this->_prettifyName) {
+            return Helper::prettifyFieldName($field);
+        }
+
+        return $field;
     }
 
     /**
+     * get real validator name by alias name
      * @param string $validator
      * @return string
      */
@@ -471,5 +490,21 @@ trait ErrorMessageTrait
     public static function getValidatorAliases(): array
     {
         return self::$validatorAliases;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPrettifyName(): bool
+    {
+        return $this->_prettifyName;
+    }
+
+    /**
+     * @param bool $prettifyName
+     */
+    public function setPrettifyName(bool $prettifyName): void
+    {
+        $this->_prettifyName = $prettifyName;
     }
 }

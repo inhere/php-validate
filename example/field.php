@@ -33,6 +33,6 @@ $v = \Inhere\Validate\FieldValidation::make($data, $rules)
     ->setMessages([
         'freeTime.required' => 'freeTime is required!!!!'
     ])
-   ->validate([], false);
+    ->validate([], false);
 
 print_r($v->getErrors());
