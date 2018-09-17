@@ -49,6 +49,14 @@ class FieldValidationTest extends TestCase
         $this->assertNotEmpty($errors);
         $this->assertCount(3, $errors);
 
-        // var_dump($errors);
+        $v = FieldValidation::check($this->data, [
+            ['userId', 'required|int'],
+            ['userId', 'min:1'],
+        ]);
+
+        $this->assertFalse($v->isOk());
+        $errors = $v->getErrors();
+        $this->assertNotEmpty($errors);
+        $this->assertCount(1, $errors);
     }
 }
