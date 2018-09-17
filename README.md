@@ -21,7 +21,7 @@
 
 **支持两种规则配置方式**：
 
-- `Validation/RuleValidation` 规则配置类似于Yii: 每条规则中，允许多个字段，但只能有一个验证器。
+- `Validation|RuleValidation` 规则配置类似于Yii: **每条规则中，允许多个字段，但只能有一个验证器。**
 
 e.g (本文档的示例都是这种)
 
@@ -32,7 +32,7 @@ e.g (本文档的示例都是这种)
 ];
 ```
 
-- `FieldValidation` 规则配置类似于Laravel: 每条规则中，只能有一个字段，但允许多个验证器。
+- `FieldValidation` 规则配置类似于Laravel: **每条规则中，只能有一个字段，但允许多个验证器。**
 
 e.g 
 
@@ -70,13 +70,6 @@ composer require inhere/php-validate
 
 然后执行: `composer update`
 
-- 直接拉取
-
-```
-git clone https://github.com/inhere/php-validate.git // github
-git clone https://gitee.com/inhere/php-validate.git // gitee
-```
-
 ## 立即使用
 
 <a name="how-to-use1"></a>
@@ -84,7 +77,7 @@ git clone https://gitee.com/inhere/php-validate.git // gitee
 
 创建一个新的class，并继承 `Inhere\Validate\Validation`。用于一个（或一系列相关）请求的验证, 相当于 laravel 的 表单请求验证
 
-> 此方式是最为完整的使用方式
+> 此方式是最为完整的使用方式，可以配置规则，设置字段翻译，设置自定义的错误消息等
 
 ```php
 use Inhere\Validate\Validation;
