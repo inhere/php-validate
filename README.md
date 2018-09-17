@@ -19,7 +19,7 @@
 - 规则设置参考 `yii`, `laravel`, `Respect/Validation`
 - 独立的过滤器 `Inhere\Validate\Filter\Filtration`，可单独用于数据过滤
 
-**支持两种规则配置方式**：
+## 两种规则配置方式
 
 - `Validation|RuleValidation` 规则配置类似于Yii: **每条规则中，允许多个字段，但只能有一个验证器。**
 
