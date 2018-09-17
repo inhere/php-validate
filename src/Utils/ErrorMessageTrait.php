@@ -309,13 +309,13 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @param bool|null $stopOnError
+     * @param bool|null $_stopOnError
      * @return $this
      */
-    public function setStopOnError($stopOnError = null): self
+    public function setStopOnError($_stopOnError = null): self
     {
-        if (null !== $stopOnError) {
-            $this->_stopOnError = (bool)$stopOnError;
+        if (null !== $_stopOnError) {
+            $this->_stopOnError = (bool)$_stopOnError;
         }
 
         return $this;

@@ -37,8 +37,11 @@ trait ValidationTrait
     /** @var \Closure after validate handler */
     private $_afterHandler;
 
+    /** @var array Used rules at current scene */
+    protected $_usedRules = [];
+
     /**
-     * current scenario name
+     * setting current scenario name
      * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
      * (
      * e.g: 在MVC框架中，
@@ -49,8 +52,12 @@ trait ValidationTrait
      */
     protected $scene = '';
 
-    /** @var array Used rules at current scene */
-    protected $_usedRules = [];
+    /**
+     * Whether to skip when empty(When not required)
+     * default is TRUE, need you manual add 'required'.
+     * @var bool
+     */
+    private $_skipOnEmpty = true;
 
     /**
      * @return array
@@ -87,8 +94,8 @@ trait ValidationTrait
     }
 
     /**
-     * 当前场景需要收集的字段
-     * @todo un-complete
+     * The field that the current scene needs to collect
+     * @return array
      */
     public function scenarios(): array
     {
@@ -163,6 +170,10 @@ trait ValidationTrait
             $cb($this);
         }
 
+        if (!$onlyChecked) {
+            $onlyChecked = $this->getSceneFields();
+        }
+
         foreach ($this->collectRules() as $fields => $rule) {
             $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
             $validator = \array_shift($rule);
@@ -180,7 +191,7 @@ trait ValidationTrait
             }
 
             // Whether to skip when empty(When not required). ref yii2
-            $skipOnEmpty = $rule['skipOnEmpty'] ?? true;
+            $skipOnEmpty = $rule['skipOnEmpty'] ?? $this->_skipOnEmpty;
             $filters = $rule['filter'] ?? null;  // filter
             $defMsg = $rule['msg'] ?? null; // Custom error message
             $defValue = $rule['default'] ?? null;// Allow default
@@ -475,6 +486,19 @@ trait ValidationTrait
      ******************************************************************************/
 
     /**
+     * get fields for the scene.
+     * @return array
+     */
+    public function getSceneFields(): array
+    {
+        if ($this->scene && $conf = $this->scenarios()) {
+            return $conf[$this->scene] ?? [];
+        }
+
+        return [];
+    }
+
+    /**
      * @param string $path 'users.*.id' 'goods.*' 'foo.bar.*.id'
      * @param null|mixed $default
      * @return mixed
@@ -570,7 +594,6 @@ trait ValidationTrait
     public function atScene(string $scene): self
     {
         $this->scene = \trim($scene);
-
         return $this;
     }
 
@@ -592,6 +615,16 @@ trait ValidationTrait
     public function onScene(string $scene)
     {
         return $this->atScene($scene);
+    }
+
+    /**
+     * @param bool $_skipOnEmpty
+     * @return static
+     */
+    public function setSkipOnEmpty(bool $_skipOnEmpty)
+    {
+        $this->_skipOnEmpty = $_skipOnEmpty;
+        return $this;
     }
 
     /**

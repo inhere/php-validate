@@ -59,4 +59,31 @@ class FieldValidationTest extends TestCase
         $this->assertNotEmpty($errors);
         $this->assertCount(1, $errors);
     }
+
+    public function testScenarios()
+    {
+        $data = [
+            'user' => 'inhere',
+            'pwd' => '123456',
+            'code' => '1234',
+        ];
+
+        $v = FieldSample::quick($data,'create')->validate();
+        $this->assertTrue($v->isOk());
+        $this->assertEmpty($v->getErrors());
+
+        $data = [
+            'user' => 'inhere',
+            'pwd' => '123456',
+            'code' => '12345',
+        ];
+
+        $v = FieldSample::quick($data,'create')->validate();
+        $this->assertFalse($v->isOk());
+        $this->assertEquals('code length must is 4', $v->firstError());
+
+        $v = FieldSample::quick($data,'update')->validate();
+        $this->assertTrue($v->isOk());
+        $this->assertEmpty($v->getErrors());
+    }
 }

@@ -61,6 +61,17 @@ abstract class AbstractValidation implements ValidationInterface
 
     /**
      * @param array $data
+     * @param string $scene
+     * @param bool $startValidate
+     * @return AbstractValidation
+     */
+    public static function quick(array $data, string $scene = '', $startValidate = false)
+    {
+        return new static($data, [], [], $scene, $startValidate);
+    }
+
+    /**
+     * @param array $data
      * @param array $rules
      * @param array $translates
      * @param string $scene
