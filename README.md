@@ -159,6 +159,7 @@ class PageRequest extends Validation
     protected function customValidator($title)
     {
         // some logic ...
+        // $this->getRaw('field'); 访问 data 数据
 
         return true; // Or false;
     }
@@ -218,7 +219,9 @@ class SomeController
 <a name="how-to-use3"></a>
 ### 方式3: 使用trait `ValidationTrait`
 
-创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中
+创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。
+
+> 此方式是高级自定义的使用方式, 可以方便的嵌入到其他类中。
 
 如下，嵌入到一个数据模型类中, 实现一个简单的模型基类，添加数据库记录前自动进行验证
 
@@ -306,10 +309,10 @@ $v = Validation::make($_POST,[
         ['freeTime', 'number'],
         ['title', 'checkTitle'],
     ])
-    ->addValidator('checkTitle',function($title){
+    ->addValidator('checkTitle',function($title) { // 第一个参数是字段值。最后一个参数总是 $data
         // some logic ...
 
-        return true; // 成功返回 True。 如果验证失败,返回 False.
+        return true; // 成功返回 True。验证失败,返回 False.
     }, '{attr} default message!')
     ->validate();
 ```
@@ -317,7 +320,7 @@ $v = Validation::make($_POST,[
 - **方式3**直接写闭包进行验证 e.g:
 
 ```php
-    ['status', function($status) {
+    ['status', function($status) { // 第一个参数是字段值。最后一个参数总是 $data
         if ($status > 3) {
             return true;
         }

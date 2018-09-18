@@ -263,7 +263,6 @@ trait ValidationTrait
 
         // fix : deny repeat validate
         $this->_validated = true;
-
         return $this;
     }
 
@@ -325,6 +324,7 @@ trait ValidationTrait
     {
         // if field don't exists.
         if (null === $value) {
+            $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
             return false;
         }
 
@@ -339,6 +339,7 @@ trait ValidationTrait
             $realName = self::getValidatorName($validator);
             // if $validator is a custom add callback in the property {@see $_validators}.
             if (isset(self::$_validators[$validator])) {
+                $args[] = $this->data;
                 $callback = self::$_validators[$validator];
                 $passed = $callback($value, ...$args);
 

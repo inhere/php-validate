@@ -156,6 +156,14 @@ trait ErrorMessageTrait
      ******************************************************************************/
 
     /**
+     * @return bool
+     */
+    protected function shouldStop(): bool
+    {
+        return $this->isFail() && $this->_stopOnError;
+    }
+
+    /**
      * 是否有错误
      * @return boolean
      */
