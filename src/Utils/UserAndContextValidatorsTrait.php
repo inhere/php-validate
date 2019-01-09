@@ -155,8 +155,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 必填
-     * @from laravel
+     * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 必填 (refer laravel)
      * @param string $field
      * @param mixed $fieldVal
      * @param string $anotherField
@@ -182,7 +181,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
+     * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填(refer laravel)
      * @param string $field
      * @param mixed $fieldVal
      * @param string $anotherField
@@ -203,7 +202,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 如果指定的其他字段中的 任意一个 有值且不为空，则此字段为 必填
+     * 如果指定的其他字段中的 任意一个 有值且不为空，则此字段为 必填(refer laravel)
      * @param string $field
      * @param mixed $fieldVal
      * @param array|string $fields
@@ -221,7 +220,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 如果指定的 所有字段 都有值且不为空，则此字段为 必填
+     * 如果指定的 所有字段 都有值且不为空，则此字段为 必填(refer laravel)
      * @param string $field
      * @param mixed $fieldVal
      * @param array|string $fields
@@ -242,7 +241,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 如果缺少 任意一个 指定的字段值，则此字段为 必填
+     * 如果缺少 任意一个 指定的字段值，则此字段为 必填(refer laravel)
      * @param string $field
      * @param mixed $fieldVal
      * @param array|string $fields
@@ -263,7 +262,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /**
-     * 如果所有指定的字段 都没有 值，则此字段为 必填
+     * 如果所有指定的字段 都没有 值，则此字段为 必填(refer laravel)
      * @from laravel
      * @param string $field
      * @param mixed $fieldVal
