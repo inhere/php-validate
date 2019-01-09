@@ -24,7 +24,7 @@ class FiltersTest extends TestCase
 
     public function testFloat()
     {
-//        $this->assertSame(FilterList::float('4.45'), 4.45);
+        //        $this->assertSame(FilterList::float('4.45'), 4.45);
         $this->assertSame(Filters::float(45.78), 45.78);
         $this->assertSame(Filters::float(-45.78), -45.78);
 

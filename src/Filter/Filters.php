@@ -27,7 +27,7 @@ final class Filters
      *   - "0"、"false"、"off"、"no" 和 ""(equal FALSE)
      * 注意： NULL 不是标量类型
      * @param  mixed $val
-     * @param bool $nullAsFalse
+     * @param bool   $nullAsFalse
      * @return bool
      */
     public static function boolean($val, $nullAsFalse = false)
@@ -86,9 +86,9 @@ final class Filters
     /**
      * 过滤器删除浮点数中所有非法的字符。
      * @note 该过滤器默认允许所有数字以及 + -
-     * @param  mixed $val 要过滤的变量
+     * @param  mixed   $val 要过滤的变量
      * @param null|int $decimal
-     * @param  int $flags 标志
+     * @param  int     $flags 标志
      *                    FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
      *                    FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
@@ -115,7 +115,7 @@ final class Filters
     /**
      * 去除标签，去除或编码特殊字符。
      * @param  string|array $val
-     * @param  int $flags 标志
+     * @param  int          $flags 标志
      *                    FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
      *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
      *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 127 以上的字符
@@ -267,7 +267,7 @@ final class Filters
     /**
      * string to camelcase
      * @param string $val
-     * @param bool $ucFirst
+     * @param bool   $ucFirst
      * @return string
      */
     public static function camel($val, $ucFirst = false): string
@@ -278,7 +278,7 @@ final class Filters
     /**
      * string to camelcase
      * @param string $val
-     * @param bool $ucFirst
+     * @param bool   $ucFirst
      * @return string
      */
     public static function camelCase($val, $ucFirst = false): string
@@ -342,7 +342,7 @@ final class Filters
     }
 
     /**
-     * @param mixed $val
+     * @param mixed       $val
      * @param null|string $allowedTags
      * @return string
      */
@@ -352,7 +352,7 @@ final class Filters
     }
 
     /**
-     * @param mixed $val
+     * @param mixed       $val
      * @param null|string $allowedTags e.g '<p><a>' 允许 <p> 和 <a>
      * @return string
      */
@@ -369,7 +369,7 @@ final class Filters
      * 去除 URL 编码不需要的字符。
      * @note 与 urlencode() 函数很类似。
      * @param  string $val 要过滤的数据
-     * @param  int $flags 标志
+     * @param  int    $flags 标志
      *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
      *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
      *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
@@ -400,7 +400,7 @@ final class Filters
     /**
      * like htmlspecialchars(), HTML 转义字符 '"<>& 以及 ASCII 值小于 32 的字符。
      * @param  string $val
-     * @param  int $flags 标志
+     * @param  int    $flags 标志
      *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
      *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
@@ -418,7 +418,7 @@ final class Filters
     }
 
     /**
-     * @param $val
+     * @param     $val
      * @param int $flags
      * @return string
      */
@@ -430,7 +430,7 @@ final class Filters
     /**
      *  HTML 转义字符 '"<>& 以及 ASCII 值小于 32 的字符。
      * @param  string $val
-     * @param  int $flags 标志 FILTER_FLAG_NO_ENCODE_QUOTES
+     * @param  int    $flags 标志 FILTER_FLAG_NO_ENCODE_QUOTES
      * @return string
      */
     public static function fullSpecialChars($val, $flags = 0): string
@@ -446,9 +446,9 @@ final class Filters
 
     /**
      * 字符串长度过滤截取
-     * @param  string $string 字符串
+     * @param  string  $string 字符串
      * @param  integer $start 起始长度
-     * @param  int $end 结束位置
+     * @param  int     $end 结束位置
      * @return string
      */
     public static function stringCute($string, $start = 0, $end = null): string
@@ -463,8 +463,8 @@ final class Filters
 
     /**
      * @param string $string
-     * @param int $start
-     * @param null $end
+     * @param int    $start
+     * @param null   $end
      * @return string
      */
     public static function cut($string, $start = 0, $end = null): string
@@ -498,7 +498,7 @@ final class Filters
      * 该过滤器删除那些对应用程序有潜在危害的数据。它用于去除标签以及删除或编码不需要的字符。
      * 如果不规定标志，则该过滤器没有任何行为。
      * @param  string $string
-     * @param  int $flags 标志
+     * @param  int    $flags 标志
      *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
      *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
      *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
@@ -519,7 +519,7 @@ final class Filters
 
     /**
      * 自定义回调过滤
-     * @param  mixed $val
+     * @param  mixed    $val
      * @param  callable $callback
      * @return bool|mixed
      */

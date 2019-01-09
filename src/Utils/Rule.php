@@ -73,22 +73,22 @@ final class Rule
     }
 
     /**
-     * @param string $field 属性名称
-     * @param mixed $value 属性值
+     * @param string          $field 属性名称
+     * @param mixed           $value 属性值
      * @param \Closure|string $validator 验证器
-     * @param array $params 验证需要的参数
-     * @param string $message default error message
-     * @param mixed $default default value
+     * @param array           $params 验证需要的参数
+     * @param string          $message default error message
+     * @param mixed           $default default value
      * @return Rule
      */
     public function init(string $field, $value, $validator, array $params, $message, $default): Rule
     {
-        $this->field = $field;
-        $this->value = $value;
+        $this->field     = $field;
+        $this->value     = $value;
         $this->validator = $validator;
-        $this->params = $params;
-        $this->message = $message;
-        $this->default = $default;
+        $this->params    = $params;
+        $this->message   = $message;
+        $this->default   = $default;
 
         return $this;
     }

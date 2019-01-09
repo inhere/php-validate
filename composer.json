@@ -1,9 +1,14 @@
 {
   "name": "inhere/php-validate",
   "type": "library",
-  "description": "a simple validate, filter library of the php",
-  "keywords": ["library", "validate"],
-  "homepage": "http://github.com/inhere/php-validate",
+  "description": "an simple validate, filter library of the php",
+  "keywords": [
+    "php-library",
+    "library",
+    "validate",
+    "validation"
+  ],
+  "homepage": "https://github.com/inhere/php-validate",
   "license": "MIT",
   "authors": [
     {
@@ -13,14 +18,11 @@
     }
   ],
   "require": {
-    "php": ">=7.0.0"
+    "php": ">7.0.0"
   },
   "autoload": {
     "psr-4": {
-      "Inhere\\Validate\\" : "src/"
+      "Inhere\\Validate\\": "src/"
     }
-  },
-  "suggest": {
-    "inhere/simple-print-tool": "Very lightweight data printing tools"
   }
 }

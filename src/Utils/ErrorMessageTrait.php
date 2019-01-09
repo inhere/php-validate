@@ -20,18 +20,18 @@ trait ErrorMessageTrait
      */
     private static $validatorAliases = [
         // alias => real name.
-        'int' => 'integer',
-        'num' => 'number',
-        'bool' => 'boolean',
-        'in' => 'enum',
-        'range' => 'size',
-        'between' => 'size',
-        'lengthEq' => 'fixedSize',
-        'sizeEq' => 'fixedSize',
+        'int'       => 'integer',
+        'num'       => 'number',
+        'bool'      => 'boolean',
+        'in'        => 'enum',
+        'range'     => 'size',
+        'between'   => 'size',
+        'lengthEq'  => 'fixedSize',
+        'sizeEq'    => 'fixedSize',
         'different' => 'notEqual',
-        'map' => 'isMap',
-        'list' => 'isList',
-        'array' => 'isArray',
+        'map'       => 'isMap',
+        'list'      => 'isList',
+        'array'     => 'isArray',
         // 'ints' => 'intList',
     ];
 
@@ -41,31 +41,31 @@ trait ErrorMessageTrait
      */
     public static $messages = [
         // 'int' 'integer'
-        'integer' => '{attr} must be an integer!',
+        'integer'    => '{attr} must be an integer!',
         // 'num'
-        'number' => [
+        'number'     => [
             '{attr} must be an integer greater than 0!',
             '{attr} must be an integer and minimum value is {min}',
             '{attr} must be an integer and in the range {min} ~ {max}',
         ],
         // 'bool', 'boolean',
-        'boolean' => '{attr} must be is boolean!',
-        'float' => '{attr} must be is float!',
-        'url' => '{attr} is not a url address!',
-        'email' => '{attr} is not a email address!',
-        'date' => '{attr} is not a date format!',
+        'boolean'    => '{attr} must be is boolean!',
+        'float'      => '{attr} must be is float!',
+        'url'        => '{attr} is not a url address!',
+        'email'      => '{attr} is not a email address!',
+        'date'       => '{attr} is not a date format!',
         'dateFormat' => '{attr} is not in a {value0} date format!',
-        'ip' => '{attr} is not IP address!',
-        'ipv4' => '{attr} is not a IPv4 address!',
-        'ipv6' => '{attr} is not a IPv6 address!',
-        'required' => 'parameter {attr} is required!',
-        'length' => [
+        'ip'         => '{attr} is not IP address!',
+        'ipv4'       => '{attr} is not a IPv4 address!',
+        'ipv6'       => '{attr} is not a IPv6 address!',
+        'required'   => 'parameter {attr} is required!',
+        'length'     => [
             '{attr} length validation is not through!',
             '{attr} must be an string/array and minimum length is {min}',
             '{attr} must be an string/array and length range {min} ~ {max}',
         ],
         // 'range', 'between'
-        'size' => [
+        'size'       => [
             '{attr} size validation is not through!',
             '{attr} must be an integer/string/array and minimum value/length is {min}',
             // '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
@@ -73,13 +73,13 @@ trait ErrorMessageTrait
         ],
 
         // 'lengthEq', 'sizeEq'
-        'fixedSize' => '{attr} length must is {value0}',
+        'fixedSize'  => '{attr} length must is {value0}',
 
-        'min' => '{attr} minimum boundary is {value0}',
-        'max' => '{attr} maximum boundary is {value0}',
+        'min'   => '{attr} minimum boundary is {value0}',
+        'max'   => '{attr} maximum boundary is {value0}',
 
         // 'in', 'enum',
-        'enum' => '{attr} must in ({value0})',
+        'enum'  => '{attr} must in ({value0})',
         'notIn' => '{attr} cannot in ({value0})',
 
         'string' => [
@@ -92,34 +92,34 @@ trait ErrorMessageTrait
         'regexp' => '{attr} does not match the {value0} conditions',
 
         'mustBe' => '{attr} must be equals to {value0}',
-        'notBe' => '{attr} can not be equals to {value0}',
+        'notBe'  => '{attr} can not be equals to {value0}',
 
-        'compare' => '{attr} must be equals to {value0}',
-        'same' => '{attr} must be equals to {value0}',
-        'equal' => '{attr} must be equals to {value0}',
+        'compare'  => '{attr} must be equals to {value0}',
+        'same'     => '{attr} must be equals to {value0}',
+        'equal'    => '{attr} must be equals to {value0}',
 
         // 'different'
         'notEqual' => '{attr} can not be equals to {value0}',
 
         'isArray' => '{attr} must be an array',
-        'isMap' => '{attr} must be an array and is key-value format',
-        'isList' => '{attr} must be an array of nature',
+        'isMap'   => '{attr} must be an array and is key-value format',
+        'isList'  => '{attr} must be an array of nature',
         'intList' => '{attr} must be an array and value is all integers',
         'numList' => '{attr} must be an array and value is all numbers',
         'strList' => '{attr} must be an array and value is all strings',
         'arrList' => '{attr} must be an array and value is all arrays',
 
-        'each' => '{attr} must be through the {value0} verify',
-        'hasKey' => '{attr} must be contains the key {value0}',
+        'each'     => '{attr} must be through the {value0} verify',
+        'hasKey'   => '{attr} must be contains the key {value0}',
         'distinct' => 'there should not be duplicate keys in the {attr}',
 
         'json' => '{attr} must be an json string',
 
-        'file' => '{attr} must be an uploaded file',
+        'file'  => '{attr} must be an uploaded file',
         'image' => '{attr} must be an uploaded image file',
 
         'callback' => '{attr} don\'t pass the test and verify!',
-        '_' => '{attr} validation is not through!',
+        '_'        => '{attr} validation is not through!',
     ];
 
     /**
@@ -254,7 +254,7 @@ trait ErrorMessageTrait
     {
         $this->_errors[] = [
             'name' => $field,
-            'msg' => $msg,
+            'msg'  => $msg,
         ];
     }
 
@@ -297,7 +297,7 @@ trait ErrorMessageTrait
      */
     public function firstError($onlyMsg = true)
     {
-        $e = $this->_errors;
+        $e     = $this->_errors;
         $first = \array_shift($e);
 
         return $onlyMsg ? $first['msg'] : $first;
@@ -310,7 +310,7 @@ trait ErrorMessageTrait
      */
     public function lastError($onlyMsg = true)
     {
-        $e = $this->_errors;
+        $e    = $this->_errors;
         $last = \array_pop($e);
 
         return $onlyMsg ? $last['msg'] : $last;
@@ -350,7 +350,7 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @param string $key
+     * @param string       $key
      * @param string|array $msg
      */
     public static function setDefaultMessage(string $key, $msg)
@@ -384,20 +384,20 @@ trait ErrorMessageTrait
     /**
      * 各个验证器的提示消息
      * @param  string|\Closure $validator 验证器
-     * @param  string $field
-     * @param  array $args
-     * @param  string|array $message 自定义提示消息
+     * @param  string          $field
+     * @param  array           $args
+     * @param  string|array    $message 自定义提示消息
      * @return string
      */
     public function getMessage($validator, string $field, array $args = [], $message = null): string
     {
-        $rawName = \is_string($validator) ? $validator : 'callback';
+        $rawName   = \is_string($validator) ? $validator : 'callback';
         $validator = self::getValidatorName($rawName);
 
         // get message from default dict.
         if (!$message) {
             // allow define a message for a validator. eg: 'username.required' => 'some message ...'
-            $fullKey = $field . '.' . $rawName;
+            $fullKey  = $field . '.' . $rawName;
             $messages = $this->getMessages();
 
             if (isset($messages[$fullKey])) {
@@ -422,13 +422,13 @@ trait ErrorMessageTrait
         ];
 
         foreach ($args as $key => $value) {
-            $key = \is_int($key) ? "value{$key}" : $key;
+            $key                      = \is_int($key) ? "value{$key}" : $key;
             $params['{' . $key . '}'] = \is_array($value) ? \implode(',', $value) : $value;
         }
 
         // @see self::$messages['size']
         if (\is_array($message)) {
-            $msgKey = \count($params) - 1;
+            $msgKey  = \count($params) - 1;
             $message = $message[$msgKey] ?? $message[0];
         }
 

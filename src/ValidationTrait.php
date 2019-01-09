@@ -146,7 +146,7 @@ trait ValidationTrait
 
     /**
      * Perform data validation
-     * @param  array $onlyChecked You can set this field that needs verification
+     * @param  array     $onlyChecked You can set this field that needs verification
      * @param  bool|null $stopOnError Stop verification if there is an error
      * @return static
      * @throws \InvalidArgumentException
@@ -175,7 +175,7 @@ trait ValidationTrait
         }
 
         foreach ($this->collectRules() as $fields => $rule) {
-            $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
+            $fields    = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
             $validator = \array_shift($rule);
 
             // How to determine the property is empty(default use the Validators::isEmpty)
@@ -192,9 +192,9 @@ trait ValidationTrait
 
             // Whether to skip when empty(When not required). ref yii2
             $skipOnEmpty = $rule['skipOnEmpty'] ?? $this->_skipOnEmpty;
-            $filters = $rule['filter'] ?? null;  // filter
-            $defMsg = $rule['msg'] ?? null; // Custom error message
-            $defValue = $rule['default'] ?? null;// Allow default
+            $filters     = $rule['filter'] ?? null;  // filter
+            $defMsg      = $rule['msg'] ?? null; // Custom error message
+            $defValue    = $rule['default'] ?? null;// Allow default
 
             // clear all keywords options. 0 is the validator
             unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
@@ -234,7 +234,7 @@ trait ValidationTrait
 
                 // Field value filtering(有通配符`*`的字段, 不应用过滤器)
                 if ($filters && !\strpos($field, '.*')) {
-                    $value = $this->valueFiltering($value, $filters);
+                    $value              = $this->valueFiltering($value, $filters);
                     $this->data[$field] = $value;
                 }
 
@@ -268,10 +268,10 @@ trait ValidationTrait
 
     /**
      * field require/exists validate 字段存在检查
-     * @param string $field Attribute name
-     * @param mixed $value Attribute value
-     * @param string $validator required* Validator name
-     * @param array $args Verify the required parameters
+     * @param string       $field Attribute name
+     * @param mixed        $value Attribute value
+     * @param string       $validator required* Validator name
+     * @param array        $args Verify the required parameters
      * @param string|array $defMsg
      * @return bool|null
      * - TRUE  check successful
@@ -312,11 +312,11 @@ trait ValidationTrait
 
     /**
      * field value validate 字段值验证
-     * @param string $field Field name
-     * @param mixed $value Field value
+     * @param string                $field Field name
+     * @param mixed                 $value Field value
      * @param \Closure|string|mixed $validator Validator
-     * @param array $args Arguments for validate
-     * @param string $defMsg
+     * @param array                 $args Arguments for validate
+     * @param string                $defMsg
      * @return bool
      * @throws \InvalidArgumentException
      */
@@ -329,7 +329,7 @@ trait ValidationTrait
         }
 
         $rawArgs = $args;
-        $args = \array_values($args);
+        $args    = \array_values($args);
 
         // if $validator is a closure OR a object has method '__invoke'
         if (\is_object($validator) && \method_exists($validator, '__invoke')) {
@@ -339,9 +339,9 @@ trait ValidationTrait
             $realName = self::getValidatorName($validator);
             // if $validator is a custom add callback in the property {@see $_validators}.
             if (isset(self::$_validators[$validator])) {
-                $args[] = $this->data;
+                $args[]   = $this->data;
                 $callback = self::$_validators[$validator];
-                $passed = $callback($value, ...$args);
+                $passed   = $callback($value, ...$args);
 
                 // if $validator is a custom method of the subclass.
             } elseif (\method_exists($this, $method = $validator . 'Validator')) {
@@ -373,7 +373,7 @@ trait ValidationTrait
     /**
      * collect Safe Value
      * @param string $field
-     * @param mixed $value
+     * @param mixed  $value
      */
     protected function collectSafeValue(string $field, $value)
     {
@@ -394,7 +394,7 @@ trait ValidationTrait
     protected function resetValidation($clearErrors = false): self
     {
         $this->_validated = false;
-        $this->_safeData = $this->_usedRules = [];
+        $this->_safeData  = $this->_usedRules = [];
 
         if ($clearErrors) {
             $this->clearErrors();
@@ -439,7 +439,7 @@ trait ValidationTrait
             }
 
             $this->_usedRules[] = $rule;
-            $fields = \array_shift($rule);
+            $fields             = \array_shift($rule);
             $this->prepareRule($rule);
 
             yield $fields => $rule;
@@ -500,7 +500,7 @@ trait ValidationTrait
     }
 
     /**
-     * @param string $path 'users.*.id' 'goods.*' 'foo.bar.*.id'
+     * @param string     $path 'users.*.id' 'goods.*' 'foo.bar.*.id'
      * @param null|mixed $default
      * @return mixed
      */
@@ -518,7 +518,7 @@ trait ValidationTrait
             return $default;
         }
 
-        $last = \trim($last, '.');
+        $last   = \trim($last, '.');
         $result = [];
 
         foreach ($recently as $item) {
@@ -650,7 +650,7 @@ trait ValidationTrait
     /**
      * Set data item
      * @param string $key The data key
-     * @param mixed $value The data value
+     * @param mixed  $value The data value
      * @return $this
      */
     public function setValue($key, $value): self
@@ -663,7 +663,7 @@ trait ValidationTrait
     /**
      * Get data item by key
      * @param string $key The data key
-     * @param mixed $default The default value to return if data key does not exist
+     * @param mixed  $default The default value to return if data key does not exist
      * @return mixed The key's value, or the default value
      */
     public function get(string $key, $default = null)
@@ -673,7 +673,7 @@ trait ValidationTrait
 
     /**
      * @param string $key
-     * @param null $default
+     * @param null   $default
      * @return mixed
      */
     public function getRaw(string $key, $default = null)
@@ -685,7 +685,7 @@ trait ValidationTrait
      * Get data item by key
      *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
      * @param string $key The data key
-     * @param mixed $default The default value
+     * @param mixed  $default The default value
      * @return mixed The key's value, or the default value
      */
     public function getByPath(string $key, $default = null)
@@ -700,7 +700,7 @@ trait ValidationTrait
     /**
      * alias of the 'getSafe()'
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      * @return mixed
      */
     public function val(string $key, $default = null)
@@ -711,7 +711,7 @@ trait ValidationTrait
     /**
      * alias of the 'getSafe()'
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      * @return mixed
      */
     public function safe(string $key, $default = null)
@@ -722,7 +722,7 @@ trait ValidationTrait
     /**
      * get safe field value
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      * @return mixed
      */
     public function getSafe(string $key, $default = null)
@@ -732,7 +732,7 @@ trait ValidationTrait
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function setSafe(string $key, $value)
     {
@@ -759,7 +759,7 @@ trait ValidationTrait
 
     /**
      * @param array $safeData
-     * @param bool $clearOld
+     * @param bool  $clearOld
      */
     public function setSafeData(array $safeData, $clearOld = false)
     {

@@ -24,7 +24,7 @@ trait DataFiltersTrait
 
     /**
      * value sanitize 直接对给的值进行过滤
-     * @param  mixed $value
+     * @param  mixed        $value
      * @param  string|array $filters
      * string:
      *  'string|trim|upper'
@@ -49,7 +49,7 @@ trait DataFiltersTrait
         foreach ($filters as $key => $filter) {
             // key is a filter. ['myFilter' => ['arg1', 'arg2']]
             if (\is_string($key)) {
-                $args = (array)$filter;
+                $args  = (array)$filter;
                 $value = $this->callStringCallback($key, $value, ...$args);
 
                 // closure
@@ -79,12 +79,12 @@ trait DataFiltersTrait
         // if $filter is a custom add callback in the property {@see $_filters}.
         if (isset(self::$_filters[$filter])) {
             $callback = self::$_filters[$filter];
-            $value = $callback(...$args);
+            $value    = $callback(...$args);
 
             // if $filter is a custom method of the subclass.
         } elseif (\method_exists($this, $filter . 'Filter')) {
             $filter .= 'Filter';
-            $value = $this->$filter(...$args);
+            $value  = $this->$filter(...$args);
 
             // $filter is a method of the class 'FilterList'
         } elseif (\method_exists(Filters::class, $filter)) {
@@ -105,7 +105,7 @@ trait DataFiltersTrait
      ******************************************************************************/
 
     /**
-     * @param string $name
+     * @param string   $name
      * @param callable $filter
      * @return $this
      */
@@ -117,7 +117,7 @@ trait DataFiltersTrait
     }
 
     /**
-     * @param string $name
+     * @param string   $name
      * @param callable $filter
      */
     public static function setFilter(string $name, callable $filter)

@@ -284,11 +284,13 @@ class ValidatorsTest extends TestCase
         $this->assertFalse(Validators::arrList(['value', 'a' => 'v']));
         $this->assertFalse(Validators::arrList(['abc', 565]));
         $this->assertFalse(Validators::arrList([
-            ['abc'], 'efg'
+            ['abc'],
+            'efg'
         ]));
 
         $this->assertTrue(Validators::arrList([
-            ['abc'], ['efg']
+            ['abc'],
+            ['efg']
         ]));
     }
 
@@ -364,7 +366,7 @@ class ValidatorsTest extends TestCase
     {
         $this->assertFalse(Validators::dateFormat('hello'));
         // $t = strtotime('20170526');
-// var_dump($t, time(), date('ymd', $t));
+        // var_dump($t, time(), date('ymd', $t));
         $this->assertFalse(Validators::dateFormat('170526', 'ymd'));
         $this->assertTrue(Validators::dateFormat('20170526', 'Ymd'));
     }

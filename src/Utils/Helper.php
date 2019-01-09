@@ -14,31 +14,36 @@ namespace Inhere\Validate\Utils;
  */
 class Helper
 {
-    const IS_TRUE = '|yes|on|1|true|';
+    const IS_TRUE  = '|yes|on|1|true|';
     const IS_FALSE = '|no|off|0|false|';
-    const IS_BOOL = '|yes|on|1|true|no|off|0|false|';
+    const IS_BOOL  = '|yes|on|1|true|no|off|0|false|';
 
     /**
      * known image mime types
      * @link https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
      */
     public static $imgMimeTypes = [
-        'bmp' => 'image/bmp',
-        'gif' => 'image/gif',
-        'ief' => 'image/ief',
+        'bmp'  => 'image/bmp',
+        'gif'  => 'image/gif',
+        'ief'  => 'image/ief',
         'jpeg' => 'image/jpeg',
-        'jpg' => 'image/jpeg',
-        'jpe' => 'image/jpeg',
-        'png' => 'image/png',
-        'svg' => 'image/svg+xml',
-        'ico' => 'image/x-icon',
+        'jpg'  => 'image/jpeg',
+        'jpe'  => 'image/jpeg',
+        'png'  => 'image/png',
+        'svg'  => 'image/svg+xml',
+        'ico'  => 'image/x-icon',
     ];
 
     /**
      * @var array
      */
     public static $imgMimeConstants = [
-        IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP, IMAGETYPE_WBMP, IMAGETYPE_ICO
+        IMAGETYPE_GIF,
+        IMAGETYPE_JPEG,
+        IMAGETYPE_PNG,
+        IMAGETYPE_BMP,
+        IMAGETYPE_WBMP,
+        IMAGETYPE_ICO
     ];
 
     /**
@@ -74,7 +79,7 @@ class Helper
     /**
      * @param string $string
      * @param string $delimiter
-     * @param bool $filterEmpty
+     * @param bool   $filterEmpty
      * @return array
      */
     public static function explode(string $string, string $delimiter = ',', $filterEmpty = true): array
@@ -110,12 +115,8 @@ class Helper
      * @param $str
      * @return string
      */
-    public static function strToLower($str): string
+    public static function strToLower(string $str): string
     {
-        if (\is_array($str)) {
-            return '';
-        }
-
         if (\function_exists('mb_strtolower')) {
             return \mb_strtolower($str, 'utf-8');
         }
@@ -137,29 +138,27 @@ class Helper
     }
 
     /**
-     * @param $str
-     * @param $start
-     * @param bool|false $length
+     * @param string $str
+     * @param int    $start
+     * @param int    $length
      * @param string $encoding
      * @return bool|string
      */
-    public static function subStr($str, $start, $length = false, $encoding = 'utf-8')
+    public static function subStr(string $str, int $start, int $length = null, string $encoding = 'utf-8')
     {
-        if (\is_array($str)) {
-            return '';
-        }
+        $length = $length === null ? self::strlen($str) : $length;
 
         if (\function_exists('mb_substr')) {
-            return \mb_substr($str, (int)$start, ($length === false ? self::strlen($str) : (int)$length), $encoding);
+            return \mb_substr($str, $start, $length, $encoding);
         }
 
-        return \substr($str, $start, ($length === false ? self::strlen($str) : (int)$length));
+        return \substr($str, $start, $length);
     }
 
     /**
-     * @param $str
-     * @param $find
-     * @param int $offset
+     * @param        $str
+     * @param        $find
+     * @param int    $offset
      * @param string $encoding
      * @return bool|int
      */
@@ -173,9 +172,9 @@ class Helper
     }
 
     /**
-     * @param $str
-     * @param $find
-     * @param int $offset
+     * @param        $str
+     * @param        $find
+     * @param int    $offset
      * @param string $encoding
      * @return bool|int
      */
@@ -213,7 +212,7 @@ class Helper
     /**
      * Translates a string with underscores into camel case (e.g. first_name -> firstName)
      * @prototype string public static function toCamelCase(string $str[, bool $capitalise_first_char = false])
-     * @param $str
+     * @param      $str
      * @param bool $upperCaseFirstChar
      * @return mixed
      */
@@ -256,9 +255,9 @@ class Helper
 
     /**
      * getValueOfArray 支持以 '.' 分割进行子级值获取 eg: 'goods.apple'
-     * @param  array $array
+     * @param  array        $array
      * @param  array|string $key
-     * @param mixed $default
+     * @param mixed         $default
      * @return mixed
      */
     public static function getValueOfArray(array $array, $key, $default = null)
@@ -288,7 +287,7 @@ class Helper
 
     /**
      * @param callable|mixed $cb
-     * @param array $args
+     * @param array          $args
      * @return mixed
      * @throws \InvalidArgumentException
      */

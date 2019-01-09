@@ -18,11 +18,11 @@ class FiltrationTest extends TestCase
     public function testFiltration()
     {
         $data = [
-            'name' => ' tom ',
-            'status' => ' 23 ',
-            'word' => 'word',
+            'name'    => ' tom ',
+            'status'  => ' 23 ',
+            'word'    => 'word',
             'toLower' => 'WORD',
-            'title' => 'helloWorld',
+            'title'   => 'helloWorld',
         ];
 
         $rules = [
@@ -30,11 +30,14 @@ class FiltrationTest extends TestCase
             ['status', 'trim|int'],
             ['word', 'string|trim|upper'],
             ['toLower', 'lower'],
-            ['title', [
-                'string',
-                'snake' => ['-'],
-                'ucfirst',
-            ]],
+            [
+                'title',
+                [
+                    'string',
+                    'snake' => ['-'],
+                    'ucfirst',
+                ]
+            ],
         ];
 
         $cleaned = Filtration::make($data, $rules)->filtering();

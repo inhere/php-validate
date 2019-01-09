@@ -69,7 +69,7 @@ class FieldValidation extends AbstractValidation
             }
 
             $this->_usedRules[] = $rule;
-            $field = \array_shift($rule);
+            $field              = \array_shift($rule);
 
             // if is a Closure
             if (\is_object($rule[0])) {
@@ -89,7 +89,7 @@ class FieldValidation extends AbstractValidation
 
     /**
      * @param string $rule
-     * @param array $row
+     * @param array  $row
      * @return array
      */
     protected function parseRule(string $rule, array $row): array
@@ -102,7 +102,7 @@ class FieldValidation extends AbstractValidation
         }
 
         list($name, $args) = \explode(':', $rule, 2);
-        $args = \trim($args, ', ');
+        $args   = \trim($args, ', ');
         $row[0] = $name;
 
         switch ($name) {
@@ -124,7 +124,7 @@ class FieldValidation extends AbstractValidation
                 break;
             default:
                 $args = \strpos($args, ',') ? \array_map('trim', \explode(',', $args)) : [$args];
-                $row = \array_merge($row, $args);
+                $row  = \array_merge($row, $args);
                 break;
         }
 

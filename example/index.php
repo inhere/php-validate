@@ -4,18 +4,18 @@ require __DIR__ . '/simple-loader.php';
 
 $data = [
     // 'userId' => 234,
-    'userId' => 'is not an integer',
-    'tagId' => '234535',
+    'userId'      => 'is not an integer',
+    'tagId'       => '234535',
     // 'freeTime' => '1456767657', // filed not exists
-    'note' => '',
-    'name' => 'Ajohn',
+    'note'        => '',
+    'name'        => 'Ajohn',
     'existsField' => 'test',
-    'passwd' => 'password',
-    'repasswd' => 'password',
-    'insertTime' => '1456767657',
-    'goods' => [
+    'passwd'      => 'password',
+    'repasswd'    => 'password',
+    'insertTime'  => '1456767657',
+    'goods'       => [
         'apple' => 34,
-        'pear' => 50,
+        'pear'  => 50,
     ],
 ];
 
@@ -34,24 +34,34 @@ $rules = [
     ['goods', 'isList'], //
 
     ['notExistsField1', 'requiredWithout', 'notExistsField2'], //
-//    ['notExistsField1', 'requiredWithout', 'existsField'], //
+    //    ['notExistsField1', 'requiredWithout', 'existsField'], //
 
-    ['freeTime', 'size', 'min' => 4, 'max' => 567, 'when' => function ($data, $valid) {
-        echo "  use when pre-check\n";
+    [
+        'freeTime',
+        'size',
+        'min'  => 4,
+        'max'  => 567,
+        'when' => function ($data, $valid) {
+            echo "  use when pre-check\n";
 
-        // $valid is current validation instance.
+            // $valid is current validation instance.
 
-        return true;
-    }], // 4<= tagId <=567
+            return true;
+        }
+    ], // 4<= tagId <=567
 
-    ['userId', function ($value, $data) {
-        echo "  use custom validate to check userId \n";
+    [
+        'userId',
+        function ($value, $data) {
+            echo "  use custom validate to check userId \n";
 
-        // var_dump($value, $data);
-        // echo __LINE__ . "\n";
+            // var_dump($value, $data);
+            // echo __LINE__ . "\n";
 
-        return false;
-    }, 'msg' => 'userId check failure by closure!'],
+            return false;
+        },
+        'msg' => 'userId check failure by closure!'
+    ],
 ];
 
 echo "\n----------------------------\n raw data, waiting to validate\n----------------------------\n\n";

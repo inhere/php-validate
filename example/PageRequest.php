@@ -18,11 +18,15 @@ class PageRequest extends \Inhere\Validate\Validation
             ['tagId', 'size', 'min' => 4, 'max' => 567], // 4<= tagId <=567
             ['title', 'min', 'min' => 40],
             ['freeTime', 'number', 'msg' => '{attr} is require number!'],
-            ['test', 'number', 'when' => function ($data) {
-                return isset($data['status']) && $data['status'] > 2;
-            }],
+            [
+                'test',
+                'number',
+                'when' => function ($data) {
+                    return isset($data['status']) && $data['status'] > 2;
+                }
+            ],
             ['userId', 'number', 'on' => 'other'],
-//            ['userId', function($value){ return false;}],
+            //            ['userId', function($value){ return false;}],
         ];
     }
 

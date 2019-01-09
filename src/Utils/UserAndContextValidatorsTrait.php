@@ -46,9 +46,9 @@ trait UserAndContextValidatorsTrait
      *     });
      * $vd->validate();
      * ```
-     * @param string $name
+     * @param string   $name
      * @param callable $callback
-     * @param string $msg
+     * @param string   $msg
      * @return $this
      */
     public function addValidator(string $name, callable $callback, string $msg = ''): self
@@ -60,9 +60,9 @@ trait UserAndContextValidatorsTrait
 
     /**
      * add a custom validator
-     * @param string $name
+     * @param string   $name
      * @param callable $callback
-     * @param string $msg
+     * @param string   $msg
      */
     public static function setValidator(string $name, callable $callback, string $msg = null)
     {
@@ -110,11 +110,10 @@ trait UserAndContextValidatorsTrait
         self::$_validators = [];
     }
 
-
     /**
      * @param array $validators
      */
-    public static function setValidators(array $validators)
+    public static function addValidators(array $validators)
     {
         self::$_validators = \array_merge(self::$_validators, $validators);
     }
@@ -134,7 +133,7 @@ trait UserAndContextValidatorsTrait
     /**
      * 验证字段必须存在，且输入数据不为空。
      * @see Validators::isEmpty() 如何鉴定为空
-     * @param string $field
+     * @param string     $field
      * @param null|mixed $value
      * @return bool
      */
@@ -156,9 +155,9 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 必填 (refer laravel)
-     * @param string $field
-     * @param mixed $fieldVal
-     * @param string $anotherField
+     * @param string       $field
+     * @param mixed        $fieldVal
+     * @param string       $anotherField
      * @param array|string $values
      * @return bool|null
      * - TRUE  check successful
@@ -182,9 +181,9 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填(refer laravel)
-     * @param string $field
-     * @param mixed $fieldVal
-     * @param string $anotherField
+     * @param string       $field
+     * @param mixed        $fieldVal
+     * @param string       $anotherField
      * @param array|string $values
      * @return bool|null @see self::requiredIf()
      */
@@ -203,8 +202,8 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 如果指定的其他字段中的 任意一个 有值且不为空，则此字段为 必填(refer laravel)
-     * @param string $field
-     * @param mixed $fieldVal
+     * @param string       $field
+     * @param mixed        $fieldVal
      * @param array|string $fields
      * @return bool|null @see self::requiredIf()
      */
@@ -221,8 +220,8 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 如果指定的 所有字段 都有值且不为空，则此字段为 必填(refer laravel)
-     * @param string $field
-     * @param mixed $fieldVal
+     * @param string       $field
+     * @param mixed        $fieldVal
      * @param array|string $fields
      * @return bool|null @see self::requiredIf()
      */
@@ -242,8 +241,8 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 如果缺少 任意一个 指定的字段值，则此字段为 必填(refer laravel)
-     * @param string $field
-     * @param mixed $fieldVal
+     * @param string       $field
+     * @param mixed        $fieldVal
      * @param array|string $fields
      * @return bool|null @see self::requiredIf()
      */
@@ -263,8 +262,8 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 如果所有指定的字段 都没有 值，则此字段为 必填(refer laravel)
-     * @param string $field
-     * @param mixed $fieldVal
+     * @param string       $field
+     * @param mixed        $fieldVal
      * @param array|string $fields
      * @return bool|null @see self::requiredIf()
      */
@@ -288,7 +287,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 验证的字段必须是成功上传的文件
-     * @param string $field
+     * @param string       $field
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      * @return bool
      */
@@ -312,7 +311,7 @@ trait UserAndContextValidatorsTrait
             return false;
         }
 
-        $suffix = \strtolower($suffix);
+        $suffix   = \strtolower($suffix);
         $suffixes = \is_string($suffixes) ? Helper::explode($suffixes) : (array)$suffixes;
 
         return \in_array($suffix, $suffixes, true);
@@ -320,7 +319,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 验证的字段必须是成功上传的图片文件
-     * @param string $field
+     * @param string       $field
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      * @return bool
      */
@@ -355,7 +354,7 @@ trait UserAndContextValidatorsTrait
                 return true;
             }
 
-            $suffix = Helper::getImageExtByMime($mime);
+            $suffix   = Helper::getImageExtByMime($mime);
             $suffixes = \is_string($suffixes) ? Helper::explode($suffixes) : (array)$suffixes;
 
             return \in_array($suffix, $suffixes, true);
@@ -367,7 +366,7 @@ trait UserAndContextValidatorsTrait
     /**
      * 验证的文件必须与给定 MIME 类型之一匹配
      * ['video', 'mimeTypes', 'video/avi,video/mpeg,video/quicktime']
-     * @param string $field
+     * @param string       $field
      * @param string|array $types
      * @return bool
      */
@@ -385,7 +384,7 @@ trait UserAndContextValidatorsTrait
             return false;
         }
 
-        $mime = Helper::getMimeType($tmpFile);
+        $mime  = Helper::getMimeType($tmpFile);
         $types = \is_string($types) ? Helper::explode($types) : (array)$types;
 
         return \in_array($mime, $types, true);
@@ -395,7 +394,7 @@ trait UserAndContextValidatorsTrait
      * 验证的文件必须具有与列出的其中一个扩展名相对应的 MIME 类型
      * ['photo', 'mimes', 'jpeg,bmp,png']
      * @todo
-     * @param string $field
+     * @param string       $field
      * @param string|array $types
      * return bool
      */
@@ -409,7 +408,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 字段值比较：当前字段值是否与给定的字段值相同
-     * @param mixed $val
+     * @param mixed  $val
      * @param string $compareField
      * @return bool
      */
@@ -430,7 +429,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 字段值比较：当前字段值是否与给定的字段值不相同
-     * @param mixed $val
+     * @param mixed  $val
      * @param string $compareField
      * @return bool
      */
@@ -441,7 +440,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * alias of the 'notEqualValidator'
-     * @param mixed $val
+     * @param mixed  $val
      * @param string $compareField
      * @return bool
      */
@@ -452,7 +451,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 验证的 字段值 必须存在于另一个字段（anotherField）的值中。
-     * @param mixed $val
+     * @param mixed  $val
      * @param string $anotherField
      * @return bool
      */
@@ -494,7 +493,7 @@ trait UserAndContextValidatorsTrait
 
                 } elseif (isset(self::$_validators[$validator])) {
                     $callback = self::$_validators[$validator];
-                    $passed = $callback($value, ...$args);
+                    $passed   = $callback($value, ...$args);
 
                 } elseif (\method_exists($this, $method = $validator . 'Validator')) {
                     $passed = $this->$method($value, ...$args);
@@ -523,7 +522,7 @@ trait UserAndContextValidatorsTrait
      * @todo
      * @param string $val
      * @param string $compareField
-     * @param int $expected
+     * @param int    $expected
      * @param string $op
      */
     public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>=')

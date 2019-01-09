@@ -89,14 +89,14 @@ class Validators
     }
 
     /**
-     * @param  mixed $val 要验证的变量
+     * @param  mixed              $val 要验证的变量
      * @param  null|integer|float $min 最小值
-     * @param  null|int|float $max 最大值
+     * @param  null|int|float     $max 最大值
      * $options = [
      *      'default' => 'default value',
      *      'decimal' => 2
      *  ]
-     * @param  int $flags FILTER_FLAG_ALLOW_THOUSAND
+     * @param  int                $flags FILTER_FLAG_ALLOW_THOUSAND
      * @return mixed
      */
     public static function float($val, $min = null, $max = null, $flags = 0)
@@ -139,10 +139,10 @@ class Validators
 
     /**
      * int 验证 (所有的最小、最大都是包含边界值的)
-     * @param  mixed $val 要验证的变量
+     * @param  mixed        $val 要验证的变量
      * @param  null|integer $min 最小值
-     * @param  null|int $max 最大值
-     * @param  int $flags 标志
+     * @param  null|int     $max 最大值
+     * @param  int          $flags 标志
      *                    FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
      *                    FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
      * @return bool false
@@ -159,7 +159,7 @@ class Validators
             return false;
         }
 
-        $options = $settings = [];
+        $options  = $settings = [];
         $minIsNum = \is_numeric($min);
         $maxIsNum = \is_numeric($max);
 
@@ -199,10 +199,10 @@ class Validators
 
     /**
      * check var is a integer and greater than 0
-     * @param mixed $val
+     * @param mixed         $val
      * @param  null|integer $min 最小值
-     * @param  null|int $max 最大值
-     * @param int $flags
+     * @param  null|int     $max 最大值
+     * @param int           $flags
      * @return bool
      */
     public static function number($val, $min = null, $max = null, $flags = 0): bool
@@ -229,8 +229,8 @@ class Validators
 
     /**
      * check val is a string
-     * @param mixed $val
-     * @param int $minLen
+     * @param mixed    $val
+     * @param int      $minLen
      * @param null|int $maxLen
      * @return bool
      */
@@ -309,8 +309,8 @@ class Validators
      * 范围检查
      * $min $max 即使传错位置也会自动调整
      * @param  int|string|array $val 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
-     * @param  null|integer $min 最小值
-     * @param  null|int $max 最大值
+     * @param  null|integer     $min 最小值
+     * @param  null|int         $max 最大值
      * @return bool
      */
     public static function size($val, $min = null, $max = null): bool
@@ -349,7 +349,7 @@ class Validators
     /**
      * 最小值检查
      * @param  int|string|array $val
-     * @param  integer $minRange
+     * @param  integer          $minRange
      * @return bool
      */
     public static function min($val, $minRange): bool
@@ -360,7 +360,7 @@ class Validators
     /**
      * 最大值检查
      * @param  int|string|array $val
-     * @param  int $maxRange
+     * @param  int              $maxRange
      * @return bool
      */
     public static function max($val, $maxRange): bool
@@ -371,8 +371,8 @@ class Validators
     /**
      * 字符串/数组长度检查
      * @param  string|array $val 字符串/数组
-     * @param  integer $minLen 最小长度
-     * @param  int $maxLen 最大长度
+     * @param  integer      $minLen 最小长度
+     * @param  int          $maxLen 最大长度
      * @return bool
      */
     public static function length($val, $minLen = 0, $maxLen = null): bool
@@ -387,7 +387,7 @@ class Validators
     /**
      * 固定的长度
      * @param mixed $val
-     * @param int $size
+     * @param int   $size
      * @return bool
      */
     public static function fixedSize($val, $size): bool
@@ -407,7 +407,7 @@ class Validators
 
     /**
      * @param mixed $val
-     * @param int $size
+     * @param int   $size
      * @return bool
      */
     public static function lengthEq($val, $size): bool
@@ -417,7 +417,7 @@ class Validators
 
     /**
      * @param mixed $val
-     * @param int $size
+     * @param int   $size
      * @return bool
      */
     public static function sizeEq($val, $size): bool
@@ -460,7 +460,7 @@ class Validators
      * 用正则验证数据
      * @param  string $val 要验证的数据
      * @param  string $regexp 正则表达式 "/^M(.*)/"
-     * @param null $default
+     * @param null    $default
      * @return bool
      */
     public static function regexp($val, $regexp, $default = null): bool
@@ -480,7 +480,7 @@ class Validators
      * alias of the 'regexp()'
      * @param string $val
      * @param string $regexp
-     * @param null $default
+     * @param null   $default
      * @return bool
      */
     public static function regex($val, $regexp, $default = null): bool
@@ -491,8 +491,8 @@ class Validators
     /**
      * url地址验证
      * @param  string $val 要验证的数据
-     * @param  mixed $default 设置验证失败时返回默认值
-     * @param  int $flags 标志
+     * @param  mixed  $default 设置验证失败时返回默认值
+     * @param  int    $flags 标志
      *                    FILTER_FLAG_SCHEME_REQUIRED - 要求 URL 是 RFC 兼容 URL（比如 http://example）
      *                    FILTER_FLAG_HOST_REQUIRED - 要求 URL 包含主机名（比如 http://www.example.com）
      *                    FILTER_FLAG_PATH_REQUIRED - 要求 URL 在域名后存在路径（比如 www.example.com/example1/test2/）
@@ -517,7 +517,7 @@ class Validators
     /**
      * email 地址验证
      * @param  string $val 要验证的数据
-     * @param  mixed $default 设置验证失败时返回默认值
+     * @param  mixed  $default 设置验证失败时返回默认值
      * @return bool
      */
     public static function email($val, $default = null): bool
@@ -534,8 +534,8 @@ class Validators
     /**
      * IP 地址验证
      * @param  string $val 要验证的数据
-     * @param  mixed $default 设置验证失败时返回默认值
-     * @param  int $flags 标志
+     * @param  mixed  $default 设置验证失败时返回默认值
+     * @param  int    $flags 标志
      *                    FILTER_FLAG_IPV4 - 要求值是合法的 IPv4 IP（比如 255.255.255.255）
      *                    FILTER_FLAG_IPV6 - 要求值是合法的 IPv6 IP（比如 2001:0db8:85a3:08d3:1319:8a2e:0370:7334）
      *                    FILTER_FLAG_NO_PRIV_RANGE - 要求值不在 RFC 指定的私有范围 IP 内（比如 192.168.0.1）
@@ -604,7 +604,7 @@ class Validators
     /**
      * 验证字段值是否是一个有效的 JSON 字符串。
      * @param mixed $val
-     * @param bool $strict
+     * @param bool  $strict
      * @return bool
      */
     public static function json($val, $strict = true): bool
@@ -782,7 +782,7 @@ class Validators
     }
 
     /**
-     * @param array|mixed $val
+     * @param array|mixed      $val
      * @param string|int|array $key
      * @return bool
      */
@@ -821,9 +821,9 @@ class Validators
     }
 
     /**
-     * @param mixed $val
+     * @param mixed        $val
      * @param array|string $dict
-     * @param bool $strict Use strict check, will check data type.
+     * @param bool         $strict Use strict check, will check data type.
      * @return bool
      */
     public static function in($val, $dict, $strict = false): bool
@@ -838,9 +838,9 @@ class Validators
 
     /**
      * alias of 'in()'
-     * @param  mixed $val
+     * @param  mixed       $val
      * @param array|string $dict
-     * @param bool $strict
+     * @param bool         $strict
      * @return bool
      */
     public static function enum($val, $dict, $strict = false): bool
@@ -849,9 +849,9 @@ class Validators
     }
 
     /**
-     * @param  mixed $val
+     * @param  mixed       $val
      * @param array|string $dict
-     * @param bool $strict
+     * @param bool         $strict
      * @return bool
      */
     public static function notIn($val, $dict, $strict = false): bool
@@ -868,9 +868,9 @@ class Validators
      ******************************************************************************/
 
     /**
-     * @param mixed $val
+     * @param mixed  $val
      * @param string $start
-     * @param bool $strict
+     * @param bool   $strict
      * @return bool
      */
     public static function startWith($val, $start, $strict = true): bool
@@ -891,15 +891,15 @@ class Validators
     }
 
     /**
-     * @param mixed $val
+     * @param mixed  $val
      * @param string $end
-     * @param bool $strict
+     * @param bool   $strict
      * @return bool
      */
     public static function endWith($val, $end, $strict = true): bool
     {
         $last = null;
-        $end = (string)$end;
+        $end  = (string)$end;
 
         if (\is_string($val)) {
             $last = \substr($val, -Helper::strlen($end));
@@ -916,7 +916,7 @@ class Validators
      * Must be equal to the given value
      * @param  mixed $val
      * @param  mixed $excepted
-     * @param bool $strict
+     * @param bool   $strict
      * @return bool
      */
     public static function mustBe($val, $excepted, $strict = true): bool
@@ -928,7 +928,7 @@ class Validators
      * Cannot be equal to a given value
      * @param  mixed $val
      * @param  mixed $excepted
-     * @param bool $strict
+     * @param bool   $strict
      * @return bool
      */
     public static function notBe($val, $excepted, $strict = true): bool
@@ -1064,7 +1064,7 @@ class Validators
      * @todo
      * @param string $val
      * @param string $compareDate
-     * @param int $expected
+     * @param int    $expected
      * @param string $op
      */
     public static function diffDate($val, $compareDate, $expected, $op = '>=')

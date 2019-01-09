@@ -13,10 +13,10 @@ class RuleValidationTest extends TestCase
     {
         $data = [
             'userId' => 0,
-            'tagId' => 10,
-            'goods' => [
+            'tagId'  => 10,
+            'goods'  => [
                 'apple' => 34,
-                'pear' => 50,
+                'pear'  => 50,
             ],
         ];
 
@@ -33,9 +33,9 @@ class RuleValidationTest extends TestCase
     public function testRequiredIf()
     {
         $data = [
-            'userId' => 0,
+            'userId'   => 0,
             'targetId' => null,
-            'status' => 10,
+            'status'   => 10,
         ];
 
         $v = RuleValidation::makeAndValidate($data, [
@@ -60,9 +60,9 @@ class RuleValidationTest extends TestCase
     public function testRequiredUnless()
     {
         $data = [
-            'userId' => null,
+            'userId'   => null,
             'targetId' => null,
-            'status' => 10,
+            'status'   => 10,
         ];
 
         $v = RuleValidation::check($data, [
@@ -82,9 +82,9 @@ class RuleValidationTest extends TestCase
     public function testRequiredWith()
     {
         $data = [
-            'userId' => null,
+            'userId'   => null,
             'targetId' => 2,
-            'status' => 10,
+            'status'   => 10,
         ];
 
         $v = RuleValidation::makeAndValidate($data, [
@@ -105,9 +105,9 @@ class RuleValidationTest extends TestCase
     public function testRequiredWithAll()
     {
         $data = [
-            'userId' => null,
+            'userId'   => null,
             'targetId' => null,
-            'status' => 10,
+            'status'   => 10,
         ];
 
         $v = RuleValidation::makeAndValidate($data, [
@@ -128,9 +128,9 @@ class RuleValidationTest extends TestCase
     public function testRequiredWithout()
     {
         $data = [
-            'userId' => null,
+            'userId'   => null,
             'targetId' => null,
-            'status' => 10,
+            'status'   => 10,
         ];
 
         $v = RuleValidation::makeAndValidate($data, [
@@ -151,9 +151,9 @@ class RuleValidationTest extends TestCase
     public function testRequiredWithoutAll()
     {
         $data = [
-            'userId' => null,
+            'userId'   => null,
             'targetId' => null,
-            'status' => 10,
+            'status'   => 10,
         ];
 
         $v = RuleValidation::makeAndValidate($data, [
@@ -171,14 +171,14 @@ class RuleValidationTest extends TestCase
     public function testCollectRules()
     {
         $data = [
-            'userId' => 234,
-            'tagId' => 35,
+            'userId'   => 234,
+            'tagId'    => 35,
             'freeTime' => '1456767657',
-            'status' => 2,
-            'name' => '1234a2',
-            'goods' => [
+            'status'   => 2,
+            'name'     => '1234a2',
+            'goods'    => [
                 'apple' => 34,
-                'pear' => 50,
+                'pear'  => 50,
             ],
 
         ];
@@ -209,34 +209,34 @@ class RuleValidationTest extends TestCase
 
     public $data = [
         // 'userId' => 234,
-        'userId' => 'is not an integer',
-        'tagId' => '35',
+        'userId'      => 'is not an integer',
+        'tagId'       => '35',
         // 'freeTime' => '1456767657', // filed not exists
-        'note' => '',
-        'status' => 2,
-        'name' => '1234a2',
+        'note'        => '',
+        'status'      => 2,
+        'name'        => '1234a2',
         'existsField' => 'test',
-        'passwd' => 'password',
-        'repasswd' => 'repassword',
-        'insertTime' => '1456767657',
-        'goods' => [
+        'passwd'      => 'password',
+        'repasswd'    => 'repassword',
+        'insertTime'  => '1456767657',
+        'goods'       => [
             'apple' => 34,
-            'pear' => 50,
+            'pear'  => 50,
         ],
     ];
 
     public function testValidatePassed()
     {
-        $data = $this->data;
+        $data           = $this->data;
         $data['userId'] = '456';
-        $rules = [
+        $rules          = [
             // ['tagId,userId,freeTime', 'required'],// set message
             ['tagId,userId,freeTime', 'number', 'filter' => 'int'],
             ['tagId', 'size', 'max' => 567, 'min' => 4, 'filter' => 'int'], // 4<= tagId <=567
             // ['goods', 'isList'],
             ['goods.pear', 'max', 60],
         ];
-        $v = RuleValidation::make($data, $rules)
+        $v              = RuleValidation::make($data, $rules)
             ->setTranslates([
                 'goods.pear' => '梨子'
             ])
@@ -257,7 +257,7 @@ class RuleValidationTest extends TestCase
     {
         $rules = $this->someRules();
         ob_start();
-        $v = RuleValidation::make($this->data, $rules)
+        $v   = RuleValidation::make($this->data, $rules)
             ->setTranslates([
                 'goods.pear' => '梨子'
             ])
@@ -303,7 +303,7 @@ class RuleValidationTest extends TestCase
     public function testValidateString()
     {
         $val = '123482';
-        $v = RuleValidation::make([
+        $v   = RuleValidation::make([
             'user_name' => $val
         ], [
             ['user_name', 'string', 'min' => 6],
@@ -323,7 +323,7 @@ class RuleValidationTest extends TestCase
     {
         $v = RuleValidation::make([
             'log_level' => 'debug',
-            'log_data' => '[23]',
+            'log_data'  => '[23]',
             'log_data1' => '234',
         ], [
             ['log_level, log_data', 'required'],
@@ -362,8 +362,8 @@ class RuleValidationTest extends TestCase
             [
                 'freeTime',
                 'size',
-                'min' => 4,
-                'max' => 567,
+                'min'  => 4,
+                'max'  => 567,
                 'when' => function () {
                     echo "  use when pre-check\n";
 
@@ -397,9 +397,9 @@ class RuleValidationTest extends TestCase
                 'opt3' => 'string',
                 'opt4' => '0',
             ],
-            'key1' => [23, '56'],
-            'key2' => [23, 56],
-            'key3' => ['23', 'str'],
+            'key1'    => [23, '56'],
+            'key2'    => [23, 56],
+            'key3'    => ['23', 'str'],
         ];
 
         $v = RuleValidation::makeAndValidate($data, [
@@ -425,8 +425,8 @@ class RuleValidationTest extends TestCase
     public function testInField()
     {
         $v = RuleValidation::makeAndValidate([
-            'status' => 3,
-            'some' => 30,
+            'status'  => 3,
+            'some'    => 30,
             'allowed' => [3, 4, 5],
         ], [
             ['status', 'inField', 'allowed'],
@@ -445,7 +445,7 @@ class RuleValidationTest extends TestCase
     {
         $v = RuleValidation::make([
             'num' => 3,
-            'id' => 300,
+            'id'  => 300,
         ], [
             ['num', 'range', 'min' => 1, 'max' => 100],
             ['id', 'range', 'min' => 1, 'max' => 100],
@@ -464,7 +464,7 @@ class RuleValidationTest extends TestCase
     public function testDistinct()
     {
         $v = RuleValidation::makeAndValidate([
-            'tags' => [3, 4, 4],
+            'tags'  => [3, 4, 4],
             'goods' => ['apple', 'pear'],
             'users' => [
                 ['id' => 34, 'name' => 'tom'],
@@ -485,7 +485,7 @@ class RuleValidationTest extends TestCase
     public function testEach()
     {
         $v = RuleValidation::makeAndValidate([
-            'tags' => [3, 4, 5],
+            'tags'  => [3, 4, 5],
             'goods' => ['apple', 'pear'],
             'users' => [
                 ['id' => 34, 'name' => 'tom'],
@@ -535,7 +535,7 @@ class RuleValidationTest extends TestCase
         $this->assertTrue($v->ok());
 
         $v = Validation::make([
-            'arrVal' => 'string',
+            'arrVal'  => 'string',
             'listVal' => 'string',
         ], [
             ['arrVal', 'list'],

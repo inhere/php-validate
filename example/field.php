@@ -4,18 +4,18 @@ require __DIR__ . '/simple-loader.php';
 
 $data = [
     // 'userId' => 234,
-    'userId' => 'is not an integer',
-    'tagId' => '234535',
+    'userId'      => 'is not an integer',
+    'tagId'       => '234535',
     // 'freeTime' => '1456767657', // filed not exists
-    'note' => '',
-    'name' => 'Ajohn',
+    'note'        => '',
+    'name'        => 'Ajohn',
     'existsField' => 'test',
-    'passwd' => 'password',
-    'repasswd' => 'repassword',
-    'insertTime' => '1456767657',
-    'goods' => [
+    'passwd'      => 'password',
+    'repasswd'    => 'repassword',
+    'insertTime'  => '1456767657',
+    'goods'       => [
         'apple' => 34,
-        'pear' => 50,
+        'pear'  => 50,
     ],
 ];
 

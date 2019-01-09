@@ -32,11 +32,11 @@ abstract class AbstractValidation implements ValidationInterface
     protected $data = [];
 
     /**
-     * @param array $data
-     * @param array $rules
-     * @param array $translates
+     * @param array  $data
+     * @param array  $rules
+     * @param array  $translates
      * @param string $scene
-     * @param bool $startValidate 立即开始验证
+     * @param bool   $startValidate 立即开始验证
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
@@ -46,8 +46,7 @@ abstract class AbstractValidation implements ValidationInterface
         array $translates = [],
         string $scene = '',
         $startValidate = false
-    )
-    {
+    ) {
         $this->data = $data;
         $this
             ->atScene($scene)
@@ -60,9 +59,9 @@ abstract class AbstractValidation implements ValidationInterface
     }
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $scene
-     * @param bool $startValidate
+     * @param bool   $startValidate
      * @return AbstractValidation
      */
     public static function quick(array $data, string $scene = '', $startValidate = false)
@@ -71,11 +70,11 @@ abstract class AbstractValidation implements ValidationInterface
     }
 
     /**
-     * @param array $data
-     * @param array $rules
-     * @param array $translates
+     * @param array  $data
+     * @param array  $rules
+     * @param array  $translates
      * @param string $scene
-     * @param bool $startValidate 立即开始验证
+     * @param bool   $startValidate 立即开始验证
      * @return static
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -86,16 +85,15 @@ abstract class AbstractValidation implements ValidationInterface
         array $translates = [],
         string $scene = '',
         $startValidate = false
-    )
-    {
+    ) {
         return new static($data, $rules, $translates, $scene, $startValidate);
     }
 
     /**
      * Create and start verification immediately
-     * @param array $data
-     * @param array $rules
-     * @param array $translates
+     * @param array  $data
+     * @param array  $rules
+     * @param array  $translates
      * @param string $scene
      * @return static
      * @throws \InvalidArgumentException
@@ -108,9 +106,9 @@ abstract class AbstractValidation implements ValidationInterface
 
     /**
      * Create and start verification immediately
-     * @param array $data
-     * @param array $rules
-     * @param array $translates
+     * @param array  $data
+     * @param array  $rules
+     * @param array  $translates
      * @param string $scene
      * @return static
      * @throws \InvalidArgumentException

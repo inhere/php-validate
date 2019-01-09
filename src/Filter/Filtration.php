@@ -54,7 +54,7 @@ class Filtration
      */
     public function __construct(array $data = [], array $rules = [])
     {
-        $this->_data = $data;
+        $this->_data  = $data;
         $this->_rules = $rules;
     }
 
@@ -88,8 +88,8 @@ class Filtration
      */
     public function applyRules(array $rules = [], array $data = []): array
     {
-        $data = $data ?: $this->_data;
-        $rules = $rules ?: $this->_rules;
+        $data     = $data ?: $this->_data;
+        $rules    = $rules ?: $this->_rules;
         $filtered = [];
 
         foreach ($rules as $rule) {
@@ -117,7 +117,7 @@ class Filtration
 
     /**
      * value sanitize 直接对给的值进行过滤
-     * @param  mixed $value
+     * @param  mixed        $value
      * @param  string|array $filters
      * @return mixed
      * @throws \InvalidArgumentException
@@ -129,9 +129,9 @@ class Filtration
 
     /**
      * get a field value from {@see $data}
-     * @param string|int $field
+     * @param string|int   $field
      * @param string|array $filters
-     * @param mixed $default
+     * @param mixed        $default
      * @return mixed
      * @throws \InvalidArgumentException
      */

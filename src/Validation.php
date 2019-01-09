@@ -40,7 +40,7 @@ class Validation extends AbstractValidation
 
     /**
      * @param string $key
-     * @param null $value
+     * @param null   $value
      * @return mixed
      */
     public function get(string $key, $value = null)
