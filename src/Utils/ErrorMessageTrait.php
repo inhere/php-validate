@@ -10,6 +10,7 @@ namespace Inhere\Validate\Utils;
 
 /**
  * trait ErrorMessageTrait
+ * @author inhere
  * @package Inhere\Validate\Utils
  */
 trait ErrorMessageTrait
@@ -304,7 +305,6 @@ trait ErrorMessageTrait
 
     /**
      * 得到最后一个错误信息
-     * @author inhere
      * @param bool $onlyMsg
      * @return array|string
      */
@@ -383,8 +383,6 @@ trait ErrorMessageTrait
 
     /**
      * 各个验证器的提示消息
-     * @author inhere
-     * @date   2015-09-27
      * @param  string|\Closure $validator 验证器
      * @param  string $field
      * @param  array $args
