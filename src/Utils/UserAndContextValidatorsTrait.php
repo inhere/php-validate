@@ -263,7 +263,6 @@ trait UserAndContextValidatorsTrait
 
     /**
      * 如果所有指定的字段 都没有 值，则此字段为 必填(refer laravel)
-     * @from laravel
      * @param string $field
      * @param mixed $fieldVal
      * @param array|string $fields
