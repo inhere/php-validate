@@ -26,8 +26,11 @@ trait ErrorMessageTrait
         'in'        => 'enum',
         'range'     => 'size',
         'between'   => 'size',
+        'len'       => 'length',
+        'lenEq'     => 'fixedSize',
         'lengthEq'  => 'fixedSize',
         'sizeEq'    => 'fixedSize',
+        'diff'      => 'notEqual',
         'different' => 'notEqual',
         'map'       => 'isMap',
         'list'      => 'isList',
@@ -129,7 +132,7 @@ trait ErrorMessageTrait
     private $_translates = [];
 
     /**
-     * 保存所有的验证错误信息
+     * Save all validation error messages
      * @var array[]
      * [
      *     ['name' => 'field', 'msg' => 'error Message1' ],
@@ -266,7 +269,6 @@ trait ErrorMessageTrait
     {
         if ($field) {
             $errors = [];
-
             foreach ($this->_errors as $item) {
                 if ($field === $item['name']) {
                     $errors[] = $item['msg'];
@@ -285,7 +287,6 @@ trait ErrorMessageTrait
     public function clearErrors(): self
     {
         $this->_errors = [];
-
         return $this;
     }
 
@@ -297,8 +298,8 @@ trait ErrorMessageTrait
      */
     public function firstError($onlyMsg = true)
     {
-        $e     = $this->_errors;
-        $first = \array_shift($e);
+        $errors = $this->_errors;
+        $first  = \array_shift($errors);
 
         return $onlyMsg ? $first['msg'] : $first;
     }

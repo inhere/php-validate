@@ -79,10 +79,10 @@ class Helper
     /**
      * @param string $string
      * @param string $delimiter
-     * @param bool   $filterEmpty
+     * @param int    $limit
      * @return array
      */
-    public static function explode(string $string, string $delimiter = ',', $filterEmpty = true): array
+    public static function explode(string $string, string $delimiter = ',', int $limit = 0): array
     {
         $string = \trim($string, $delimiter);
 
@@ -90,9 +90,13 @@ class Helper
             return [$string];
         }
 
-        $list = \array_map('trim', \explode($delimiter, $string));
+        if ($limit < 1) {
+            $list = \explode($delimiter, $string);
+        } else {
+            $list = \explode($delimiter, $string, $limit);
+        }
 
-        return $filterEmpty ? \array_filter($list) : $list;
+        return \array_filter(\array_map('trim', $list), 'strlen');
     }
 
     /**

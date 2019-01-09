@@ -10,20 +10,14 @@ namespace Inhere\Validate;
 
 /**
  * Class AbstractValidation
- * - one field to many rules. like Laravel framework
- * ```php
- * [
- *  ['field1', 'rule1, rule2, ...', ...],
- *  ['field2', 'rule1, rule3, ...', ...],
- * ]
- * ```
  * @package Inhere\Validate
  */
 abstract class AbstractValidation implements ValidationInterface
 {
     use ValidationTrait {
         //set as traitSet;
-        get as traitGet;// Methods to define an alias, can be used in the current class.
+        // Methods to define an alias, can be used in the current class.
+        get as traitGet;
     }
 
     /**
@@ -64,7 +58,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @param bool   $startValidate
      * @return AbstractValidation
      */
-    public static function quick(array $data, string $scene = '', $startValidate = false)
+    public static function quick(array $data, string $scene = '', bool $startValidate = false)
     {
         return new static($data, [], [], $scene, $startValidate);
     }

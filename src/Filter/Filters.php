@@ -59,7 +59,7 @@ final class Filters
     public static function integer($val)
     {
         if (\is_array($val)) {
-            return array_map(self::class . '::integer', $val);
+            return \array_map(self::class . '::integer', $val);
         }
 
         return (int)filter_var($val, FILTER_SANITIZE_NUMBER_INT);
@@ -102,8 +102,8 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        $ret = filter_var($val, FILTER_SANITIZE_NUMBER_FLOAT, $settings);
-        $new = strpos($ret, '.') ? (float)$ret : $ret;
+        $ret = \filter_var($val, \FILTER_SANITIZE_NUMBER_FLOAT, $settings);
+        $new = \strpos($ret, '.') ? (float)$ret : $ret;
 
         if (\is_int($decimal)) {
             return round($new, $decimal);
@@ -136,7 +136,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return (string)\filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+        return (string)\filter_var($val, \FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -175,9 +175,9 @@ final class Filters
      * @param string $val
      * @return mixed
      */
-    public static function clearSpace($val)
+    public static function clearSpace($val): string
     {
-        return str_replace(' ', '', \trim($val));
+        return \str_replace(' ', '', \trim((string)$val));
     }
 
     /**
@@ -185,9 +185,9 @@ final class Filters
      * @param string $val
      * @return mixed
      */
-    public static function clearNewline($val)
+    public static function clearNewline($val): string
     {
-        return str_replace(["\r\n", "\r", "\n"], '', \trim($val));
+        return \str_replace(["\r\n", "\r", "\n"], '', \trim((string)$val));
     }
 
     /**
@@ -314,6 +314,25 @@ final class Filters
         return (int)strtotime($val);
     }
 
+    public static function explode(string $string, string $delimiter = ',', int $limit = 0): array
+    {
+        $string = \trim($string, "$delimiter ");
+        if ($string === '') {
+            return [];
+        }
+
+        $values  = [];
+        $rawList = $limit < 1 ? \explode($delimiter, $string) : \explode($delimiter, $string, $limit);
+
+        foreach ($rawList as $val) {
+            if (($val = \trim($val)) !== '') {
+                $values[] = $val;
+            }
+        }
+
+        return $values;
+    }
+
     /**
      * @param string $str
      * @param string $sep
@@ -325,20 +344,26 @@ final class Filters
     }
 
     /**
-     * var_dump(str2array('34,56,678, 678, 89, '));
-     * @param string $str
-     * @param string $sep
+     * @param string $string
+     * @param string $delimiter
+     * @param int    $limit
      * @return array
      */
-    public static function str2array($str, $sep = ','): array
+    public static function str2array(string $string, string $delimiter = ',', int $limit = 0): array
     {
-        $str = trim($str, "$sep ");
+        $string = \trim($string, "$delimiter ");
 
-        if (!$str) {
-            return [];
+        if (!\strpos($string, $delimiter)) {
+            return [$string];
         }
 
-        return (array)\preg_split("/\s*$sep\s*/", $str, -1, PREG_SPLIT_NO_EMPTY);
+        if ($limit < 1) {
+            $list = \explode($delimiter, $string);
+        } else {
+            $list = \explode($delimiter, $string, $limit);
+        }
+
+        return \array_values(\array_filter(\array_map('trim', $list), 'strlen'));
     }
 
     /**
@@ -384,7 +409,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return (string)\filter_var($val, FILTER_SANITIZE_ENCODED, $settings);
+        return (string)\filter_var($val, \FILTER_SANITIZE_ENCODED, $settings);
     }
 
     /**
@@ -394,7 +419,7 @@ final class Filters
      */
     public static function quotes($val): string
     {
-        return (string)\filter_var($val, FILTER_SANITIZE_MAGIC_QUOTES);
+        return (string)\filter_var($val, \FILTER_SANITIZE_MAGIC_QUOTES);
     }
 
     /**
@@ -414,7 +439,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return (string)\filter_var($val, FILTER_SANITIZE_SPECIAL_CHARS, $settings);
+        return (string)\filter_var($val, \FILTER_SANITIZE_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -441,7 +466,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return (string)\filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+        return (string)\filter_var($val, \FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -480,7 +505,7 @@ final class Filters
      */
     public static function url($val): string
     {
-        return (string)\filter_var($val, FILTER_SANITIZE_URL);
+        return (string)\filter_var($val, \FILTER_SANITIZE_URL);
     }
 
     /**
@@ -490,7 +515,7 @@ final class Filters
      */
     public static function email($val): string
     {
-        return (string)\filter_var($val, FILTER_SANITIZE_EMAIL);
+        return (string)\filter_var($val, \FILTER_SANITIZE_EMAIL);
     }
 
     /**
@@ -514,7 +539,7 @@ final class Filters
             $settings['flags'] = (int)$flags;
         }
 
-        return filter_var($string, FILTER_UNSAFE_RAW, $settings);
+        return \filter_var($string, \FILTER_UNSAFE_RAW, $settings);
     }
 
     /**
@@ -525,7 +550,7 @@ final class Filters
      */
     public static function callback($val, $callback)
     {
-        return \filter_var($val, FILTER_CALLBACK, ['options' => $callback]);
+        return \filter_var($val, \FILTER_CALLBACK, ['options' => $callback]);
     }
 
     /**

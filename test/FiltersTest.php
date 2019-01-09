@@ -51,9 +51,15 @@ class FiltersTest extends TestCase
 
     public function testStr2list()
     {
+        $this->assertSame(Filters::str2array('0,23'), ['0', '23']);
+        $this->assertSame(Filters::explode('0,23'), ['0', '23']);
         $this->assertSame(Filters::str2array('a,b,c,'), ['a', 'b', 'c']);
+        $this->assertSame(Filters::explode('a,b,c,'), ['a', 'b', 'c']);
         $this->assertSame(Filters::str2array('a, b ,c,'), ['a', 'b', 'c']);
+        $this->assertSame(Filters::explode('a, b ,c,'), ['a', 'b', 'c']);
         $this->assertSame(Filters::str2array(' a, b , c'), ['a', 'b', 'c']);
+        $this->assertSame(Filters::explode(' a, b , c'), ['a', 'b', 'c']);
         $this->assertSame(Filters::str2array(' a,, b ,, c'), ['a', 'b', 'c']);
+        $this->assertSame(Filters::explode(' a,, b ,, c'), ['a', 'b', 'c']);
     }
 }

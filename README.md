@@ -1,10 +1,10 @@
-# php validate
+# PHP validate
 
 [![License](https://img.shields.io/packagist/l/inhere/php-validate.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/php-validate)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/php-validate.svg)](https://packagist.org/packages/inhere/php-validate)
-[![git branch](https://img.shields.io/badge/branch-master-yellow.svg)](https://github.com/inhere/php-validate)
 [![Build Status](https://travis-ci.org/inhere/php-validate.svg?branch=master)](https://travis-ci.org/inhere/php-validate)
+[![Coverage Status](https://coveralls.io/repos/github/inhere/php-validate/badge.svg?branch=master)](https://coveralls.io/github/inhere/php-validate?branch=master)
 
 一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无其它依赖。
 
@@ -841,14 +841,6 @@ MIT
 
 ## 我的其他项目
 
-### `inhere/console` [github](https://github.com/inhere/php-console) [git@osc](https://git.oschina.net/inhere/php-console)
+- [inhere/console](https://github.com/inhere/php-validate) 轻量且功能丰富的命令行应用, 控制台交互，工具库
+- [inhere/sroute](https://github.com/inhere/php-srouter) 轻量且快速的HTTP请求路由库
 
-轻量且功能丰富的命令行应用，工具库, 控制台交互.
-
-### `inhere/sroute` [github](https://github.com/inhere/php-srouter)  [git@osc](https://git.oschina.net/inhere/php-srouter)
- 
-轻量且快速的路由库
-
-### `inhere/http` [github](https://github.com/inhere/php-http) [git@osc](https://git.oschina.net/inhere/php-http)
-
-http message 工具库(PSR 7 实现)

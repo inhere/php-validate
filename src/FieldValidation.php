@@ -8,7 +8,7 @@
 
 namespace Inhere\Validate;
 
-use Inhere\Validate\Utils\Helper;
+use Inhere\Validate\Filter\Filters;
 
 /**
  * Class FieldValidation
@@ -59,7 +59,7 @@ class FieldValidation extends AbstractValidation
                     continue;
                 }
 
-                $sceneList = \is_string($rule['on']) ? Helper::explode($rule['on']) : (array)$rule['on'];
+                $sceneList = \is_string($rule['on']) ? Filters::explode($rule['on']) : (array)$rule['on'];
 
                 if (!\in_array($scene, $sceneList, true)) {
                     continue;
@@ -69,7 +69,8 @@ class FieldValidation extends AbstractValidation
             }
 
             $this->_usedRules[] = $rule;
-            $field              = \array_shift($rule);
+            // field
+            $field = \array_shift($rule);
 
             // if is a Closure
             if (\is_object($rule[0])) {
@@ -80,7 +81,6 @@ class FieldValidation extends AbstractValidation
 
                 foreach ($rules as $aRule) {
                     $rule = $this->parseRule($aRule, $rule);
-
                     yield $field => $rule;
                 }
             }
@@ -101,7 +101,7 @@ class FieldValidation extends AbstractValidation
             return $row;
         }
 
-        list($name, $args) = \explode(':', $rule, 2);
+        list($name, $args) = Filters::explode($rule, ':', 2);
         $args   = \trim($args, ', ');
         $row[0] = $name;
 
@@ -109,7 +109,7 @@ class FieldValidation extends AbstractValidation
             case 'in':
             case 'enum':
             case 'ontIn':
-                $row[] = \array_map('trim', \explode(',', $args));
+                $row[] = Filters::explode($args);
                 break;
 
             case 'size':
@@ -117,14 +117,13 @@ class FieldValidation extends AbstractValidation
             case 'string':
             case 'between':
                 if (\strpos($args, ',')) {
-                    list($row['min'], $row['max']) = \array_map('trim', \explode(',', $args, 2));
+                    list($row['min'], $row['max']) = Filters::explode($args, ',', 2);
                 } else {
                     $row['min'] = $args;
                 }
                 break;
             default:
-                $args = \strpos($args, ',') ? \array_map('trim', \explode(',', $args)) : [$args];
-                $row  = \array_merge($row, $args);
+                $row  = \array_merge($row, Filters::explode($args));
                 break;
         }
 
