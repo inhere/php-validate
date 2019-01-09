@@ -16,6 +16,7 @@ before_script:
 
 script:
     - phpunit --coverage-clover clover.xml
+    - ls -al ./
 
 after_success:
     - vendor/bin/php-coveralls --coverage_clover=clover.xml --json_path=coveralls-upload.json -v
