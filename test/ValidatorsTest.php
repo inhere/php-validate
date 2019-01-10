@@ -1,11 +1,9 @@
 <?php
+namespace Inhere\ValidateTest;
 
 use Inhere\Validate\Validators;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Inhere\Validate\Validators
- */
 class ValidatorsTest extends TestCase
 {
     public function testIsEmpty()

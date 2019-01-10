@@ -1,11 +1,11 @@
 <?php
 
+namespace Inhere\ValidateTest;
+
 use Inhere\Validate\FieldValidation;
+use Inhere\ValidateTest\Sample\FieldSample;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Inhere\Validate\FieldValidation
- */
 class FieldValidationTest extends TestCase
 {
     public $data = [

@@ -1,9 +1,9 @@
 <?php
 
+namespace Inhere\ValidateTest\Sample;
+
 /**
- * Class DataModel
- *
- * custom extend the trait 'ValidationTrait' like the class 'Validation'
+ * Class DataModel - custom extend the trait 'ValidationTrait' like the class 'Validation'
  */
 class DataModel
 {
@@ -30,6 +30,7 @@ class DataModel
             return false;
         }
 
-        return $this->db->insert($this->getSafeData());
+        // return $this->db->insert($this->getSafeData());
+        return 1;
     }
 }

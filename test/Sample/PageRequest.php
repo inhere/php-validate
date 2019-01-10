@@ -6,6 +6,8 @@
  * Time: 23:35
  */
 
+namespace Inhere\ValidateTest\Sample;
+
 /**
  * Class PageRequest
  */

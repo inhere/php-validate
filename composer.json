@@ -6,6 +6,7 @@
     "php-library",
     "library",
     "validate",
+    "form-validate",
     "validation"
   ],
   "homepage": "https://github.com/inhere/php-validate",
@@ -23,6 +24,11 @@
   "autoload": {
     "psr-4": {
       "Inhere\\Validate\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Inhere\\ValidateTest\\": "test/"
     }
   }
 }

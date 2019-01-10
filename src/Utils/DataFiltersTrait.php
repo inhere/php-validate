@@ -16,11 +16,23 @@ use Inhere\Validate\Filter\Filters;
  */
 trait DataFiltersTrait
 {
-    /**
-     * custom add's filter by addFilter()
-     * @var array
-     */
-    private static $_filters = [];
+    /** @var array user custom filters */
+    private static $customFilters = [];
+
+    /** @var array filter aliases map */
+    private static $filterAliases = [
+        'str2list'     => 'explode',
+        'str2array'    => 'explode',
+        'string2list'  => 'explode',
+        'string2array' => 'explode',
+        'toUpper'      => 'uppercase',
+        'str2upper'    => 'uppercase',
+        'strToUpper'   => 'uppercase',
+        'toLower'      => 'lowercase',
+        'str2lower'    => 'lowercase',
+        'strToLower'   => 'lowercase',
+        'clearNl'      => 'clearNewline',
+    ];
 
     /**
      * value sanitize 直接对给的值进行过滤
@@ -44,7 +56,7 @@ trait DataFiltersTrait
      */
     protected function valueFiltering($value, $filters)
     {
-        $filters = \is_string($filters) ? Helper::explode($filters, '|') : $filters;
+        $filters = \is_string($filters) ? Filters::explode($filters, '|') : $filters;
 
         foreach ($filters as $key => $filter) {
             // key is a filter. ['myFilter' => ['arg1', 'arg2']]
@@ -53,7 +65,7 @@ trait DataFiltersTrait
                 $value = $this->callStringCallback($key, $value, ...$args);
 
                 // closure
-            } elseif (\is_object($filter) && method_exists($filter, '__invoke')) {
+            } elseif (\is_object($filter) && \method_exists($filter, '__invoke')) {
                 $value = $filter($value);
                 // string, trim, ....
             } elseif (\is_string($filter)) {
@@ -74,11 +86,14 @@ trait DataFiltersTrait
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    protected function callStringCallback($filter, ...$args)
+    protected function callStringCallback(string $filter, ...$args)
     {
+        // if is alias name
+        $filterName = isset(self::$filterAliases[$filter]) ? self::$filterAliases[$filter] : $filter;
+
         // if $filter is a custom add callback in the property {@see $_filters}.
-        if (isset(self::$_filters[$filter])) {
-            $callback = self::$_filters[$filter];
+        if (isset(self::$customFilters[$filterName])) {
+            $callback = self::$customFilters[$filterName];
             $value    = $callback(...$args);
 
             // if $filter is a custom method of the subclass.
@@ -109,10 +124,9 @@ trait DataFiltersTrait
      * @param callable $filter
      * @return $this
      */
-    public function addFilter(string $name, callable $filter): self
+    public function addCustomFilter(string $name, callable $filter): self
     {
-        self::$_filters[$name] = $filter;
-
+        self::$customFilters[$name] = $filter;
         return $this;
     }
 
@@ -120,19 +134,19 @@ trait DataFiltersTrait
      * @param string   $name
      * @param callable $filter
      */
-    public static function setFilter(string $name, callable $filter)
+    public static function setCustomFilter(string $name, callable $filter)
     {
-        self::$_filters[$name] = $filter;
+        self::$customFilters[$name] = $filter;
     }
 
     /**
      * @param string $name
      * @return $this
      */
-    public function delFilter(string $name): self
+    public function delCustomFilter(string $name): self
     {
-        if (isset(self::$_filters[$name])) {
-            unset(self::$_filters[$name]);
+        if (isset(self::$customFilters[$name])) {
+            unset(self::$customFilters[$name]);
         }
 
         return $this;
@@ -141,24 +155,24 @@ trait DataFiltersTrait
     /**
      * clear Filters
      */
-    public static function clearFilters()
+    public static function clearCustomFilters()
     {
-        self::$_filters = [];
+        self::$customFilters = [];
     }
 
     /**
      * @return array
      */
-    public static function getFilters(): array
+    public static function getCustomFilters(): array
     {
-        return self::$_filters;
+        return self::$customFilters;
     }
 
     /**
      * @param array $filters
      */
-    public static function setFilters(array $filters)
+    public static function setCustomFilters(array $filters)
     {
-        self::$_filters = $filters;
+        self::$customFilters = $filters;
     }
 }

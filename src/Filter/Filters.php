@@ -36,8 +36,8 @@ final class Filters
             return (bool)$val;
         }
 
-        return \filter_var($val, FILTER_VALIDATE_BOOLEAN, [
-            'flags' => $nullAsFalse ? FILTER_NULL_ON_FAILURE : 0
+        return \filter_var($val, \FILTER_VALIDATE_BOOLEAN, [
+            'flags' => $nullAsFalse ? \FILTER_NULL_ON_FAILURE : 0
         ]);
     }
 
@@ -62,7 +62,7 @@ final class Filters
             return \array_map(self::class . '::integer', $val);
         }
 
-        return (int)filter_var($val, FILTER_SANITIZE_NUMBER_INT);
+        return (int)\filter_var($val, \FILTER_SANITIZE_NUMBER_INT);
     }
 
     /**
@@ -94,7 +94,7 @@ final class Filters
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
      * @return mixed
      */
-    public static function float($val, $decimal = null, $flags = FILTER_FLAG_ALLOW_FRACTION)
+    public static function float($val, $decimal = null, $flags = \FILTER_FLAG_ALLOW_FRACTION)
     {
         $settings = [];
 
@@ -127,7 +127,7 @@ final class Filters
     public static function string($val, $flags = 0)
     {
         if (\is_array($val)) {
-            return array_map(self::class . '::string', $val);
+            return \array_map(self::class . '::string', $val);
         }
 
         $settings = [];
@@ -165,7 +165,7 @@ final class Filters
      */
     public static function trim($val)
     {
-        return \is_array($val) ? array_map(function ($val) {
+        return \is_array($val) ? \array_map(function ($val) {
             return \is_string($val) ? \trim($val) : $val;
         }, $val) : \trim((string)$val);
     }
@@ -314,6 +314,12 @@ final class Filters
         return (int)strtotime($val);
     }
 
+    /**
+     * @param string $string
+     * @param string $delimiter
+     * @param int    $limit
+     * @return array
+     */
     public static function explode(string $string, string $delimiter = ',', int $limit = 0): array
     {
         $string = \trim($string, "$delimiter ");
@@ -333,37 +339,14 @@ final class Filters
         return $values;
     }
 
-    /**
-     * @param string $str
-     * @param string $sep
-     * @return array
-     */
-    public static function str2list($str, $sep = ','): array
+    public static function str2list(string $str, string $sep = ',', int $limit = 0): array
     {
-        return self::str2array($str, $sep);
+        return self::explode($str, $sep, $limit);
     }
 
-    /**
-     * @param string $string
-     * @param string $delimiter
-     * @param int    $limit
-     * @return array
-     */
     public static function str2array(string $string, string $delimiter = ',', int $limit = 0): array
     {
-        $string = \trim($string, "$delimiter ");
-
-        if (!\strpos($string, $delimiter)) {
-            return [$string];
-        }
-
-        if ($limit < 1) {
-            $list = \explode($delimiter, $string);
-        } else {
-            $list = \explode($delimiter, $string, $limit);
-        }
-
-        return \array_values(\array_filter(\array_map('trim', $list), 'strlen'));
+        return self::explode($string, $delimiter, $limit);
     }
 
     /**

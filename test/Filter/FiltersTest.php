@@ -1,10 +1,13 @@
 <?php
 
+namespace Inhere\ValidateTest\Filter;
+
 use Inhere\Validate\Filter\Filters;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Inhere\Validate\Filter\Filters
+ * Class FiltersTest
+ * @package Inhere\ValidateTest\Filter
  */
 class FiltersTest extends TestCase
 {
@@ -46,6 +49,7 @@ class FiltersTest extends TestCase
 
     public function testUppercase()
     {
+        $this->assertSame(Filters::upper('test'), 'TEST');
         $this->assertSame(Filters::uppercase('Test'), 'TEST');
     }
 

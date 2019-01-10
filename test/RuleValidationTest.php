@@ -5,7 +5,7 @@ use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Inhere\Validate\RuleValidation
+ * Class RuleValidationTest
  */
 class RuleValidationTest extends TestCase
 {

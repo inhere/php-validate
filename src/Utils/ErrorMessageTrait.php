@@ -35,6 +35,7 @@ trait ErrorMessageTrait
         'map'       => 'isMap',
         'list'      => 'isList',
         'array'     => 'isArray',
+        'absUrl'    => 'absoluteUrl',
         // 'ints' => 'intList',
     ];
 

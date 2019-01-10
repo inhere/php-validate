@@ -9,7 +9,6 @@
 namespace Inhere\Validate\Filter;
 
 use Inhere\Validate\Utils\DataFiltersTrait;
-use Inhere\Validate\Utils\Helper;
 
 /**
  * Class Filtration
@@ -26,15 +25,10 @@ class Filtration
 {
     use DataFiltersTrait;
 
-    /**
-     * @var array
-     */
+    /** @var array raw data */
     private $_data;
 
-    /**
-     * the rules is by setRules()
-     * @var array
-     */
+    /** @var array the rules is by setRules() */
     private $_rules;
 
     /**
@@ -65,7 +59,6 @@ class Filtration
     public function load(array $data): self
     {
         $this->_data = $data;
-
         return $this;
     }
 
@@ -88,8 +81,9 @@ class Filtration
      */
     public function applyRules(array $rules = [], array $data = []): array
     {
-        $data     = $data ?: $this->_data;
-        $rules    = $rules ?: $this->_rules;
+        $data  = $data ?: $this->_data;
+        $rules = $rules ?: $this->_rules;
+        // save clean data
         $filtered = [];
 
         foreach ($rules as $rule) {
@@ -101,7 +95,7 @@ class Filtration
                 continue;
             }
 
-            $fields = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
+            $fields = \is_string($fields) ? Filters::explode($fields) : (array)$fields;
 
             foreach ($fields as $field) {
                 if (!isset($data[$field])) {
@@ -159,7 +153,7 @@ class Filtration
         $this->_data = $this->_rules = [];
 
         if ($clearFilters) {
-            self::clearFilters();
+            self::clearCustomFilters();
         }
 
         return $this;
@@ -188,7 +182,6 @@ class Filtration
     public function setRules(array $rules): self
     {
         $this->_rules = $rules;
-
         return $this;
     }
 

@@ -3,29 +3,21 @@
  * phpunit --bootstrap test/boot.php test
  */
 
-require dirname(__DIR__) . '/example/simple-loader.php';
+error_reporting(E_ALL);
+date_default_timezone_set('Asia/Shanghai');
 
-class FieldSample extends \Inhere\Validate\FieldValidation
-{
-    public function rules(): array
-    {
-        return [
-            ['user', 'required|string:1,12'],
-            ['pwd', 'required|string:6,16'],
-            ['code', 'lengthEq:4'],
-        ];
+$libDir = dirname(__DIR__);
+$npMap = [
+    'Inhere\\Validate\\' => $libDir . '/src/',
+    'Inhere\\ValidateTest\\' => $libDir . '/test/',
+];
+
+spl_autoload_register(function ($class) use ($npMap) {
+    foreach ($npMap as $np => $dir) {
+        $file = $dir . str_replace('\\', '/', substr($class, strlen($np))) . '.php';
+
+        if (file_exists($file)) {
+            include $file;
+        }
     }
-
-    public function scenarios(): array
-    {
-        return [
-            'create' => ['user', 'pwd', 'code'],
-            'update' => ['user', 'pwd'],
-        ];
-    }
-}
-
-class RuleSample extends \Inhere\Validate\Validation
-{
-
-}
+});

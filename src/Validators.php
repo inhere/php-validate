@@ -107,7 +107,7 @@ class Validators
             $settings['flags'] = $flags;
         }
 
-        if (\filter_var($val, FILTER_VALIDATE_FLOAT, $settings) === false) {
+        if (\filter_var($val, \FILTER_VALIDATE_FLOAT, $settings) === false) {
             return false;
         }
 
@@ -185,7 +185,7 @@ class Validators
             $settings['flags'] = $flags;
         }
 
-        return \filter_var($val, FILTER_VALIDATE_INT, $settings) !== false;
+        return \filter_var($val, \FILTER_VALIDATE_INT, $settings) !== false;
     }
 
     /**
@@ -473,7 +473,7 @@ class Validators
             $options['default'] = $default;
         }
 
-        return (bool)\filter_var($val, FILTER_VALIDATE_REGEXP, ['options' => $options]);
+        return (bool)\filter_var($val, \FILTER_VALIDATE_REGEXP, ['options' => $options]);
     }
 
     /**
@@ -511,7 +511,7 @@ class Validators
             $settings['flags'] = $flags;
         }
 
-        return (bool)\filter_var($val, FILTER_VALIDATE_URL, $settings);
+        return (bool)\filter_var($val, \FILTER_VALIDATE_URL, $settings);
     }
 
     /**
@@ -528,7 +528,7 @@ class Validators
             $options['default'] = $default;
         }
 
-        return (bool)\filter_var($val, FILTER_VALIDATE_EMAIL, ['options' => $options]);
+        return (bool)\filter_var($val, \FILTER_VALIDATE_EMAIL, ['options' => $options]);
     }
 
     /**
@@ -554,7 +554,7 @@ class Validators
             $settings['flags'] = $flags;
         }
 
-        return (bool)\filter_var($val, FILTER_VALIDATE_IP, $settings);
+        return (bool)\filter_var($val, \FILTER_VALIDATE_IP, $settings);
     }
 
     /**
@@ -564,7 +564,7 @@ class Validators
      */
     public static function ipv4($val): bool
     {
-        return self::ip($val, false, FILTER_FLAG_IPV4);
+        return self::ip($val, false, \FILTER_FLAG_IPV4);
     }
 
     /**
@@ -574,7 +574,7 @@ class Validators
      */
     public static function ipv6($val): bool
     {
-        return self::ip($val, false, FILTER_FLAG_IPV6);
+        return self::ip($val, false, \FILTER_FLAG_IPV6);
     }
 
     /**
@@ -584,7 +584,11 @@ class Validators
      */
     public static function macAddress($input): bool
     {
-        return !empty($input) && \preg_match('/^(([0-9a-fA-F]{2}-){5}|([0-9a-fA-F]{2}:){5})[0-9a-fA-F]{2}$/', $input);
+        if (!\is_string($input) || !$input) {
+            return false;
+        }
+
+        return \preg_match('/^(([0-9a-fA-F]{2}-){5}|([0-9a-fA-F]{2}:){5})[0-9a-fA-F]{2}$/', $input);
     }
 
     /**
@@ -598,7 +602,7 @@ class Validators
             return false;
         }
 
-        return 1 === preg_match('/^[A-Za-z]+$/', $val);
+        return 1 === \preg_match('/^[A-Za-z]+$/', $val);
     }
 
     /**
@@ -622,7 +626,7 @@ class Validators
 
         \json_decode($val);
 
-        return \json_last_error() === JSON_ERROR_NONE;
+        return \json_last_error() === \JSON_ERROR_NONE;
     }
 
     /*******************************************************************************
@@ -1036,11 +1040,11 @@ class Validators
             return false;
         }
 
-        if (!$valueTime = strtotime($val)) {
+        if (!$valueTime = \strtotime($val)) {
             return false;
         }
 
-        $afterTime = $afterDate ? strtotime($afterDate) : time();
+        $afterTime = $afterDate ? \strtotime($afterDate) : \time();
 
         if ($symbol === '>') {
             return $afterTime > $valueTime;
@@ -1079,7 +1083,7 @@ class Validators
      */
     public static function isDateFormat($date): bool
     {
-        return (bool)preg_match(
+        return (bool)\preg_match(
             '/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
             $date
         );
@@ -1092,7 +1096,7 @@ class Validators
      */
     public static function isDate($date): bool
     {
-        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
+        if (!\preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
             $date, $matches)) {
             return false;
         }
@@ -1110,7 +1114,7 @@ class Validators
      */
     public static function phone($val): bool
     {
-        return 1 === preg_match('/^1[2-9]\d{9}$/', $val);
+        return 1 === \preg_match('/^1[2-9]\d{9}$/', $val);
     }
 
     // public static function telNumber($val)
@@ -1123,7 +1127,7 @@ class Validators
      */
     public static function postCode($val): bool
     {
-        return empty($val) || preg_match('/^\d{6}$/', $val);
+        return empty($val) || \preg_match('/^\d{6}$/', $val);
     }
 
     /**
@@ -1133,7 +1137,7 @@ class Validators
      */
     public static function price($price): bool
     {
-        return 1 === preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === \preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
     }
 
     /**
@@ -1143,7 +1147,7 @@ class Validators
      */
     public static function negativePrice($price): bool
     {
-        return 1 === preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === \preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
     }
 
     /**
@@ -1192,7 +1196,7 @@ class Validators
             return false;
         }
 
-        return 1 === preg_match('/^[a-f0-9A-F]{32}$/', $val);
+        return 1 === \preg_match('/^[a-f0-9A-F]{32}$/', $val);
     }
 
     /**
@@ -1206,7 +1210,7 @@ class Validators
             return false;
         }
 
-        return 1 === preg_match('/^[a-fA-F0-9]{40}$/', $val);
+        return 1 === \preg_match('/^[a-fA-F0-9]{40}$/', $val);
     }
 
     /**
@@ -1220,7 +1224,7 @@ class Validators
             return false;
         }
 
-        return 1 === preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $val);
+        return 1 === \preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $val);
     }
 
     /**
@@ -1230,11 +1234,11 @@ class Validators
      */
     public static function absoluteUrl($url): bool
     {
-        if (!empty($url)) {
-            return 1 === preg_match('/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/', $url);
+        if (!$url || !\is_string($url)) {
+            return false;
         }
 
-        return false;
+        return 1 === \preg_match('/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/', $url);
     }
 
     /**
@@ -1244,6 +1248,10 @@ class Validators
      */
     public static function fileName($name): bool
     {
+        if (!$name || !\is_string($name)) {
+            return false;
+        }
+
         return 1 === \preg_match('/^[a-zA-Z0-9_.-]+$/', $name);
     }
 
@@ -1254,6 +1262,10 @@ class Validators
      */
     public static function dirName($dir): bool
     {
-        return (bool)preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
+        if (!$dir || !\is_string($dir)) {
+            return false;
+        }
+
+        return 1 === \preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
     }
 }

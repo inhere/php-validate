@@ -8,6 +8,7 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Utils\DataFiltersTrait;
 use Inhere\Validate\Utils\ErrorMessageTrait;
 use Inhere\Validate\Utils\Helper;
@@ -175,7 +176,7 @@ trait ValidationTrait
         }
 
         foreach ($this->collectRules() as $fields => $rule) {
-            $fields    = \is_string($fields) ? Helper::explode($fields) : (array)$fields;
+            $fields    = \is_string($fields) ? Filters::explode($fields) : (array)$fields;
             $validator = \array_shift($rule);
 
             // How to determine the property is empty(default use the Validators::isEmpty)
@@ -391,7 +392,7 @@ trait ValidationTrait
      * @param bool|false $clearErrors
      * @return $this
      */
-    public function resetValidation(bool $clearErrors = false): self
+    protected function resetValidation(bool $clearErrors = false)
     {
         $this->_validated = false;
         $this->_safeData  = $this->_usedRules = [];
@@ -429,7 +430,7 @@ trait ValidationTrait
                     continue;
                 }
 
-                $sceneList = \is_string($rule['on']) ? Helper::explode($rule['on']) : (array)$rule['on'];
+                $sceneList = \is_string($rule['on']) ? Filters::explode($rule['on']) : (array)$rule['on'];
 
                 if (!\in_array($scene, $sceneList, true)) {
                     continue;
@@ -439,7 +440,8 @@ trait ValidationTrait
             }
 
             $this->_usedRules[] = $rule;
-            $fields             = \array_shift($rule);
+            // fields
+            $fields = \array_shift($rule);
             $this->prepareRule($rule);
 
             yield $fields => $rule;
@@ -568,7 +570,6 @@ trait ValidationTrait
     public function setRules(array $rules): self
     {
         $this->_rules = $rules;
-
         return $this;
     }
 
@@ -656,7 +657,6 @@ trait ValidationTrait
     public function setValue($key, $value): self
     {
         $this->data[$key] = $value;
-
         return $this;
     }
 

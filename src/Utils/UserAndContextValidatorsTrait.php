@@ -8,6 +8,7 @@
 
 namespace Inhere\Validate\Utils;
 
+use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Validators;
 
 /**
@@ -312,7 +313,7 @@ trait UserAndContextValidatorsTrait
         }
 
         $suffix   = \strtolower($suffix);
-        $suffixes = \is_string($suffixes) ? Helper::explode($suffixes) : (array)$suffixes;
+        $suffixes = \is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
 
         return \in_array($suffix, $suffixes, true);
     }
@@ -355,7 +356,7 @@ trait UserAndContextValidatorsTrait
             }
 
             $suffix   = Helper::getImageExtByMime($mime);
-            $suffixes = \is_string($suffixes) ? Helper::explode($suffixes) : (array)$suffixes;
+            $suffixes = \is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
 
             return \in_array($suffix, $suffixes, true);
         }
@@ -385,7 +386,7 @@ trait UserAndContextValidatorsTrait
         }
 
         $mime  = Helper::getMimeType($tmpFile);
-        $types = \is_string($types) ? Helper::explode($types) : (array)$types;
+        $types = \is_string($types) ? Filters::explode($types) : (array)$types;
 
         return \in_array($mime, $types, true);
     }
