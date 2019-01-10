@@ -391,7 +391,7 @@ trait ValidationTrait
      * @param bool|false $clearErrors
      * @return $this
      */
-    protected function resetValidation($clearErrors = false): self
+    public function resetValidation(bool $clearErrors = false): self
     {
         $this->_validated = false;
         $this->_safeData  = $this->_usedRules = [];
