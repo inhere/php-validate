@@ -67,7 +67,7 @@ final class Rule
      */
     public $filters;
 
-    public function initByArray(array $config)
+    public static function createByArray(array $config)
     {
 
     }

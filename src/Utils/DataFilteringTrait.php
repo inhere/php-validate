@@ -11,16 +11,18 @@ namespace Inhere\Validate\Utils;
 use Inhere\Validate\Filter\Filters;
 
 /**
- * Trait DataFiltersTrait
+ * Trait DataFilteringTrait
  * @package Inhere\Validate\Utils
  */
-trait DataFiltersTrait
+trait DataFilteringTrait
 {
     /** @var array user custom filters */
     private static $customFilters = [];
 
     /** @var array filter aliases map */
     private static $filterAliases = [
+        'substr'       => 'subStr',
+        'substring'    => 'subStr',
         'str2list'     => 'explode',
         'str2array'    => 'explode',
         'string2list'  => 'explode',
@@ -32,6 +34,8 @@ trait DataFiltersTrait
         'str2lower'    => 'lowercase',
         'strToLower'   => 'lowercase',
         'clearNl'      => 'clearNewline',
+        'str2time'     => 'strToTime',
+        'strtotime'    => 'strToTime',
     ];
 
     /**

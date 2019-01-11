@@ -48,31 +48,49 @@ e.g
 - **github** https://github.com/inhere/php-validate.git
 - **gitee** https://gitee.com/inhere/php-validate.git
 
-> **注意：** master 分支是要求 `php7+` 的(推荐使用)。php5 分支是支持php5的代码分支,基本上不再维护。
+> **注意：** master 分支是要求 `php7+` 的(推荐使用)。`1.x` 分支是支持php5的代码分支,但是基本上不再维护。
 
 ## 安装
-
-- 使用 composer 命令
 
 ```php
 composer require inhere/php-validate
 // composer require inhere/php-validate ^2.2
 ```
 
-- 使用 composer.json
-
-编辑 `composer.json`，在 `require` 添加
-
-```
-"inhere/php-validate": "~2.0",
-// "inhere/php-validate": "dev-php5", // for php5
-```
-
-然后执行: `composer update`
-
 ## 立即使用
 
 <a name="how-to-use1"></a>
+### 方式1: 直接使用类 `Validation`
+
+需要快速简便的使用验证时，可直接使用 `Inhere\Validate\Validation`
+
+```php
+use Inhere\Validate\Validation;
+
+class SomeController
+{
+    public function demoAction()
+    {
+        $v = Validation::check($_POST,[
+            // add rule
+            ['title', 'min', 40],
+            ['freeTime', 'number'],
+        ]);
+
+        if ($v->fail()) {
+            var_dump($v->getErrors());
+            var_dump($v->firstError());
+        }
+
+        // $postData = $v->all(); // 原始数据
+        $safeData = $v->getSafeData(); // 验证通过的安全数据
+
+        $db->save($safeData);
+    }
+}
+```
+
+<a name="how-to-use2"></a>
 ### 方式1: 继承类 `Validation`
 
 创建一个新的class，并继承 `Inhere\Validate\Validation`。用于一个（或一系列相关）请求的验证, 相当于 laravel 的 表单请求验证
@@ -185,37 +203,6 @@ $safeData = $v->getSafeData(); // 验证通过的安全数据
 $db->save($safeData);
 ```
 
-<a name="how-to-use2"></a>
-### 方式2: 直接使用类 `Validation`
-
-需要快速简便的使用验证时，可直接使用 `Inhere\Validate\Validation`
-
-```php
-use Inhere\Validate\Validation;
-
-class SomeController
-{
-    public function demoAction()
-    {
-        $v = Validation::check($_POST,[
-            // add rule
-            ['title', 'min', 40],
-            ['freeTime', 'number'],
-        ]);
-
-        if ($v->fail()) {
-            var_dump($v->getErrors());
-            var_dump($v->firstError());
-        }
-
-        // $postData = $v->all(); // 原始数据
-        $safeData = $v->getSafeData(); // 验证通过的安全数据
-
-        $db->save($safeData);
-    }
-}
-```
-
 <a name="how-to-use3"></a>
 ### 方式3: 使用trait `ValidationTrait`
 
@@ -296,7 +283,7 @@ class UserController
 
 ## 添加自定义验证器
 
-- **方式1**在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use1)
+- **方式1**在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use2)
 
 > 注意： 写在当前类里的验证器方法必须带有后缀 `Validator`, 以防止对内部的其他的方法造成干扰
 

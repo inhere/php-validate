@@ -8,6 +8,8 @@
 
 namespace Inhere\Validate\Utils;
 
+use Inhere\Validate\Filter\Filters;
+
 /**
  * Class StrHelper
  * @package Inhere\Validate\Utils
@@ -77,86 +79,19 @@ class Helper
     }
 
     /**
-     * @param string $string
-     * @param string $delimiter
-     * @param int    $limit
-     * @return array
-     */
-    public static function explode(string $string, string $delimiter = ',', int $limit = 0): array
-    {
-        $string = \trim($string, $delimiter);
-
-        if (!\strpos($string, $delimiter)) {
-            return [$string];
-        }
-
-        if ($limit < 1) {
-            $list = \explode($delimiter, $string);
-        } else {
-            $list = \explode($delimiter, $string, $limit);
-        }
-
-        return \array_filter(\array_map('trim', $list), 'strlen');
-    }
-
-    /**
      * @param string $str
      * @param string $encoding
      * @return int
      */
     public static function strlen(string $str, string $encoding = 'UTF-8'): int
     {
-        $str = \html_entity_decode($str, ENT_COMPAT, 'UTF-8');
+        $str = \html_entity_decode($str, \ENT_COMPAT, 'UTF-8');
 
         if (\function_exists('mb_strlen')) {
             return \mb_strlen($str, $encoding);
         }
 
         return \strlen($str);
-    }
-
-    /**
-     * @param $str
-     * @return string
-     */
-    public static function strToLower(string $str): string
-    {
-        if (\function_exists('mb_strtolower')) {
-            return \mb_strtolower($str, 'utf-8');
-        }
-
-        return \strtolower($str);
-    }
-
-    /**
-     * @param string $str
-     * @return string
-     */
-    public static function strToUpper(string $str): string
-    {
-        if (\function_exists('mb_strtoupper')) {
-            return \mb_strtoupper($str, 'utf-8');
-        }
-
-        return \strtoupper($str);
-    }
-
-    /**
-     * @param string $str
-     * @param int    $start
-     * @param int    $length
-     * @param string $encoding
-     * @return bool|string
-     */
-    public static function subStr(string $str, int $start, int $length = null, string $encoding = 'utf-8')
-    {
-        $length = $length === null ? self::strlen($str) : $length;
-
-        if (\function_exists('mb_substr')) {
-            return \mb_substr($str, $start, $length, $encoding);
-        }
-
-        return \substr($str, $start, $length);
     }
 
     /**
@@ -192,67 +127,12 @@ class Helper
     }
 
     /**
-     * @param string $str
-     * @return string
-     */
-    public static function ucfirst(string $str): string
-    {
-        return self::strToUpper(self::subStr($str, 0, 1)) . self::subStr($str, 1);
-    }
-
-    /**
-     * @param string $str
-     * @return string
-     */
-    public static function ucwords(string $str): string
-    {
-        if (\function_exists('mb_convert_case')) {
-            return \mb_convert_case($str, MB_CASE_TITLE);
-        }
-
-        return \ucwords(self::strToLower($str));
-    }
-
-    /**
-     * Translates a string with underscores into camel case (e.g. first_name -> firstName)
-     * @prototype string public static function toCamelCase(string $str[, bool $capitalise_first_char = false])
-     * @param      $str
-     * @param bool $upperCaseFirstChar
-     * @return mixed
-     */
-    public static function toCamelCase(string $str, $upperCaseFirstChar = false)
-    {
-        $str = self::strToLower($str);
-
-        if ($upperCaseFirstChar) {
-            $str = self::ucfirst($str);
-        }
-
-        return \preg_replace_callback('/_+([a-z])/', function ($c) {
-            return \strtoupper($c[1]);
-        }, $str);
-    }
-
-    /**
-     * Transform a CamelCase string to underscore_case string
-     * @param string $string
-     * @param string $sep
-     * @return string
-     */
-    public static function toSnakeCase(string $string, string $sep = '_'): string
-    {
-        // 'CMSCategories' => 'cms_categories'
-        // 'RangePrice' => 'range_price'
-        return self::strToLower(trim(\preg_replace('/([A-Z][a-z])/', $sep . '$1', $string), $sep));
-    }
-
-    /**
      * @param string $field
      * @return string
      */
     public static function prettifyFieldName(string $field): string
     {
-        $str = self::toSnakeCase($field, ' ');
+        $str = Filters::snakeCase($field, ' ');
 
         return \strpos($str, '_') ? \str_replace('_', ' ', $str) : $str;
     }

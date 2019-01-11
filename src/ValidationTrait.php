@@ -9,7 +9,7 @@
 namespace Inhere\Validate;
 
 use Inhere\Validate\Filter\Filters;
-use Inhere\Validate\Utils\DataFiltersTrait;
+use Inhere\Validate\Utils\DataFilteringTrait;
 use Inhere\Validate\Utils\ErrorMessageTrait;
 use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
@@ -21,7 +21,7 @@ use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
  */
 trait ValidationTrait
 {
-    use DataFiltersTrait, ErrorMessageTrait, UserAndContextValidatorsTrait;
+    use DataFilteringTrait, ErrorMessageTrait, UserAndContextValidatorsTrait;
 
     /** @var array The rules is by setRules() */
     private $_rules = [];

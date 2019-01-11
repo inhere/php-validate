@@ -211,7 +211,11 @@ final class Filters
             return \is_numeric($val) ? $val : '';
         }
 
-        return Helper::strToLower($val);
+        if (\function_exists('mb_strtolower')) {
+            return \mb_strtolower($val, 'utf-8');
+        }
+
+        return \strtolower($val);
     }
 
     /**
@@ -226,16 +230,38 @@ final class Filters
 
     /**
      * string to uppercase
-     * @param string $val
+     * @param string $str
      * @return string
      */
-    public static function uppercase($val): string
+    public static function uppercase($str): string
     {
-        if (!$val || !\is_string($val)) {
-            return \is_numeric($val) ? $val : '';
+        if (!$str || !\is_string($str)) {
+            return \is_numeric($str) ? $str : '';
         }
 
-        return Helper::strToUpper($val);
+        if (\function_exists('mb_strtoupper')) {
+            return \mb_strtoupper($str, 'utf-8');
+        }
+
+        return \strtoupper($str);
+    }
+
+    /**
+     * @param string $str
+     * @return string
+     */
+    public static function ucfirst($str): string
+    {
+        return self::uppercase(self::subStr($str, 0, 1)) . self::subStr($str, 1);
+    }
+
+    public static function ucwords($str): string
+    {
+        if (\function_exists('mb_convert_case')) {
+            return \mb_convert_case($str, \MB_CASE_TITLE);
+        }
+
+        return \ucwords(Filters::lowercase($str));
     }
 
     /**
@@ -250,7 +276,9 @@ final class Filters
     }
 
     /**
-     * string to snakeCase
+     * Transform a CamelCase string to underscore_case string
+     *  'CMSCategories' => 'cms_categories'
+     *  'RangePrice' => 'range_price'
      * @param string $val
      * @param string $sep
      * @return string
@@ -261,7 +289,9 @@ final class Filters
             return '';
         }
 
-        return Helper::toSnakeCase($val, $sep);
+        $val = \preg_replace('/([A-Z][a-z])/', $sep . '$1', $val);
+
+        return self::lowercase(\trim($val, $sep));
     }
 
     /**
@@ -276,7 +306,7 @@ final class Filters
     }
 
     /**
-     * string to camelcase
+     * Translates a string with underscores into camel case (e.g. first_name -> firstName)
      * @param string $val
      * @param bool   $ucFirst
      * @return string
@@ -287,7 +317,15 @@ final class Filters
             return '';
         }
 
-        return Helper::toCamelCase($val, $ucFirst);
+        $str = self::lowercase($val);
+
+        if ($ucFirst) {
+            $str = self::ucfirst($str);
+        }
+
+        return \preg_replace_callback('/_+([a-z])/', function ($c) {
+            return \strtoupper($c[1]);
+        }, $str);
     }
 
     /**
@@ -311,7 +349,25 @@ final class Filters
             return 0;
         }
 
-        return (int)strtotime($val);
+        return (int)\strtotime($val);
+    }
+
+    /**
+     * @param string $str
+     * @param int    $start
+     * @param int    $length
+     * @param string $encoding
+     * @return bool|string
+     */
+    public static function subStr(string $str, int $start, int $length = 0, string $encoding = 'utf-8')
+    {
+        $length = $length === 0 ? Helper::strlen($str) : $length;
+
+        if (\function_exists('mb_substr')) {
+            return \mb_substr($str, $start, $length, $encoding);
+        }
+
+        return \substr($str, $start, $length);
     }
 
     /**
@@ -466,7 +522,7 @@ final class Filters
         }
 
         // $length    = Helper::strlen($string);
-        return Helper::subStr($string, $start, $end);
+        return self::subStr($string, $start, $end);
     }
 
     /**

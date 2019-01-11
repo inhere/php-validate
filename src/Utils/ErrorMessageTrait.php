@@ -471,6 +471,7 @@ trait ErrorMessageTrait
     public function getTranslate(string $field): string
     {
         $trans = $this->getTranslates();
+
         if (isset($trans[$field])) {
             return $trans[$field];
         }

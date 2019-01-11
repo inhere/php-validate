@@ -8,7 +8,7 @@
 
 namespace Inhere\Validate\Filter;
 
-use Inhere\Validate\Utils\DataFiltersTrait;
+use Inhere\Validate\Utils\DataFilteringTrait;
 
 /**
  * Class Filtration
@@ -23,7 +23,7 @@ use Inhere\Validate\Utils\DataFiltersTrait;
  */
 class Filtration
 {
-    use DataFiltersTrait;
+    use DataFilteringTrait;
 
     /** @var array raw data */
     private $_data;
