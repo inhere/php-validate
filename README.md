@@ -562,10 +562,10 @@ $v = Validation::make($_POST,[
 `in/enum`  | 枚举验证: 包含 | `['status', 'in', [1,2,3]]`
 `notIn`    | 枚举验证: 不包含 | `['status', 'notIn', [4,5,6]]`
 `inField`    | 枚举验证: 字段值 存在于 另一个字段（anotherField）的值中 | `['field', 'inField', 'anotherField']`
-`mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
-`notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
-`compare/same/equal` | 字段值比较: 相同 | `['passwd', 'compare', 'repasswd']`
-`different/notEqual` | 字段值比较: 不能相同 | `['userId', 'notEqual', 'targetId']`
+`eq/mustBe`   | 必须是等于给定值 | `['status', 'mustBe', 1]`
+`neq/notBe`   | 不能等于给定值 | `['status', 'notBe', 0]`
+`eqField` | 字段值比较: 相同 | `['passwd', 'eqField', 'repasswd']`
+`neqField` | 字段值比较: 不能相同 | `['userId', 'neqField', 'targetId']`
 `requiredIf` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **必填**(ref laravel) | `['city', 'requiredIf', 'myCity', ['chengdu'] ]`
 `requiredUnless` | 指定的其它字段（ anotherField ）值等于任何一个 `value` 时，此字段为 **不必填**(ref laravel) | `['city', 'requiredUnless', 'myCity', ['chengdu'] ]`
 `requiredWith` | 指定的字段中的 _任意一个_ 有值且不为空，则此字段为 **必填**(ref laravel) | `['city', 'requiredWith', ['myCity'] ]`

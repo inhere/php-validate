@@ -520,9 +520,6 @@ class RuleValidationTest extends TestCase
         $this->assertEquals('in test must in (1,2)', $v->firstError());
     }
 
-    /**
-     * @covers \Inhere\Validate\RuleValidation::getValidatorName()
-     */
     public function testValidatorAlias()
     {
         $v = Validation::makeAndValidate([

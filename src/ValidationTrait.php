@@ -337,7 +337,7 @@ trait ValidationTrait
             $args[] = $this->data;
             $passed = $validator($value, ...$args);
         } elseif (\is_string($validator)) {
-            $realName = self::getValidatorName($validator);
+            $realName = Validators::getRealName($validator);
             // if $validator is a custom add callback in the property {@see $_validators}.
             if (isset(self::$_validators[$validator])) {
                 $args[]   = $this->data;

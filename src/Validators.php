@@ -18,10 +18,51 @@ use Inhere\Validate\Utils\Helper;
 class Validators
 {
     /**
-     * don't allow create instance.
+     * @var array
      */
-    private function __construct()
+    private static $validatorAliases = [
+        // alias => real name.
+        'int'         => 'integer',
+        'num'         => 'number',
+        'bool'        => 'boolean',
+        'in'          => 'enum',
+        'greaterThan' => 'gt',
+        'lessThan'    => 'lt',
+        'mustBe'      => 'eq',
+        'notBe'       => 'neq',
+        'range'       => 'size',
+        'between'     => 'size',
+        'len'         => 'length',
+        'lenEq'       => 'fixedSize',
+        'lengthEq'    => 'fixedSize',
+        'sizeEq'      => 'fixedSize',
+        'diff'        => 'neqField',
+        'notEqual'    => 'neqField',
+        'different'   => 'neqField',
+        'map'         => 'isMap',
+        'list'        => 'isList',
+        'array'       => 'isArray',
+        'absUrl'      => 'absoluteUrl',
+        'equalField'  => 'eqField',
+        // 'ints' => 'intList',
+    ];
+
+    /**
+     * get real validator name by alias name
+     * @param string $validator
+     * @return string
+     */
+    public static function getRealName(string $validator): string
     {
+        return self::$validatorAliases[$validator] ?? $validator;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getValidatorAliases(): array
+    {
+        return self::$validatorAliases;
     }
 
     /*******************************************************************************
@@ -302,6 +343,82 @@ class Validators
     }
 
     /*******************************************************************************
+     * compare validators(TODO )
+     ******************************************************************************/
+
+    /**
+     * Must be equal to the given value
+     * @param  mixed $val
+     * @param  mixed $expected
+     * @param bool   $strict
+     * @return bool
+     */
+    public static function eq($val, $expected, $strict = true): bool
+    {
+        return $strict ? $val === $expected : $val == $expected;
+    }
+
+    /**
+     * Cannot be equal to a given value
+     * @param  mixed $val
+     * @param  mixed $expected
+     * @param bool   $strict
+     * @return bool
+     */
+    public static function neq($val, $expected, $strict = true): bool
+    {
+        return $strict ? $val !== $expected : $val != $expected;
+    }
+
+    /**
+     * Greater than expected value
+     * - int    Compare size
+     * - string Compare length
+     * - array  Compare length
+     * @param mixed $val
+     * @param mixed $expected
+     * @return bool
+     */
+    public static function gt($val, $expected): bool
+    {
+        // type must be same
+        if (\gettype($val) !== \gettype($expected)) {
+            return false;
+        }
+
+        // not in: int, string, array
+        if (($len = Helper::length($val)) < 0) {
+            return false;
+        }
+
+        return $len > Helper::length($expected);
+    }
+
+    /**
+     * Greater than or equal expected value
+     * - int    Compare size
+     * - string Compare length
+     * - array  Compare length
+     * @param mixed $val
+     * @param mixed $expected
+     * @return bool
+     */
+    public static function gte($val, $expected): bool
+    {
+        // type must be same
+        if (\gettype($val) !== \gettype($expected)) {
+            return false;
+        }
+
+        // not in: int, string, array
+        if (($len = Helper::length($val)) < 0) {
+            return false;
+        }
+
+        return $len >= Helper::length($expected);
+    }
+
+    /*******************************************************************************
      * size/range/length validators
      ******************************************************************************/
 
@@ -317,7 +434,7 @@ class Validators
     {
         if (!\is_int($val)) {
             if (\is_string($val)) {
-                $val = Helper::strlen(trim($val));
+                $val = Helper::strlen(\trim($val));
             } elseif (\is_array($val)) {
                 $val = \count($val);
             } else {
@@ -830,7 +947,7 @@ class Validators
      * @param bool         $strict Use strict check, will check data type.
      * @return bool
      */
-    public static function in($val, $dict, $strict = false): bool
+    public static function enum($val, $dict, $strict = false): bool
     {
         if (\is_string($dict)) {
             // $dict = array_map('trim', explode(',', $dict));
@@ -841,15 +958,15 @@ class Validators
     }
 
     /**
-     * alias of 'in()'
+     * alias of 'enum()'
      * @param  mixed       $val
      * @param array|string $dict
      * @param bool         $strict
      * @return bool
      */
-    public static function enum($val, $dict, $strict = false): bool
+    public static function in($val, $dict, $strict = false): bool
     {
-        return self::in($val, $dict, $strict);
+        return self::enum($val, $dict, $strict);
     }
 
     /**
@@ -914,30 +1031,6 @@ class Validators
         }
 
         return $strict ? $last === $end : (string)$last === $end;
-    }
-
-    /**
-     * Must be equal to the given value
-     * @param  mixed $val
-     * @param  mixed $excepted
-     * @param bool   $strict
-     * @return bool
-     */
-    public static function mustBe($val, $excepted, $strict = true): bool
-    {
-        return $strict ? $val === $excepted : $val == $excepted;
-    }
-
-    /**
-     * Cannot be equal to a given value
-     * @param  mixed $val
-     * @param  mixed $excepted
-     * @param bool   $strict
-     * @return bool
-     */
-    public static function notBe($val, $excepted, $strict = true): bool
-    {
-        return $strict ? $val !== $excepted : $val != $excepted;
     }
 
     /*******************************************************************************

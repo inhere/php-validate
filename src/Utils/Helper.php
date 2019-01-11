@@ -79,6 +79,23 @@ class Helper
     }
 
     /**
+     * @param mixed $val
+     * @return int
+     */
+    public static function length($val): int
+    {
+        if (\is_int($val)) {
+            return $val;
+        }
+
+        if (\is_string($val)) {
+            return self::strlen($val);
+        }
+
+        return \is_array($val) ? \count($val) : -1;
+    }
+
+    /**
      * @param string $str
      * @param string $encoding
      * @return int

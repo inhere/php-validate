@@ -6,6 +6,12 @@ use PHPUnit\Framework\TestCase;
 
 class ValidatorsTest extends TestCase
 {
+    public function testAlias()
+    {
+        $this->assertSame('neqField', Validators::getRealName('diff'));
+        $this->assertSame('not-exist', Validators::getRealName('not-exist'));
+    }
+
     public function testIsEmpty()
     {
         $this->assertFalse(Validators::isEmpty(1));
@@ -157,6 +163,39 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::max(56, 60));
         $this->assertTrue(Validators::max('test', 5));
         $this->assertTrue(Validators::max([3, 'test', 'hi'], 5));
+    }
+
+    // eq neq gt gte lt lte
+    public function testValueCompare()
+    {
+        // eq
+        $this->assertTrue(Validators::eq(6, 6));
+        $this->assertTrue(Validators::eq(true, true));
+        $this->assertTrue(Validators::eq(null, null));
+        $this->assertFalse(Validators::eq(false, null));
+        $this->assertFalse(Validators::eq(5, '5'));
+        $this->assertTrue(Validators::eq(5, '5', false));
+        $this->assertFalse(Validators::eq(false, 0));
+        $this->assertTrue(Validators::eq(false, 0, false));
+
+        // neq
+        $this->assertFalse(Validators::neq(5, '5', false));
+        $this->assertTrue(Validators::neq(5, '5'));
+
+        // gt
+        $this->assertTrue(Validators::gt(6, 5));
+        $this->assertTrue(Validators::gt('abc', 'ab'));
+        $this->assertTrue(Validators::gt([1,2], [2]));
+        $this->assertFalse(Validators::gt(4, 4));
+        $this->assertFalse(Validators::gt(3, 4));
+
+        // gte
+        $this->assertTrue(Validators::gte(6, 5));
+        $this->assertTrue(Validators::gte('abc', 'ab'));
+        $this->assertTrue(Validators::gte([1,2], [2]));
+        $this->assertTrue(Validators::gte(4, 4));
+        $this->assertFalse(Validators::gte(2, 4));
+
     }
 
     public function testLength()

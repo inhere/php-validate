@@ -8,6 +8,8 @@
 
 namespace Inhere\Validate\Utils;
 
+use Inhere\Validate\Validators;
+
 /**
  * trait ErrorMessageTrait
  * @author inhere
@@ -15,30 +17,6 @@ namespace Inhere\Validate\Utils;
  */
 trait ErrorMessageTrait
 {
-    /**
-     * @var array
-     */
-    private static $validatorAliases = [
-        // alias => real name.
-        'int'       => 'integer',
-        'num'       => 'number',
-        'bool'      => 'boolean',
-        'in'        => 'enum',
-        'range'     => 'size',
-        'between'   => 'size',
-        'len'       => 'length',
-        'lenEq'     => 'fixedSize',
-        'lengthEq'  => 'fixedSize',
-        'sizeEq'    => 'fixedSize',
-        'diff'      => 'notEqual',
-        'different' => 'notEqual',
-        'map'       => 'isMap',
-        'list'      => 'isList',
-        'array'     => 'isArray',
-        'absUrl'    => 'absoluteUrl',
-        // 'ints' => 'intList',
-    ];
-
     /**
      * 默认的错误提示信息
      * @var array
@@ -394,7 +372,7 @@ trait ErrorMessageTrait
     public function getMessage($validator, string $field, array $args = [], $message = null): string
     {
         $rawName   = \is_string($validator) ? $validator : 'callback';
-        $validator = self::getValidatorName($rawName);
+        $validator = Validators::getRealName($rawName);
 
         // get message from default dict.
         if (!$message) {
@@ -481,24 +459,6 @@ trait ErrorMessageTrait
         }
 
         return $field;
-    }
-
-    /**
-     * get real validator name by alias name
-     * @param string $validator
-     * @return string
-     */
-    public static function getValidatorName(string $validator): string
-    {
-        return self::$validatorAliases[$validator] ?? $validator;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getValidatorAliases(): array
-    {
-        return self::$validatorAliases;
     }
 
     /**

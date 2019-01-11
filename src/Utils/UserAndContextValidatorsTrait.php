@@ -19,10 +19,7 @@ use Inhere\Validate\Validators;
  */
 trait UserAndContextValidatorsTrait
 {
-    /**
-     * custom add's validator by addValidator()
-     * @var array
-     */
+    /** @var array user custom add's validators */
     protected static $_validators = [];
 
     /** @var string */
@@ -55,7 +52,6 @@ trait UserAndContextValidatorsTrait
     public function addValidator(string $name, callable $callback, string $msg = ''): self
     {
         self::setValidator($name, $callback, $msg);
-
         return $this;
     }
 
@@ -63,14 +59,14 @@ trait UserAndContextValidatorsTrait
      * add a custom validator
      * @param string   $name
      * @param callable $callback
-     * @param string   $msg
+     * @param string   $message
      */
-    public static function setValidator(string $name, callable $callback, string $msg = null)
+    public static function setValidator(string $name, callable $callback, string $message = '')
     {
         self::$_validators[$name] = $callback;
 
-        if ($msg) {
-            self::setDefaultMessage($name, $msg);
+        if ($message) {
+            self::setDefaultMessage($name, $message);
         }
     }
 
@@ -404,7 +400,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /*******************************************************************************
-     * Special validators(require context data)
+     * Field compare validators(require context data)
      ******************************************************************************/
 
     /**
@@ -428,26 +424,48 @@ trait UserAndContextValidatorsTrait
         return $this->compareValidator($val, $compareField);
     }
 
+    public function eqFieldValidator($val, string $compareField): bool
+    {
+        return $this->compareValidator($val, $compareField);
+    }
+
     /**
      * 字段值比较：当前字段值是否与给定的字段值不相同
      * @param mixed  $val
      * @param string $compareField
      * @return bool
      */
-    public function notEqualValidator($val, string $compareField): bool
+    public function neqFieldValidator($val, string $compareField): bool
     {
         return $compareField && ($val !== $this->getByPath($compareField));
     }
 
+    // TODO: gtFiled, ltField, gteField, lteField
+
     /**
-     * alias of the 'notEqualValidator'
-     * @param mixed  $val
-     * @param string $compareField
+     * 字段值比较：当前字段值 要大于 给定字段的值
+     * @param string|int $val
+     * @param string     $compareField
      * @return bool
      */
-    public function differentValidator($val, string $compareField): bool
+    public function gtFieldValidator($val, string $compareField): bool
     {
-        return $compareField && ($val !== $this->getByPath($compareField));
+        $minVal = $this->getByPath($compareField);
+
+        return Validators::gt($val, $minVal);
+    }
+
+    /**
+     * 字段值比较：当前字段值 要大于等于 给定字段的值
+     * @param string|int $val
+     * @param string     $compareField
+     * @return bool
+     */
+    public function gteFieldValidator($val, string $compareField): bool
+    {
+        $minVal = $this->getByPath($compareField);
+
+        return Validators::gte($val, $minVal);
     }
 
     /**
@@ -463,6 +481,19 @@ trait UserAndContextValidatorsTrait
         }
 
         return false;
+    }
+
+    /**
+     * 比较两个日期字段的 间隔天数 是否符合要求
+     * @todo
+     * @param string $val
+     * @param string $compareField
+     * @param int    $expected
+     * @param string $op
+     */
+    public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>=')
+    {
+
     }
 
     /**
@@ -516,19 +547,6 @@ trait UserAndContextValidatorsTrait
         }
 
         return true;
-    }
-
-    /**
-     * 比较两个日期字段的 间隔天数 是否符合要求
-     * @todo
-     * @param string $val
-     * @param string $compareField
-     * @param int    $expected
-     * @param string $op
-     */
-    public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>=')
-    {
-
     }
 
     /*******************************************************************************
