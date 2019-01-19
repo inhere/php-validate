@@ -12,7 +12,7 @@ use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Filter\DataFilteringTrait;
 use Inhere\Validate\Traits\ErrorMessageTrait;
 use Inhere\Validate\Utils\Helper;
-use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
+use Inhere\Validate\Validator\ScopedValidatorsTrait;
 use Inhere\Validate\Validator\UserValidators;
 
 /**
@@ -22,7 +22,7 @@ use Inhere\Validate\Validator\UserValidators;
  */
 trait ValidationTrait
 {
-    use DataFilteringTrait, ErrorMessageTrait, UserAndContextValidatorsTrait;
+    use DataFilteringTrait, ErrorMessageTrait, ScopedValidatorsTrait;
 
     /** @var array The rules is by setRules() */
     private $_rules = [];

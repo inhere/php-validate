@@ -6,11 +6,11 @@
  * Time: 21:47
  */
 
-namespace Inhere\Validate\Utils;
+namespace Inhere\Validate\Validator;
 
 /**
  * Class Rule
- * @package Inhere\Validate\Utils
+ * @package Inhere\Validate\Validator
  * @TODO
  */
 final class Rule

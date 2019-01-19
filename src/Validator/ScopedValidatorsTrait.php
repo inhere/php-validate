@@ -6,18 +6,18 @@
  * Time: 11:26
  */
 
-namespace Inhere\Validate\Utils;
+namespace Inhere\Validate\Validator;
 
 use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Validators;
 
 /**
- * trait UserAndContextValidatorsTrait
+ * trait ScopedValidatorsTrait - deps the current validation instance.
  * - user custom validators
  * - some validators of require context data.
- * @package Inhere\Validate\Utils
+ * @package Inhere\Validate\Validator
  */
-trait UserAndContextValidatorsTrait
+trait ScopedValidatorsTrait
 {
     /** @var array user custom add's validators(current scope) */
     protected $_validators = [];
@@ -87,7 +87,7 @@ trait UserAndContextValidatorsTrait
 
     /**
      * @param array $validators
-     * @return UserAndContextValidatorsTrait
+     * @return ScopedValidatorsTrait
      */
     public function addValidators(array $validators)
     {
