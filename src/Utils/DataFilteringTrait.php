@@ -9,6 +9,7 @@
 namespace Inhere\Validate\Utils;
 
 use Inhere\Validate\Filter\Filters;
+use Inhere\Validate\Filter\UserFilters;
 
 /**
  * Trait DataFilteringTrait
@@ -17,7 +18,7 @@ use Inhere\Validate\Filter\Filters;
 trait DataFilteringTrait
 {
     /** @var array user custom filters */
-    private static $customFilters = [];
+    private $_filters = [];
 
     /** @var array filter aliases map */
     private static $filterAliases = [
@@ -95,19 +96,22 @@ trait DataFilteringTrait
         // if is alias name
         $filterName = isset(self::$filterAliases[$filter]) ? self::$filterAliases[$filter] : $filter;
 
-        // if $filter is a custom add callback in the property {@see $_filters}.
-        if (isset(self::$customFilters[$filterName])) {
-            $callback = self::$customFilters[$filterName];
+        // if $filter is a custom by addFiler()
+        if ($callback = $this->getFilter($filter)) {
             $value    = $callback(...$args);
-
             // if $filter is a custom method of the subclass.
         } elseif (\method_exists($this, $filter . 'Filter')) {
             $filter .= 'Filter';
             $value  = $this->$filter(...$args);
 
+            // if $filter is a custom add callback in the property {@see $_filters}.
+        } elseif ($callback = UserFilters::get($filter)) {
+            $value = $callback(...$args);
+
+            // if $filter is a custom add callback in the property {@see $_filters}.
             // $filter is a method of the class 'FilterList'
-        } elseif (\method_exists(Filters::class, $filter)) {
-            $value = Filters::$filter(...$args);
+        } elseif (\method_exists(Filters::class, $filterName)) {
+            $value = Filters::$filterName(...$args);
 
             // it is function name
         } elseif (\function_exists($filter)) {
@@ -124,33 +128,48 @@ trait DataFilteringTrait
      ******************************************************************************/
 
     /**
+     * @param string $name
+     * @return callable|null
+     */
+    public function getFilter(string $name)
+    {
+        if (isset($this->_filters[$name])) {
+            return $this->_filters[$name];
+        }
+
+        return null;
+    }
+
+    /**
      * @param string   $name
      * @param callable $filter
      * @return $this
      */
-    public function addCustomFilter(string $name, callable $filter): self
+    public function addFilter(string $name, callable $filter): self
     {
-        self::$customFilters[$name] = $filter;
+        $this->_filters[$name] = $filter;
         return $this;
     }
 
     /**
      * @param string   $name
      * @param callable $filter
+     * @return DataFilteringTrait
      */
-    public static function setCustomFilter(string $name, callable $filter)
+    public function setFilter(string $name, callable $filter)
     {
-        self::$customFilters[$name] = $filter;
+        $this->_filters[$name] = $filter;
+        return $this;
     }
 
     /**
      * @param string $name
      * @return $this
      */
-    public function delCustomFilter(string $name): self
+    public function delFilter(string $name): self
     {
-        if (isset(self::$customFilters[$name])) {
-            unset(self::$customFilters[$name]);
+        if (isset($this->_filters[$name])) {
+            unset($this->_filters[$name]);
         }
 
         return $this;
@@ -159,24 +178,24 @@ trait DataFilteringTrait
     /**
      * clear Filters
      */
-    public static function clearCustomFilters()
+    public function clearFilters()
     {
-        self::$customFilters = [];
+        $this->_filters = [];
     }
 
     /**
      * @return array
      */
-    public static function getCustomFilters(): array
+    public function getFilters(): array
     {
-        return self::$customFilters;
+        return $this->_filters;
     }
 
     /**
      * @param array $filters
      */
-    public static function setCustomFilters(array $filters)
+    public function setFilters(array $filters)
     {
-        self::$customFilters = $filters;
+        $this->_filters = $filters;
     }
 }

@@ -14,6 +14,8 @@ use Inhere\Validate\Utils\Helper;
  */
 final class Filters
 {
+    // TODO manage aliases
+
     /**
      * don't allow create instance.
      */

@@ -153,7 +153,7 @@ class Filtration
         $this->_data = $this->_rules = [];
 
         if ($clearFilters) {
-            self::clearCustomFilters();
+            $this->clearFilters();
         }
 
         return $this;

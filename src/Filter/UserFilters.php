@@ -14,8 +14,23 @@ namespace Inhere\Validate\Filter;
  */
 final class UserFilters
 {
-    /** @var array user custom filters */
+    /**
+     * @var array user custom filters
+     */
     private static $filters = [];
+
+    /**
+     * @param string $name
+     * @return null|callable
+     */
+    public static function get(string $name)
+    {
+        if (isset(self::$filters[$name])) {
+            return self::$filters[$name];
+        }
+
+        return null;
+    }
 
     /**
      * @param string   $name

@@ -350,13 +350,13 @@ trait ValidationTrait
             if ($callback = $this->getValidator($validator)) {
                 $args[] = $this->data;
                 $passed = $callback($value, ...$args);
+                // if $validator is a custom method of the subclass.
+            } elseif (\method_exists($this, $method = $validator . 'Validator')) {
+                $passed = $this->$method($value, ...$args);
                 // if $validator is a custom validator {@see $_validators}.
             } elseif ($callback = UserValidators::get($validator)) {
                 $args[] = $this->data;
                 $passed = $callback($value, ...$args);
-                // if $validator is a custom method of the subclass.
-            } elseif (\method_exists($this, $method = $validator . 'Validator')) {
-                $passed = $this->$method($value, ...$args);
             } elseif (\method_exists(Validators::class, $realName)) {
                 $passed = Validators::$realName($value, ...$args);
             } elseif (\function_exists($validator)) { // it is function name
