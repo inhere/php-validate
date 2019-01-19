@@ -6,14 +6,15 @@
  * Time: 11:26
  */
 
-namespace Inhere\Validate\Utils;
+namespace Inhere\Validate\Traits;
 
+use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Validators;
 
 /**
  * trait ErrorMessageTrait
  * @author inhere
- * @package Inhere\Validate\Utils
+ * @package Inhere\Validate\Traits
  */
 trait ErrorMessageTrait
 {

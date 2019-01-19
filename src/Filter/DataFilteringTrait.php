@@ -6,14 +6,11 @@
  * Time: 00:51
  */
 
-namespace Inhere\Validate\Utils;
-
-use Inhere\Validate\Filter\Filters;
-use Inhere\Validate\Filter\UserFilters;
+namespace Inhere\Validate\Filter;
 
 /**
  * Trait DataFilteringTrait
- * @package Inhere\Validate\Utils
+ * @package Inhere\Validate\Filter
  */
 trait DataFilteringTrait
 {

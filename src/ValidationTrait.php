@@ -9,8 +9,8 @@
 namespace Inhere\Validate;
 
 use Inhere\Validate\Filter\Filters;
-use Inhere\Validate\Utils\DataFilteringTrait;
-use Inhere\Validate\Utils\ErrorMessageTrait;
+use Inhere\Validate\Filter\DataFilteringTrait;
+use Inhere\Validate\Traits\ErrorMessageTrait;
 use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
 use Inhere\Validate\Validator\UserValidators;

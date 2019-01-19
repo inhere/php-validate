@@ -8,8 +8,6 @@
 
 namespace Inhere\Validate\Filter;
 
-use Inhere\Validate\Utils\DataFilteringTrait;
-
 /**
  * Class Filtration
  * @package Inhere\Validate\Filter
