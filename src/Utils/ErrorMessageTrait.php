@@ -402,7 +402,8 @@ trait ErrorMessageTrait
         ];
 
         foreach ($args as $key => $value) {
-            $key                      = \is_int($key) ? "value{$key}" : $key;
+            $key = \is_int($key) ? "value{$key}" : $key;
+            // build params
             $params['{' . $key . '}'] = \is_array($value) ? \implode(',', $value) : $value;
         }
 

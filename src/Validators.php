@@ -47,6 +47,11 @@ class Validators
         // 'ints' => 'intList',
     ];
 
+    public function get(string $name)
+    {
+
+    }
+
     /**
      * get real validator name by alias name
      * @param string $validator
@@ -321,7 +326,7 @@ class Validators
      */
     public static function alphaNum($val): bool
     {
-        if (!\is_string($val) && !is_numeric($val)) {
+        if (!\is_string($val) && !\is_numeric($val)) {
             return false;
         }
 
@@ -343,14 +348,14 @@ class Validators
     }
 
     /*******************************************************************************
-     * compare validators(TODO )
+     * value size compare validators
      ******************************************************************************/
 
     /**
      * Must be equal to the given value
-     * @param  mixed $val
-     * @param  mixed $expected
-     * @param bool   $strict
+     * @param mixed $val
+     * @param mixed $expected
+     * @param bool  $strict
      * @return bool
      */
     public static function eq($val, $expected, $strict = true): bool
@@ -372,50 +377,48 @@ class Validators
 
     /**
      * Greater than expected value
-     * - int    Compare size
-     * - string Compare length
-     * - array  Compare length
+     * @see Helper::compareSize()
      * @param mixed $val
      * @param mixed $expected
      * @return bool
      */
     public static function gt($val, $expected): bool
     {
-        // type must be same
-        if (\gettype($val) !== \gettype($expected)) {
-            return false;
-        }
-
-        // not in: int, string, array
-        if (($len = Helper::length($val)) < 0) {
-            return false;
-        }
-
-        return $len > Helper::length($expected);
+        return Helper::compareSize($val, '>', $expected);
     }
 
     /**
      * Greater than or equal expected value
-     * - int    Compare size
-     * - string Compare length
-     * - array  Compare length
      * @param mixed $val
      * @param mixed $expected
      * @return bool
      */
     public static function gte($val, $expected): bool
     {
-        // type must be same
-        if (\gettype($val) !== \gettype($expected)) {
-            return false;
-        }
+        return Helper::compareSize($val, '>=', $expected);
+    }
 
-        // not in: int, string, array
-        if (($len = Helper::length($val)) < 0) {
-            return false;
-        }
+    /**
+     * Less than expected value
+     * @see Helper::compareSize()
+     * @param mixed $val
+     * @param mixed $expected
+     * @return bool
+     */
+    public static function lt($val, $expected): bool
+    {
+        return Helper::compareSize($val, '<', $expected);
+    }
 
-        return $len >= Helper::length($expected);
+    /**
+     * Less than or equal expected value
+     * @param mixed $val
+     * @param mixed $expected
+     * @return bool
+     */
+    public static function lte($val, $expected): bool
+    {
+        return Helper::compareSize($val, '<=', $expected);
     }
 
     /*******************************************************************************

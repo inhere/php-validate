@@ -13,6 +13,7 @@ use Inhere\Validate\Utils\DataFilteringTrait;
 use Inhere\Validate\Utils\ErrorMessageTrait;
 use Inhere\Validate\Utils\Helper;
 use Inhere\Validate\Utils\UserAndContextValidatorsTrait;
+use Inhere\Validate\Validator\UserValidators;
 
 /**
  * Trait ValidationTrait
@@ -268,6 +269,14 @@ trait ValidationTrait
     }
 
     /**
+     * apply validate rule
+     */
+    protected function applyRule()
+    {
+        // TODO
+    }
+
+    /**
      * field require/exists validate 字段存在检查
      * @param string       $field Attribute name
      * @param mixed        $value Attribute value
@@ -300,7 +309,6 @@ trait ValidationTrait
         // validate success, save value to safeData
         if ($passed) {
             $this->collectSafeValue($field, $value);
-
             return true;
         }
 
@@ -338,12 +346,14 @@ trait ValidationTrait
             $passed = $validator($value, ...$args);
         } elseif (\is_string($validator)) {
             $realName = Validators::getRealName($validator);
-            // if $validator is a custom add callback in the property {@see $_validators}.
-            if (isset(self::$_validators[$validator])) {
-                $args[]   = $this->data;
-                $callback = self::$_validators[$validator];
-                $passed   = $callback($value, ...$args);
-
+            // is global user validator
+            if ($callback = $this->getValidator($validator)) {
+                $args[] = $this->data;
+                $passed = $callback($value, ...$args);
+                // if $validator is a custom validator {@see $_validators}.
+            } elseif ($callback = UserValidators::get($validator)) {
+                $args[] = $this->data;
+                $passed = $callback($value, ...$args);
                 // if $validator is a custom method of the subclass.
             } elseif (\method_exists($this, $method = $validator . 'Validator')) {
                 $passed = $this->$method($value, ...$args);
@@ -367,7 +377,6 @@ trait ValidationTrait
         }
 
         $this->addError($field, $this->getMessage($validator, $field, $rawArgs, $defMsg));
-
         return false;
     }
 
@@ -390,7 +399,6 @@ trait ValidationTrait
 
     /**
      * @param bool|false $clearErrors
-     * @return $this
      */
     protected function resetValidation(bool $clearErrors = false)
     {
@@ -400,8 +408,6 @@ trait ValidationTrait
         if ($clearErrors) {
             $this->clearErrors();
         }
-
-        return $this;
     }
 
     /**
@@ -446,7 +452,6 @@ trait ValidationTrait
 
             yield $fields => $rule;
         }
-
         //
     }
 

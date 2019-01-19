@@ -19,11 +19,11 @@ use Inhere\Validate\Validators;
  */
 trait UserAndContextValidatorsTrait
 {
-    /** @var array user custom add's validators */
-    protected static $_validators = [];
+    /** @var array user custom add's validators(current scope) */
+    protected $_validators = [];
 
     /** @var string */
-    protected static $_fileValidators = '|file|image|mimeTypes|mimes|';
+    private static $_fileValidators = '|file|image|mimeTypes|mimes|';
 
     /**
      * @see $_FILES
@@ -51,8 +51,7 @@ trait UserAndContextValidatorsTrait
      */
     public function addValidator(string $name, callable $callback, string $msg = ''): self
     {
-        self::setValidator($name, $callback, $msg);
-        return $this;
+        return $this->setValidator($name, $callback, $msg);
     }
 
     /**
@@ -60,67 +59,69 @@ trait UserAndContextValidatorsTrait
      * @param string   $name
      * @param callable $callback
      * @param string   $message
+     * @return self
      */
-    public static function setValidator(string $name, callable $callback, string $message = '')
+    public function setValidator(string $name, callable $callback, string $message = ''): self
     {
-        self::$_validators[$name] = $callback;
+        $this->_validators[$name] = $callback;
 
         if ($message) {
             self::setDefaultMessage($name, $message);
         }
+
+        return $this;
     }
 
     /**
      * @param string $name
      * @return null|callable
      */
-    public static function getValidator(string $name)
+    public function getValidator(string $name)
     {
-        if (isset(self::$_validators[$name])) {
-            return self::$_validators[$name];
+        if (isset($this->_validators[$name])) {
+            return $this->_validators[$name];
         }
 
         return null;
     }
 
     /**
-     * @param string $name
-     * @return bool|callable
+     * @param array $validators
+     * @return UserAndContextValidatorsTrait
      */
-    public static function delValidator(string $name)
+    public function addValidators(array $validators)
     {
-        $cb = false;
-
-        if (isset(self::$_validators[$name])) {
-            $cb = self::$_validators[$name];
-            unset(self::$_validators[$name]);
+        foreach ($validators as $name => $validator) {
+            $this->addValidator($name, $validator);
         }
 
-        return $cb;
-    }
-
-    /**
-     * clear Filters
-     */
-    public static function clearValidators()
-    {
-        self::$_validators = [];
-    }
-
-    /**
-     * @param array $validators
-     */
-    public static function addValidators(array $validators)
-    {
-        self::$_validators = \array_merge(self::$_validators, $validators);
+        return $this;
     }
 
     /**
      * @return array
      */
-    public static function getValidators(): array
+    public function getValidators(): array
     {
-        return self::$_validators;
+        return $this->_validators;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function delValidator(string $name)
+    {
+        if (isset($this->_validators[$name])) {
+            unset($this->_validators[$name]);
+        }
+    }
+
+    /**
+     * clear validators
+     */
+    public function clearValidators()
+    {
+        $this->_validators = [];
     }
 
     /*******************************************************************************
@@ -400,7 +401,7 @@ trait UserAndContextValidatorsTrait
     }
 
     /*******************************************************************************
-     * Field compare validators(require context data)
+     * Field compare validators
      ******************************************************************************/
 
     /**
@@ -523,8 +524,8 @@ trait UserAndContextValidatorsTrait
                 if ('required' === $validator) {
                     $passed = !Validators::isEmpty($value);
 
-                } elseif (isset(self::$_validators[$validator])) {
-                    $callback = self::$_validators[$validator];
+                } elseif (isset($this->_validators[$validator])) {
+                    $callback = $this->_validators[$validator];
                     $passed   = $callback($value, ...$args);
 
                 } elseif (\method_exists($this, $method = $validator . 'Validator')) {

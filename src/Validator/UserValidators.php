@@ -1,0 +1,98 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: inhere
+ * Date: 2019-01-20
+ * Time: 00:03
+ */
+
+namespace Inhere\Validate\Validator;
+
+/**
+ * Class UserValidators - user custom add global validators
+ * @package Inhere\Validate\Validator
+ */
+final class UserValidators
+{
+    /**
+     * @var array user custom add's validators (global)
+     */
+    private static $validators = [];
+
+    /**
+     * add a custom validator
+     * @param string   $name
+     * @param callable $callback
+     */
+    public static function set(string $name, callable $callback)
+    {
+        self::$validators[$name] = $callback;
+    }
+
+    /**
+     * @param string $name
+     * @return null|callable
+     */
+    public static function get(string $name)
+    {
+        if (isset(self::$validators[$name])) {
+            return self::$validators[$name];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public static function has(string $name): bool
+    {
+        return isset(self::$validators[$name]);
+    }
+
+    /**
+     * @param array $validators
+     */
+    public static function setValidators(array $validators)
+    {
+        self::$validators = [];
+        self::addValidators($validators);
+    }
+
+    /**
+     * @param array $validators
+     */
+    public static function addValidators(array $validators)
+    {
+        foreach ($validators as $name => $validator) {
+            self::set($name, $validator);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getValidators(): array
+    {
+        return self::$validators;
+    }
+
+    /**
+     * @param string $name
+     */
+    public static function remove(string $name)
+    {
+        if (isset(self::$validators[$name])) {
+            unset(self::$validators[$name]);
+        }
+    }
+
+    /**
+     * clear all validators
+     */
+    public static function removeAll()
+    {
+        self::$validators = [];
+    }
+}

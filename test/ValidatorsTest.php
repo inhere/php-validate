@@ -196,6 +196,34 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::gte(4, 4));
         $this->assertFalse(Validators::gte(2, 4));
 
+        // lt
+        $samples = [
+            [5, 6, true],
+            [[1], [1,'a'], true],
+            ['a', 'ab', true],
+            [6, 6, false],
+            [[1], [1], false],
+            ['a', 'a', false],
+            [1, 'a', false],
+        ];
+        foreach ($samples as $v) {
+            $this->assertSame($v[2], Validators::lt($v[0], $v[1]));
+        }
+
+        // lte
+        $samples = [
+            [5, 6, true],
+            [[1], [1,'a'], true],
+            ['a', 'ab', true],
+            [6, 6, true],
+            [[1], [1], true],
+            ['a', 'a', true],
+            [1, 'a', false],
+            [6, 5, false],
+        ];
+        foreach ($samples as $v) {
+            $this->assertSame($v[2], Validators::lte($v[0], $v[1]));
+        }
     }
 
     public function testLength()

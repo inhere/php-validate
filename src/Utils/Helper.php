@@ -214,4 +214,48 @@ class Helper
 
         throw new \InvalidArgumentException('The parameter is not a callable');
     }
+
+    /**
+     * compare of size
+     * - int    Compare size
+     * - string Compare length
+     * - array  Compare length
+     * @param mixed  $val
+     * @param mixed  $expected
+     * @param string $operator
+     * @return bool
+     */
+    public static function compareSize($val, string $operator, $expected): bool
+    {
+        // type must be same
+        if (\gettype($val) !== \gettype($expected)) {
+            return false;
+        }
+
+        // not in: int, string, array
+        if (($len = self::length($val)) < 0) {
+            return false;
+        }
+
+        $wantLen = self::length($expected);
+
+        switch ($operator) {
+            case '>':
+                $ok = $len > $wantLen;
+                break;
+            case '>=':
+                $ok = $len >= $wantLen;
+                break;
+            case '<':
+                $ok = $len < $wantLen;
+                break;
+            case '<=':
+                $ok = $len <= $wantLen;
+                break;
+            default:
+                $ok = false;
+        }
+
+        return $ok;
+    }
 }

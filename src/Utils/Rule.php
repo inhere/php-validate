@@ -11,6 +11,7 @@ namespace Inhere\Validate\Utils;
 /**
  * Class Rule
  * @package Inhere\Validate\Utils
+ * @TODO
  */
 final class Rule
 {
