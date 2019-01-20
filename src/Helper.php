@@ -6,12 +6,12 @@
  * Time: 11:26
  */
 
-namespace Inhere\Validate\Utils;
+namespace Inhere\Validate;
 
 use Inhere\Validate\Filter\Filters;
 
 /**
- * Class StrHelper
+ * Class Helper
  * @package Inhere\Validate\Utils
  */
 class Helper

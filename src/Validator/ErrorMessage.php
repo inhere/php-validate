@@ -6,7 +6,7 @@
  * Time: 00:54
  */
 
-namespace Inhere\Validate;
+namespace Inhere\Validate\Validator;
 
 /**
  * Class GlobalMessage

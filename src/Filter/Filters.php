@@ -6,7 +6,7 @@
 
 namespace Inhere\Validate\Filter;
 
-use Inhere\Validate\Utils\Helper;
+use Inhere\Validate\Helper;
 
 /**
  * Class Filters

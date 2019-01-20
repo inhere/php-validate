@@ -8,7 +8,7 @@
 
 namespace Inhere\Validate\Traits;
 
-use Inhere\Validate\Utils\Helper;
+use Inhere\Validate\Helper;
 use Inhere\Validate\Validators;
 
 /**
