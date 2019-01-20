@@ -6,16 +6,17 @@
  * Time: 11:26
  */
 
-namespace Inhere\Validate\Validator;
+namespace Inhere\Validate\Traits;
 
 use Inhere\Validate\Filter\Filters;
+use Inhere\Validate\Helper;
 use Inhere\Validate\Validators;
 
 /**
  * trait ScopedValidatorsTrait - deps the current validation instance.
  * - user custom validators
  * - some validators of require context data.
- * @package Inhere\Validate\Validator
+ * @package Inhere\Validate\Traits
  */
 trait ScopedValidatorsTrait
 {
@@ -66,9 +67,8 @@ trait ScopedValidatorsTrait
         $this->_validators[$name] = $callback;
 
         if ($message) {
-            self::setDefaultMessage($name, $message);
+            $this->setMessage($name, $message);
         }
-
         return $this;
     }
 
@@ -78,11 +78,7 @@ trait ScopedValidatorsTrait
      */
     public function getValidator(string $name)
     {
-        if (isset($this->_validators[$name])) {
-            return $this->_validators[$name];
-        }
-
-        return null;
+        return $this->_validators[$name] ?? null;
     }
 
     /**

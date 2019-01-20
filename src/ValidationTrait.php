@@ -8,11 +8,10 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Filter\FilteringTrait;
 use Inhere\Validate\Filter\Filters;
-use Inhere\Validate\Filter\DataFilteringTrait;
 use Inhere\Validate\Traits\ErrorMessageTrait;
-use Inhere\Validate\Helper;
-use Inhere\Validate\Validator\ScopedValidatorsTrait;
+use Inhere\Validate\Traits\ScopedValidatorsTrait;
 use Inhere\Validate\Validator\UserValidators;
 
 /**
@@ -22,7 +21,7 @@ use Inhere\Validate\Validator\UserValidators;
  */
 trait ValidationTrait
 {
-    use DataFilteringTrait, ErrorMessageTrait, ScopedValidatorsTrait;
+    use FilteringTrait, ErrorMessageTrait, ScopedValidatorsTrait;
 
     /** @var array The rules is by setRules() */
     private $_rules = [];
@@ -166,6 +165,7 @@ trait ValidationTrait
 
         $this->resetValidation(true);
         $this->setStopOnError($stopOnError);
+        $this->prepareValidation();
         $this->beforeValidate();
 
         if ($cb = $this->_beforeHandler) {

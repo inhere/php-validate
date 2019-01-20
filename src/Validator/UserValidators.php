@@ -35,11 +35,7 @@ final class UserValidators
      */
     public static function get(string $name)
     {
-        if (isset(self::$validators[$name])) {
-            return self::$validators[$name];
-        }
-
-        return null;
+        return self::$validators[$name] ?? null;
     }
 
     /**

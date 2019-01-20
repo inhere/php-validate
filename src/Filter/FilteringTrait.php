@@ -9,10 +9,10 @@
 namespace Inhere\Validate\Filter;
 
 /**
- * Trait DataFilteringTrait
+ * Trait FilteringTrait
  * @package Inhere\Validate\Filter
  */
-trait DataFilteringTrait
+trait FilteringTrait
 {
     /** @var array user custom filters */
     private $_filters = [];
@@ -95,7 +95,7 @@ trait DataFilteringTrait
 
         // if $filter is a custom by addFiler()
         if ($callback = $this->getFilter($filter)) {
-            $value    = $callback(...$args);
+            $value = $callback(...$args);
             // if $filter is a custom method of the subclass.
         } elseif (\method_exists($this, $filter . 'Filter')) {
             $filter .= 'Filter';
@@ -151,7 +151,7 @@ trait DataFilteringTrait
     /**
      * @param string   $name
      * @param callable $filter
-     * @return DataFilteringTrait
+     * @return FilteringTrait
      */
     public function setFilter(string $name, callable $filter)
     {

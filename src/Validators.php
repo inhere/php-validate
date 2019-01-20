@@ -9,8 +9,6 @@
 
 namespace Inhere\Validate;
 
-use Inhere\Validate\Helper;
-
 /**
  * Class Validators
  * @package Inhere\Validate

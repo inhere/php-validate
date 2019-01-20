@@ -21,7 +21,7 @@ namespace Inhere\Validate\Filter;
  */
 class Filtration
 {
-    use DataFilteringTrait;
+    use FilteringTrait;
 
     /** @var array raw data */
     private $_data;

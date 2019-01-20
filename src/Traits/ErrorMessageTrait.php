@@ -9,6 +9,7 @@
 namespace Inhere\Validate\Traits;
 
 use Inhere\Validate\Helper;
+use Inhere\Validate\Validator\Messages;
 use Inhere\Validate\Validators;
 
 /**
@@ -19,91 +20,10 @@ use Inhere\Validate\Validators;
 trait ErrorMessageTrait
 {
     /**
-     * 默认的错误提示信息
+     * error messages map
      * @var array
      */
-    public static $messages = [
-        // 'int' 'integer'
-        'integer'    => '{attr} must be an integer!',
-        // 'num'
-        'number'     => [
-            '{attr} must be an integer greater than 0!',
-            '{attr} must be an integer and minimum value is {min}',
-            '{attr} must be an integer and in the range {min} ~ {max}',
-        ],
-        // 'bool', 'boolean',
-        'boolean'    => '{attr} must be is boolean!',
-        'float'      => '{attr} must be is float!',
-        'url'        => '{attr} is not a url address!',
-        'email'      => '{attr} is not a email address!',
-        'date'       => '{attr} is not a date format!',
-        'dateFormat' => '{attr} is not in a {value0} date format!',
-        'ip'         => '{attr} is not IP address!',
-        'ipv4'       => '{attr} is not a IPv4 address!',
-        'ipv6'       => '{attr} is not a IPv6 address!',
-        'required'   => 'parameter {attr} is required!',
-        'length'     => [
-            '{attr} length validation is not through!',
-            '{attr} must be an string/array and minimum length is {min}',
-            '{attr} must be an string/array and length range {min} ~ {max}',
-        ],
-        // 'range', 'between'
-        'size'       => [
-            '{attr} size validation is not through!',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
-            // '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
-            '{attr} must be in the range {min} ~ {max}',
-        ],
-
-        // 'lengthEq', 'sizeEq'
-        'fixedSize'  => '{attr} length must is {value0}',
-
-        'min'   => '{attr} minimum boundary is {value0}',
-        'max'   => '{attr} maximum boundary is {value0}',
-
-        // 'in', 'enum',
-        'enum'  => '{attr} must in ({value0})',
-        'notIn' => '{attr} cannot in ({value0})',
-
-        'string' => [
-            '{attr} must be a string',
-            '{attr} must be a string and minimum length be {min}',
-            '{attr} must be a string and length range must be {min} ~ {max}',
-        ],
-
-        // 'regex', 'regexp',
-        'regexp' => '{attr} does not match the {value0} conditions',
-
-        'mustBe' => '{attr} must be equals to {value0}',
-        'notBe'  => '{attr} can not be equals to {value0}',
-
-        'compare'  => '{attr} must be equals to {value0}',
-        'same'     => '{attr} must be equals to {value0}',
-        'equal'    => '{attr} must be equals to {value0}',
-
-        // 'different'
-        'notEqual' => '{attr} can not be equals to {value0}',
-
-        'isArray' => '{attr} must be an array',
-        'isMap'   => '{attr} must be an array and is key-value format',
-        'isList'  => '{attr} must be an array of nature',
-        'intList' => '{attr} must be an array and value is all integers',
-        'numList' => '{attr} must be an array and value is all numbers',
-        'strList' => '{attr} must be an array and value is all strings',
-        'arrList' => '{attr} must be an array and value is all arrays',
-
-        'each'     => '{attr} must be through the {value0} verify',
-        'hasKey'   => '{attr} must be contains the key {value0}',
-        'distinct' => 'there should not be duplicate keys in the {attr}',
-
-        'json' => '{attr} must be an json string',
-
-        'file'  => '{attr} must be an uploaded file',
-        'image' => '{attr} must be an uploaded image file',
-
-        'callback' => '{attr} don\'t pass the test and verify!',
-        '_'        => '{attr} validation is not through!',
-    ];
+    private $_messages = [];
 
     /**
      * attribute field translate list
@@ -318,26 +238,25 @@ trait ErrorMessageTrait
         return $this->_stopOnError;
     }
 
+    protected function prepareValidation()
+    {
+        $this->_translates = \array_merge($this->translates(), $this->_translates);
+        // error message
+        $this->_messages = \array_merge($this->messages(), $this->_messages);
+    }
+
     /*******************************************************************************
      * Error Messages
      ******************************************************************************/
 
     /**
-     * @return array
-     */
-    public static function getDefaultMessages(): array
-    {
-        return self::$messages;
-    }
-
-    /**
      * @param string       $key
-     * @param string|array $msg
+     * @param string|array $message
      */
-    public static function setDefaultMessage(string $key, $msg)
+    public function setMessage(string $key, $message)
     {
-        if ($key && $msg) {
-            self::$messages[$key] = $msg;
+        if ($key && $message) {
+            $this->_messages[$key] = $message;
         }
     }
 
@@ -346,7 +265,7 @@ trait ErrorMessageTrait
      */
     public function getMessages(): array
     {
-        return \array_merge(self::getDefaultMessages(), $this->messages());
+        return $this->_messages;
     }
 
     /**
@@ -356,7 +275,7 @@ trait ErrorMessageTrait
     public function setMessages(array $messages): self
     {
         foreach ($messages as $key => $value) {
-            self::setDefaultMessage($key, $value);
+            $this->setMessage($key, $value);
         }
 
         return $this;
@@ -372,35 +291,34 @@ trait ErrorMessageTrait
      */
     public function getMessage($validator, string $field, array $args = [], $message = null): string
     {
-        $rawName   = \is_string($validator) ? $validator : 'callback';
-        $validator = Validators::getRealName($rawName);
+        $rawName = \is_string($validator) ? $validator : 'callback';
+        $params  = [
+            '{attr}' => $this->getTranslate($field)
+        ];
 
-        // get message from default dict.
+        // get message from built in dict.
         if (!$message) {
-            // allow define a message for a validator. eg: 'username.required' => 'some message ...'
-            $fullKey  = $field . '.' . $rawName;
-            $messages = $this->getMessages();
-
-            if (isset($messages[$fullKey])) {
-                $message = $messages[$fullKey];
-            } elseif (isset($messages[$rawName])) {
-                $message = $messages[$rawName];
-            } else {
-                $message = $messages[$validator] ?? $messages['_'];
-            }
-
+            $message = $this->findMessage($field, $rawName) ?: Messages::getDefault();
             // is array. It's defined multi error messages
-        } elseif (\is_array($message) && isset($message[$rawName])) {
-            $message = $message[$rawName];
+        } elseif (\is_array($message)) {
+            $message = $message[$rawName] ?? $this->findMessage($field, $rawName);
+
+            if (!$message) { // use default
+                return \strtr(Messages::getDefault(), $params);
+            }
+        } else {
+            $message = (string)$message;
+        }
+
+        /** @see Messages::$messages['size'] */
+        if (\is_array($message)) {
+            $msgKey  = \count($params) - 1;
+            $message = $message[$msgKey] ?? $message[0];
         }
 
         if (\is_string($message) && false === \strpos($message, '{')) {
             return $message;
         }
-
-        $params = [
-            '{attr}' => $this->getTranslate($field)
-        ];
 
         foreach ($args as $key => $value) {
             $key = \is_int($key) ? "value{$key}" : $key;
@@ -408,13 +326,33 @@ trait ErrorMessageTrait
             $params['{' . $key . '}'] = \is_array($value) ? \implode(',', $value) : $value;
         }
 
-        // @see self::$messages['size']
-        if (\is_array($message)) {
-            $msgKey  = \count($params) - 1;
-            $message = $message[$msgKey] ?? $message[0];
+        return \strtr($message, $params);
+    }
+
+    /**
+     * @param string $field
+     * @param string $rawName
+     * @return string|array
+     */
+    protected function findMessage(string $field, string $rawName)
+    {
+        // allow define a message for a validator.
+        // eg: 'username.required' => 'some message ...'
+        $fullKey  = $field . '.' . $rawName;
+        $realName = Validators::getRealName($rawName);
+
+        if (isset($this->_messages[$fullKey])) {
+            $message = $this->_messages[$fullKey];
+            // eg 'required' => 'some message ...'
+        } elseif (isset($this->_messages[$rawName])) {
+            $message = $this->_messages[$rawName];
+        } elseif (isset($this->_messages[$realName])) {
+            $message = $this->_messages[$realName];
+        } else { // get from default
+            $message = Messages::get($realName);
         }
 
-        return \strtr($message, $params);
+        return $message;
     }
 
     /**
@@ -425,7 +363,17 @@ trait ErrorMessageTrait
     public function setTranslates(array $fieldTrans): self
     {
         $this->_translates = $fieldTrans;
+        return $this;
+    }
 
+    /**
+     * add the attrs translation data
+     * @param array $fieldTrans
+     * @return $this
+     */
+    public function addTranslates(array $fieldTrans): self
+    {
+        $this->_translates = \array_merge($this->_translates, $fieldTrans);
         return $this;
     }
 
@@ -434,13 +382,7 @@ trait ErrorMessageTrait
      */
     public function getTranslates(): array
     {
-        static $translates;
-
-        if (!$translates) {
-            $translates = \array_merge($this->translates(), $this->_translates);
-        }
-
-        return $translates;
+        return $this->_translates;
     }
 
     /**

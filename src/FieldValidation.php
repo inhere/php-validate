@@ -8,7 +8,6 @@
 
 namespace Inhere\Validate;
 
-use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Traits\StringRulesTrait;
 
 /**

@@ -121,7 +121,7 @@ trait StringRulesTrait
                 }
                 break;
             default:
-                $row  = \array_merge($row, Filters::explode($args));
+                $row = \array_merge($row, Filters::explode($args));
                 break;
         }
 
