@@ -115,13 +115,19 @@ trait ValidationTrait
     public function onBeforeValidate(\Closure $cb)
     {
         $this->_beforeHandler = $cb;
-
         return $this;
     }
 
-    public function beforeValidate()
+    public function beforeValidate(): bool
     {
+        $ok = true;
+
+        if ($cb = $this->_beforeHandler) {
+            $ok = $cb($this);
+        }
+
         // do something ...
+        return (bool)$ok;
     }
 
     /**
@@ -132,12 +138,14 @@ trait ValidationTrait
     public function onAfterValidate(\Closure $cb)
     {
         $this->_afterHandler = $cb;
-
         return $this;
     }
 
     public function afterValidate()
     {
+        if ($cb = $this->_afterHandler) {
+            $cb($this);
+        }
         // do something ...
     }
 
@@ -166,10 +174,9 @@ trait ValidationTrait
         $this->resetValidation(true);
         $this->setStopOnError($stopOnError);
         $this->prepareValidation();
-        $this->beforeValidate();
 
-        if ($cb = $this->_beforeHandler) {
-            $cb($this);
+        if (!$this->beforeValidate()) {
+            return $this;
         }
 
         if (!$onlyChecked) {
@@ -177,74 +184,7 @@ trait ValidationTrait
         }
 
         foreach ($this->collectRules() as $fields => $rule) {
-            $fields    = \is_string($fields) ? Filters::explode($fields) : (array)$fields;
-            $validator = \array_shift($rule);
-
-            // How to determine the property is empty(default use the Validators::isEmpty)
-            $isEmpty = [Validators::class, 'isEmpty'];
-            if (!empty($rule['isEmpty']) && (\is_string($rule['isEmpty']) || $rule['isEmpty'] instanceof \Closure)) {
-                $isEmpty = $rule['isEmpty'];
-            }
-
-            // Preconditions for verification -- If do not meet the conditions, skip this rule
-            $when = $rule['when'] ?? null;
-            if ($when && ($when instanceof \Closure) && $when($this->data, $this) !== true) {
-                continue;
-            }
-
-            // Whether to skip when empty(When not required). ref yii2
-            $skipOnEmpty = $rule['skipOnEmpty'] ?? $this->_skipOnEmpty;
-            $filters     = $rule['filter'] ?? null;  // filter
-            $defMsg      = $rule['msg'] ?? null; // Custom error message
-            $defValue    = $rule['default'] ?? null;// Allow default
-
-            // clear all keywords options. 0 is the validator
-            unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
-
-            // The rest are validator parameters. Some validators require parameters. e.g. size()
-            $args = $rule;
-
-            foreach ($fields as $field) {
-                if (!$field || ($onlyChecked && !\in_array($field, $onlyChecked, true))) {
-                    continue;
-                }
-
-                $value = $this->getByPath($field, $defValue);
-
-                if (\is_string($validator)) {
-                    if ($validator === 'safe') {
-                        $this->setSafe($field, $value);
-                        continue;
-                    }
-
-                    // required*系列字段检查 || 文件资源检查
-                    if (self::isCheckRequired($validator) || self::isCheckFile($validator)) {
-                        $result = $this->fieldValidate($field, $value, $validator, $args, $defMsg);
-
-                        if (false === $result && $this->isStopOnError()) {
-                            break;
-                        }
-
-                        continue;
-                    }
-                }
-
-                // skip On Empty && The value is empty
-                if ($skipOnEmpty && Helper::call($isEmpty, $value)) {
-                    continue;
-                }
-
-                // Field value filtering(有通配符`*`的字段, 不应用过滤器)
-                if ($filters && !\strpos($field, '.*')) {
-                    $value              = $this->valueFiltering($value, $filters);
-                    $this->data[$field] = $value;
-                }
-
-                // Field value verification check
-                if (!$this->valueValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
-                    break;
-                }
-            }
+            $this->applyRule($fields, $rule, $onlyChecked);
 
             // There is an error an immediate end to verify
             if ($this->isStopOnError() && $this->isFail()) {
@@ -259,21 +199,88 @@ trait ValidationTrait
 
         $this->afterValidate();
 
-        if ($cb = $this->_afterHandler) {
-            $cb($this);
-        }
-
         // fix : deny repeat validate
         $this->_validated = true;
         return $this;
     }
 
     /**
-     * apply validate rule
+     * apply validate rule for given fields
+     * @param string|array $fields
+     * @param array        $rule
+     * @param array        $onlyChecked
      */
-    protected function applyRule()
+    protected function applyRule($fields, array $rule, array $onlyChecked)
     {
-        // TODO
+        $fields    = \is_string($fields) ? Filters::explode($fields) : (array)$fields;
+        $validator = \array_shift($rule);
+
+        // How to determine the property is empty(default use the Validators::isEmpty)
+        $isEmpty = [Validators::class, 'isEmpty'];
+        if (!empty($rule['isEmpty']) && (\is_string($rule['isEmpty']) || $rule['isEmpty'] instanceof \Closure)) {
+            $isEmpty = $rule['isEmpty'];
+        }
+
+        // Preconditions for verification -- If do not meet the conditions, skip this rule
+        $when = $rule['when'] ?? null;
+        if ($when && ($when instanceof \Closure) && $when($this->data, $this) !== true) {
+            return;
+        }
+
+        // Whether to skip when empty(When not required). ref yii2
+        $skipOnEmpty = $rule['skipOnEmpty'] ?? $this->_skipOnEmpty;
+        $filters     = $rule['filter'] ?? null;  // filter
+        $defMsg      = $rule['msg'] ?? null; // Custom error message
+        $defValue    = $rule['default'] ?? null;// Allow default
+
+        // clear all keywords options. 0 is the validator
+        unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
+
+        // The rest are validator parameters. Some validators require parameters. e.g. size()
+        $args = $rule;
+
+        foreach ($fields as $field) {
+            if (!$field || ($onlyChecked && !\in_array($field, $onlyChecked, true))) {
+                continue;
+            }
+
+            $value = $this->getByPath($field, $defValue);
+
+            if (\is_string($validator)) {
+                if ($validator === 'safe') {
+                    $this->setSafe($field, $value);
+                    continue;
+                }
+
+                // required*系列字段检查 || 文件资源检查
+                if (self::isCheckRequired($validator) || self::isCheckFile($validator)) {
+                    $result = $this->fieldValidate($field, $value, $validator, $args, $defMsg);
+
+                    if (false === $result && $this->isStopOnError()) {
+                        break;
+                    }
+
+                    continue;
+                }
+            }
+
+            // skip On Empty && The value is empty
+            if ($skipOnEmpty && Helper::call($isEmpty, $value)) {
+                continue;
+            }
+
+            // Field value filtering(有通配符`*`的字段, 不应用过滤器)
+            if ($filters && !\strpos($field, '.*')) {
+                $value = $this->valueFiltering($value, $filters);
+                // save
+                $this->data[$field] = $value;
+            }
+
+            // Field value verification check
+            if (!$this->valueValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
+                break;
+            }
+        }
     }
 
     /**
