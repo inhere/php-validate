@@ -12,7 +12,7 @@ namespace Inhere\Validate\Validator;
  * Class Messages
  * @package Inhere\Validate
  */
-class Messages
+final class Messages
 {
     /**
      * Default error messages
@@ -54,8 +54,23 @@ class Messages
         // 'lengthEq', 'sizeEq'
         'fixedSize'  => '{attr} length must is {value0}',
 
+        'eq'    => '{attr} must be equals to {value0}',
+        // 'different'
+        'ne'    => '{attr} can not be equals to {value0}',
         'min'   => '{attr} minimum boundary is {value0}',
         'max'   => '{attr} maximum boundary is {value0}',
+        'lt'    => '{attr} value must be less than {value0}',
+        'lte'   => '{attr} value must be less than or equals to {value0}',
+        'gt'    => '{attr} value must be greater than or equals to {value0}',
+        'gte'   => '{attr} value must be greater than or equals to {value0}',
+
+        // field compare
+        'eqField'   => '{attr} value must be less than {value0}',
+        'neqField'  => '{attr} value must be less than {value0}',
+        'ltField'   => '{attr} value must be less than {value0}',
+        'lteField'   => '{attr} value must be less than or equals to {value0}',
+        'gtField'   => '{attr} value must be greater than {value0}',
+        'gteField'   => '{attr} value must be greater than or equals to {value0}',
 
         // 'in', 'enum',
         'enum'  => '{attr} must in ({value0})',
@@ -73,12 +88,8 @@ class Messages
         'mustBe' => '{attr} must be equals to {value0}',
         'notBe'  => '{attr} can not be equals to {value0}',
 
-        'compare'  => '{attr} must be equals to {value0}',
-        'same'     => '{attr} must be equals to {value0}',
-        'equal'    => '{attr} must be equals to {value0}',
-
-        // 'different'
-        'notEqual' => '{attr} can not be equals to {value0}',
+        'compare' => '{attr} must be equals to {value0}',
+        'same'    => '{attr} must be equals to {value0}',
 
         'isArray' => '{attr} must be an array',
         'isMap'   => '{attr} must be an array and is key-value format',
@@ -135,7 +146,7 @@ class Messages
      * @param string       $key
      * @param string|array $msg
      */
-    public static function setMessage(string $key, $msg)
+    public static function set(string $key, $msg)
     {
         if ($key && $msg) {
             self::$messages[$key] = $msg;
@@ -148,7 +159,7 @@ class Messages
     public static function setMessages(array $messages)
     {
         foreach ($messages as $key => $value) {
-            self::setMessage($key, $value);
+            self::set($key, $value);
         }
     }
 

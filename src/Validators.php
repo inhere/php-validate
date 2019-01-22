@@ -18,7 +18,7 @@ class Validators
     /**
      * @var array
      */
-    private static $validatorAliases = [
+    private static $aliases = [
         // alias => real name.
         'int'         => 'integer',
         'num'         => 'number',
@@ -27,22 +27,27 @@ class Validators
         'greaterThan' => 'gt',
         'lessThan'    => 'lt',
         'mustBe'      => 'eq',
+        'equal'       => 'eq',
         'notBe'       => 'neq',
+        'notEqual'    => 'neq',
+        'ne'          => 'neq',
         'range'       => 'size',
         'between'     => 'size',
         'len'         => 'length',
         'lenEq'       => 'fixedSize',
         'lengthEq'    => 'fixedSize',
         'sizeEq'      => 'fixedSize',
+        'neField'     => 'neqField',
         'diff'        => 'neqField',
-        'notEqual'    => 'neqField',
         'different'   => 'neqField',
+        'equalField'  => 'eqField',
         'map'         => 'isMap',
         'list'        => 'isList',
         'array'       => 'isArray',
         'absUrl'      => 'absoluteUrl',
-        'equalField'  => 'eqField',
-        // 'ints' => 'intList',
+        'ints'        => 'intList',
+        'stringList'  => 'strList',
+        'strings'     => 'strList',
     ];
 
     public function get(string $name)
@@ -57,15 +62,15 @@ class Validators
      */
     public static function getRealName(string $validator): string
     {
-        return self::$validatorAliases[$validator] ?? $validator;
+        return self::$aliases[$validator] ?? $validator;
     }
 
     /**
      * @return array
      */
-    public static function getValidatorAliases(): array
+    public static function getAliases(): array
     {
-        return self::$validatorAliases;
+        return self::$aliases;
     }
 
     /*******************************************************************************

@@ -437,7 +437,33 @@ trait ScopedValidatorsTrait
         return $compareField && ($val !== $this->getByPath($compareField));
     }
 
-    // TODO: gtFiled, ltField, gteField, lteField
+    // TODO: ltField, lteField
+
+    /**
+     * 字段值比较：当前字段值 要小于 给定字段的值
+     * @param string|int $val
+     * @param string     $compareField
+     * @return bool
+     */
+    public function ltFieldValidator($val, string $compareField): bool
+    {
+        $minVal = $this->getByPath($compareField);
+
+        return Validators::gt($val, $minVal);
+    }
+
+    /**
+     * 字段值比较：当前字段值 要小于等于 给定字段的值
+     * @param string|int $val
+     * @param string     $compareField
+     * @return bool
+     */
+    public function lteFieldValidator($val, string $compareField): bool
+    {
+        $minVal = $this->getByPath($compareField);
+
+        return Validators::gte($val, $minVal);
+    }
 
     /**
      * 字段值比较：当前字段值 要大于 给定字段的值
@@ -572,7 +598,7 @@ trait ScopedValidatorsTrait
      * @param string $field
      * @return array|null
      */
-    public function getUploadedFile($field)
+    public function getUploadedFile(string $field)
     {
         return $this->uploadedFiles[$field] ?? null;
     }
