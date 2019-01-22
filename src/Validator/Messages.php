@@ -122,6 +122,17 @@ final class Messages
     }
 
     /**
+     * @param string       $key
+     * @param string|array $msg
+     */
+    public static function set(string $key, $msg)
+    {
+        if ($key && $msg) {
+            self::$messages[$key] = $msg;
+        }
+    }
+
+    /**
      * @param string $key
      * @return bool
      */
@@ -136,21 +147,6 @@ final class Messages
     public static function getDefault(): string
     {
         return self::$messages['__default'];
-    }
-
-    /*******************************************************************************
-     * Error Messages
-     ******************************************************************************/
-
-    /**
-     * @param string       $key
-     * @param string|array $msg
-     */
-    public static function set(string $key, $msg)
-    {
-        if ($key && $msg) {
-            self::$messages[$key] = $msg;
-        }
     }
 
     /**

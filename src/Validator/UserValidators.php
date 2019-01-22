@@ -26,7 +26,9 @@ final class UserValidators
      */
     public static function set(string $name, callable $callback)
     {
-        self::$validators[$name] = $callback;
+        if ($name = \trim($name)) {
+            self::$validators[$name] = $callback;
+        }
     }
 
     /**

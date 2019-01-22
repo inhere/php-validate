@@ -437,8 +437,6 @@ trait ScopedValidatorsTrait
         return $compareField && ($val !== $this->getByPath($compareField));
     }
 
-    // TODO: ltField, lteField
-
     /**
      * 字段值比较：当前字段值 要小于 给定字段的值
      * @param string|int $val
@@ -447,9 +445,13 @@ trait ScopedValidatorsTrait
      */
     public function ltFieldValidator($val, string $compareField): bool
     {
-        $minVal = $this->getByPath($compareField);
+        $maxVal = $this->getByPath($compareField);
 
-        return Validators::gt($val, $minVal);
+        if ($maxVal === null) {
+            return false;
+        }
+
+        return Validators::lt($val, $maxVal);
     }
 
     /**
@@ -460,9 +462,13 @@ trait ScopedValidatorsTrait
      */
     public function lteFieldValidator($val, string $compareField): bool
     {
-        $minVal = $this->getByPath($compareField);
+        $maxVal = $this->getByPath($compareField);
 
-        return Validators::gte($val, $minVal);
+        if ($maxVal === null) {
+            return false;
+        }
+
+        return Validators::lte($val, $maxVal);
     }
 
     /**
@@ -474,6 +480,10 @@ trait ScopedValidatorsTrait
     public function gtFieldValidator($val, string $compareField): bool
     {
         $minVal = $this->getByPath($compareField);
+
+        if ($minVal === null) {
+            return false;
+        }
 
         return Validators::gt($val, $minVal);
     }
@@ -487,6 +497,10 @@ trait ScopedValidatorsTrait
     public function gteFieldValidator($val, string $compareField): bool
     {
         $minVal = $this->getByPath($compareField);
+
+        if ($minVal === null) {
+            return false;
+        }
 
         return Validators::gte($val, $minVal);
     }
