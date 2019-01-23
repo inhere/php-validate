@@ -122,7 +122,7 @@ class ValidatorsTest extends TestCase
             ['true', true],
         ];
 
-        foreach ($samples as [$val, $want]) {
+        foreach ($samples as list($val, $want)) {
             $this->assertSame($want, Validators::accepted($val));
         }
     }
