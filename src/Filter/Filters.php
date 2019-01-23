@@ -108,9 +108,9 @@ final class Filters
     /**
      * 过滤器删除浮点数中所有非法的字符。
      * @note 该过滤器默认允许所有数字以及 + -
-     * @param mixed   $val 要过滤的变量
+     * @param mixed    $val 要过滤的变量
      * @param null|int $decimal
-     * @param int     $flags 标志
+     * @param int      $flags 标志
      *                    FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
      *                    FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）

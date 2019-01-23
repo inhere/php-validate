@@ -21,9 +21,12 @@ class UserValidatorsTest extends TestCase
     {
         UserValidators::removeAll();
         UserValidators::setValidators([
-            'name1' => function() {},
-            'name2' => function() {},
-            '' => function() {},
+            'name1' => function () {
+            },
+            'name2' => function () {
+            },
+            ''      => function () {
+            },
         ]);
 
         $this->assertCount(2, UserValidators::getValidators());

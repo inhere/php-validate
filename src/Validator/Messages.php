@@ -54,27 +54,27 @@ final class Messages
         // 'lengthEq', 'sizeEq'
         'fixedSize'  => '{attr} length must is {value0}',
 
-        'eq'    => '{attr} must be equals to {value0}',
+        'eq'       => '{attr} must be equals to {value0}',
         // 'different'
-        'ne'    => '{attr} can not be equals to {value0}',
-        'min'   => '{attr} minimum boundary is {value0}',
-        'max'   => '{attr} maximum boundary is {value0}',
-        'lt'    => '{attr} value must be less than {value0}',
-        'lte'   => '{attr} value must be less than or equals to {value0}',
-        'gt'    => '{attr} value must be greater than or equals to {value0}',
-        'gte'   => '{attr} value must be greater than or equals to {value0}',
+        'ne'       => '{attr} can not be equals to {value0}',
+        'min'      => '{attr} minimum boundary is {value0}',
+        'max'      => '{attr} maximum boundary is {value0}',
+        'lt'       => '{attr} value must be less than {value0}',
+        'lte'      => '{attr} value must be less than or equals to {value0}',
+        'gt'       => '{attr} value must be greater than or equals to {value0}',
+        'gte'      => '{attr} value must be greater than or equals to {value0}',
 
         // field compare
-        'eqField'   => '{attr} value must be less than {value0}',
-        'neqField'  => '{attr} value must be less than {value0}',
-        'ltField'   => '{attr} value must be less than {value0}',
-        'lteField'   => '{attr} value must be less than or equals to {value0}',
-        'gtField'   => '{attr} value must be greater than {value0}',
-        'gteField'   => '{attr} value must be greater than or equals to {value0}',
+        'eqField'  => '{attr} value must be less than {value0}',
+        'neqField' => '{attr} value must be less than {value0}',
+        'ltField'  => '{attr} value must be less than {value0}',
+        'lteField' => '{attr} value must be less than or equals to {value0}',
+        'gtField'  => '{attr} value must be greater than {value0}',
+        'gteField' => '{attr} value must be greater than or equals to {value0}',
 
         // 'in', 'enum',
-        'enum'  => '{attr} must in ({value0})',
-        'notIn' => '{attr} cannot in ({value0})',
+        'enum'     => '{attr} must in ({value0})',
+        'notIn'    => '{attr} cannot in ({value0})',
 
         'string' => [
             '{attr} must be a string',
