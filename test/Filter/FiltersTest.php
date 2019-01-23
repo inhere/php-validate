@@ -11,6 +11,22 @@ use PHPUnit\Framework\TestCase;
  */
 class FiltersTest extends TestCase
 {
+    public function testAliases()
+    {
+        $this->assertTrue(Filters::hasAlias('str2list'));
+        $this->assertSame('explode', Filters::realName('str2list'));
+
+        $this->assertFalse(Filters::hasAlias('not-exist'));
+        $this->assertSame('not-exist', Filters::realName('not-exist'));
+
+        $this->assertFalse(Filters::hasAlias('new-key'));
+        Filters::setAliases([
+            'new-key' => 'new-val',
+        ]);
+        $this->assertTrue(Filters::hasAlias('new-key'));
+        $this->assertSame('new-val', Filters::realName('new-key'));
+    }
+
     public function testInteger()
     {
         $this->assertSame(Filters::integer('456'), 456);

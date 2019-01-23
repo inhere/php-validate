@@ -8,6 +8,8 @@
 
 namespace Inhere\Validate\Filter;
 
+use Inhere\Validate\Helper;
+
 /**
  * Trait FilteringTrait
  * @package Inhere\Validate\Filter
@@ -16,25 +18,6 @@ trait FilteringTrait
 {
     /** @var array user custom filters */
     private $_filters = [];
-
-    /** @var array filter aliases map */
-    private static $filterAliases = [
-        'substr'       => 'subStr',
-        'substring'    => 'subStr',
-        'str2list'     => 'explode',
-        'str2array'    => 'explode',
-        'string2list'  => 'explode',
-        'string2array' => 'explode',
-        'toUpper'      => 'uppercase',
-        'str2upper'    => 'uppercase',
-        'strToUpper'   => 'uppercase',
-        'toLower'      => 'lowercase',
-        'str2lower'    => 'lowercase',
-        'strToLower'   => 'lowercase',
-        'clearNl'      => 'clearNewline',
-        'str2time'     => 'strToTime',
-        'strtotime'    => 'strToTime',
-    ];
 
     /**
      * value sanitize 直接对给的值进行过滤
@@ -91,7 +74,7 @@ trait FilteringTrait
     protected function callStringCallback(string $filter, ...$args)
     {
         // if is alias name
-        $filterName = isset(self::$filterAliases[$filter]) ? self::$filterAliases[$filter] : $filter;
+        $filterName = self::$filterAliases[$filter] ?? $filter;
 
         // if $filter is a custom by addFiler()
         if ($callback = $this->getFilter($filter)) {
@@ -130,11 +113,7 @@ trait FilteringTrait
      */
     public function getFilter(string $name)
     {
-        if (isset($this->_filters[$name])) {
-            return $this->_filters[$name];
-        }
-
-        return null;
+        return $this->_filters[$name] ?? null;
     }
 
     /**
@@ -161,19 +140,16 @@ trait FilteringTrait
 
     /**
      * @param string $name
-     * @return $this
      */
-    public function delFilter(string $name): self
+    public function delFilter(string $name)
     {
         if (isset($this->_filters[$name])) {
             unset($this->_filters[$name]);
         }
-
-        return $this;
     }
 
     /**
-     * clear Filters
+     * clear filters
      */
     public function clearFilters()
     {
@@ -186,6 +162,14 @@ trait FilteringTrait
     public function getFilters(): array
     {
         return $this->_filters;
+    }
+
+    /**
+     * @param array $filters
+     */
+    public function addFilters(array $filters)
+    {
+        $this->_filters = \array_merge($this->_filters, $filters);
     }
 
     /**

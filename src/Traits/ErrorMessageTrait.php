@@ -55,6 +55,14 @@ trait ErrorMessageTrait
      */
     private $_prettifyName = true;
 
+    protected function prepareValidation()
+    {
+        // error message
+        $this->_messages = \array_merge($this->messages(), $this->_messages);
+        // field translate
+        $this->_translates = \array_merge($this->translates(), $this->_translates);
+    }
+
     /*******************************************************************************
      * Errors Information
      ******************************************************************************/
@@ -145,7 +153,6 @@ trait ErrorMessageTrait
                 return true;
             }
         }
-
         return false;
     }
 
@@ -182,12 +189,11 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @return $this
+     * clear errors
      */
-    public function clearErrors(): self
+    public function clearErrors()
     {
         $this->_errors = [];
-        return $this;
     }
 
     /**
@@ -196,11 +202,10 @@ trait ErrorMessageTrait
      * @param bool $onlyMsg
      * @return array|string
      */
-    public function firstError($onlyMsg = true)
+    public function firstError(bool $onlyMsg = true)
     {
         $errors = $this->_errors;
         $first  = \array_shift($errors);
-
         return $onlyMsg ? $first['msg'] : $first;
     }
 
@@ -209,11 +214,10 @@ trait ErrorMessageTrait
      * @param bool $onlyMsg
      * @return array|string
      */
-    public function lastError($onlyMsg = true)
+    public function lastError(bool $onlyMsg = true)
     {
-        $e    = $this->_errors;
-        $last = \array_pop($e);
-
+        $ers  = $this->_errors;
+        $last = \array_pop($ers);
         return $onlyMsg ? $last['msg'] : $last;
     }
 
@@ -236,13 +240,6 @@ trait ErrorMessageTrait
     public function isStopOnError(): bool
     {
         return $this->_stopOnError;
-    }
-
-    protected function prepareValidation()
-    {
-        $this->_translates = \array_merge($this->translates(), $this->_translates);
-        // error message
-        $this->_messages = \array_merge($this->messages(), $this->_messages);
     }
 
     /*******************************************************************************
@@ -277,7 +274,6 @@ trait ErrorMessageTrait
         foreach ($messages as $key => $value) {
             $this->setMessage($key, $value);
         }
-
         return $this;
     }
 
@@ -339,7 +335,7 @@ trait ErrorMessageTrait
         // allow define a message for a validator.
         // eg: 'username.required' => 'some message ...'
         $fullKey  = $field . '.' . $rawName;
-        $realName = Validators::getRealName($rawName);
+        $realName = Validators::realName($rawName);
 
         if (isset($this->_messages[$fullKey])) {
             $message = $this->_messages[$fullKey];
@@ -362,8 +358,7 @@ trait ErrorMessageTrait
      */
     public function setTranslates(array $fieldTrans): self
     {
-        $this->_translates = $fieldTrans;
-        return $this;
+        return $this->addTranslates($fieldTrans);
     }
 
     /**
@@ -373,7 +368,9 @@ trait ErrorMessageTrait
      */
     public function addTranslates(array $fieldTrans): self
     {
-        $this->_translates = \array_merge($this->_translates, $fieldTrans);
+        foreach ($fieldTrans as $field => $tran) {
+            $this->_translates[$field] = $tran;
+        }
         return $this;
     }
 
@@ -403,6 +400,14 @@ trait ErrorMessageTrait
         }
 
         return $field;
+    }
+
+    /**
+     * @return array
+     */
+    public function clearTranslates(): array
+    {
+        return $this->_translates = [];
     }
 
     /**

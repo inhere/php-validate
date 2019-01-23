@@ -2,7 +2,7 @@
 /**
  * Created by PhpStorm.
  * User: inhere
- * Date: 2017-11-07
+ * Date: 2015-08-11
  * Time: 10:23
  */
 
@@ -20,22 +20,19 @@ interface ValidationInterface
     public function rules();
 
     /**
-     * define attribute field translate list
-     * @return array
-     */
-    public function translates();
-
-    /**
-     * 自定义验证器的默认错误消息格式
      * custom validator's message, to override default message.
      * @return array
      */
     public function messages();
 
     /**
-     * 进行数据验证
-     * @author inhere
-     * @date   2015-08-11
+     * define attribute field translate list
+     * @return array
+     */
+    public function translates();
+
+    /**
+     * Data validation
      * @param  array     $onlyChecked 可以设置此次需要验证的字段
      * @param  bool|null $stopOnError 是否出现错误即停止验证
      * @return static
@@ -75,7 +72,7 @@ interface ValidationInterface
      * @param bool $onlyMsg Only return message string.
      * @return array|string
      */
-    public function firstError($onlyMsg = true);
+    public function firstError(bool $onlyMsg = true);
 
     /**
      * 得到最后一个错误信息
@@ -83,7 +80,7 @@ interface ValidationInterface
      * @param bool $onlyMsg
      * @return array|string
      */
-    public function lastError($onlyMsg = true);
+    public function lastError(bool $onlyMsg = true);
 
     /**
      * @return array

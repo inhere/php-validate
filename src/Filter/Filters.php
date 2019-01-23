@@ -7,6 +7,7 @@
 namespace Inhere\Validate\Filter;
 
 use Inhere\Validate\Helper;
+use Inhere\Validate\Traits\NameAliasTrait;
 
 /**
  * Class Filters
@@ -14,7 +15,26 @@ use Inhere\Validate\Helper;
  */
 final class Filters
 {
-    // TODO manage aliases
+    use NameAliasTrait;
+
+    /** @var array filter aliases map */
+    private static $aliases = [
+        'substr'       => 'subStr',
+        'substring'    => 'subStr',
+        'str2list'     => 'explode',
+        'str2array'    => 'explode',
+        'string2list'  => 'explode',
+        'string2array' => 'explode',
+        'toUpper'      => 'uppercase',
+        'str2upper'    => 'uppercase',
+        'strToUpper'   => 'uppercase',
+        'toLower'      => 'lowercase',
+        'str2lower'    => 'lowercase',
+        'strToLower'   => 'lowercase',
+        'clearNl'      => 'clearNewline',
+        'str2time'     => 'strToTime',
+        'strtotime'    => 'strToTime',
+    ];
 
     /**
      * don't allow create instance.
@@ -88,9 +108,9 @@ final class Filters
     /**
      * 过滤器删除浮点数中所有非法的字符。
      * @note 该过滤器默认允许所有数字以及 + -
-     * @param  mixed   $val 要过滤的变量
+     * @param mixed   $val 要过滤的变量
      * @param null|int $decimal
-     * @param  int     $flags 标志
+     * @param int     $flags 标志
      *                    FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
      *                    FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
      *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
@@ -108,7 +128,7 @@ final class Filters
         $new = \strpos($ret, '.') ? (float)$ret : $ret;
 
         if (\is_int($decimal)) {
-            return round($new, $decimal);
+            return \round($new, $decimal);
         }
 
         return $new;
@@ -263,7 +283,7 @@ final class Filters
             return \mb_convert_case($str, \MB_CASE_TITLE);
         }
 
-        return \ucwords(Filters::lowercase($str));
+        return \ucwords(self::lowercase($str));
     }
 
     /**
@@ -285,7 +305,7 @@ final class Filters
      * @param string $sep
      * @return string
      */
-    public static function snakeCase($val, $sep = '_'): string
+    public static function snakeCase($val, string $sep = '_'): string
     {
         if (!$val || !\is_string($val)) {
             return '';
@@ -442,7 +462,7 @@ final class Filters
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
      * @return string
      */
-    public static function encoded($val, $flags = 0): string
+    public static function encoded(string $val, int $flags = 0): string
     {
         $settings = [];
 
@@ -458,7 +478,7 @@ final class Filters
      * @param  string $val
      * @return string
      */
-    public static function quotes($val): string
+    public static function quotes(string $val): string
     {
         return (string)\filter_var($val, \FILTER_SANITIZE_MAGIC_QUOTES);
     }

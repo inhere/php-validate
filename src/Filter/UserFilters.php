@@ -25,11 +25,7 @@ final class UserFilters
      */
     public static function get(string $name)
     {
-        if (isset(self::$filters[$name])) {
-            return self::$filters[$name];
-        }
-
-        return null;
+        return self::$filters[$name] ?? null;
     }
 
     /**
@@ -49,7 +45,9 @@ final class UserFilters
      */
     public static function set(string $name, callable $filter)
     {
-        self::$filters[$name] = $filter;
+        if ($name) {
+            self::$filters[$name] = $filter;
+        }
     }
 
     /**
@@ -72,17 +70,11 @@ final class UserFilters
     /**
      * @param array $filters
      */
-    public static function addFilters(array $filters)
-    {
-        self::$filters = \array_merge(self::$filters, $filters);
-    }
-
-    /**
-     * @param array $filters
-     */
     public static function setFilters(array $filters)
     {
-        self::$filters = $filters;
+        foreach ($filters as $name => $filter) {
+            self::set($name, $filter);
+        }
     }
 
     /**

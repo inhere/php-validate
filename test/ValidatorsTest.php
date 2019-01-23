@@ -1,4 +1,5 @@
 <?php
+
 namespace Inhere\ValidateTest;
 
 use Inhere\Validate\Validators;
@@ -6,10 +7,10 @@ use PHPUnit\Framework\TestCase;
 
 class ValidatorsTest extends TestCase
 {
-    public function testAlias()
+    public function testAliases()
     {
-        $this->assertSame('neqField', Validators::getRealName('diff'));
-        $this->assertSame('not-exist', Validators::getRealName('not-exist'));
+        $this->assertSame('neqField', Validators::realName('diff'));
+        $this->assertSame('not-exist', Validators::realName('not-exist'));
     }
 
     public function testIsEmpty()
@@ -99,24 +100,31 @@ class ValidatorsTest extends TestCase
 
     public function testAccepted()
     {
-        $this->assertFalse(Validators::accepted(5));
-        $this->assertFalse(Validators::accepted('5'));
-        $this->assertFalse(Validators::accepted('no'));
-        $this->assertFalse(Validators::accepted('off'));
-        $this->assertFalse(Validators::accepted('OFF'));
-        $this->assertFalse(Validators::accepted('0'));
-        $this->assertFalse(Validators::accepted(0));
-        $this->assertFalse(Validators::accepted(false));
-        $this->assertFalse(Validators::accepted('false'));
+        $samples = [
+            [5, false],
+            ['5', false],
+            ['no', false],
+            ['off', false],
+            ['OFF', false],
+            [0, false],
+            ['0', false],
+            [false, false],
+            ['false', false],
 
-        $this->assertTrue(Validators::accepted('yes'));
-        $this->assertTrue(Validators::accepted('Yes'));
-        $this->assertTrue(Validators::accepted('on'));
-        $this->assertTrue(Validators::accepted('ON'));
-        $this->assertTrue(Validators::accepted('1'));
-        $this->assertTrue(Validators::accepted(1));
-        $this->assertTrue(Validators::accepted(true));
-        $this->assertTrue(Validators::accepted('true'));
+            ['yes', true],
+            ['Yes', true],
+            ['YES', true],
+            ['on', true],
+            ['ON', true],
+            ['1', true],
+            [1, true],
+            [true, true],
+            ['true', true],
+        ];
+
+        foreach ($samples as [$val, $want]) {
+            $this->assertSame($want, Validators::accepted($val));
+        }
     }
 
     public function testAlphaNum()
@@ -185,21 +193,21 @@ class ValidatorsTest extends TestCase
         // gt
         $this->assertTrue(Validators::gt(6, 5));
         $this->assertTrue(Validators::gt('abc', 'ab'));
-        $this->assertTrue(Validators::gt([1,2], [2]));
+        $this->assertTrue(Validators::gt([1, 2], [2]));
         $this->assertFalse(Validators::gt(4, 4));
         $this->assertFalse(Validators::gt(3, 4));
 
         // gte
         $this->assertTrue(Validators::gte(6, 5));
         $this->assertTrue(Validators::gte('abc', 'ab'));
-        $this->assertTrue(Validators::gte([1,2], [2]));
+        $this->assertTrue(Validators::gte([1, 2], [2]));
         $this->assertTrue(Validators::gte(4, 4));
         $this->assertFalse(Validators::gte(2, 4));
 
         // lt
         $samples = [
             [5, 6, true],
-            [[1], [1,'a'], true],
+            [[1], [1, 'a'], true],
             ['a', 'ab', true],
             [6, 6, false],
             [[1], [1], false],
@@ -213,7 +221,7 @@ class ValidatorsTest extends TestCase
         // lte
         $samples = [
             [5, 6, true],
-            [[1], [1,'a'], true],
+            [[1], [1, 'a'], true],
             ['a', 'ab', true],
             [6, 6, true],
             [[1], [1], true],

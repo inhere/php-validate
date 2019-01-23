@@ -9,12 +9,16 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Traits\NameAliasTrait;
+
 /**
  * Class Validators
  * @package Inhere\Validate
  */
 class Validators
 {
+    use NameAliasTrait;
+
     /**
      * @var array
      */
@@ -49,29 +53,6 @@ class Validators
         'stringList'  => 'strList',
         'strings'     => 'strList',
     ];
-
-    public function get(string $name)
-    {
-
-    }
-
-    /**
-     * get real validator name by alias name
-     * @param string $validator
-     * @return string
-     */
-    public static function getRealName(string $validator): string
-    {
-        return self::$aliases[$validator] ?? $validator;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getAliases(): array
-    {
-        return self::$aliases;
-    }
 
     /*******************************************************************************
      * Validators
@@ -298,7 +279,7 @@ class Validators
     }
 
     /**
-     * 验证的字段必须为 yes、 on、 1、true。这在确认「服务条款」是否同意时相当有用。
+     * 验证的字段必须为 yes, on, 1, true 这在确认「服务条款」是否同意时相当有用。
      * @from laravel
      * @param mixed $val
      * @return bool
@@ -309,7 +290,7 @@ class Validators
             return false;
         }
 
-        return false !== \stripos(Helper::IS_TRUE, (string)$val);
+        return false !== \stripos(Helper::IS_TRUE, '|' . $val . '|');
     }
 
     /**
@@ -424,6 +405,28 @@ class Validators
         return Helper::compareSize($val, '<=', $expected);
     }
 
+    /**
+     * 最小值检查
+     * @param  int|string|array $val
+     * @param  integer          $minRange
+     * @return bool
+     */
+    public static function min($val, $minRange): bool
+    {
+        return self::size($val, (int)$minRange);
+    }
+
+    /**
+     * 最大值检查
+     * @param  int|string|array $val
+     * @param  int              $maxRange
+     * @return bool
+     */
+    public static function max($val, $maxRange): bool
+    {
+        return self::size($val, null, (int)$maxRange);
+    }
+
     /*******************************************************************************
      * size/range/length validators
      ******************************************************************************/
@@ -467,28 +470,6 @@ class Validators
     public static function range($val, $min = null, $max = null): bool
     {
         return self::size($val, $min, $max);
-    }
-
-    /**
-     * 最小值检查
-     * @param  int|string|array $val
-     * @param  integer          $minRange
-     * @return bool
-     */
-    public static function min($val, $minRange): bool
-    {
-        return self::size($val, (int)$minRange);
-    }
-
-    /**
-     * 最大值检查
-     * @param  int|string|array $val
-     * @param  int              $maxRange
-     * @return bool
-     */
-    public static function max($val, $maxRange): bool
-    {
-        return self::size($val, null, (int)$maxRange);
     }
 
     /**

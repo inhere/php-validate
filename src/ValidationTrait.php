@@ -29,7 +29,7 @@ trait ValidationTrait
     /** @var array Through the validation of the data */
     private $_safeData = [];
 
-    /** @var bool */
+    /** @var bool Mark validate has running */
     private $_validated = false;
 
     /** @var \Closure before validate handler */
@@ -42,7 +42,14 @@ trait ValidationTrait
     protected $_usedRules = [];
 
     /**
-     * setting current scenario name
+     * Whether to skip when empty(When not required)
+     * default is TRUE, need you manual add 'required'.
+     * @var bool
+     */
+    private $_skipOnEmpty = true;
+
+    /**
+     * Setting current scenario name
      * 当前验证的场景 -- 如果需要让规则列表在多个类似情形下使用
      * (
      * e.g: 在MVC框架中，
@@ -52,13 +59,6 @@ trait ValidationTrait
      * @var string
      */
     protected $scene = '';
-
-    /**
-     * Whether to skip when empty(When not required)
-     * default is TRUE, need you manual add 'required'.
-     * @var bool
-     */
-    private $_skipOnEmpty = true;
 
     /**
      * @return array
@@ -352,7 +352,7 @@ trait ValidationTrait
             $args[] = $this->data;
             $passed = $validator($value, ...$args);
         } elseif (\is_string($validator)) {
-            $realName = Validators::getRealName($validator);
+            $realName = Validators::realName($validator);
             // is global user validator
             if ($callback = $this->getValidator($validator)) {
                 $args[] = $this->data;
