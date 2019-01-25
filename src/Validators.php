@@ -41,10 +41,12 @@ class Validators
         'lenEq'       => 'fixedSize',
         'lengthEq'    => 'fixedSize',
         'sizeEq'      => 'fixedSize',
+        //
         'neField'     => 'neqField',
         'diff'        => 'neqField',
         'different'   => 'neqField',
         'equalField'  => 'eqField',
+        //
         'map'         => 'isMap',
         'list'        => 'isList',
         'array'       => 'isArray',
@@ -219,7 +221,7 @@ class Validators
     }
 
     /**
-     * @see Validators::integer()
+     * @see integer()
      * {@inheritdoc}
      */
     public static function int($val, $min = null, $max = null, $flags = 0): bool
@@ -249,7 +251,7 @@ class Validators
     }
 
     /**
-     * @see Validators::number()
+     * @see number()
      * {@inheritdoc}
      */
     public static function num($val, $min = null, $max = null, $flags = 0): bool
@@ -334,6 +336,16 @@ class Validators
     /*******************************************************************************
      * value size compare validators
      ******************************************************************************/
+
+    /**
+     * @param $val
+     * @param $expected
+     * @return bool
+     */
+    public static function same($val, $expected): bool
+    {
+        return self::eq($val, $expected);
+    }
 
     /**
      * Must be equal to the given value

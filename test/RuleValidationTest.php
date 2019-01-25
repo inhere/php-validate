@@ -9,6 +9,21 @@ use PHPUnit\Framework\TestCase;
  */
 class RuleValidationTest extends TestCase
 {
+    public function testBasic()
+    {
+        $v = Validation::make([
+            'key' => 'val',
+        ]);
+
+        $this->assertTrue($v->has('key'));
+        $this->assertSame('val', $v->get('key'));
+        $this->assertNotEmpty($v->all());
+
+        $this->assertFalse($v->has('key1'));
+        $v->setValue('key1', 'val1');
+        $this->assertTrue($v->has('key1'));
+    }
+
     public function testRequired()
     {
         $data = [

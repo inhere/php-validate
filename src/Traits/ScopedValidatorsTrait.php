@@ -38,21 +38,22 @@ trait ScopedValidatorsTrait
 
     /**
      * add a custom validator
+     *
      * ```
-     * $vd = ValidatorClass::make($_POST)
-     *     ->addValidator('name',function($val [, $arg1, $arg2 ... ]){
+     * $v = Validation::make($_POST)
+     *     ->addValidator('my-validator', function($val [, $arg1, $arg2 ... ]){
      *           return $val === 23;
      *     });
-     * $vd->validate();
+     * $v->validate();
      * ```
      * @param string   $name
      * @param callable $callback
-     * @param string   $msg
+     * @param string   $message
      * @return $this
      */
-    public function addValidator(string $name, callable $callback, string $msg = ''): self
+    public function addValidator(string $name, callable $callback, string $message = ''): self
     {
-        return $this->setValidator($name, $callback, $msg);
+        return $this->setValidator($name, $callback, $message);
     }
 
     /**
@@ -64,11 +65,14 @@ trait ScopedValidatorsTrait
      */
     public function setValidator(string $name, callable $callback, string $message = ''): self
     {
-        $this->_validators[$name] = $callback;
+        if ($name = \trim($name)) {
+            $this->_validators[$name] = $callback;
 
-        if ($message) {
-            $this->setMessage($name, $message);
+            if ($message) {
+                $this->setMessage($name, $message);
+            }
         }
+
         return $this;
     }
 
@@ -82,15 +86,23 @@ trait ScopedValidatorsTrait
     }
 
     /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasValidator(string $name): bool
+    {
+        return isset($this->_validators[$name]);
+    }
+
+    /**
      * @param array $validators
-     * @return ScopedValidatorsTrait
+     * @return $this
      */
     public function addValidators(array $validators)
     {
         foreach ($validators as $name => $validator) {
             $this->addValidator($name, $validator);
         }
-
         return $this;
     }
 
@@ -126,10 +138,13 @@ trait ScopedValidatorsTrait
 
     /**
      * 验证字段必须存在，且输入数据不为空。
+     * The verification field must exist and the input data is not empty.
      * @see Validators::isEmpty() 如何鉴定为空
      * @param string     $field
      * @param null|mixed $value
      * @return bool
+     * - True  field exists and value is not empty.
+     * - False field not exists or value is empty.
      */
     public function required(string $field, $value = null): bool
     {
@@ -156,7 +171,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * - TRUE  check successful
      * - FALSE check failed
-     * - NULL  skip check
+     * - NULL  skip check the field
      */
     public function requiredIf(string $field, $fieldVal, string $anotherField, $values)
     {
@@ -179,7 +194,8 @@ trait ScopedValidatorsTrait
      * @param mixed        $fieldVal
      * @param string       $anotherField
      * @param array|string $values
-     * @return bool|null @see self::requiredIf()
+     * @return bool|null
+     * @see requiredIf()
      */
     public function requiredUnless(string $field, $fieldVal, string $anotherField, $values)
     {
@@ -199,7 +215,8 @@ trait ScopedValidatorsTrait
      * @param string       $field
      * @param mixed        $fieldVal
      * @param array|string $fields
-     * @return bool|null @see self::requiredIf()
+     * @return bool|null
+     * @see equiredIf()
      */
     public function requiredWith(string $field, $fieldVal, $fields)
     {
@@ -217,7 +234,8 @@ trait ScopedValidatorsTrait
      * @param string       $field
      * @param mixed        $fieldVal
      * @param array|string $fields
-     * @return bool|null @see self::requiredIf()
+     * @return bool|null
+     * @see equiredIf()
      */
     public function requiredWithAll(string $field, $fieldVal, $fields)
     {
@@ -238,7 +256,8 @@ trait ScopedValidatorsTrait
      * @param string       $field
      * @param mixed        $fieldVal
      * @param array|string $fields
-     * @return bool|null @see self::requiredIf()
+     * @return bool|null
+     * @see equiredIf()
      */
     public function requiredWithout(string $field, $fieldVal, $fields)
     {
@@ -259,7 +278,8 @@ trait ScopedValidatorsTrait
      * @param string       $field
      * @param mixed        $fieldVal
      * @param array|string $fields
-     * @return bool|null @see self::requiredIf()
+     * @return bool|null
+     * @see equiredIf()
      */
     public function requiredWithoutAll(string $field, $fieldVal, $fields)
     {
@@ -299,16 +319,13 @@ trait ScopedValidatorsTrait
             return true;
         }
 
-        $suffix = \trim(\strrchr($file['name'], '.'), '.');
-
-        if (!$suffix) {
+        if (!$suffix = \trim(\strrchr($file['name'], '.'), '.')) {
             return false;
         }
 
-        $suffix   = \strtolower($suffix);
         $suffixes = \is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
 
-        return \in_array($suffix, $suffixes, true);
+        return \in_array(\strtolower($suffix), $suffixes, true);
     }
 
     /**
@@ -409,11 +426,6 @@ trait ScopedValidatorsTrait
     public function compareValidator($val, string $compareField): bool
     {
         return $compareField && ($val === $this->getByPath($compareField));
-    }
-
-    public function sameValidator($val, string $compareField): bool
-    {
-        return $this->compareValidator($val, $compareField);
     }
 
     public function equalValidator($val, string $compareField): bool

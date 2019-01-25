@@ -657,7 +657,7 @@ trait ValidationTrait
      */
     public function has(string $key): bool
     {
-        return \array_key_exists($key, $this->data);
+        return isset($this->data[$key]);
     }
 
     /**
