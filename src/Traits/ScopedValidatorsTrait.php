@@ -216,7 +216,7 @@ trait ScopedValidatorsTrait
      * @param mixed        $fieldVal
      * @param array|string $fields
      * @return bool|null
-     * @see equiredIf()
+     * @see requiredIf()
      */
     public function requiredWith(string $field, $fieldVal, $fields)
     {
@@ -235,7 +235,7 @@ trait ScopedValidatorsTrait
      * @param mixed        $fieldVal
      * @param array|string $fields
      * @return bool|null
-     * @see equiredIf()
+     * @see requiredIf()
      */
     public function requiredWithAll(string $field, $fieldVal, $fields)
     {
@@ -257,7 +257,7 @@ trait ScopedValidatorsTrait
      * @param mixed        $fieldVal
      * @param array|string $fields
      * @return bool|null
-     * @see equiredIf()
+     * @see requiredIf()
      */
     public function requiredWithout(string $field, $fieldVal, $fields)
     {
@@ -279,7 +279,7 @@ trait ScopedValidatorsTrait
      * @param mixed        $fieldVal
      * @param array|string $fields
      * @return bool|null
-     * @see equiredIf()
+     * @see requiredIf()
      */
     public function requiredWithoutAll(string $field, $fieldVal, $fields)
     {
