@@ -20,7 +20,7 @@ class RuleValidationTest extends TestCase
         $this->assertNotEmpty($v->all());
 
         $this->assertFalse($v->has('key1'));
-        $v->setValue('key1', 'val1');
+        $v->setRaw('key1', 'val1');
         $this->assertTrue($v->has('key1'));
     }
 
@@ -102,7 +102,7 @@ class RuleValidationTest extends TestCase
             'status'   => 10,
         ];
 
-        $v = RuleValidation::makeAndValidate($data, [
+        $v = RuleValidation::check($data, [
             ['targetId', 'requiredWith', 'status'],
             ['userId', 'requiredWith', ['status', 'someField']],
         ]);
@@ -125,7 +125,7 @@ class RuleValidationTest extends TestCase
             'status'   => 10,
         ];
 
-        $v = RuleValidation::makeAndValidate($data, [
+        $v = RuleValidation::check($data, [
             ['targetId', 'requiredWithAll', 'status'],
             ['userId', 'requiredWithAll', ['status', 'someField']],
         ]);
@@ -148,7 +148,7 @@ class RuleValidationTest extends TestCase
             'status'   => 10,
         ];
 
-        $v = RuleValidation::makeAndValidate($data, [
+        $v = RuleValidation::check($data, [
             ['targetId', 'requiredWithout', 'status'],
             ['userId', 'requiredWithout', ['status', 'someField']],
         ]);

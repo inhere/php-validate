@@ -23,9 +23,6 @@ trait ScopedValidatorsTrait
     /** @var array user custom add's validators(current scope) */
     protected $_validators = [];
 
-    /** @var string */
-    private static $_fileValidators = '|file|image|mimeTypes|mimes|';
-
     /**
      * @see $_FILES
      * @var array[]
@@ -175,14 +172,12 @@ trait ScopedValidatorsTrait
      */
     public function requiredIf(string $field, $fieldVal, string $anotherField, $values)
     {
-        if (!isset($this->data[$anotherField])) {
-            return null;
-        }
+        if (isset($this->data[$anotherField])) {
+            $anotherVal = $this->data[$anotherField];
 
-        $val = $this->data[$anotherField];
-
-        if (\in_array($val, (array)$values, true)) {
-            return $this->required($field, $fieldVal);
+            if (\in_array($anotherVal, (array)$values, true)) {
+                return $this->required($field, $fieldVal);
+            }
         }
 
         return null;
@@ -199,12 +194,12 @@ trait ScopedValidatorsTrait
      */
     public function requiredUnless(string $field, $fieldVal, string $anotherField, $values)
     {
-        if (!isset($this->data[$anotherField])) {
-            return $this->required($field, $fieldVal);
-        }
+        if (isset($this->data[$anotherField])) {
+            $anotherVal = $this->data[$anotherField];
 
-        if (\in_array($this->data[$anotherField], (array)$values, true)) {
-            return null;
+            if (\in_array($anotherVal, (array)$values, true)) {
+                return null;
+            }
         }
 
         return $this->required($field, $fieldVal);
@@ -428,11 +423,6 @@ trait ScopedValidatorsTrait
         return $compareField && ($val === $this->getByPath($compareField));
     }
 
-    public function equalValidator($val, string $compareField): bool
-    {
-        return $this->compareValidator($val, $compareField);
-    }
-
     public function eqFieldValidator($val, string $compareField): bool
     {
         return $this->compareValidator($val, $compareField);
@@ -608,7 +598,7 @@ trait ScopedValidatorsTrait
      */
     public static function isCheckFile(string $name): bool
     {
-        return false !== \strpos(self::$_fileValidators, '|' . $name . '|');
+        return false !== \strpos(Helper::$fileValidators, '|' . $name . '|');
     }
 
     /**
@@ -644,7 +634,6 @@ trait ScopedValidatorsTrait
     public function setUploadedFiles($uploadedFiles): self
     {
         $this->uploadedFiles = (array)$uploadedFiles;
-
         return $this;
     }
 

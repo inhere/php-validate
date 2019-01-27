@@ -48,6 +48,9 @@ class Helper
         IMAGETYPE_ICO
     ];
 
+    /** @var string */
+    public static $fileValidators = '|file|image|mimeTypes|mimes|';
+
     /**
      * @param string $ext
      * @return string

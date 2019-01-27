@@ -259,7 +259,6 @@ trait ValidationTrait
                     if (false === $result && $this->isStopOnError()) {
                         break;
                     }
-
                     continue;
                 }
             }
@@ -661,18 +660,6 @@ trait ValidationTrait
     }
 
     /**
-     * Set data item
-     * @param string $key The data key
-     * @param mixed  $value The data value
-     * @return $this
-     */
-    public function setValue($key, $value): self
-    {
-        $this->data[$key] = $value;
-        return $this;
-    }
-
-    /**
      * Get data item by key
      * @param string $key The data key
      * @param mixed  $default The default value to return if data key does not exist
@@ -691,6 +678,27 @@ trait ValidationTrait
     public function getRaw(string $key, $default = null)
     {
         return $this->has($key) ? $this->data[$key] : $default;
+    }
+
+    /**
+     * Set data item by key
+     * @param string $key The data key
+     * @param mixed  $value The data value
+     * @return $this
+     */
+    public function setRaw(string $key, $value): self
+    {
+        $this->data[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * alias of the setRow()
+     * {@inheritdoc}
+     */
+    public function setValue(string $key, $value): self
+    {
+        return $this->setRaw($key, $value);
     }
 
     /**
