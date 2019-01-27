@@ -531,23 +531,15 @@ trait ValidationTrait
             return $default;
         }
 
-        $last   = \trim($last, '.');
+        $field  = \trim($last, '.');
         $result = [];
 
         foreach ($recently as $item) {
-            $result[] = $item[$last];
+            if (isset($item[$field])) {
+                $result[] = $item[$field];
+            }
         }
-
         return $result;
-    }
-
-    /**
-     * @param string $path 'users.*.id'
-     * @return bool
-     */
-    protected function hasWildcard(string $path): bool
-    {
-        return \strpos($path, '.*') > 0;
     }
 
     /**
@@ -710,7 +702,8 @@ trait ValidationTrait
      */
     public function getByPath(string $key, $default = null)
     {
-        if ($this->hasWildcard($key)) {
+        // eg. 'users.*.id'
+        if (\strpos($key, '.*') > 0) {
             return $this->getByWildcard($key);
         }
 

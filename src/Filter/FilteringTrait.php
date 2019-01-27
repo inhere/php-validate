@@ -74,7 +74,7 @@ trait FilteringTrait
     protected function callStringCallback(string $filter, ...$args)
     {
         // if is alias name
-        $filterName = self::$filterAliases[$filter] ?? $filter;
+        $filterName = Filters::realName($filter);
 
         // if $filter is a custom by addFiler()
         if ($callback = $this->getFilter($filter)) {
@@ -123,8 +123,7 @@ trait FilteringTrait
      */
     public function addFilter(string $name, callable $filter): self
     {
-        $this->_filters[$name] = $filter;
-        return $this;
+        return $this->setFilter($name, $filter);
     }
 
     /**
@@ -134,7 +133,10 @@ trait FilteringTrait
      */
     public function setFilter(string $name, callable $filter)
     {
-        $this->_filters[$name] = $filter;
+        if ($name = \trim($name)) {
+            $this->_filters[$name] = $filter;
+        }
+
         return $this;
     }
 
@@ -169,7 +171,7 @@ trait FilteringTrait
      */
     public function addFilters(array $filters)
     {
-        $this->_filters = \array_merge($this->_filters, $filters);
+        $this->setFilters($filters);
     }
 
     /**
@@ -177,6 +179,8 @@ trait FilteringTrait
      */
     public function setFilters(array $filters)
     {
-        $this->_filters = $filters;
+        foreach ($filters as $name => $filter) {
+            $this->setFilter($name, $filter);
+        }
     }
 }

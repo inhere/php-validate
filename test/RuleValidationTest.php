@@ -22,6 +22,8 @@ class RuleValidationTest extends TestCase
         $this->assertFalse($v->has('key1'));
         $v->setRaw('key1', 'val1');
         $this->assertTrue($v->has('key1'));
+
+        $this->assertFalse($v->hasRule());
     }
 
     public function testRequired()
@@ -439,7 +441,7 @@ class RuleValidationTest extends TestCase
      */
     public function testInField()
     {
-        $v = RuleValidation::makeAndValidate([
+        $v = RuleValidation::check([
             'status'  => 3,
             'some'    => 30,
             'allowed' => [3, 4, 5],
@@ -499,7 +501,7 @@ class RuleValidationTest extends TestCase
 
     public function testEach()
     {
-        $v = RuleValidation::makeAndValidate([
+        $v = RuleValidation::check([
             'tags'  => [3, 4, 5],
             'goods' => ['apple', 'pear'],
             'users' => [
@@ -525,7 +527,7 @@ class RuleValidationTest extends TestCase
      */
     public function testGetMessage()
     {
-        $v = Validation::makeAndValidate([
+        $v = Validation::check([
             'inTest' => 3,
         ], [
             ['inTest', 'in', [1, 2]],
@@ -537,7 +539,7 @@ class RuleValidationTest extends TestCase
 
     public function testValidatorAlias()
     {
-        $v = Validation::makeAndValidate([
+        $v = Validation::check([
             'arrTest' => [12, 23],
         ], [
             ['arrTest', 'list'],

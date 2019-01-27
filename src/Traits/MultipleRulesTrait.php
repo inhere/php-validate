@@ -11,10 +11,10 @@ namespace Inhere\Validate\Traits;
 use Inhere\Validate\Filter\Filters;
 
 /**
- * Trait StringRulesTrait - Add rules like Laravel
+ * Trait MultipleRulesTrait - allow add multiple rules like Laravel.
  * @package Inhere\Validate\Traits
  */
-trait StringRulesTrait
+trait MultipleRulesTrait
 {
     /**
      * Add rules like Laravel

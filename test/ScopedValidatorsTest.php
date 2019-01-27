@@ -179,6 +179,34 @@ class ScopedValidatorsTest extends TestCase
         $this->assertFalse($v->fileValidator('err_file'));
         $this->assertFalse($v->fileValidator('not-exist'));
 
+        $this->assertFalse($v->imageValidator('err_file'));
         $this->assertFalse($v->imageValidator('not-exist'));
+    }
+
+    public function testEachValidator()
+    {
+        $v = Validation::make([
+            'tags'  => [3, 4, 5],
+            'goods' => ['apple', 'pear'],
+            'users' => [
+                ['id' => 34, 'name' => 'tom'],
+                ['id' => 89, 'name' => 'john'],
+            ],
+        ]);
+        $v->addValidator('my-validator', function () {
+            return true;
+        });
+
+        $tags = $v->getByPath('tags.*');
+        $this->assertFalse($v->eachValidator($tags, 'lt', 4));
+        $this->assertTrue($v->eachValidator($tags, 'gt', 2));
+        $this->assertTrue($v->eachValidator($tags, 'is_int'));
+        $this->assertTrue($v->eachValidator($tags, 'my-validator'));
+        $this->assertTrue($v->eachValidator($tags, function () {
+            return true;
+        }));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->assertTrue($v->eachValidator([]));
     }
 }

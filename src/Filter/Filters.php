@@ -37,13 +37,6 @@ final class Filters
     ];
 
     /**
-     * don't allow create instance.
-     */
-    private function __construct()
-    {
-    }
-
-    /**
      * 布尔值验证，转换成字符串后是下列的一个，就认为他是个bool值
      *   - "1"、"true"、"on" 和 "yes" (equal TRUE)
      *   - "0"、"false"、"off"、"no" 和 ""(equal FALSE)
@@ -118,13 +111,9 @@ final class Filters
      */
     public static function float($val, $decimal = null, $flags = \FILTER_FLAG_ALLOW_FRACTION)
     {
-        $settings = [];
+        $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
-        if ((int)$flags !== 0) {
-            $settings['flags'] = (int)$flags;
-        }
-
-        $ret = \filter_var($val, \FILTER_SANITIZE_NUMBER_FLOAT, $settings);
+        $ret = \filter_var($val, \FILTER_SANITIZE_NUMBER_FLOAT, $options);
         $new = \strpos($ret, '.') ? (float)$ret : $ret;
 
         if (\is_int($decimal)) {
@@ -152,13 +141,9 @@ final class Filters
             return \array_map(self::class . '::string', $val);
         }
 
-        $settings = [];
+        $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
-        if ((int)$flags !== 0) {
-            $settings['flags'] = (int)$flags;
-        }
-
-        return (string)\filter_var($val, \FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+        return (string)\filter_var($val, \FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options);
     }
 
     /**
@@ -224,13 +209,13 @@ final class Filters
 
     /**
      * string to lowercase
-     * @param string $val
+     * @param string|int $val
      * @return string
      */
     public static function lowercase($val): string
     {
         if (!$val || !\is_string($val)) {
-            return \is_numeric($val) ? $val : '';
+            return \is_int($val) ? $val : '';
         }
 
         if (\function_exists('mb_strtolower')) {
@@ -252,13 +237,13 @@ final class Filters
 
     /**
      * string to uppercase
-     * @param string $str
+     * @param string|int $str
      * @return string
      */
     public static function uppercase($str): string
     {
         if (!$str || !\is_string($str)) {
-            return \is_numeric($str) ? $str : '';
+            return \is_int($str) ? $str : '';
         }
 
         if (\function_exists('mb_strtoupper')) {
@@ -274,11 +259,23 @@ final class Filters
      */
     public static function ucfirst($str): string
     {
+        if (!$str || !\is_string($str)) {
+            return '';
+        }
+
         return self::uppercase(self::subStr($str, 0, 1)) . self::subStr($str, 1);
     }
 
+    /**
+     * @param string $str
+     * @return string
+     */
     public static function ucwords($str): string
     {
+        if (!$str || !\is_string($str)) {
+            return '';
+        }
+
         if (\function_exists('mb_convert_case')) {
             return \mb_convert_case($str, \MB_CASE_TITLE);
         }
@@ -292,7 +289,7 @@ final class Filters
      * @param string $sep
      * @return string
      */
-    public static function snake($val, $sep = '_'): string
+    public static function snake($val, string $sep = '_'): string
     {
         return self::snakeCase($val, $sep);
     }
@@ -464,11 +461,7 @@ final class Filters
      */
     public static function encoded(string $val, int $flags = 0): string
     {
-        $settings = [];
-
-        if ((int)$flags !== 0) {
-            $settings['flags'] = (int)$flags;
-        }
+        $settings = $flags !== 0 ? ['flags' => $flags] : [];
 
         return (string)\filter_var($val, \FILTER_SANITIZE_ENCODED, $settings);
     }
@@ -492,19 +485,15 @@ final class Filters
      *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
      * @return string
      */
-    public static function specialChars($val, $flags = 0): string
+    public static function specialChars($val, int $flags = 0): string
     {
-        $settings = [];
-
-        if ((int)$flags !== 0) {
-            $settings['flags'] = (int)$flags;
-        }
+        $settings = $flags !== 0 ? ['flags' => $flags] : [];
 
         return (string)\filter_var($val, \FILTER_SANITIZE_SPECIAL_CHARS, $settings);
     }
 
     /**
-     * @param     $val
+     * @param string $val
      * @param int $flags
      * @return string
      */
@@ -519,13 +508,9 @@ final class Filters
      * @param  int    $flags 标志 FILTER_FLAG_NO_ENCODE_QUOTES
      * @return string
      */
-    public static function fullSpecialChars($val, $flags = 0): string
+    public static function fullSpecialChars($val, int $flags = 0): string
     {
-        $settings = [];
-
-        if ((int)$flags !== 0) {
-            $settings['flags'] = (int)$flags;
-        }
+        $settings = $flags !== 0 ? ['flags' => $flags] : [];
 
         return (string)\filter_var($val, \FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
@@ -566,6 +551,10 @@ final class Filters
      */
     public static function url($val): string
     {
+        if (!\is_string($val)) {
+            return '';
+        }
+
         return (string)\filter_var($val, \FILTER_SANITIZE_URL);
     }
 
@@ -576,6 +565,10 @@ final class Filters
      */
     public static function email($val): string
     {
+        if (!\is_string($val)) {
+            return '';
+        }
+
         return (string)\filter_var($val, \FILTER_SANITIZE_EMAIL);
     }
 

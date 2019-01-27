@@ -17,18 +17,61 @@ use PHPUnit\Framework\TestCase;
  */
 class FiltrationTest extends TestCase
 {
-    /**
-     *
-     */
+    private $data = [
+        'name'    => ' tom ',
+        'status'  => ' 23 ',
+        'word'    => 'word',
+        'toLower' => 'WORD',
+        'title'   => 'helloWorld',
+    ];
+
+    public function testBasic()
+    {
+        $fl = Filtration::make($this->data);
+
+        $this->assertFalse($fl->has('age'));
+
+        $fl->load([
+            'age' => '34',
+        ]);
+
+        $this->assertTrue($fl->has('age'));
+        $this->assertSame(34, $fl->get('age', 'intval'));
+        $this->assertSame(23, $fl->get('status', 'trim|int'));
+        $this->assertNull($fl->get('not-exists'));
+    }
+
+    public function testUserFilters()
+    {
+        $fl = Filtration::make($this->data);
+        $fl->clearFilters();
+        $fl->addFilters([
+            'name1' => function () {
+            },
+            'name2' => function () {
+            },
+            ''      => function () {
+            },
+        ]);
+
+        $this->assertCount(2, $fl->getFilters());
+
+        $this->assertNotEmpty($fl->getFilter('name2'));
+        $this->assertEmpty($fl->getFilter('name3'));
+
+        $fl->addFilter('new1', function () {
+        });
+        $this->assertNotEmpty($fl->getFilter('new1'));
+
+        $fl->delFilter('name1');
+        $this->assertEmpty($fl->getFilter('name1'));
+
+        $fl->clearFilters();
+        $this->assertCount(0, $fl->getFilters());
+    }
+
     public function testFiltering()
     {
-        $data = [
-            'name'    => ' tom ',
-            'status'  => ' 23 ',
-            'word'    => 'word',
-            'toLower' => 'WORD',
-            'title'   => 'helloWorld',
-        ];
 
         $rules = [
             ['name', 'string|trim'],
@@ -45,7 +88,7 @@ class FiltrationTest extends TestCase
             ],
         ];
 
-        $fl = Filtration::make($data);
+        $fl = Filtration::make($this->data);
         $fl->setRules($rules);
 
         // get cleaned data

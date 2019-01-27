@@ -8,20 +8,22 @@
 
 namespace Inhere\Validate;
 
-use Inhere\Validate\Traits\StringRulesTrait;
+use Inhere\Validate\Traits\MultipleRulesTrait;
 
 /**
  * Class FieldValidation
- * - one field to many rules. like Laravel framework
+ * - one field to multiple rules. like Laravel framework
+ *
  * ```php
  * $vd = FieldValidation::make($data, $rules, ...);
  * $vd->validate();
  * ```
+ *
  * @package Inhere\Validate
  */
 class FieldValidation extends AbstractValidation
 {
-    use StringRulesTrait;
+    use MultipleRulesTrait;
 
     /*
     public function rules()

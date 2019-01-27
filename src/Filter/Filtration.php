@@ -56,7 +56,7 @@ class Filtration
      */
     public function load(array $data): self
     {
-        $this->_data = $data;
+        $this->_data = \array_merge($this->_data, $data);
         return $this;
     }
 
@@ -140,6 +140,15 @@ class Filtration
         }
 
         return $this->valueFiltering($value, $filters);
+    }
+
+    /**
+     * @param string|int   $field
+     * @return bool
+     */
+    public function has($field): bool
+    {
+        return isset($this->_data[$field]);
     }
 
     /**
