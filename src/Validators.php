@@ -101,10 +101,8 @@ class Validators
             return false;
         }
 
-        // $ret = filter_var($val, FILTER_VALIDATE_BOOLEAN, $settings);
-        $val = (string)$val;
-
-        if ($val === '') {
+        // $ret = filter_var($val, \FILTER_VALIDATE_BOOLEAN, $settings);
+        if (($val = (string)$val) === '') {
             return true;
         }
 

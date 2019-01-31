@@ -62,13 +62,12 @@ class Helper
 
     /**
      * @param string $mime
-     * @return mixed|null
+     * @return string|null
      */
-    public static function getImageExtByMime(string $mime)
+    public static function getImageExtByMime(string $mime): string
     {
         $key = \array_search($mime, self::$imgMimeTypes, true);
-
-        return false !== $key ? self::$imgMimeTypes[$key] : null;
+        return (string)$key;
     }
 
     /**
@@ -77,12 +76,19 @@ class Helper
      */
     public static function getMimeType(string $file): string
     {
-        // return mime_content_type($file);
+        if (!\file_exists($file)) {
+            return '';
+        }
+
+        if (\function_exists('mime_content_type')) {
+            return \mime_content_type($file);
+        }
+
         return (string)\finfo_file(\finfo_open(FILEINFO_MIME_TYPE), $file);
     }
 
     /**
-     * @param mixed $val
+     * @param int|string|array $val
      * @return int
      */
     public static function length($val): int
@@ -115,13 +121,13 @@ class Helper
     }
 
     /**
-     * @param        $str
-     * @param        $find
+     * @param string $str
+     * @param string $find
      * @param int    $offset
      * @param string $encoding
      * @return bool|int
      */
-    public static function strPos(string $str, $find, $offset = 0, $encoding = 'UTF-8')
+    public static function strPos(string $str, $find, int $offset = 0, $encoding = 'UTF-8')
     {
         if (\function_exists('mb_strpos')) {
             return \mb_strpos($str, $find, $offset, $encoding);
@@ -131,13 +137,13 @@ class Helper
     }
 
     /**
-     * @param        $str
-     * @param        $find
+     * @param string $str
+     * @param string $find
      * @param int    $offset
      * @param string $encoding
      * @return bool|int
      */
-    public static function strrpos(string $str, $find, $offset = 0, $encoding = 'utf-8')
+    public static function strrpos(string $str, $find, int $offset = 0, string $encoding = 'utf-8')
     {
         if (\function_exists('mb_strrpos')) {
             return \mb_strrpos($str, $find, $offset, $encoding);
@@ -198,13 +204,13 @@ class Helper
     public static function call($cb, ...$args)
     {
         if (\is_string($cb)) {
-            // function
-            if (\strpos($cb, '::') === false) {
+            // className::method
+            if (\strpos($cb, '::') > 0) {
+                $cb = \explode('::', $cb, 2);
+                // function
+            } elseif (\function_exists($cb)) {
                 return $cb(...$args);
             }
-
-            // ClassName/Service::method
-            $cb = \explode('::', $cb, 2);
         } elseif (\is_object($cb) && \method_exists($cb, '__invoke')) {
             return $cb(...$args);
         }
