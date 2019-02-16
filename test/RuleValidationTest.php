@@ -284,8 +284,8 @@ class RuleValidationTest extends TestCase
             ->validate([], false);
         $out = ob_get_clean();
 
-        $this->assertContains('use when pre-check', $out);
-        $this->assertContains('use custom validate', $out);
+        $this->assertStringContainsString('use when pre-check', $out);
+        $this->assertStringContainsString('use custom validate', $out);
 
         $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());
