@@ -344,6 +344,7 @@ class ValidatorsTest extends TestCase
         $this->assertFalse(Validators::intList(['a' => 'v']));
         $this->assertFalse(Validators::intList(['value', 'a' => 'v']));
         $this->assertFalse(Validators::intList([2 => '343', 45]));
+        $this->assertFalse(Validators::intList([45, 2 => '343']));
 
         $this->assertTrue(Validators::intList(['343', 45]));
         $this->assertTrue(Validators::intList([565, 3234, -56]));
@@ -416,6 +417,22 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::distinct(['a', 'b', 'c']));
     }
 
+    public function testInANDNotIn()
+    {
+        $samples = [
+            [true, 1, [1, 2, 3], false],
+            [true, 1, [1, 2, 3], true],
+            [true, '1', [1, 2, 3], false],
+            [false, '1', [1, 2, 3], true],
+            [true, '1', '1,2,3', true],
+        ];
+
+        foreach ($samples as list($want, $val, $dict, $strict)) {
+            $this->assertSame($want, Validators::in($val, $dict, $strict));
+            $this->assertSame(!$want, Validators::notIn($val, $dict, $strict));
+        }
+    }
+
     public function testJson()
     {
         $this->assertFalse(Validators::json('test'));
@@ -446,7 +463,9 @@ class ValidatorsTest extends TestCase
 
     public function testStartWith()
     {
+        $this->assertFalse(Validators::startWith(null, 'ell'));
         $this->assertFalse(Validators::startWith('hello, world', 'ell'));
+        $this->assertFalse(Validators::startWith('hello, world', ''));
 
         $this->assertTrue(Validators::startWith('hello, world', 'hell'));
         $this->assertTrue(Validators::startWith(['hello', 'world'], 'hello'));
@@ -460,20 +479,31 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::endWith(['hello', 'world'], 'world'));
     }
 
-    public function testDate()
-    {
-        $this->assertFalse(Validators::date('hello'));
-
-        $this->assertTrue(Validators::date(170526));
-        $this->assertTrue(Validators::date('20170526'));
-    }
-
     public function testDateCheck()
     {
+        // date
+        $this->assertFalse(Validators::date('hello'));
+        $this->assertTrue(Validators::date(170526));
+        $this->assertTrue(Validators::date('20170526'));
+
+        // dateEquals
+        $this->assertTrue(Validators::dateEquals('20170526', '20170526'));
+        $this->assertTrue(Validators::dateEquals('2017-05-26', '20170526'));
+        $this->assertFalse(Validators::dateEquals('20170525', '20170526'));
+
         // dateFormat
         $this->assertFalse(Validators::dateFormat('hello'));
         $this->assertFalse(Validators::dateFormat('170526', 'ymd'));
         $this->assertTrue(Validators::dateFormat('20170526', 'Ymd'));
+
+        // beforeDate
+        $this->assertTrue(Validators::beforeDate('20170524', '20170526'));
+        $this->assertFalse(Validators::beforeDate('20170526', '20170526'));
+
+        // beforeOrEqualDate
+        $this->assertTrue(Validators::beforeOrEqualDate('20170524', '20170526'));
+        $this->assertTrue(Validators::beforeOrEqualDate('20170526', '20170526'));
+        $this->assertFalse(Validators::beforeOrEqualDate('20170527', '20170526'));
 
         // afterDate
         $this->assertTrue(Validators::afterDate('20170526', '20170524'));
@@ -485,6 +515,13 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::afterOrEqualDate('20170526', '20170526'));
         $this->assertTrue(Validators::afterOrEqualDate('20170526', '20170524'));
         $this->assertFalse(Validators::afterOrEqualDate('20170524', '20170526'));
+
+        // isDate
+        $this->assertTrue(Validators::isDate('2017-05-26'));
+        $this->assertFalse(Validators::isDate('20170526'));
+        // isDateFormat
+        $this->assertTrue(Validators::isDateFormat('2017-05-26'));
+        $this->assertFalse(Validators::isDateFormat('20170526'));
     }
 
     public function testPhone()
@@ -502,6 +539,48 @@ class ValidatorsTest extends TestCase
     public function testPrice()
     {
         $this->assertTrue(Validators::price('610.45'));
-        $this->assertFalse(Validators::price('-20170526'));
+        $this->assertFalse(Validators::price('-201.26'));
+        $this->assertFalse(Validators::price('abc'));
+
+        $this->assertTrue(Validators::negativePrice('610.45'));
+        $this->assertTrue(Validators::negativePrice('-201.26'));
+        $this->assertFalse(Validators::negativePrice('abc'));
+    }
+
+    public function testOther()
+    {
+        // isFloat
+        $this->assertFalse(Validators::isFloat([]));
+        $this->assertFalse(Validators::isFloat('abc'));
+        $this->assertTrue(Validators::isFloat('23.34'));
+        $this->assertTrue(Validators::isFloat('-23.34'));
+
+        // isUnsignedFloat
+        $this->assertTrue(Validators::isUnsignedFloat('23.34'));
+        $this->assertFalse(Validators::isUnsignedFloat('-23.34'));
+
+        // isInt
+        $this->assertTrue(Validators::isInt('23'));
+        $this->assertTrue(Validators::isInt('-23'));
+        $this->assertFalse(Validators::isInt('-23.34'));
+
+        // isUnsignedInt
+        $this->assertTrue(Validators::isUnsignedInt('23'));
+        $this->assertFalse(Validators::isUnsignedInt('-23'));
+        $this->assertFalse(Validators::isUnsignedInt('-23.34'));
+
+        // macAddress
+        $this->assertTrue(Validators::macAddress('01:23:45:67:89:ab'));
+        $this->assertFalse(Validators::macAddress([]));
+        $this->assertFalse(Validators::macAddress(null));
+        $this->assertFalse(Validators::macAddress('123 abc'));
+
+        // md5
+        $this->assertFalse(Validators::md5('123 abc'));
+        $this->assertFalse(Validators::md5(true));
+
+        // sha1
+        $this->assertFalse(Validators::sha1(true));
+        $this->assertFalse(Validators::sha1('123 abc'));
     }
 }

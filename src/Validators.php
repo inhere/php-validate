@@ -681,7 +681,7 @@ class Validators
 
     /**
      * mac Address
-     * @param string $input
+     * @param string|mixed $input
      * @return bool
      */
     public static function macAddress($input): bool
@@ -955,7 +955,7 @@ class Validators
     }
 
     /**
-     * @param  mixed       $val
+     * @param mixed       $val
      * @param array|string $dict
      * @param bool         $strict
      * @return bool
@@ -981,7 +981,9 @@ class Validators
      */
     public static function startWith($val, $start, $strict = true): bool
     {
-        $start = (string)$start;
+        if (($start = (string)$start) === '') {
+            return false;
+        }
 
         if (\is_string($val)) {
             return ($strict ? \strpos($val, $start) : \stripos($val, $start)) === 0;
@@ -1009,10 +1011,10 @@ class Validators
 
         if (\is_string($val)) {
             $last = \substr($val, -Helper::strlen($end));
-        }
-
-        if (\is_array($val)) {
+        } elseif (\is_array($val)) {
             $last = \array_pop($val);
+        } else {
+            return false;
         }
 
         return $strict ? $last === $end : (string)$last === $end;
@@ -1045,11 +1047,7 @@ class Validators
             return false;
         }
 
-        if (!$date) {
-            return false;
-        }
-
-        return $time === \strtotime($date);
+        return $date ? $time === \strtotime((string)$date) : false;
     }
 
     /**
@@ -1087,11 +1085,11 @@ class Validators
 
         $beforeTime = $beforeDate ? \strtotime($beforeDate) : \time();
 
-        if ($symbol === '>') {
-            return $beforeTime < $valueTime;
+        if ($symbol === '<') {
+            return $valueTime < $beforeTime;
         }
 
-        return $beforeTime <= $valueTime;
+        return $valueTime <= $beforeTime;
     }
 
     /**
@@ -1230,16 +1228,24 @@ class Validators
 
     /**
      * Check for a float number validity
-     * @param float $float Float number to validate
+     * @param float|mixed $float Float number to validate
      * @return bool Validity is ok or not
      */
     public static function isFloat($float): bool
     {
+        if (!\is_scalar($float)) {
+            return false;
+        }
+
         return (string)((float)$float) === (string)$float;
     }
 
     public static function isUnsignedFloat($float): bool
     {
+        if (!\is_scalar($float)) {
+            return false;
+        }
+
         return (string)((float)$float) === (string)$float && $float >= 0;
     }
 
