@@ -131,13 +131,9 @@ class Validators
      */
     public static function float($val, $min = null, $max = null, $flags = 0)
     {
-        $settings = [];
+        $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
-        if ($flags !== 0) {
-            $settings['flags'] = $flags;
-        }
-
-        if (\filter_var($val, \FILTER_VALIDATE_FLOAT, $settings) === false) {
+        if (\filter_var($val, \FILTER_VALIDATE_FLOAT, $options) === false) {
             return false;
         }
 
@@ -305,7 +301,7 @@ class Validators
 
     /**
      * 验证字段值是否仅包含字母、数字
-     * @param  string $val
+     * @param  string|mixed $val
      * @return bool
      */
     public static function alphaNum($val): bool
@@ -546,7 +542,7 @@ class Validators
     /**
      * 值是否包含给的数据
      * @param string|mixed $val
-     * @param string|array $needle
+     * @param int|string|array $needle
      * @return bool
      */
     public static function contains($val, $needle): bool
@@ -555,8 +551,8 @@ class Validators
             return false;
         }
 
-        if (\is_string($needle)) {
-            return \stripos($val, $needle) !== false;
+        if (\is_string($needle) || \is_int($needle)) {
+            return \stripos($val, (string)$needle) !== false;
         }
 
         if (\is_array($needle)) {
@@ -615,14 +611,10 @@ class Validators
      */
     public static function url($val, $default = null, $flags = 0): bool
     {
-        $settings = [];
+        $settings = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
         if ($default !== null) {
             $settings['options']['default'] = $default;
-        }
-
-        if ($flags !== 0) {
-            $settings['flags'] = $flags;
         }
 
         return (bool)\filter_var($val, \FILTER_VALIDATE_URL, $settings);
@@ -658,14 +650,10 @@ class Validators
      */
     public static function ip($val, $default = null, $flags = 0): bool
     {
-        $settings = [];
+        $settings = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
         if ($default !== null) {
-            $settings['options']['default'] = $default;
-        }
-
-        if ($flags !== 0) {
-            $settings['flags'] = $flags;
+            $settings['options']['default'] = (bool)$default;
         }
 
         return (bool)\filter_var($val, \FILTER_VALIDATE_IP, $settings);
@@ -1119,8 +1107,8 @@ class Validators
 
     /**
      * 字段值必须是给定日期之后的值
-     * @param string $val
-     * @param string $afterDate
+     * @param string|mixed $val
+     * @param string|mixed $afterDate
      * @param string $symbol allow: '>' '>='
      * @return bool
      */
@@ -1137,10 +1125,10 @@ class Validators
         $afterTime = $afterDate ? \strtotime($afterDate) : \time();
 
         if ($symbol === '>') {
-            return $afterTime > $valueTime;
+            return $valueTime > $afterTime;
         }
 
-        return $afterTime >= $valueTime;
+        return $valueTime >= $afterTime;
     }
 
     /**
@@ -1217,7 +1205,7 @@ class Validators
      */
     public static function postCode($val): bool
     {
-        return empty($val) || \preg_match('/^\d{6}$/', $val);
+        return $val && \is_string($val) && \preg_match('/^\d{6}$/', $val);
     }
 
     /**

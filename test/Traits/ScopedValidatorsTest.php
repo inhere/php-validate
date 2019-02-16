@@ -6,14 +6,13 @@
  * Time: 01:26
  */
 
-namespace Inhere\ValidateTest;
+namespace Inhere\ValidateTest\Traits;
 
 use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class ScopedValidatorsTest
- * @package Inhere\ValidateTest
  */
 class ScopedValidatorsTest extends TestCase
 {
