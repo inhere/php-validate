@@ -284,8 +284,19 @@ class RuleValidationTest extends TestCase
             ->validate([], false);
         $out = ob_get_clean();
 
-        $this->assertStringContainsString('use when pre-check', $out);
-        $this->assertStringContainsString('use custom validate', $out);
+        $needle = 'use when pre-check';
+        if (\version_compare(\PHPUnit\Runner\Version::id(), '7.0.0', '<') ) {
+            $this->assertContains($needle, $out);
+        } else {
+            $this->assertStringContainsString($needle, $out);
+        }
+
+        $needle = 'use custom validate';
+        if (\version_compare(\PHPUnit\Runner\Version::id(), '7.0.0', '<') ) {
+            $this->assertContains($needle, $out);
+        } else {
+            $this->assertStringContainsString($needle, $out);
+        }
 
         $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());

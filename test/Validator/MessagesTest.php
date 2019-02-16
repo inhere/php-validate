@@ -10,6 +10,7 @@ namespace Inhere\ValidateTest\Validator;
 
 use Inhere\Validate\Validator\Messages;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Runner\Version;
 
 /**
  * Class MessagesTest
@@ -30,6 +31,12 @@ class MessagesTest extends TestCase
         $this->assertTrue(Messages::has('key1'));
         $this->assertFalse(Messages::has('key3'));
 
-        $this->assertContains('validation is not through!', Messages::getDefault());
+        $needle = 'validation is not through!';
+
+        if (\version_compare(Version::id(), '7.0.0', '<') ) {
+            $this->assertContains($needle, Messages::getDefault());
+        } else {
+            $this->assertStringContainsString($needle, Messages::getDefault());
+        }
     }
 }
