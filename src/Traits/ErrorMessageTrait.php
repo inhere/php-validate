@@ -422,7 +422,7 @@ trait ErrorMessageTrait
     /**
      * @param bool $prettifyName
      */
-    public function setPrettifyName(bool $prettifyName = true): void
+    public function setPrettifyName(bool $prettifyName = true)
     {
         $this->_prettifyName = $prettifyName;
     }
