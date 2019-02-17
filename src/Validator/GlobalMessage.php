@@ -1,18 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-01-20
- * Time: 00:54
- */
 
 namespace Inhere\Validate\Validator;
 
 /**
- * Class Messages
- * @package Inhere\Validate
+ * Class GlobalMessage
+ * - global error message storage
  */
-final class Messages
+final class GlobalMessage
 {
     /**
      * Default error messages

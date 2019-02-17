@@ -171,7 +171,7 @@ trait ValidationTrait
             return $this;
         }
 
-        $this->resetValidation(true);
+        $this->resetValidation();
         $this->setStopOnError($stopOnError);
         $this->prepareValidation();
 
@@ -406,7 +406,7 @@ trait ValidationTrait
     /**
      * @param bool|false $clearErrors
      */
-    protected function resetValidation(bool $clearErrors = false)
+    public function resetValidation(bool $clearErrors = true)
     {
         $this->_validated = false;
         $this->_safeData  = $this->_usedRules = [];

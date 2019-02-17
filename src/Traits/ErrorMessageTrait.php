@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-03-17
- * Time: 11:26
- */
 
 namespace Inhere\Validate\Traits;
 
 use Inhere\Validate\Helper;
-use Inhere\Validate\Validator\Messages;
+use Inhere\Validate\Validator\GlobalMessage;
 use Inhere\Validate\Validators;
 
 /**
@@ -76,7 +70,7 @@ trait ErrorMessageTrait
     }
 
     /**
-     * 是否有错误
+     * Is there an error?
      * @return boolean
      */
     public function hasError(): bool
@@ -94,6 +88,7 @@ trait ErrorMessageTrait
 
     /**
      * @return bool
+     * @deprecated will delete, please use isFail() instead
      */
     public function fail(): bool
     {
@@ -110,6 +105,7 @@ trait ErrorMessageTrait
 
     /**
      * @return bool
+     * @deprecated will delete, please use isOk() or isPassed() instead
      */
     public function ok(): bool
     {
@@ -125,7 +121,7 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @deprecated will delete
+     * @deprecated will delete, please use isOk() or isPassed() instead
      * @return bool
      */
     public function passed(): bool
@@ -169,10 +165,10 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @param string|null $field Only get errors of the field.
+     * @param string $field Only get errors of the field.
      * @return array
      */
-    public function getErrors(string $field = null): array
+    public function getErrors(string $field = ''): array
     {
         if ($field) {
             $errors = [];
@@ -197,27 +193,32 @@ trait ErrorMessageTrait
     }
 
     /**
-     * 得到第一个错误信息
-     * @author inhere
+     * Get the first error message
      * @param bool $onlyMsg
      * @return array|string
      */
     public function firstError(bool $onlyMsg = true)
     {
-        $errors = $this->_errors;
-        $first  = \array_shift($errors);
+        if (!$errors = $this->_errors) {
+            return $onlyMsg ? '' : [];
+        }
+
+        $first = \array_shift($errors);
         return $onlyMsg ? $first['msg'] : $first;
     }
 
     /**
-     * 得到最后一个错误信息
+     * Get the last error message
      * @param bool $onlyMsg
      * @return array|string
      */
     public function lastError(bool $onlyMsg = true)
     {
-        $ers  = $this->_errors;
-        $last = \array_pop($ers);
+        if (!$errors = $this->_errors) {
+            return $onlyMsg ? '' : [];
+        }
+
+        $last = \array_pop($errors);
         return $onlyMsg ? $last['msg'] : $last;
     }
 
@@ -294,19 +295,19 @@ trait ErrorMessageTrait
 
         // get message from built in dict.
         if (!$message) {
-            $message = $this->findMessage($field, $rawName) ?: Messages::getDefault();
+            $message = $this->findMessage($field, $rawName) ?: GlobalMessage::getDefault();
             // is array. It's defined multi error messages
         } elseif (\is_array($message)) {
             $message = $message[$rawName] ?? $this->findMessage($field, $rawName);
 
             if (!$message) { // use default
-                return \strtr(Messages::getDefault(), $params);
+                return \strtr(GlobalMessage::getDefault(), $params);
             }
         } else {
             $message = (string)$message;
         }
 
-        /** @see Messages::$messages['size'] */
+        /** @see GlobalMessage::$messages['size'] */
         if (\is_array($message)) {
             $msgKey  = \count($params) - 1;
             $message = $message[$msgKey] ?? $message[0];
@@ -345,7 +346,7 @@ trait ErrorMessageTrait
         } elseif (isset($this->_messages[$realName])) {
             $message = $this->_messages[$realName];
         } else { // get from default
-            $message = Messages::get($realName);
+            $message = GlobalMessage::get($realName);
         }
 
         return $message;
@@ -421,7 +422,7 @@ trait ErrorMessageTrait
     /**
      * @param bool $prettifyName
      */
-    public function setPrettifyName(bool $prettifyName): void
+    public function setPrettifyName(bool $prettifyName = true): void
     {
         $this->_prettifyName = $prettifyName;
     }

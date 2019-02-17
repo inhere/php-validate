@@ -254,7 +254,7 @@ final class Filters
     }
 
     /**
-     * @param string $str
+     * @param string|mixed $str
      * @return string
      */
     public static function ucfirst($str): string
@@ -267,7 +267,7 @@ final class Filters
     }
 
     /**
-     * @param string $str
+     * @param string|mixed $str
      * @return string
      */
     public static function ucwords($str): string
@@ -284,8 +284,8 @@ final class Filters
     }
 
     /**
-     * string to snakeCase
-     * @param string $val
+     * string to snake case
+     * @param string|mixed $val
      * @param string $sep
      * @return string
      */
@@ -315,7 +315,7 @@ final class Filters
 
     /**
      * string to camelcase
-     * @param string $val
+     * @param string|mixed $val
      * @param bool   $ucFirst
      * @return string
      */
@@ -587,11 +587,7 @@ final class Filters
      */
     public static function unsafeRaw($string, $flags = 0)
     {
-        $settings = [];
-
-        if ((int)$flags !== 0) {
-            $settings['flags'] = (int)$flags;
-        }
+        $settings = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
         return \filter_var($string, \FILTER_UNSAFE_RAW, $settings);
     }

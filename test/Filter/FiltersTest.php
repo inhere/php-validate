@@ -25,11 +25,14 @@ class FiltersTest extends TestCase
             'off'   => false,
             'false' => false,
             'False' => false,
+            null    => false,
         ];
 
         foreach ($samples as $sample => $expected) {
             $this->assertSame($expected, Filters::bool($sample));
         }
+
+        $this->assertFalse(Filters::bool([]));
     }
 
     public function testAliases()
@@ -119,17 +122,25 @@ class FiltersTest extends TestCase
 
         // ucfirst
         $this->assertSame('Abc', Filters::ucfirst('abc'));
+        $this->assertSame('', Filters::ucfirst(''));
+        $this->assertSame('', Filters::ucfirst([]));
 
         // ucwords
         $this->assertSame('Hello World', Filters::ucwords('hello world'));
+        $this->assertSame('', Filters::ucwords(''));
+        $this->assertSame('', Filters::ucwords([]));
 
         // snake case
         $this->assertSame('hello_world', Filters::snake('HelloWorld'));
         $this->assertSame('hello-world', Filters::snake('HelloWorld', '-'));
+        $this->assertSame('', Filters::snake(''));
+        $this->assertSame('', Filters::snake([]));
 
         // camel case
         $this->assertSame('helloWorld', Filters::camel('hello_world'));
         $this->assertSame('HelloWorld', Filters::camel('hello_world', true));
+        $this->assertSame('', Filters::camel(''));
+        $this->assertSame('', Filters::camel([]));
     }
 
     public function testTime()
@@ -153,5 +164,45 @@ class FiltersTest extends TestCase
             $this->assertSame($expected, Filters::str2array($sample));
             $this->assertSame($expected, Filters::explode($sample));
         }
+
+        $this->assertSame([], Filters::explode(''));
+        $this->assertSame([], Filters::str2list(' , '));
+    }
+
+    public function testUnique()
+    {
+        $this->assertSame([1], Filters::unique([1, 1]));
+        $this->assertSame(['a', 'b'], Filters::unique(['a', 'b', 'a']));
+        $this->assertSame(['a', 2 => 'b'], Filters::unique(['a', 'a', 'b', 'a']));
+    }
+
+    public function testEncodeOrClearTag()
+    {
+        // clearTags
+        $samples = [
+            ''                  => '',
+            '<p>text</p>'        => 'text',
+            '<p>text'            => 'text',
+            '<p><a>text</a></p>' => 'text',
+        ];
+        foreach ($samples as $sample => $expected) {
+            $this->assertSame($expected, Filters::clearTags($sample));
+        }
+
+        $this->assertSame('<a>text</a>', Filters::clearTags('<p><a>text</a></p>', '<a>'));
+
+        // encoded
+        $this->assertSame('abc.com%3Fa%3D7%2B9', Filters::encoded('abc.com?a=7+9'));
+        $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D', Filters::encoded('abc.com?a=7+9&b=你', \FILTER_FLAG_STRIP_HIGH));
+        $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0', Filters::encoded('abc.com?a=7+9&b=你'));
+        $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0', Filters::encoded('abc.com?a=7+9&b=你', \FILTER_FLAG_ENCODE_LOW));
+        $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0', Filters::encoded('abc.com?a=7+9&b=你', \FILTER_FLAG_ENCODE_HIGH));
+
+        $this->assertSame('', Filters::url(''));
+        $this->assertSame('abc.com?a=7+9', Filters::url('abc.com?a=7+9'));
+        $this->assertSame('abc.com?a=7+9&b=', Filters::url('abc.com?a=7+9&b=你'));
+
+        $this->assertSame('', Filters::email(''));
+        $this->assertSame('abc@email.com', Filters::email('abc@email.com'));
     }
 }

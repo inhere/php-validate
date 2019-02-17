@@ -1,9 +1,7 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2015-08-11
- * Time: 10:23
+ * @author inhere
+ * @date: 2015-08-11
  */
 
 namespace Inhere\Validate;
@@ -62,21 +60,20 @@ interface ValidationInterface
     public function isPassed(): bool;
 
     /**
+     * @param string $field
      * @return array
      */
-    public function getErrors(): array;
+    public function getErrors(string $field = ''): array;
 
     /**
-     * 得到第一个错误信息
-     * @author inhere
+     * Get the first error message
      * @param bool $onlyMsg Only return message string.
      * @return array|string
      */
     public function firstError(bool $onlyMsg = true);
 
     /**
-     * 得到最后一个错误信息
-     * @author inhere
+     * Get the last error message
      * @param bool $onlyMsg
      * @return array|string
      */
