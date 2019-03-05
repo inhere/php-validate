@@ -15,7 +15,7 @@
 - 支持自定义每个验证的错误消息，字段翻译，消息翻译，支持默认值
 - 支持基本的数组检查，数组的子级(`'goods.apple'`)值检查, 通配符的子级检查 (`'users.*.id' 'goods.*'`)
 - 方便的获取错误信息，验证后的安全数据获取(只会收集有规则检查过的数据)
-- 已经内置了50多个常用的验证器[内置验证器](#built-in-validators)
+- 已经内置了60多个常用的验证器[内置验证器](#built-in-validators)
 - 规则设置参考 `yii`, `laravel`, `Respect/Validation`
 - 独立的过滤器 `Inhere\Validate\Filter\Filtration`，可单独用于数据过滤
 
