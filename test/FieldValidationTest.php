@@ -26,7 +26,7 @@ class FieldValidationTest extends TestCase
         ],
     ];
 
-    public function testValidate()
+    public function testValidateField()
     {
         $rules = [
             ['freeTime', 'required'],
@@ -58,6 +58,24 @@ class FieldValidationTest extends TestCase
         $errors = $v->getErrors();
         $this->assertNotEmpty($errors);
         $this->assertCount(1, $errors);
+
+        $v = FieldValidation::check([
+            'title' => 'hello',
+        ], [
+            ['title', 'required|string:2,8']
+        ]);
+        $this->assertTrue($v->isOk());
+
+        $v = FieldValidation::check([
+            'title' => 'hello',
+        ], [
+            ['title', 'required|string:1,3']
+        ]);
+        $this->assertTrue($v->isFail());
+        $this->assertSame(
+            'title must be a string and length range must be 1 ~ 3',
+            $v->firstError()
+        );
     }
 
     public function testScenarios()

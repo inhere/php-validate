@@ -309,11 +309,11 @@ trait ErrorMessageTrait
 
         /** @see GlobalMessage::$messages['size'] */
         if (\is_array($message)) {
-            $msgKey  = \count($params) - 1;
+            $msgKey  = \count($args);
             $message = $message[$msgKey] ?? $message[0];
         }
 
-        if (\is_string($message) && false === \strpos($message, '{')) {
+        if (false === \strpos($message, '{')) {
             return $message;
         }
 
