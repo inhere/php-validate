@@ -6,7 +6,7 @@
 [![Build Status](https://travis-ci.org/inhere/php-validate.svg?branch=master)](https://travis-ci.org/inhere/php-validate)
 [![Coverage Status](https://coveralls.io/repos/github/inhere/php-validate/badge.svg?branch=master)](https://coveralls.io/github/inhere/php-validate?branch=master)
 
-一个简洁小巧且功能完善的php验证、过滤库。仅有几个文件，无其它依赖。
+一个简洁小巧且功能完善的php验证、过滤库。
 
 - 简单方便，支持添加自定义验证器
 - 支持前置验证检查, 自定义如何判断非空
@@ -56,7 +56,7 @@ validate 同时支持两种规则配置方式，对应了两种规则的收集�
 - **github** https://github.com/inhere/php-validate.git
 - **gitee** https://gitee.com/inhere/php-validate.git
 
-> **注意：** master 分支是要求 `php7+` 的(推荐使用)。`1.x` 分支是支持php5的代码分支,但是基本上不再维护。
+> **注意：** master 分支是要求 `php7.1+` 的(推荐使用)。`1.x` 分支是支持php5的代码分支,但是基本上不再维护。
 
 ## 安装
 
@@ -110,7 +110,7 @@ use Inhere\Validate\Validation;
 
 class PageRequest extends Validation
 {
-    public function rules()
+    public function rules(): array
     {
         return [
             // 字段必须存在且不能为空
@@ -164,7 +164,7 @@ class PageRequest extends Validation
     }
 
     // 定义字段翻译
-    public function translates()
+    public function translates(): array
     {
         return [
           'userId' => '用户Id',
@@ -172,7 +172,7 @@ class PageRequest extends Validation
     }
 
     // 自定义验证器的提示消息, 默认消息请看 {@see ErrorMessageTrait::$messages}
-    public function messages()
+    public function messages(): array
     {
         return [
           'required' => '{attr} 是必填项。',
@@ -182,7 +182,7 @@ class PageRequest extends Validation
     }
     
     // 添加一个验证器。必须返回一个布尔值标明验证失败或成功
-    protected function customValidator($title)
+    protected function customValidator($title): bool
     {
         // some logic ...
         // $this->getRaw('field'); 访问 data 数据
@@ -257,7 +257,7 @@ class DataModel
 // on model class
 class UserModel extends DataModel
 {
-    public function rules()
+    public function rules(): array
     {
         return [
             ['username, passwd', 'required'],
@@ -388,7 +388,7 @@ $v = Validation::make($_POST,[
 
 ```php
     // 在继承了 Validation 的子类 ValidationClass 中 ...
-    public function rules()
+    public function rules(): array
     {
          return [
             ['title', 'required' ],
@@ -418,7 +418,7 @@ $v = Validation::make($_POST,[
 
 ```php
     // 在继承了 Validation 的子类中 ...
-    public function rules()
+    public function rules(): array
     {
          return [
             ['title', 'required' ],
