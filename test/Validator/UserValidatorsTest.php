@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  */
 class UserValidatorsTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
         UserValidators::removeAll();
         UserValidators::setValidators([

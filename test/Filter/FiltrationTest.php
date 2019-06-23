@@ -25,7 +25,7 @@ class FiltrationTest extends TestCase
         'title'   => 'helloWorld',
     ];
 
-    public function testBasic()
+    public function testBasic(): void
     {
         $fl = Filtration::make($this->data);
 
@@ -41,7 +41,7 @@ class FiltrationTest extends TestCase
         $this->assertNull($fl->get('not-exists'));
     }
 
-    public function testUserFilters()
+    public function testUserFilters(): void
     {
         $fl = Filtration::make($this->data);
         $fl->clearFilters();
@@ -70,7 +70,7 @@ class FiltrationTest extends TestCase
         $this->assertCount(0, $fl->getFilters());
     }
 
-    public function testFiltering()
+    public function testFiltering(): void
     {
 
         $rules = [

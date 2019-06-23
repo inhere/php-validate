@@ -1283,19 +1283,6 @@ class Validators
     }
 
     /**
-     * @param string $val
-     * @param string $compareDate
-     * @param int    $expected
-     * @param string $op
-     *
-     * @todo
-     */
-    public static function diffDate($val, $compareDate, $expected, $op = '>=')
-    {
-
-    }
-
-    /**
      * Check for date format
      *
      * @param string $date Date to validate

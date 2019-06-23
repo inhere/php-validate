@@ -9,6 +9,7 @@
 namespace Inhere\Validate;
 
 use Closure;
+use Generator;
 use Inhere\Validate\Filter\FilteringTrait;
 use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Traits\ErrorMessageTrait;
@@ -83,7 +84,7 @@ trait ValidationTrait
     /**
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [];
     }
@@ -92,7 +93,7 @@ trait ValidationTrait
      * define attribute field translate list
      * @return array
      */
-    public function translates()
+    public function translates(): array
     {
         return [
             // 'field' => 'translate',
@@ -105,7 +106,7 @@ trait ValidationTrait
      * custom validator's message, to override default message.
      * @return array
      */
-    public function messages()
+    public function messages(): array
     {
         return [
             // validator name => message string
@@ -165,7 +166,7 @@ trait ValidationTrait
         return $this;
     }
 
-    public function afterValidate()
+    public function afterValidate(): void
     {
         if ($cb = $this->_afterHandler) {
             $cb($this);
@@ -237,7 +238,7 @@ trait ValidationTrait
      * @param array        $rule
      * @param array        $onlyChecked
      */
-    protected function applyRule($fields, array $rule, array $onlyChecked)
+    protected function applyRule($fields, array $rule, array $onlyChecked): void
     {
         $fields    = is_string($fields) ? Filters::explode($fields) : (array)$fields;
         $validator = array_shift($rule);
@@ -325,7 +326,7 @@ trait ValidationTrait
      * - NULL  skip check(for `required*`)
      * @throws InvalidArgumentException
      */
-    protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg)
+    protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg): ?bool
     {
         // required check
         if ($validator === 'required') {
@@ -424,7 +425,7 @@ trait ValidationTrait
      * @param string $field
      * @param mixed  $value
      */
-    protected function collectSafeValue(string $field, $value)
+    protected function collectSafeValue(string $field, $value): void
     {
         // 进行的是子级属性检查 eg: 'goods.apple'
         if ($pos = strpos($field, '.')) {
@@ -439,7 +440,7 @@ trait ValidationTrait
     /**
      * @param bool|false $clearErrors
      */
-    public function resetValidation(bool $clearErrors = true)
+    public function resetValidation(bool $clearErrors = true): void
     {
         $this->_validated = false;
         $this->_safeData  = $this->_usedRules = [];
@@ -454,7 +455,7 @@ trait ValidationTrait
      * Collect the current scenario of the available rules list
      * @throws InvalidArgumentException
      */
-    protected function collectRules()
+    protected function collectRules(): ?Generator
     {
         $scene = $this->scene;
 
@@ -497,7 +498,7 @@ trait ValidationTrait
     /**
      * @param array $rule
      */
-    protected function prepareRule(array &$rule)
+    protected function prepareRule(array &$rule): void
     {
         $validator = $rule[0];
 
@@ -553,7 +554,7 @@ trait ValidationTrait
      */
     protected function getByWildcard(string $path, $default = null)
     {
-        list($first, $last) = explode('.*', $path, 2);
+        [$first, $last] = explode('.*', $path, 2);
         $recently = Helper::getValueOfArray($this->data, $first, $default);
 
         // 'goods.*'
@@ -803,7 +804,7 @@ trait ValidationTrait
      * @param string $key
      * @param mixed  $value
      */
-    public function setSafe(string $key, $value)
+    public function setSafe(string $key, $value): void
     {
         $this->_safeData[$key] = $value;
     }
@@ -832,7 +833,7 @@ trait ValidationTrait
      * @param array $safeData
      * @param bool  $clearOld
      */
-    public function setSafeData(array $safeData, $clearOld = false)
+    public function setSafeData(array $safeData, $clearOld = false): void
     {
         if ($clearOld) {
             $this->_safeData = [];

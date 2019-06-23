@@ -50,7 +50,7 @@ trait NameAliasTrait
     /**
      * @param array $aliases
      */
-    public static function setAliases(array $aliases)
+    public static function setAliases(array $aliases): void
     {
         foreach ($aliases as $name => $alias) {
             static::$aliases[$name] = $alias;

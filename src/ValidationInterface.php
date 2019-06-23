@@ -18,19 +18,19 @@ interface ValidationInterface
     /**
      * @return array
      */
-    public function rules();
+    public function rules(): array;
 
     /**
      * custom validator's message, to override default message.
      * @return array
      */
-    public function messages();
+    public function messages(): array;
 
     /**
      * define attribute field translate list
      * @return array
      */
-    public function translates();
+    public function translates(): array;
 
     /**
      * Data validation
@@ -44,20 +44,10 @@ interface ValidationInterface
     public function validate(array $onlyChecked = [], bool $stopOnError = null);
 
     /**
-     * @return bool
-     */
-    public function fail(): bool;
-
-    /**
      * alias of the fail()
      * @return bool
      */
     public function isFail(): bool;
-
-    /**
-     * @return bool
-     */
-    public function ok(): bool;
 
     /**
      * @return bool

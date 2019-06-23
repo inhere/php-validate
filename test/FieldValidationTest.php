@@ -26,7 +26,7 @@ class FieldValidationTest extends TestCase
         ],
     ];
 
-    public function testValidateField()
+    public function testValidateField(): void
     {
         $rules = [
             ['freeTime', 'required'],
@@ -79,7 +79,7 @@ class FieldValidationTest extends TestCase
         );
     }
 
-    public function testScenarios()
+    public function testScenarios(): void
     {
         $data = [
             'user' => 'inhere',

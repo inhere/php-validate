@@ -124,7 +124,7 @@ final class GlobalMessage
      * @param string       $key
      * @param string|array $msg
      */
-    public static function set(string $key, $msg)
+    public static function set(string $key, $msg): void
     {
         if ($key && $msg) {
             self::$messages[$key] = $msg;
@@ -152,7 +152,7 @@ final class GlobalMessage
     /**
      * @param array $messages
      */
-    public static function setMessages(array $messages)
+    public static function setMessages(array $messages): void
     {
         foreach ($messages as $key => $value) {
             self::set($key, $value);

@@ -20,7 +20,7 @@ use const UPLOAD_ERR_OK;
  */
 class ScopedValidatorsTest extends TestCase
 {
-    public function testUserValidators()
+    public function testUserValidators(): void
     {
         $v = Validation::make([]);
         $v->clearValidators();
@@ -54,7 +54,7 @@ class ScopedValidatorsTest extends TestCase
     /**
      * eq, neq, lt, lte, gt, gte field compare...
      */
-    public function testFiledCompare()
+    public function testFiledCompare(): void
     {
         $v = Validation::make([
             'name' => 'tom',
@@ -101,7 +101,7 @@ class ScopedValidatorsTest extends TestCase
         $this->assertFalse($v->inFieldValidator('book', 'tags'));
     }
 
-    public function testRequired()
+    public function testRequired(): void
     {
         $v = Validation::make([
             'age'      => 23,
@@ -129,7 +129,7 @@ class ScopedValidatorsTest extends TestCase
         }
     }
 
-    public function testRequiredXXX()
+    public function testRequiredXXX(): void
     {
         $v = Validation::make([
             'nick' => 'tom',
@@ -153,7 +153,7 @@ class ScopedValidatorsTest extends TestCase
         $this->assertTrue($ok);
     }
 
-    public function testUploadFile()
+    public function testUploadFile(): void
     {
         $v = Validation::make([]);
         $v->setUploadedFiles([
@@ -187,7 +187,7 @@ class ScopedValidatorsTest extends TestCase
         $this->assertFalse($v->imageValidator('not-exist'));
     }
 
-    public function testEachValidator()
+    public function testEachValidator(): void
     {
         $v = Validation::make([
             'tags'  => [3, 4, 5],

@@ -24,7 +24,7 @@ final class UserFilters
      *
      * @return null|callable
      */
-    public static function get(string $name)
+    public static function get(string $name): ?callable
     {
         return self::$filters[$name] ?? null;
     }
@@ -33,7 +33,7 @@ final class UserFilters
      * @param string   $name
      * @param callable $filter
      */
-    public static function add(string $name, callable $filter)
+    public static function add(string $name, callable $filter): void
     {
         if (!isset(self::$filters[$name])) {
             self::$filters[$name] = $filter;
@@ -44,7 +44,7 @@ final class UserFilters
      * @param string   $name
      * @param callable $filter
      */
-    public static function set(string $name, callable $filter)
+    public static function set(string $name, callable $filter): void
     {
         if ($name) {
             self::$filters[$name] = $filter;
@@ -72,7 +72,7 @@ final class UserFilters
     /**
      * @param array $filters
      */
-    public static function setFilters(array $filters)
+    public static function setFilters(array $filters): void
     {
         foreach ($filters as $name => $filter) {
             self::set($name, $filter);
@@ -82,7 +82,7 @@ final class UserFilters
     /**
      * @param string $name
      */
-    public static function remove(string $name)
+    public static function remove(string $name): void
     {
         if (isset(self::$filters[$name])) {
             unset(self::$filters[$name]);
@@ -92,7 +92,7 @@ final class UserFilters
     /**
      * clear all filters
      */
-    public static function removeAll()
+    public static function removeAll(): void
     {
         self::$filters = [];
     }

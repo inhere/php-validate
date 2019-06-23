@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ValidationTraitTest extends TestCase
 {
-    public function testNoDataProperty()
+    public function testNoDataProperty(): void
     {
         $v = new class
         {
@@ -29,7 +29,7 @@ class ValidationTraitTest extends TestCase
         ]);
     }
 
-    public function testBeforeAndAfter()
+    public function testBeforeAndAfter(): void
     {
         $v = Validation::make(['name' => 'inhere'], [
             ['name', 'string', 'min' => 3, 'filter' => 'trim|upper']

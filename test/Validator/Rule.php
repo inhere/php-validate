@@ -70,7 +70,7 @@ final class Rule
      */
     public $filters;
 
-    public static function createByArray(array $config)
+    public static function createByArray(array $config): void
     {
 
     }

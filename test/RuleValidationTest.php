@@ -13,7 +13,7 @@ use function version_compare;
  */
 class RuleValidationTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
         $v = Validation::make([
             'key' => 'val',
@@ -30,7 +30,7 @@ class RuleValidationTest extends TestCase
         $this->assertFalse($v->hasRule());
     }
 
-    public function testRequired()
+    public function testRequired(): void
     {
         $data = [
             'userId' => 0,
@@ -51,7 +51,7 @@ class RuleValidationTest extends TestCase
     /**
      * 如果指定的其它字段（ anotherField ）等于任何一个 value 时，被验证的字段必须存在且不为空。
      */
-    public function testRequiredIf()
+    public function testRequiredIf(): void
     {
         $data = [
             'userId'   => 0,
@@ -78,7 +78,7 @@ class RuleValidationTest extends TestCase
     /**
      * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填
      */
-    public function testRequiredUnless()
+    public function testRequiredUnless(): void
     {
         $data = [
             'userId'   => null,
@@ -100,7 +100,7 @@ class RuleValidationTest extends TestCase
     /**
      * 只要在指定的其他字段中有任意一个字段存在时，被验证的字段就必须存在并且不能为空。
      */
-    public function testRequiredWith()
+    public function testRequiredWith(): void
     {
         $data = [
             'userId'   => null,
@@ -123,7 +123,7 @@ class RuleValidationTest extends TestCase
     /**
      * 只有当所有的 其他指定字段 全部存在时，被验证的字段才 必须存在并且不能为空。
      */
-    public function testRequiredWithAll()
+    public function testRequiredWithAll(): void
     {
         $data = [
             'userId'   => null,
@@ -146,7 +146,7 @@ class RuleValidationTest extends TestCase
     /**
      * 只要在其他指定的字段中 有任意一个字段不存在，被验证的字段就 必须存在且不为空。
      */
-    public function testRequiredWithout()
+    public function testRequiredWithout(): void
     {
         $data = [
             'userId'   => null,
@@ -169,7 +169,7 @@ class RuleValidationTest extends TestCase
     /**
      * 只有当所有的 其他指定的字段 都不存在时，被验证的字段才 必须存在且不为空。
      */
-    public function testRequiredWithoutAll()
+    public function testRequiredWithoutAll(): void
     {
         $data = [
             'userId'   => null,
@@ -189,7 +189,7 @@ class RuleValidationTest extends TestCase
         $this->assertFalse($v->inError('userId'));
     }
 
-    public function testCollectRules()
+    public function testCollectRules(): void
     {
         $data = [
             'userId'   => 234,
@@ -246,7 +246,7 @@ class RuleValidationTest extends TestCase
         ],
     ];
 
-    public function testValidatePassed()
+    public function testValidatePassed(): void
     {
         $data = $this->data;
         // change value
@@ -278,7 +278,7 @@ class RuleValidationTest extends TestCase
         $this->assertSame($v->getSafe('tagId'), 35);
     }
 
-    public function testValidateFailed()
+    public function testValidateFailed(): void
     {
         $rules = $this->someRules();
         ob_start();
@@ -316,7 +316,7 @@ class RuleValidationTest extends TestCase
         $this->assertEquals($v->getSafe('tagId'), null);
     }
 
-    public function testValidateRegex()
+    public function testValidateRegex(): void
     {
         $v = RuleValidation::check([
             'text1' => 'hello-world',
@@ -337,7 +337,7 @@ class RuleValidationTest extends TestCase
         $this->assertArrayHasKey('text2', $safeData);
     }
 
-    public function testValidateString()
+    public function testValidateString(): void
     {
         $val = '123482';
         $v   = RuleValidation::make([
@@ -356,7 +356,7 @@ class RuleValidationTest extends TestCase
         $this->assertEquals($v->getSafe('user_name'), $val);
     }
 
-    public function testValidateJson()
+    public function testValidateJson(): void
     {
         $v = RuleValidation::make([
             'log_level' => 'debug',
@@ -378,7 +378,7 @@ class RuleValidationTest extends TestCase
         $this->assertCount(0, $errors);
     }
 
-    protected function someRules()
+    protected function someRules(): array
     {
         return [
             ['tagId,userId,freeTime', 'required'],// set message
@@ -425,7 +425,7 @@ class RuleValidationTest extends TestCase
         ];
     }
 
-    public function testArrayValidate()
+    public function testArrayValidate(): void
     {
         $data = [
             'options' => [
@@ -459,7 +459,7 @@ class RuleValidationTest extends TestCase
     /**
      * 验证的 字段值 必须存在于另一个字段（anotherField）的值中。
      */
-    public function testInField()
+    public function testInField(): void
     {
         $v = RuleValidation::check([
             'status'  => 3,
@@ -478,7 +478,7 @@ class RuleValidationTest extends TestCase
     /**
      * 验证的 字段值 必须存在于另一个字段（anotherField）的值中。
      */
-    public function testRange()
+    public function testRange(): void
     {
         $v = RuleValidation::make([
             'num' => 3,
@@ -498,7 +498,7 @@ class RuleValidationTest extends TestCase
         $this->assertEquals('range error message', $v->firstError());
     }
 
-    public function testDistinct()
+    public function testDistinct(): void
     {
         $v = RuleValidation::makeAndValidate([
             'tags'  => [3, 4, 4],
@@ -519,7 +519,7 @@ class RuleValidationTest extends TestCase
         $this->assertTrue($v->inError('tags'));
     }
 
-    public function testEach()
+    public function testEach(): void
     {
         $v = RuleValidation::check([
             'tags'  => [3, 4, 5],
@@ -545,7 +545,7 @@ class RuleValidationTest extends TestCase
     /**
      * @covers \Inhere\Validate\RuleValidation::getMessage()
      */
-    public function testGetMessage()
+    public function testGetMessage(): void
     {
         $v = Validation::check([
             'inTest' => 3,
@@ -557,7 +557,7 @@ class RuleValidationTest extends TestCase
         $this->assertEquals('in test must in (1,2)', $v->firstError());
     }
 
-    public function testValidatorAlias()
+    public function testValidatorAlias(): void
     {
         $v = Validation::check([
             'arrTest' => [12, 23],
@@ -578,7 +578,7 @@ class RuleValidationTest extends TestCase
         $v->setStopOnError(false);
         $v->validate();
 
-        $this->assertTrue($v->fail());
+        $this->assertTrue($v->isFail());
         $this->assertFalse($v->isStopOnError());
         $this->assertCount(2, $v->getErrors());
         $this->assertTrue($v->inError('listVal'));

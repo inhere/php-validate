@@ -14,7 +14,7 @@ use const FILTER_FLAG_STRIP_HIGH;
  */
 class FiltersTest extends TestCase
 {
-    public function testBool()
+    public function testBool(): void
     {
         $samples = [
             '1'     => true,
@@ -38,7 +38,7 @@ class FiltersTest extends TestCase
         $this->assertFalse(Filters::bool([]));
     }
 
-    public function testAliases()
+    public function testAliases(): void
     {
         $this->assertTrue(Filters::hasAlias('str2list'));
         $this->assertSame('explode', Filters::realName('str2list'));
@@ -54,7 +54,7 @@ class FiltersTest extends TestCase
         $this->assertSame('new-val', Filters::realName('new-key'));
     }
 
-    public function testInteger()
+    public function testInteger(): void
     {
         $this->assertSame(Filters::integer('456'), 456);
         $this->assertSame(Filters::integer('4df5dg6'), 456);
@@ -62,13 +62,13 @@ class FiltersTest extends TestCase
         $this->assertSame(Filters::integer(['34', '67gh']), [34, 67]);
     }
 
-    public function testAbs()
+    public function testAbs(): void
     {
         $this->assertSame(Filters::abs('456'), 456);
         $this->assertSame(Filters::abs(-45), 45);
     }
 
-    public function testFloat()
+    public function testFloat(): void
     {
         //        $this->assertSame(FilterList::float('4.45'), 4.45);
         $this->assertSame(Filters::float(45.78), 45.78);
@@ -78,7 +78,7 @@ class FiltersTest extends TestCase
         $this->assertSame(Filters::float(457, 2), 457.00);
     }
 
-    public function testString()
+    public function testString(): void
     {
         self::assertSame('1', Filters::string(1));
         self::assertSame('tom', Filters::string('tom'));
@@ -100,13 +100,13 @@ class FiltersTest extends TestCase
         self::assertSame('abc/hi', Filters::unsafeRaw('abc/hi'));
     }
 
-    public function testNl2br()
+    public function testNl2br(): void
     {
         self::assertSame('a<br/>b', Filters::nl2br("a\nb"));
         self::assertSame('a<br/>b', Filters::nl2br("a\r\nb"));
     }
 
-    public function testClearXXX()
+    public function testClearXXX(): void
     {
         // clearSpace
         $samples = ['abc ', ' abc ', 'a bc', 'a b c', ' a b c'];
@@ -120,13 +120,13 @@ class FiltersTest extends TestCase
         self::assertSame('ab', Filters::clearNewline("a\r\nb"));
     }
 
-    public function testTrim()
+    public function testTrim(): void
     {
         $this->assertEquals(Filters::trim(' test '), 'test');
         $this->assertEquals(Filters::trim([' test ', 'a ']), ['test', 'a']);
     }
 
-    public function testChangeCase()
+    public function testChangeCase(): void
     {
         // lowercase
         $this->assertSame('test', Filters::lowercase('Test'));
@@ -160,14 +160,14 @@ class FiltersTest extends TestCase
         $this->assertSame('', Filters::camel([]));
     }
 
-    public function testTime()
+    public function testTime(): void
     {
         $this->assertSame(1563811200, Filters::timestamp('2019-07-23'));
         $this->assertSame(0, Filters::timestamp(''));
         $this->assertSame(0, Filters::timestamp('invalid'));
     }
 
-    public function testStr2list()
+    public function testStr2list(): void
     {
         $samples = [
             '0,23'        => ['0', '23'],
@@ -186,7 +186,7 @@ class FiltersTest extends TestCase
         $this->assertSame([], Filters::str2list(' , '));
     }
 
-    public function testUnique()
+    public function testUnique(): void
     {
         $this->assertSame([1], Filters::unique(1));
         $this->assertSame([1], Filters::unique([1, 1]));
@@ -194,7 +194,7 @@ class FiltersTest extends TestCase
         $this->assertSame(['a', 2 => 'b'], Filters::unique(['a', 'a', 'b', 'a']));
     }
 
-    public function testEncodeOrClearTag()
+    public function testEncodeOrClearTag(): void
     {
         // clearTags
         $samples = [

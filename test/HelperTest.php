@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
  */
 class HelperTest extends TestCase
 {
-    public function testStringCheck()
+    public function testStringCheck(): void
     {
         $this->assertSame(3, Helper::strPos('string', 'i'));
         $this->assertSame(0, Helper::strPos('string', 's'));
@@ -29,7 +29,7 @@ class HelperTest extends TestCase
         $this->assertFalse(Helper::strrpos('string', 'o'));
     }
 
-    public function testMimeHelper()
+    public function testMimeHelper(): void
     {
         $this->assertSame('image/jpeg', Helper::getImageMime('jpg'));
         $this->assertSame('', Helper::getImageMime('invalid'));
@@ -45,7 +45,7 @@ class HelperTest extends TestCase
         }
     }
 
-    public function testCompareSize()
+    public function testCompareSize(): void
     {
         $this->assertTrue(Helper::compareSize(5, '>', 3));
 
@@ -53,7 +53,7 @@ class HelperTest extends TestCase
         $this->assertFalse(Helper::compareSize(5, 'invalid', 3));
     }
 
-    public function testGetValueOfArray()
+    public function testGetValueOfArray(): void
     {
         $data = [
             'user' => [
@@ -66,7 +66,7 @@ class HelperTest extends TestCase
         $this->assertSame($data, Helper::getValueOfArray($data, null));
     }
 
-    public function testCall()
+    public function testCall(): void
     {
         // function
         $this->assertSame(34, Helper::call('intval', '34'));

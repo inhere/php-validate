@@ -15,7 +15,7 @@ use Inhere\Validate\Validation;
  */
 class PageRequest extends Validation
 {
-    public function rules()
+    public function rules(): array
     {
         return [
             ['tagId,userId,freeTime', 'required'],
@@ -34,15 +34,19 @@ class PageRequest extends Validation
         ];
     }
 
-    public function translates()
+    public function translates(): array
     {
         return [
             'userId' => '用户Id',
         ];
     }
 
-    // custom validator message
-    public function messages()
+    /**
+     * custom validator message
+     *
+     * @return array
+     */
+    public function messages(): array
     {
         return [
             'required' => '{attr} 是必填项。',

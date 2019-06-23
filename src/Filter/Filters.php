@@ -87,7 +87,7 @@ final class Filters
      *
      * @return bool
      */
-    public static function boolean($val, $nullAsFalse = false)
+    public static function boolean($val, $nullAsFalse = false): bool
     {
         if ($val !== null && !is_scalar($val)) {
             return (bool)$val;
@@ -102,7 +102,7 @@ final class Filters
      * @see Validators::boolean()
      * {@inheritdoc}
      */
-    public static function bool($val, $nullAsFalse = false)
+    public static function bool($val, $nullAsFalse = false): bool
     {
         return self::boolean($val, $nullAsFalse);
     }

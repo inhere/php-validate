@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  */
 class UserFiltersTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
         UserFilters::removeAll();
         UserFilters::setFilters([

@@ -27,7 +27,7 @@ final class UserValidators
      * @param string   $name
      * @param callable $callback
      */
-    public static function set(string $name, callable $callback)
+    public static function set(string $name, callable $callback): void
     {
         if ($name = trim($name)) {
             self::$validators[$name] = $callback;
@@ -39,7 +39,7 @@ final class UserValidators
      *
      * @return null|callable
      */
-    public static function get(string $name)
+    public static function get(string $name): ?callable
     {
         return self::$validators[$name] ?? null;
     }
@@ -57,7 +57,7 @@ final class UserValidators
     /**
      * @param array $validators
      */
-    public static function setValidators(array $validators)
+    public static function setValidators(array $validators): void
     {
         self::$validators = [];
         self::addValidators($validators);
@@ -66,7 +66,7 @@ final class UserValidators
     /**
      * @param array $validators
      */
-    public static function addValidators(array $validators)
+    public static function addValidators(array $validators): void
     {
         foreach ($validators as $name => $validator) {
             self::set($name, $validator);
@@ -84,7 +84,7 @@ final class UserValidators
     /**
      * @param string $name
      */
-    public static function remove(string $name)
+    public static function remove(string $name): void
     {
         if (isset(self::$validators[$name])) {
             unset(self::$validators[$name]);
@@ -94,7 +94,7 @@ final class UserValidators
     /**
      * clear all validators
      */
-    public static function removeAll()
+    public static function removeAll(): void
     {
         self::$validators = [];
     }

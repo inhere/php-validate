@@ -95,7 +95,7 @@ trait ScopedValidatorsTrait
      *
      * @return null|callable
      */
-    public function getValidator(string $name)
+    public function getValidator(string $name): ?callable
     {
         return $this->_validators[$name] ?? null;
     }
@@ -115,7 +115,7 @@ trait ScopedValidatorsTrait
      *
      * @return $this
      */
-    public function addValidators(array $validators)
+    public function addValidators(array $validators): self
     {
         foreach ($validators as $name => $validator) {
             $this->addValidator($name, $validator);
@@ -134,7 +134,7 @@ trait ScopedValidatorsTrait
     /**
      * @param string $name
      */
-    public function delValidator(string $name)
+    public function delValidator(string $name): void
     {
         if (isset($this->_validators[$name])) {
             unset($this->_validators[$name]);
@@ -144,7 +144,7 @@ trait ScopedValidatorsTrait
     /**
      * clear validators
      */
-    public function clearValidators()
+    public function clearValidators(): void
     {
         $this->_validators = [];
     }
@@ -194,7 +194,7 @@ trait ScopedValidatorsTrait
      * - FALSE check failed
      * - NULL  skip check the field
      */
-    public function requiredIf(string $field, $fieldVal, string $anotherField, $values)
+    public function requiredIf(string $field, $fieldVal, string $anotherField, $values): ?bool
     {
         if (isset($this->data[$anotherField])) {
             $anotherVal = $this->data[$anotherField];
@@ -218,7 +218,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredUnless(string $field, $fieldVal, string $anotherField, $values)
+    public function requiredUnless(string $field, $fieldVal, string $anotherField, $values): ?bool
     {
         if (isset($this->data[$anotherField])) {
             $anotherVal = $this->data[$anotherField];
@@ -241,7 +241,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredWith(string $field, $fieldVal, $fields)
+    public function requiredWith(string $field, $fieldVal, $fields): ?bool
     {
         foreach ((array)$fields as $name) {
             if ($this->required($name)) {
@@ -262,7 +262,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredWithAll(string $field, $fieldVal, $fields)
+    public function requiredWithAll(string $field, $fieldVal, $fields): ?bool
     {
         $allHasValue = true;
 
@@ -286,7 +286,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredWithout(string $field, $fieldVal, $fields)
+    public function requiredWithout(string $field, $fieldVal, $fields): ?bool
     {
         $allHasValue = true;
 
@@ -310,7 +310,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredWithoutAll(string $field, $fieldVal, $fields)
+    public function requiredWithoutAll(string $field, $fieldVal, $fields): ?bool
     {
         $allNoValue = true;
 
@@ -446,7 +446,7 @@ trait ScopedValidatorsTrait
      *
      * @todo
      */
-    public function mimesValidator(string $field, $types = null)
+    public function mimesValidator(string $field, $types = null): void
     {
     }
 
@@ -588,7 +588,7 @@ trait ScopedValidatorsTrait
      *
      * @todo
      */
-    public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>=')
+    public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>='): void
     {
 
     }
@@ -677,7 +677,7 @@ trait ScopedValidatorsTrait
      *
      * @return array|null
      */
-    public function getUploadedFile(string $field)
+    public function getUploadedFile(string $field): ?array
     {
         return $this->uploadedFiles[$field] ?? null;
     }

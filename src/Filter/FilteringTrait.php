@@ -121,7 +121,7 @@ trait FilteringTrait
      *
      * @return callable|null
      */
-    public function getFilter(string $name)
+    public function getFilter(string $name): ?callable
     {
         return $this->_filters[$name] ?? null;
     }
@@ -141,9 +141,9 @@ trait FilteringTrait
      * @param string   $name
      * @param callable $filter
      *
-     * @return FilteringTrait
+     * @return $this
      */
-    public function setFilter(string $name, callable $filter)
+    public function setFilter(string $name, callable $filter): self
     {
         if ($name = trim($name)) {
             $this->_filters[$name] = $filter;
@@ -155,7 +155,7 @@ trait FilteringTrait
     /**
      * @param string $name
      */
-    public function delFilter(string $name)
+    public function delFilter(string $name): void
     {
         if (isset($this->_filters[$name])) {
             unset($this->_filters[$name]);
@@ -165,7 +165,7 @@ trait FilteringTrait
     /**
      * clear filters
      */
-    public function clearFilters()
+    public function clearFilters(): void
     {
         $this->_filters = [];
     }
@@ -181,7 +181,7 @@ trait FilteringTrait
     /**
      * @param array $filters
      */
-    public function addFilters(array $filters)
+    public function addFilters(array $filters): void
     {
         $this->setFilters($filters);
     }
@@ -189,7 +189,7 @@ trait FilteringTrait
     /**
      * @param array $filters
      */
-    public function setFilters(array $filters)
+    public function setFilters(array $filters): void
     {
         foreach ($filters as $name => $filter) {
             $this->setFilter($name, $filter);

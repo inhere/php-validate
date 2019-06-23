@@ -41,9 +41,9 @@ use const ENT_COMPAT;
  */
 class Helper
 {
-    const IS_TRUE  = '|yes|on|1|true|';
-    const IS_FALSE = '|no|off|0|false|';
-    const IS_BOOL  = '|yes|on|1|true|no|off|0|false|';
+    public const IS_TRUE  = '|yes|on|1|true|';
+    public const IS_FALSE = '|no|off|0|false|';
+    public const IS_BOOL  = '|yes|on|1|true|no|off|0|false|';
 
     /**
      * known image mime types
@@ -258,7 +258,7 @@ class Helper
         }
 
         if (is_array($cb)) {
-            list($obj, $mhd) = $cb;
+            [$obj, $mhd] = $cb;
 
             return is_object($obj) ? $obj->$mhd(...$args) : $obj::$mhd(...$args);
         }

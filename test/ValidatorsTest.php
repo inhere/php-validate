@@ -8,13 +8,13 @@ use stdClass;
 
 class ValidatorsTest extends TestCase
 {
-    public function testAliases()
+    public function testAliases(): void
     {
         $this->assertSame('neqField', Validators::realName('diff'));
         $this->assertSame('not-exist', Validators::realName('not-exist'));
     }
 
-    public function testIsEmpty()
+    public function testIsEmpty(): void
     {
         $this->assertFalse(Validators::isEmpty(1));
         $this->assertFalse(Validators::isEmpty(0));
@@ -27,7 +27,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::isEmpty(' '));
     }
 
-    public function testBool()
+    public function testBool(): void
     {
         $this->assertFalse(Validators::bool(null));
         $this->assertFalse(Validators::bool([]));
@@ -37,7 +37,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::bool(''));
     }
 
-    public function testFloat()
+    public function testFloat(): void
     {
         $this->assertFalse(Validators::float(null));
         $this->assertFalse(Validators::float(false));
@@ -53,7 +53,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::float(3.4, null, 5.4));
     }
 
-    public function testInteger()
+    public function testInteger(): void
     {
         $this->assertFalse(Validators::int(''));
         $this->assertFalse(Validators::integer(null));
@@ -69,7 +69,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::integer(2, null, 5));
     }
 
-    public function testNumber()
+    public function testNumber(): void
     {
         $this->assertFalse(Validators::number(''));
         $this->assertFalse(Validators::number(-1));
@@ -81,7 +81,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::number(10, null, 12));
     }
 
-    public function testString()
+    public function testString(): void
     {
         $this->assertFalse(Validators::string(false));
         $this->assertFalse(Validators::string(null));
@@ -94,14 +94,14 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::string('test', 2, 5));
     }
 
-    public function testAlpha()
+    public function testAlpha(): void
     {
         $this->assertFalse(Validators::alpha(5));
         $this->assertFalse(Validators::alpha('5'));
         $this->assertTrue(Validators::alpha('test'));
     }
 
-    public function testAccepted()
+    public function testAccepted(): void
     {
         $samples = [
             [5, false],
@@ -126,12 +126,12 @@ class ValidatorsTest extends TestCase
             ['true', true],
         ];
 
-        foreach ($samples as list($val, $want)) {
+        foreach ($samples as [$val, $want]) {
             $this->assertSame($want, Validators::accepted($val));
         }
     }
 
-    public function testAlphaNum()
+    public function testAlphaNum(): void
     {
         $this->assertFalse(Validators::alphaNum('='));
         $this->assertFalse(Validators::alphaNum(null));
@@ -142,7 +142,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::alphaNum('test'));
     }
 
-    public function testAlphaDash()
+    public function testAlphaDash(): void
     {
         $this->assertFalse(Validators::alphaDash('='));
         $this->assertFalse(Validators::alphaDash(null));
@@ -151,7 +151,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::alphaDash('sdf56-_'));
     }
 
-    public function testMin()
+    public function testMin(): void
     {
         $this->assertFalse(Validators::min('test', 5));
         $this->assertFalse(Validators::min(56, 60));
@@ -161,7 +161,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::min([3, 'test', 'hi'], 2));
     }
 
-    public function testMax()
+    public function testMax(): void
     {
         $this->assertFalse(Validators::max('test', 3));
         $this->assertFalse(Validators::max(56, 50));
@@ -172,7 +172,7 @@ class ValidatorsTest extends TestCase
     }
 
     // eq neq gt gte lt lte
-    public function testValueCompare()
+    public function testValueCompare(): void
     {
         // eq
         $this->assertTrue(Validators::same(6, 6));
@@ -232,7 +232,7 @@ class ValidatorsTest extends TestCase
         }
     }
 
-    public function testSize()
+    public function testSize(): void
     {
         $this->assertFalse(Validators::size('test', 5));
         $this->assertFalse(Validators::size(null, 5));
@@ -244,13 +244,13 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::size([3, 'test', 'hi'], 1, 4));
     }
 
-    public function testFixedSize()
+    public function testFixedSize(): void
     {
         $this->assertTrue(Validators::sizeEq([3, 'test', 'hi'], 3));
         $this->assertTrue(Validators::lengthEq('test', 4));
     }
 
-    public function testLength()
+    public function testLength(): void
     {
         $this->assertFalse(Validators::length('test', 5));
         $this->assertFalse(Validators::length('test', 0, 3));
@@ -260,7 +260,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::length([3, 'test', 'hi'], 2, 5));
     }
 
-    public function testRegexp()
+    public function testRegexp(): void
     {
         $this->assertFalse(Validators::regexp('test', '/^\d+$/'));
         $this->assertFalse(Validators::regexp('test-dd', '/^\w+$/'));
@@ -269,7 +269,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::regexp('test56', '/^\w+$/'));
     }
 
-    public function testUrl()
+    public function testUrl(): void
     {
         $this->assertFalse(Validators::url('test'));
         $this->assertFalse(Validators::url('/test56'));
@@ -277,7 +277,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::url('http://a.com/test56'));
     }
 
-    public function testEmail()
+    public function testEmail(): void
     {
         $this->assertFalse(Validators::email('test'));
         $this->assertFalse(Validators::email('/test56'));
@@ -285,7 +285,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::email('abc@gmail.com'));
     }
 
-    public function testIp()
+    public function testIp(): void
     {
         $this->assertFalse(Validators::ip('test'));
         $this->assertFalse(Validators::ip('/test56'));
@@ -297,14 +297,14 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::ipv4('127.0.0.1'));
     }
 
-    public function testEnglish()
+    public function testEnglish(): void
     {
         $this->assertFalse(Validators::english(123));
         $this->assertFalse(Validators::english('123'));
         $this->assertTrue(Validators::english('test'));
     }
 
-    public function testIsArray()
+    public function testIsArray(): void
     {
         $this->assertFalse(Validators::isArray('test'));
         $this->assertFalse(Validators::isArray(345));
@@ -313,7 +313,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::isArray(['a']));
     }
 
-    public function testIsMap()
+    public function testIsMap(): void
     {
         $this->assertFalse(Validators::isMap('test'));
         $this->assertFalse(Validators::isMap([]));
@@ -323,7 +323,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::isMap(['value', 'a' => 'v']));
     }
 
-    public function testIsList()
+    public function testIsList(): void
     {
         $this->assertFalse(Validators::isList('test'));
         $this->assertFalse(Validators::isList([]));
@@ -336,7 +336,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::isList(['abc', 565, null]));
     }
 
-    public function testIntList()
+    public function testIntList(): void
     {
         $this->assertFalse(Validators::intList('test'));
         $this->assertFalse(Validators::intList([]));
@@ -351,7 +351,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::intList([565, 3234, -56]));
     }
 
-    public function testNumList()
+    public function testNumList(): void
     {
         $this->assertFalse(Validators::numList('test'));
         $this->assertFalse(Validators::numList([]));
@@ -366,7 +366,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::numList([56, 45]));
     }
 
-    public function testStrList()
+    public function testStrList(): void
     {
         $this->assertFalse(Validators::strList('test'));
         $this->assertFalse(Validators::strList([]));
@@ -378,7 +378,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::strList(['abc', 'efg']));
     }
 
-    public function testArrList()
+    public function testArrList(): void
     {
         $this->assertFalse(Validators::arrList('test'));
         $this->assertFalse(Validators::arrList([]));
@@ -396,7 +396,7 @@ class ValidatorsTest extends TestCase
         ]));
     }
 
-    public function testHasKey()
+    public function testHasKey(): void
     {
         $this->assertFalse(Validators::hasKey('hello, world', 'all'));
         $this->assertFalse(Validators::hasKey('hello, world', true));
@@ -407,7 +407,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::hasKey(['a' => 'v0', 'b' => 'v1', 'c' => 'v2'], ['b', 'c']));
     }
 
-    public function testDistinct()
+    public function testDistinct(): void
     {
         $this->assertFalse(Validators::distinct('string'));
         $this->assertFalse(Validators::distinct([1, 2, 2]));
@@ -418,7 +418,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::distinct(['a', 'b', 'c']));
     }
 
-    public function testInANDNotIn()
+    public function testInANDNotIn(): void
     {
         $samples = [
             [true, 1, [1, 2, 3], false],
@@ -428,13 +428,13 @@ class ValidatorsTest extends TestCase
             [true, '1', '1,2,3', true],
         ];
 
-        foreach ($samples as list($want, $val, $dict, $strict)) {
+        foreach ($samples as [$want, $val, $dict, $strict]) {
             $this->assertSame($want, Validators::in($val, $dict, $strict));
             $this->assertSame(!$want, Validators::notIn($val, $dict, $strict));
         }
     }
 
-    public function testJson()
+    public function testJson(): void
     {
         $this->assertFalse(Validators::json('test'));
         $this->assertFalse(Validators::json([]));
@@ -450,7 +450,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::json('{"aa": 34}'));
     }
 
-    public function testContains()
+    public function testContains(): void
     {
         $this->assertFalse(Validators::contains('hello, world', 'all'));
         $this->assertFalse(Validators::contains(null, 'all'));
@@ -462,7 +462,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::contains('hello, world', ['llo', 'wor']));
     }
 
-    public function testStartWith()
+    public function testStartWith(): void
     {
         $this->assertFalse(Validators::startWith(null, 'ell'));
         $this->assertFalse(Validators::startWith('hello, world', 'ell'));
@@ -472,7 +472,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::startWith(['hello', 'world'], 'hello'));
     }
 
-    public function testEndWith()
+    public function testEndWith(): void
     {
         $this->assertFalse(Validators::endWith('hello, world', 'ell'));
 
@@ -480,7 +480,7 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::endWith(['hello', 'world'], 'world'));
     }
 
-    public function testDateCheck()
+    public function testDateCheck(): void
     {
         // date
         $this->assertFalse(Validators::date('hello'));
@@ -525,19 +525,19 @@ class ValidatorsTest extends TestCase
         $this->assertFalse(Validators::isDateFormat('20170526'));
     }
 
-    public function testPhone()
+    public function testPhone(): void
     {
         $this->assertTrue(Validators::phone('13555556666'));
         $this->assertFalse(Validators::phone('20170526'));
     }
 
-    public function testPostCode()
+    public function testPostCode(): void
     {
         $this->assertTrue(Validators::postCode('610000'));
         $this->assertFalse(Validators::postCode('20170526'));
     }
 
-    public function testPrice()
+    public function testPrice(): void
     {
         $this->assertTrue(Validators::price('610.45'));
         $this->assertFalse(Validators::price('-201.26'));
@@ -548,7 +548,7 @@ class ValidatorsTest extends TestCase
         $this->assertFalse(Validators::negativePrice('abc'));
     }
 
-    public function testOther()
+    public function testOther(): void
     {
         // isFloat
         $this->assertFalse(Validators::isFloat([]));

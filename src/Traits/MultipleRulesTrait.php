@@ -47,7 +47,7 @@ trait MultipleRulesTrait
      * @return Generator
      * @throws InvalidArgumentException
      */
-    protected function collectRules()
+    protected function collectRules(): ?Generator
     {
         $scene = $this->scene;
 
@@ -112,7 +112,7 @@ trait MultipleRulesTrait
             return $row;
         }
 
-        list($name, $args) = Filters::explode($rule, ':', 2);
+        [$name, $args] = Filters::explode($rule, ':', 2);
         $args   = trim($args, ', ');
         $row[0] = $name;
 
@@ -128,7 +128,7 @@ trait MultipleRulesTrait
             case 'string':
             case 'between':
                 if (strpos($args, ',')) {
-                    list($row['min'], $row['max']) = Filters::explode($args, ',', 2);
+                    [$row['min'], $row['max']] = Filters::explode($args, ',', 2);
                 } else {
                     $row['min'] = $args;
                 }

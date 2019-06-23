@@ -29,7 +29,7 @@ class ErrorMessageTraitTest extends TestCase
         ],
     ];
 
-    public function testErrorMessage()
+    public function testErrorMessage(): void
     {
         // empty test
         $v = FieldValidation::make($this->sampleDate);
@@ -84,7 +84,7 @@ class ErrorMessageTraitTest extends TestCase
         $this->assertSame('userId must be an integer!', $error['msg']);
     }
 
-    public function testFieldTranslate()
+    public function testFieldTranslate(): void
     {
         $v = FieldValidation::make([]);
 
@@ -108,7 +108,7 @@ class ErrorMessageTraitTest extends TestCase
     /**
      * for https://github.com/inhere/php-validate/issues/10
      */
-    public function testForIssues10()
+    public function testForIssues10(): void
     {
         $v = Validation::check([
             'page' => 0

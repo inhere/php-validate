@@ -13,7 +13,7 @@ use function version_compare;
  */
 class GlobalMessageTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
         GlobalMessage::setMessages([
             'key1' => 'val1',

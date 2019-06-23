@@ -60,7 +60,7 @@ trait ErrorMessageTrait
      */
     private $_prettifyName = true;
 
-    protected function prepareValidation()
+    protected function prepareValidation(): void
     {
         // error message
         $this->_messages = array_merge($this->messages(), $this->_messages);
@@ -95,15 +95,6 @@ trait ErrorMessageTrait
     public function isFail(): bool
     {
         return count($this->_errors) > 0;
-    }
-
-    /**
-     * @return bool
-     * @deprecated will delete, please use isFail() instead
-     */
-    public function fail(): bool
-    {
-        return $this->isFail();
     }
 
     /**
@@ -169,7 +160,7 @@ trait ErrorMessageTrait
      * @param string $field
      * @param string $msg
      */
-    public function addError(string $field, string $msg)
+    public function addError(string $field, string $msg): void
     {
         $this->_errors[] = [
             'name' => $field,
@@ -201,7 +192,7 @@ trait ErrorMessageTrait
     /**
      * clear errors
      */
-    public function clearErrors()
+    public function clearErrors(): void
     {
         $this->_errors = [];
     }
@@ -270,7 +261,7 @@ trait ErrorMessageTrait
      * @param string       $key
      * @param string|array $message
      */
-    public function setMessage(string $key, $message)
+    public function setMessage(string $key, $message): void
     {
         if ($key && $message) {
             $this->_messages[$key] = $message;
@@ -456,7 +447,7 @@ trait ErrorMessageTrait
     /**
      * @param bool $prettifyName
      */
-    public function setPrettifyName(bool $prettifyName = true)
+    public function setPrettifyName(bool $prettifyName = true): void
     {
         $this->_prettifyName = $prettifyName;
     }

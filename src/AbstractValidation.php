@@ -63,7 +63,7 @@ abstract class AbstractValidation implements ValidationInterface
      *
      * @return AbstractValidation
      */
-    public static function quick(array $data, string $scene = '', bool $startValidate = false)
+    public static function quick(array $data, string $scene = '', bool $startValidate = false): AbstractValidation
     {
         return new static($data, [], [], $scene, $startValidate);
     }

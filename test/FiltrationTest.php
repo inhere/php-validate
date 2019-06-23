@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  */
 class FiltrationTest extends TestCase
 {
-    public function testFiltration()
+    public function testFiltration(): void
     {
         $data = [
             'name'    => ' tom ',

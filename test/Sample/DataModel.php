@@ -20,7 +20,7 @@ class DataModel
      *
      * @return $this
      */
-    public function setData($data)
+    public function setData($data): self
     {
         $this->data = $data;
 
