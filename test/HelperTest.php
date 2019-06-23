@@ -8,6 +8,7 @@
 
 namespace Inhere\ValidateTest;
 
+use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Helper;
 use PHPUnit\Framework\TestCase;
 
@@ -51,10 +52,38 @@ class HelperTest extends TestCase
         $this->assertFalse(Helper::compareSize(5, 'invalid', 3));
     }
 
+    public function testGetValueOfArray()
+    {
+        $data = [
+            'user' => [
+                'name' => 'inhere',
+                'age' => 1,
+            ]
+        ];
+
+        $this->assertNull(Helper::getValueOfArray($data, 'not-exist'));
+        $this->assertSame($data, Helper::getValueOfArray($data, null));
+    }
+
     public function testCall()
     {
+        // function
         $this->assertSame(34, Helper::call('intval', '34'));
 
+        // class:;method
+        $this->assertSame(34, Helper::call(Filters::class . '::integer', '34'));
+
+        $callabled = new class {
+            public function __invoke($str)
+            {
+                return (int)$str;
+            }
+        };
+
+        // callabled object
+        $this->assertSame(34, Helper::call($callabled, '34'));
+
+        // invalid
         $this->expectException(\InvalidArgumentException::class);
         Helper::call('oo-invalid');
     }

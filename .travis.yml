@@ -12,6 +12,7 @@ php:
 #      env: ANALYSIS='true'
 
 before_script:
+    - php -m
     - composer require php-coveralls/php-coveralls:^2.1.0
 
 script:

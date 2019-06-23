@@ -188,15 +188,17 @@ class Helper
             return $default;
         }
 
+        $found = false;
         foreach (\explode('.', $key) as $segment) {
             if (\is_array($array) && \array_key_exists($segment, $array)) {
+                $found = true;
                 $array = $array[$segment];
             } else {
                 return $default;
             }
         }
 
-        return $array;
+        return $found ? $array : $default;
     }
 
     /**

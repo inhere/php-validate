@@ -48,6 +48,7 @@ class FieldValidationTest extends TestCase
         $errors = $v->getErrors();
         $this->assertNotEmpty($errors);
         $this->assertCount(3, $errors);
+        $this->assertSame('freeTime is required!!!!', $v->getErrors('freeTime')[0]);
 
         $v = FieldValidation::check($this->data, [
             ['userId', 'required|int'],
