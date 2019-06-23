@@ -36,9 +36,11 @@ class HelperTest extends TestCase
         $this->assertSame('png', Helper::getImageExtByMime('image/png'));
         $this->assertSame('', Helper::getImageExtByMime('invalid'));
 
-        $mime = Helper::getMimeType(__DIR__ . '/avatar.jpeg');
-        $this->assertSame('image/jpeg', $mime);
-        $this->assertSame('', Helper::getMimeType('invalid'));
+        if (extension_loaded('fileinfo')) {
+            $mime = Helper::getMimeType(__DIR__ . '/avatar.jpeg');
+            $this->assertSame('image/jpeg', $mime);
+            $this->assertSame('', Helper::getMimeType('invalid'));
+        }
     }
 
     public function testCompareSize()

@@ -84,7 +84,11 @@ class Helper
             return \mime_content_type($file);
         }
 
-        return (string)\finfo_file(\finfo_open(FILEINFO_MIME_TYPE), $file);
+        if (\function_exists('finfo_file')) {
+            return (string)\finfo_file(\finfo_open(FILEINFO_MIME_TYPE), $file);
+        }
+
+        return '';
     }
 
     /**
