@@ -1,7 +1,7 @@
 # PHP validate
 
 [![License](https://img.shields.io/packagist/l/inhere/php-validate.svg?style=flat-square)](LICENSE)
-[![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/php-validate)
+[![Php Version](https://img.shields.io/badge/php-%3E=7.1-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/php-validate)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/php-validate.svg)](https://packagist.org/packages/inhere/php-validate)
 [![Build Status](https://travis-ci.org/inhere/php-validate.svg?branch=master)](https://travis-ci.org/inhere/php-validate)
 [![Coverage Status](https://coveralls.io/repos/github/inhere/php-validate/badge.svg?branch=master)](https://coveralls.io/github/inhere/php-validate?branch=master)

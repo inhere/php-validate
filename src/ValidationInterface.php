@@ -31,8 +31,10 @@ interface ValidationInterface
 
     /**
      * Data validation
-     * @param  array     $onlyChecked 可以设置此次需要验证的字段
-     * @param  bool|null $stopOnError 是否出现错误即停止验证
+     *
+     * @param array     $onlyChecked 可以设置此次需要验证的字段
+     * @param bool|null $stopOnError 是否出现错误即停止验证
+     *
      * @return static
      * @throws \RuntimeException
      */
@@ -61,20 +63,25 @@ interface ValidationInterface
 
     /**
      * @param string $field
+     *
      * @return array
      */
     public function getErrors(string $field = ''): array;
 
     /**
      * Get the first error message
+     *
      * @param bool $onlyMsg Only return message string.
+     *
      * @return array|string
      */
     public function firstError(bool $onlyMsg = true);
 
     /**
      * Get the last error message
+     *
      * @param bool $onlyMsg
+     *
      * @return array|string
      */
     public function lastError(bool $onlyMsg = true);

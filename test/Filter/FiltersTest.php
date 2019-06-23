@@ -195,7 +195,7 @@ class FiltersTest extends TestCase
     {
         // clearTags
         $samples = [
-            ''                  => '',
+            ''                   => '',
             '<p>text</p>'        => 'text',
             '<p>text'            => 'text',
             '<p><a>text</a></p>' => 'text',
@@ -210,8 +210,10 @@ class FiltersTest extends TestCase
         $this->assertSame('abc.com%3Fa%3D7%2B9', Filters::encoded('abc.com?a=7+9'));
         $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D', Filters::encoded('abc.com?a=7+9&b=你', \FILTER_FLAG_STRIP_HIGH));
         $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0', Filters::encoded('abc.com?a=7+9&b=你'));
-        $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0', Filters::encoded('abc.com?a=7+9&b=你', \FILTER_FLAG_ENCODE_LOW));
-        $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0', Filters::encoded('abc.com?a=7+9&b=你', \FILTER_FLAG_ENCODE_HIGH));
+        $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0',
+            Filters::encoded('abc.com?a=7+9&b=你', \FILTER_FLAG_ENCODE_LOW));
+        $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0',
+            Filters::encoded('abc.com?a=7+9&b=你', \FILTER_FLAG_ENCODE_HIGH));
 
         $this->assertSame('', Filters::url(''));
         $this->assertSame('abc.com?a=7+9', Filters::url('abc.com?a=7+9'));

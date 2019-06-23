@@ -21,6 +21,7 @@ final class UserValidators
 
     /**
      * add a custom validator
+     *
      * @param string   $name
      * @param callable $callback
      */
@@ -33,6 +34,7 @@ final class UserValidators
 
     /**
      * @param string $name
+     *
      * @return null|callable
      */
     public static function get(string $name)
@@ -42,6 +44,7 @@ final class UserValidators
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public static function has(string $name): bool

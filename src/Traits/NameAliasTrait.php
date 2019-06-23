@@ -19,7 +19,9 @@ trait NameAliasTrait
 
     /**
      * get real validator name by alias name
+     *
      * @param string $name
+     *
      * @return string
      */
     public static function realName(string $name): string
@@ -29,6 +31,7 @@ trait NameAliasTrait
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public static function hasAlias(string $name): bool

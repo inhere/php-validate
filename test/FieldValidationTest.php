@@ -36,11 +36,11 @@ class FieldValidationTest extends TestCase
             ['goods.pear', 'max:30'],
         ];
 
-        $v = FieldValidation::make($this->data, $rules)
-            ->setMessages([
-                'freeTime.required' => 'freeTime is required!!!!'
-            ])
-            ->validate([], false);
+        $v = FieldValidation::make($this->data, $rules);
+        $v->setMessages([
+            'freeTime.required' => 'freeTime is required!!!!'
+        ])
+          ->validate([], false);
 
         $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());

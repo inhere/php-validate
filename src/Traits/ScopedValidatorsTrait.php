@@ -43,9 +43,11 @@ trait ScopedValidatorsTrait
      *     });
      * $v->validate();
      * ```
+     *
      * @param string   $name
      * @param callable $callback
      * @param string   $message
+     *
      * @return $this
      */
     public function addValidator(string $name, callable $callback, string $message = ''): self
@@ -55,9 +57,11 @@ trait ScopedValidatorsTrait
 
     /**
      * add a custom validator
+     *
      * @param string   $name
      * @param callable $callback
      * @param string   $message
+     *
      * @return self
      */
     public function setValidator(string $name, callable $callback, string $message = ''): self
@@ -75,6 +79,7 @@ trait ScopedValidatorsTrait
 
     /**
      * @param string $name
+     *
      * @return null|callable
      */
     public function getValidator(string $name)
@@ -84,6 +89,7 @@ trait ScopedValidatorsTrait
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function hasValidator(string $name): bool
@@ -93,6 +99,7 @@ trait ScopedValidatorsTrait
 
     /**
      * @param array $validators
+     *
      * @return $this
      */
     public function addValidators(array $validators)
@@ -136,12 +143,14 @@ trait ScopedValidatorsTrait
     /**
      * 验证字段必须存在，且输入数据不为空。
      * The verification field must exist and the input data is not empty.
-     * @see Validators::isEmpty() 如何鉴定为空
+     *
      * @param string     $field
      * @param null|mixed $value
+     *
      * @return bool
      * - True  field exists and value is not empty.
      * - False field not exists or value is empty.
+     * @see Validators::isEmpty() 如何鉴定为空
      */
     public function required(string $field, $value = null): bool
     {
@@ -161,10 +170,12 @@ trait ScopedValidatorsTrait
 
     /**
      * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 必填 (refer laravel)
+     *
      * @param string       $field
      * @param mixed        $fieldVal
      * @param string       $anotherField
      * @param array|string $values
+     *
      * @return bool|null
      * - TRUE  check successful
      * - FALSE check failed
@@ -185,10 +196,12 @@ trait ScopedValidatorsTrait
 
     /**
      * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 不必填(refer laravel)
+     *
      * @param string       $field
      * @param mixed        $fieldVal
      * @param string       $anotherField
      * @param array|string $values
+     *
      * @return bool|null
      * @see requiredIf()
      */
@@ -207,9 +220,11 @@ trait ScopedValidatorsTrait
 
     /**
      * 如果指定的其他字段中的 任意一个 有值且不为空，则此字段为 必填(refer laravel)
+     *
      * @param string       $field
      * @param mixed        $fieldVal
      * @param array|string $fields
+     *
      * @return bool|null
      * @see requiredIf()
      */
@@ -226,9 +241,11 @@ trait ScopedValidatorsTrait
 
     /**
      * 如果指定的 所有字段 都有值且不为空，则此字段为 必填(refer laravel)
+     *
      * @param string       $field
      * @param mixed        $fieldVal
      * @param array|string $fields
+     *
      * @return bool|null
      * @see requiredIf()
      */
@@ -248,9 +265,11 @@ trait ScopedValidatorsTrait
 
     /**
      * 如果缺少 任意一个 指定的字段值，则此字段为 必填(refer laravel)
+     *
      * @param string       $field
      * @param mixed        $fieldVal
      * @param array|string $fields
+     *
      * @return bool|null
      * @see requiredIf()
      */
@@ -270,9 +289,11 @@ trait ScopedValidatorsTrait
 
     /**
      * 如果所有指定的字段 都没有 值，则此字段为 必填(refer laravel)
+     *
      * @param string       $field
      * @param mixed        $fieldVal
      * @param array|string $fields
+     *
      * @return bool|null
      * @see requiredIf()
      */
@@ -296,8 +317,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 验证的字段必须是成功上传的文件
+     *
      * @param string       $field
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
+     *
      * @return bool
      */
     public function fileValidator(string $field, $suffixes = null): bool
@@ -325,8 +348,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 验证的字段必须是成功上传的图片文件
+     *
      * @param string       $field
      * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
+     *
      * @return bool
      */
     public function imageValidator(string $field, $suffixes = null): bool
@@ -372,8 +397,10 @@ trait ScopedValidatorsTrait
     /**
      * 验证的文件必须与给定 MIME 类型之一匹配
      * ['video', 'mimeTypes', 'video/avi,video/mpeg,video/quicktime']
+     *
      * @param string       $field
      * @param string|array $types
+     *
      * @return bool
      */
     public function mimeTypesValidator(string $field, $types): bool
@@ -399,10 +426,12 @@ trait ScopedValidatorsTrait
     /**
      * 验证的文件必须具有与列出的其中一个扩展名相对应的 MIME 类型
      * ['photo', 'mimes', 'jpeg,bmp,png']
-     * @todo
+     *
      * @param string       $field
      * @param string|array $types
      * return bool
+     *
+     * @todo
      */
     public function mimesValidator(string $field, $types = null)
     {
@@ -414,8 +443,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 字段值比较：当前字段值是否与给定的字段值相同
+     *
      * @param mixed  $val
      * @param string $compareField
+     *
      * @return bool
      */
     public function compareValidator($val, string $compareField): bool
@@ -430,8 +461,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 字段值比较：当前字段值是否与给定的字段值不相同
+     *
      * @param mixed  $val
      * @param string $compareField
+     *
      * @return bool
      */
     public function neqFieldValidator($val, string $compareField): bool
@@ -441,8 +474,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 字段值比较：当前字段值 要小于 给定字段的值
+     *
      * @param string|int $val
      * @param string     $compareField
+     *
      * @return bool
      */
     public function ltFieldValidator($val, string $compareField): bool
@@ -458,8 +493,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 字段值比较：当前字段值 要小于等于 给定字段的值
+     *
      * @param string|int $val
      * @param string     $compareField
+     *
      * @return bool
      */
     public function lteFieldValidator($val, string $compareField): bool
@@ -475,8 +512,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 字段值比较：当前字段值 要大于 给定字段的值
+     *
      * @param string|int $val
      * @param string     $compareField
+     *
      * @return bool
      */
     public function gtFieldValidator($val, string $compareField): bool
@@ -492,8 +531,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 字段值比较：当前字段值 要大于等于 给定字段的值
+     *
      * @param string|int $val
      * @param string     $compareField
+     *
      * @return bool
      */
     public function gteFieldValidator($val, string $compareField): bool
@@ -509,8 +550,10 @@ trait ScopedValidatorsTrait
 
     /**
      * 验证的 字段值 必须存在于另一个字段（anotherField）的值中。
+     *
      * @param mixed  $val
      * @param string $anotherField
+     *
      * @return bool
      */
     public function inFieldValidator($val, string $anotherField): bool
@@ -524,11 +567,13 @@ trait ScopedValidatorsTrait
 
     /**
      * 比较两个日期字段的 间隔天数 是否符合要求
-     * @todo
+     *
      * @param string $val
      * @param string $compareField
      * @param int    $expected
      * @param string $op
+     *
+     * @todo
      */
     public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>=')
     {
@@ -539,10 +584,12 @@ trait ScopedValidatorsTrait
      * 对数组中的每个值都应用给定的验证器，并且要全部通过
      * `['foo.*.id', 'each', 'number']`
      * `['goods.*', 'each', 'string']`
+     *
      * @param array $values
      * @param array ...$args
      *  - string|\Closure $validator
      *  - ... args for $validator
+     *
      * @return bool
      * @throws \InvalidArgumentException
      */
@@ -594,6 +641,7 @@ trait ScopedValidatorsTrait
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public static function isCheckFile(string $name): bool
@@ -603,6 +651,7 @@ trait ScopedValidatorsTrait
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public static function isCheckRequired(string $name): bool
@@ -612,6 +661,7 @@ trait ScopedValidatorsTrait
 
     /**
      * @param string $field
+     *
      * @return array|null
      */
     public function getUploadedFile(string $field)
@@ -629,6 +679,7 @@ trait ScopedValidatorsTrait
 
     /**
      * @param array $uploadedFiles
+     *
      * @return $this
      */
     public function setUploadedFiles($uploadedFiles): self

@@ -32,6 +32,7 @@ class Filtration
     /**
      * @param array $data
      * @param array $rules
+     *
      * @return Filtration
      */
     public static function make(array $data = [], array $rules = []): self
@@ -41,6 +42,7 @@ class Filtration
 
     /**
      * Filtration constructor.
+     *
      * @param array $data
      * @param array $rules
      */
@@ -52,6 +54,7 @@ class Filtration
 
     /**
      * @param array $data
+     *
      * @return $this
      */
     public function load(array $data): self
@@ -62,6 +65,7 @@ class Filtration
 
     /**
      * @param array $rules
+     *
      * @return array
      * @throws \InvalidArgumentException
      */
@@ -72,8 +76,10 @@ class Filtration
 
     /**
      * 对数据应用给的一系列过滤规则
+     *
      * @param array $rules
      * @param array $data
+     *
      * @return array 返回过滤后的数据
      * @throws \InvalidArgumentException
      */
@@ -109,8 +115,10 @@ class Filtration
 
     /**
      * value sanitize 直接对给的值进行过滤
-     * @param  mixed        $value
-     * @param  string|array $filters
+     *
+     * @param mixed        $value
+     * @param string|array $filters
+     *
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -121,9 +129,11 @@ class Filtration
 
     /**
      * get a field value from {@see $data}
+     *
      * @param string|int   $field
      * @param string|array $filters
      * @param mixed        $default
+     *
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -143,7 +153,8 @@ class Filtration
     }
 
     /**
-     * @param string|int   $field
+     * @param string|int $field
+     *
      * @return bool
      */
     public function has($field): bool
@@ -153,6 +164,7 @@ class Filtration
 
     /**
      * @param bool $clearFilters
+     *
      * @return $this
      */
     public function reset(bool $clearFilters = false): self
@@ -184,6 +196,7 @@ class Filtration
 
     /**
      * @param array $rules
+     *
      * @return self
      */
     public function setRules(array $rules): self

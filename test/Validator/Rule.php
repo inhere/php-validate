@@ -80,6 +80,7 @@ final class Rule
      * @param array           $params 验证需要的参数
      * @param string          $message default error message
      * @param mixed           $default default value
+     *
      * @return Rule
      */
     public function init(string $field, $value, $validator, array $params, $message, $default): Rule

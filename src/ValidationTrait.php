@@ -109,7 +109,9 @@ trait ValidationTrait
 
     /**
      * before validate handler
-     * @param  \Closure $cb
+     *
+     * @param \Closure $cb
+     *
      * @return static
      */
     public function onBeforeValidate(\Closure $cb)
@@ -132,7 +134,9 @@ trait ValidationTrait
 
     /**
      * after validate handler
-     * @param  \Closure $cb
+     *
+     * @param \Closure $cb
+     *
      * @return static
      */
     public function onAfterValidate(\Closure $cb)
@@ -155,8 +159,10 @@ trait ValidationTrait
 
     /**
      * Perform data validation
-     * @param  array     $onlyChecked You can set this field that needs verification
-     * @param  bool|null $stopOnError Stop verification if there is an error
+     *
+     * @param array     $onlyChecked You can set this field that needs verification
+     * @param bool|null $stopOnError Stop verification if there is an error
+     *
      * @return static
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -206,6 +212,7 @@ trait ValidationTrait
 
     /**
      * apply validate rule for given fields
+     *
      * @param string|array $fields
      * @param array        $rule
      * @param array        $onlyChecked
@@ -285,11 +292,13 @@ trait ValidationTrait
 
     /**
      * field require/exists validate 字段存在检查
+     *
      * @param string       $field Attribute name
      * @param mixed        $value Attribute value
      * @param string       $validator required* Validator name
      * @param array        $args Verify the required parameters
      * @param string|array $defMsg
+     *
      * @return bool|null
      * - TRUE  check successful
      * - FALSE check failed
@@ -328,11 +337,13 @@ trait ValidationTrait
 
     /**
      * field value validate 字段值验证
+     *
      * @param string                $field Field name
      * @param mixed                 $value Field value
      * @param \Closure|string|mixed $validator Validator
      * @param array                 $args Arguments for validate
      * @param string                $defMsg
+     *
      * @return bool
      * @throws \InvalidArgumentException
      */
@@ -389,6 +400,7 @@ trait ValidationTrait
 
     /**
      * collect Safe Value
+     *
      * @param string $field
      * @param mixed  $value
      */
@@ -516,6 +528,7 @@ trait ValidationTrait
     /**
      * @param string     $path 'users.*.id' 'goods.*' 'foo.bar.*.id'
      * @param null|mixed $default
+     *
      * @return mixed
      */
     protected function getByWildcard(string $path, $default = null)
@@ -569,6 +582,7 @@ trait ValidationTrait
 
     /**
      * @param array $rules
+     *
      * @return $this
      */
     public function setRules(array $rules): self
@@ -595,6 +609,7 @@ trait ValidationTrait
 
     /**
      * @param string $scene
+     *
      * @return self
      */
     public function atScene(string $scene): self
@@ -605,7 +620,9 @@ trait ValidationTrait
 
     /**
      * alias of the `setScene()`
+     *
      * @param string $scene
+     *
      * @return static
      */
     public function setScene(string $scene)
@@ -615,7 +632,9 @@ trait ValidationTrait
 
     /**
      * alias of the `setScene()`
+     *
      * @param string $scene
+     *
      * @return static
      */
     public function onScene(string $scene)
@@ -625,6 +644,7 @@ trait ValidationTrait
 
     /**
      * @param bool $_skipOnEmpty
+     *
      * @return static
      */
     public function setSkipOnEmpty(bool $_skipOnEmpty)
@@ -644,7 +664,9 @@ trait ValidationTrait
 
     /**
      * Does this collection have a given key?
+     *
      * @param string $key The data key
+     *
      * @return bool
      */
     public function has(string $key): bool
@@ -654,8 +676,10 @@ trait ValidationTrait
 
     /**
      * Get data item by key
+     *
      * @param string $key The data key
      * @param mixed  $default The default value to return if data key does not exist
+     *
      * @return mixed The key's value, or the default value
      */
     public function get(string $key, $default = null)
@@ -666,6 +690,7 @@ trait ValidationTrait
     /**
      * @param string $key
      * @param null   $default
+     *
      * @return mixed
      */
     public function getRaw(string $key, $default = null)
@@ -675,8 +700,10 @@ trait ValidationTrait
 
     /**
      * Set data item by key
+     *
      * @param string $key The data key
      * @param mixed  $value The data value
+     *
      * @return $this
      */
     public function setRaw(string $key, $value): self
@@ -697,8 +724,10 @@ trait ValidationTrait
     /**
      * Get data item by key
      *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
+     *
      * @param string $key The data key
      * @param mixed  $default The default value
+     *
      * @return mixed The key's value, or the default value
      */
     public function getByPath(string $key, $default = null)
@@ -713,8 +742,10 @@ trait ValidationTrait
 
     /**
      * alias of the 'getSafe()'
+     *
      * @param string $key
      * @param mixed  $default
+     *
      * @return mixed
      */
     public function val(string $key, $default = null)
@@ -724,8 +755,10 @@ trait ValidationTrait
 
     /**
      * alias of the 'getSafe()'
+     *
      * @param string $key
      * @param mixed  $default
+     *
      * @return mixed
      */
     public function safe(string $key, $default = null)
@@ -735,8 +768,10 @@ trait ValidationTrait
 
     /**
      * get safe field value
+     *
      * @param string $key
      * @param mixed  $default
+     *
      * @return mixed
      */
     public function getSafe(string $key, $default = null)
@@ -755,6 +790,7 @@ trait ValidationTrait
 
     /**
      * @param bool $asObject
+     *
      * @return array|\stdClass
      */
     public function safeData($asObject = false)
@@ -764,6 +800,7 @@ trait ValidationTrait
 
     /**
      * @param bool $asObject
+     *
      * @return array|\stdClass
      */
     public function getSafeData($asObject = false)

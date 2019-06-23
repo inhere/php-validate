@@ -15,6 +15,7 @@ class DataModel
 
     /**
      * @param array $data
+     *
      * @return $this
      */
     public function setData($data)

@@ -112,6 +112,7 @@ final class GlobalMessage
 
     /**
      * @param string $key
+     *
      * @return string|array
      */
     public static function get(string $key)
@@ -132,6 +133,7 @@ final class GlobalMessage
 
     /**
      * @param string $key
+     *
      * @return bool
      */
     public static function has(string $key): bool

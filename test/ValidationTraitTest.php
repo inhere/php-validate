@@ -14,7 +14,8 @@ class ValidationTraitTest extends TestCase
 {
     public function testNoDataProperty()
     {
-        $v = new class {
+        $v = new class
+        {
             use ValidationTrait;
         };
 

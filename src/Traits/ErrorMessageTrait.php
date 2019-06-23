@@ -121,8 +121,8 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @deprecated will delete, please use isOk() or isPassed() instead
      * @return bool
+     * @deprecated will delete, please use isOk() or isPassed() instead
      */
     public function passed(): bool
     {
@@ -139,7 +139,9 @@ trait ErrorMessageTrait
 
     /**
      * check field whether in the errors
+     *
      * @param string $field
+     *
      * @return bool
      */
     public function inError(string $field): bool
@@ -166,6 +168,7 @@ trait ErrorMessageTrait
 
     /**
      * @param string $field Only get errors of the field.
+     *
      * @return array
      */
     public function getErrors(string $field = ''): array
@@ -194,7 +197,9 @@ trait ErrorMessageTrait
 
     /**
      * Get the first error message
+     *
      * @param bool $onlyMsg
+     *
      * @return array|string
      */
     public function firstError(bool $onlyMsg = true)
@@ -209,7 +214,9 @@ trait ErrorMessageTrait
 
     /**
      * Get the last error message
+     *
      * @param bool $onlyMsg
+     *
      * @return array|string
      */
     public function lastError(bool $onlyMsg = true)
@@ -224,6 +231,7 @@ trait ErrorMessageTrait
 
     /**
      * @param bool|null $_stopOnError
+     *
      * @return $this
      */
     public function setStopOnError($_stopOnError = null): self
@@ -268,6 +276,7 @@ trait ErrorMessageTrait
 
     /**
      * @param array $messages
+     *
      * @return $this
      */
     public function setMessages(array $messages): self
@@ -280,10 +289,12 @@ trait ErrorMessageTrait
 
     /**
      * 各个验证器的提示消息
-     * @param  string|\Closure $validator 验证器
-     * @param  string          $field
-     * @param  array           $args
-     * @param  string|array    $message 自定义提示消息
+     *
+     * @param string|\Closure $validator 验证器
+     * @param string          $field
+     * @param array           $args
+     * @param string|array    $message 自定义提示消息
+     *
      * @return string
      */
     public function getMessage($validator, string $field, array $args = [], $message = null): string
@@ -329,6 +340,7 @@ trait ErrorMessageTrait
     /**
      * @param string $field
      * @param string $rawName
+     *
      * @return string|array
      */
     protected function findMessage(string $field, string $rawName)
@@ -359,7 +371,9 @@ trait ErrorMessageTrait
 
     /**
      * set the attrs translation data
+     *
      * @param array $fieldTrans
+     *
      * @return $this
      */
     public function setTranslates(array $fieldTrans): self
@@ -369,7 +383,9 @@ trait ErrorMessageTrait
 
     /**
      * add the attrs translation data
+     *
      * @param array $fieldTrans
+     *
      * @return $this
      */
     public function addTranslates(array $fieldTrans): self
@@ -390,7 +406,9 @@ trait ErrorMessageTrait
 
     /**
      * get field translate string.
+     *
      * @param string $field
+     *
      * @return string
      */
     public function getTranslate(string $field): string

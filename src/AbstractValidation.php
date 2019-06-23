@@ -31,6 +31,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @param array  $translates
      * @param string $scene
      * @param bool   $startValidate 立即开始验证
+     *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
@@ -56,6 +57,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @param array  $data
      * @param string $scene
      * @param bool   $startValidate
+     *
      * @return AbstractValidation
      */
     public static function quick(array $data, string $scene = '', bool $startValidate = false)
@@ -69,6 +71,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @param array  $translates
      * @param string $scene
      * @param bool   $startValidate 立即开始验证
+     *
      * @return static
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -85,10 +88,12 @@ abstract class AbstractValidation implements ValidationInterface
 
     /**
      * Create and start verification immediately
+     *
      * @param array  $data
      * @param array  $rules
      * @param array  $translates
      * @param string $scene
+     *
      * @return static
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -100,10 +105,12 @@ abstract class AbstractValidation implements ValidationInterface
 
     /**
      * Create and start verification immediately
+     *
      * @param array  $data
      * @param array  $rules
      * @param array  $translates
      * @param string $scene
+     *
      * @return static
      * @throws \InvalidArgumentException
      * @throws \RuntimeException

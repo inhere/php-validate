@@ -21,6 +21,7 @@ final class UserFilters
 
     /**
      * @param string $name
+     *
      * @return null|callable
      */
     public static function get(string $name)
@@ -52,6 +53,7 @@ final class UserFilters
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public static function has(string $name): bool

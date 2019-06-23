@@ -36,7 +36,8 @@ class ScopedValidatorsTest extends TestCase
         $this->assertNotEmpty($v->getValidator('name2'));
         $this->assertEmpty($v->getValidator('name3'));
 
-        $v->addValidator('name4', function () {});
+        $v->addValidator('name4', function () {
+        });
         $this->assertNotEmpty($v->getValidator('name4'));
 
         $v->delValidator('name1');
@@ -152,20 +153,20 @@ class ScopedValidatorsTest extends TestCase
     {
         $v = Validation::make([]);
         $v->setUploadedFiles([
-            'file1' => [
-                'name' => 'some.jpg',
+            'file1'      => [
+                'name'     => 'some.jpg',
                 'tmp_name' => '/tmp/some.jpg',
-                'error' => \UPLOAD_ERR_OK,
+                'error'    => \UPLOAD_ERR_OK,
             ],
-            'err_file' => [
-                'name' => 'some.jpg',
+            'err_file'   => [
+                'name'     => 'some.jpg',
                 'tmp_name' => '/tmp/some.jpg',
-                'error' => \UPLOAD_ERR_INI_SIZE,
+                'error'    => \UPLOAD_ERR_INI_SIZE,
             ],
             'err_suffix' => [
-                'name' => 'some-no-ext',
+                'name'     => 'some-no-ext',
                 'tmp_name' => '/tmp/some.jpg',
-                'error' => \UPLOAD_ERR_OK,
+                'error'    => \UPLOAD_ERR_OK,
             ],
         ]);
 

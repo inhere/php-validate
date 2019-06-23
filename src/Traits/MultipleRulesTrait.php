@@ -88,6 +88,7 @@ trait MultipleRulesTrait
     /**
      * @param string $rule
      * @param array  $row
+     *
      * @return array
      */
     protected function parseRule(string $rule, array $row): array

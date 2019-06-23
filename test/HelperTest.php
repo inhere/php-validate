@@ -57,7 +57,7 @@ class HelperTest extends TestCase
         $data = [
             'user' => [
                 'name' => 'inhere',
-                'age' => 1,
+                'age'  => 1,
             ]
         ];
 
@@ -73,7 +73,8 @@ class HelperTest extends TestCase
         // class:;method
         $this->assertSame(34, Helper::call(Filters::class . '::integer', '34'));
 
-        $callabled = new class {
+        $callabled = new class
+        {
             public function __invoke($str)
             {
                 return (int)$str;

@@ -21,8 +21,9 @@ trait FilteringTrait
 
     /**
      * value sanitize 直接对给的值进行过滤
-     * @param  mixed        $value
-     * @param  string|array $filters
+     *
+     * @param mixed        $value
+     * @param string|array $filters
      * string:
      *  'string|trim|upper'
      * array:
@@ -36,6 +37,7 @@ trait FilteringTrait
      *          return str_replace(' ', '', $val);
      *      },
      *  ]
+     *
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -68,6 +70,7 @@ trait FilteringTrait
     /**
      * @param mixed $filter
      * @param array ...$args
+     *
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -109,6 +112,7 @@ trait FilteringTrait
 
     /**
      * @param string $name
+     *
      * @return callable|null
      */
     public function getFilter(string $name)
@@ -119,6 +123,7 @@ trait FilteringTrait
     /**
      * @param string   $name
      * @param callable $filter
+     *
      * @return $this
      */
     public function addFilter(string $name, callable $filter): self
@@ -129,6 +134,7 @@ trait FilteringTrait
     /**
      * @param string   $name
      * @param callable $filter
+     *
      * @return FilteringTrait
      */
     public function setFilter(string $name, callable $filter)

@@ -53,6 +53,7 @@ class Helper
 
     /**
      * @param string $ext
+     *
      * @return string
      */
     public static function getImageMime(string $ext): string
@@ -62,6 +63,7 @@ class Helper
 
     /**
      * @param string $mime
+     *
      * @return string|null
      */
     public static function getImageExtByMime(string $mime): string
@@ -72,6 +74,7 @@ class Helper
 
     /**
      * @param string $file
+     *
      * @return string eg: 'image/gif'
      */
     public static function getMimeType(string $file): string
@@ -93,6 +96,7 @@ class Helper
 
     /**
      * @param int|string|array $val
+     *
      * @return int
      */
     public static function length($val): int
@@ -111,6 +115,7 @@ class Helper
     /**
      * @param string $str
      * @param string $encoding
+     *
      * @return int
      */
     public static function strlen(string $str, string $encoding = 'UTF-8'): int
@@ -129,6 +134,7 @@ class Helper
      * @param string $find
      * @param int    $offset
      * @param string $encoding
+     *
      * @return bool|int
      */
     public static function strPos(string $str, $find, int $offset = 0, $encoding = 'UTF-8')
@@ -145,6 +151,7 @@ class Helper
      * @param string $find
      * @param int    $offset
      * @param string $encoding
+     *
      * @return bool|int
      */
     public static function strrpos(string $str, $find, int $offset = 0, string $encoding = 'utf-8')
@@ -158,6 +165,7 @@ class Helper
 
     /**
      * @param string $field
+     *
      * @return string
      */
     public static function prettifyFieldName(string $field): string
@@ -169,9 +177,11 @@ class Helper
 
     /**
      * getValueOfArray 支持以 '.' 分割进行子级值获取 eg: 'goods.apple'
-     * @param  array        $array
-     * @param  array|string $key
-     * @param mixed         $default
+     *
+     * @param array        $array
+     * @param array|string $key
+     * @param mixed        $default
+     *
      * @return mixed
      */
     public static function getValueOfArray(array $array, $key, $default = null)
@@ -204,6 +214,7 @@ class Helper
     /**
      * @param callable|mixed $cb
      * @param array          $args
+     *
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -235,9 +246,11 @@ class Helper
      * - int    Compare size
      * - string Compare length
      * - array  Compare length
+     *
      * @param mixed  $val
      * @param mixed  $expected
      * @param string $operator
+     *
      * @return bool
      */
     public static function compareSize($val, string $operator, $expected): bool
