@@ -5,6 +5,7 @@ namespace Inhere\ValidateTest\Validator;
 use Inhere\Validate\Validator\GlobalMessage;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Version;
+use function version_compare;
 
 /**
  * Class GlobalMessageTest
@@ -27,7 +28,7 @@ class GlobalMessageTest extends TestCase
 
         $needle = 'validation is not through!';
 
-        if (\version_compare(Version::id(), '7.0.0', '<')) {
+        if (version_compare(Version::id(), '7.0.0', '<')) {
             $this->assertContains($needle, GlobalMessage::getDefault());
         } else {
             $this->assertStringContainsString($needle, GlobalMessage::getDefault());

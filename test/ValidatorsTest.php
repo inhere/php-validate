@@ -4,6 +4,7 @@ namespace Inhere\ValidateTest;
 
 use Inhere\Validate\Validators;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class ValidatorsTest extends TestCase
 {
@@ -21,7 +22,7 @@ class ValidatorsTest extends TestCase
 
         $this->assertTrue(Validators::isEmpty(null));
         $this->assertTrue(Validators::isEmpty([]));
-        $this->assertTrue(Validators::isEmpty(new \stdClass()));
+        $this->assertTrue(Validators::isEmpty(new stdClass()));
         $this->assertTrue(Validators::isEmpty(''));
         $this->assertTrue(Validators::isEmpty(' '));
     }
@@ -235,7 +236,7 @@ class ValidatorsTest extends TestCase
     {
         $this->assertFalse(Validators::size('test', 5));
         $this->assertFalse(Validators::size(null, 5));
-        $this->assertFalse(Validators::range(new \stdClass(), 5));
+        $this->assertFalse(Validators::range(new stdClass(), 5));
         $this->assertFalse(Validators::between(56, 20, 50));
 
         $this->assertTrue(Validators::size(56, 20, 100));

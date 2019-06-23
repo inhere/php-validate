@@ -2,9 +2,20 @@
 
 namespace Inhere\Validate\Traits;
 
+use function array_merge;
+use function array_pop;
+use function array_shift;
+use Closure;
+use function count;
+use function implode;
 use Inhere\Validate\Helper;
 use Inhere\Validate\Validator\GlobalMessage;
 use Inhere\Validate\Validators;
+use function is_array;
+use function is_int;
+use function is_string;
+use function strpos;
+use function strtr;
 
 /**
  * trait ErrorMessageTrait
@@ -52,9 +63,9 @@ trait ErrorMessageTrait
     protected function prepareValidation()
     {
         // error message
-        $this->_messages = \array_merge($this->messages(), $this->_messages);
+        $this->_messages = array_merge($this->messages(), $this->_messages);
         // field translate
-        $this->_translates = \array_merge($this->translates(), $this->_translates);
+        $this->_translates = array_merge($this->translates(), $this->_translates);
     }
 
     /*******************************************************************************
@@ -83,7 +94,7 @@ trait ErrorMessageTrait
      */
     public function isFail(): bool
     {
-        return \count($this->_errors) > 0;
+        return count($this->_errors) > 0;
     }
 
     /**
@@ -208,7 +219,7 @@ trait ErrorMessageTrait
             return $onlyMsg ? '' : [];
         }
 
-        $first = \array_shift($errors);
+        $first = array_shift($errors);
         return $onlyMsg ? $first['msg'] : $first;
     }
 
@@ -225,7 +236,7 @@ trait ErrorMessageTrait
             return $onlyMsg ? '' : [];
         }
 
-        $last = \array_pop($errors);
+        $last = array_pop($errors);
         return $onlyMsg ? $last['msg'] : $last;
     }
 
@@ -290,16 +301,16 @@ trait ErrorMessageTrait
     /**
      * 各个验证器的提示消息
      *
-     * @param string|\Closure $validator 验证器
-     * @param string          $field
-     * @param array           $args
-     * @param string|array    $message 自定义提示消息
+     * @param string|Closure $validator 验证器
+     * @param string         $field
+     * @param array          $args
+     * @param string|array   $message 自定义提示消息
      *
      * @return string
      */
     public function getMessage($validator, string $field, array $args = [], $message = null): string
     {
-        $rawName = \is_string($validator) ? $validator : 'callback';
+        $rawName = is_string($validator) ? $validator : 'callback';
         $params  = [
             '{attr}' => $this->getTranslate($field)
         ];
@@ -308,33 +319,33 @@ trait ErrorMessageTrait
         if (!$message) {
             $message = $this->findMessage($field, $rawName) ?: GlobalMessage::getDefault();
             // is array. It's defined multi error messages
-        } elseif (\is_array($message)) {
+        } elseif (is_array($message)) {
             $message = $message[$rawName] ?? $this->findMessage($field, $rawName);
 
             if (!$message) { // use default
-                return \strtr(GlobalMessage::getDefault(), $params);
+                return strtr(GlobalMessage::getDefault(), $params);
             }
         } else {
             $message = (string)$message;
         }
 
         /** @see GlobalMessage::$messages['size'] */
-        if (\is_array($message)) {
-            $msgKey  = \count($args);
+        if (is_array($message)) {
+            $msgKey  = count($args);
             $message = $message[$msgKey] ?? $message[0];
         }
 
-        if (false === \strpos($message, '{')) {
+        if (false === strpos($message, '{')) {
             return $message;
         }
 
         foreach ($args as $key => $value) {
-            $key = \is_int($key) ? "value{$key}" : $key;
+            $key = is_int($key) ? "value{$key}" : $key;
             // build params
-            $params['{' . $key . '}'] = \is_array($value) ? \implode(',', $value) : $value;
+            $params['{' . $key . '}'] = is_array($value) ? implode(',', $value) : $value;
         }
 
-        return \strtr($message, $params);
+        return strtr($message, $params);
     }
 
     /**

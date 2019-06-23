@@ -8,6 +8,8 @@
 
 namespace Inhere\Validate\Validator;
 
+use Closure;
+
 /**
  * Class Rule
  * @package Inhere\Validate\Validator
@@ -32,7 +34,7 @@ final class Rule
     public $params = [];
 
     /**
-     * @var \Closure
+     * @var Closure
      */
     public $when;
 
@@ -76,7 +78,7 @@ final class Rule
     /**
      * @param string          $field 属性名称
      * @param mixed           $value 属性值
-     * @param \Closure|string $validator 验证器
+     * @param Closure|string $validator 验证器
      * @param array           $params 验证需要的参数
      * @param string          $message default error message
      * @param mixed           $default default value

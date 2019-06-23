@@ -9,7 +9,46 @@
 
 namespace Inhere\Validate;
 
+use function array_diff;
+use function array_key_exists;
+use function array_keys;
+use function array_map;
+use function array_pop;
+use function array_shift;
+use function array_unique;
+use function checkdate;
+use function count;
+use function date;
+use function explode;
+use const FILTER_FLAG_IPV4;
+use const FILTER_FLAG_IPV6;
+use const FILTER_VALIDATE_EMAIL;
+use const FILTER_VALIDATE_FLOAT;
+use const FILTER_VALIDATE_INT;
+use const FILTER_VALIDATE_IP;
+use const FILTER_VALIDATE_REGEXP;
+use const FILTER_VALIDATE_URL;
+use function filter_var;
+use function get_object_vars;
+use function in_array;
 use Inhere\Validate\Traits\NameAliasTrait;
+use function is_array;
+use function is_int;
+use function is_numeric;
+use function is_object;
+use function is_scalar;
+use function is_string;
+use function json_decode;
+use const JSON_ERROR_NONE;
+use function json_last_error;
+use function method_exists;
+use function preg_match;
+use function stripos;
+use function strpos;
+use function strtotime;
+use function substr;
+use function time;
+use function trim;
 
 /**
  * Class Validators
@@ -75,11 +114,11 @@ class Validators
      */
     public static function isEmpty($val): bool
     {
-        if (\is_string($val)) {
-            $val = \trim($val);
+        if (is_string($val)) {
+            $val = trim($val);
 
-        } elseif (\is_object($val)) {
-            $val = \get_object_vars($val);
+        } elseif (is_object($val)) {
+            $val = get_object_vars($val);
         }
 
         return $val === '' || $val === null || $val === [];
@@ -101,7 +140,7 @@ class Validators
      */
     public static function boolean($val): bool
     {
-        if (!\is_scalar($val)) {
+        if (!is_scalar($val)) {
             return false;
         }
 
@@ -110,7 +149,7 @@ class Validators
             return true;
         }
 
-        return false !== \stripos(Helper::IS_BOOL, '|' . $val . '|');
+        return false !== stripos(Helper::IS_BOOL, '|' . $val . '|');
     }
 
     /**
@@ -138,12 +177,12 @@ class Validators
     {
         $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
-        if (\filter_var($val, \FILTER_VALIDATE_FLOAT, $options) === false) {
+        if (filter_var($val, FILTER_VALIDATE_FLOAT, $options) === false) {
             return false;
         }
 
-        $minIsNum = \is_numeric($min);
-        $maxIsNum = \is_numeric($max);
+        $minIsNum = is_numeric($min);
+        $maxIsNum = is_numeric($max);
 
         if ($minIsNum && $maxIsNum) {
             if ($max > $min) {
@@ -188,13 +227,13 @@ class Validators
      */
     public static function integer($val, $min = null, $max = null, $flags = 0): bool
     {
-        if (!\is_numeric($val)) {
+        if (!is_numeric($val)) {
             return false;
         }
 
         $options  = $settings = [];
-        $minIsNum = \is_numeric($min);
-        $maxIsNum = \is_numeric($max);
+        $minIsNum = is_numeric($min);
+        $maxIsNum = is_numeric($max);
 
         if ($minIsNum && $maxIsNum) {
             if ($max > $min) {
@@ -218,7 +257,7 @@ class Validators
             $settings['flags'] = $flags;
         }
 
-        return \filter_var($val, \FILTER_VALIDATE_INT, $settings) !== false;
+        return filter_var($val, FILTER_VALIDATE_INT, $settings) !== false;
     }
 
     /**
@@ -242,7 +281,7 @@ class Validators
      */
     public static function number($val, $min = null, $max = null, $flags = 0): bool
     {
-        if (!\is_numeric($val)) {
+        if (!is_numeric($val)) {
             return false;
         }
 
@@ -273,7 +312,7 @@ class Validators
      */
     public static function string($val, $minLen = 0, $maxLen = null): bool
     {
-        if (!\is_string($val)) {
+        if (!is_string($val)) {
             return false;
         }
 
@@ -295,11 +334,11 @@ class Validators
      */
     public static function accepted($val): bool
     {
-        if (!\is_scalar($val)) {
+        if (!is_scalar($val)) {
             return false;
         }
 
-        return false !== \stripos(Helper::IS_TRUE, '|' . $val . '|');
+        return false !== stripos(Helper::IS_TRUE, '|' . $val . '|');
     }
 
     /**
@@ -311,7 +350,7 @@ class Validators
      */
     public static function alpha($val): bool
     {
-        return \is_string($val) && \preg_match('/^(?:[a-zA-Z]+)$/', $val);
+        return is_string($val) && preg_match('/^(?:[a-zA-Z]+)$/', $val);
     }
 
     /**
@@ -323,11 +362,11 @@ class Validators
      */
     public static function alphaNum($val): bool
     {
-        if (!\is_string($val) && !\is_numeric($val)) {
+        if (!is_string($val) && !is_numeric($val)) {
             return false;
         }
 
-        return 1 === \preg_match('/^(?:[a-zA-Z0-9]+)$/', $val);
+        return 1 === preg_match('/^(?:[a-zA-Z0-9]+)$/', $val);
     }
 
     /**
@@ -339,11 +378,11 @@ class Validators
      */
     public static function alphaDash($val): bool
     {
-        if (!\is_string($val) && !\is_numeric($val)) {
+        if (!is_string($val) && !is_numeric($val)) {
             return false;
         }
 
-        return 1 === \preg_match('/^(?:[\w-]+)$/', $val);
+        return 1 === preg_match('/^(?:[\w-]+)$/', $val);
     }
 
     /*******************************************************************************
@@ -485,11 +524,11 @@ class Validators
      */
     public static function size($val, $min = null, $max = null): bool
     {
-        if (!\is_int($val)) {
-            if (\is_string($val)) {
-                $val = Helper::strlen(\trim($val));
-            } elseif (\is_array($val)) {
-                $val = \count($val);
+        if (!is_int($val)) {
+            if (is_string($val)) {
+                $val = Helper::strlen(trim($val));
+            } elseif (is_array($val)) {
+                $val = count($val);
             } else {
                 return false;
             }
@@ -527,7 +566,7 @@ class Validators
      */
     public static function length($val, $minLen = 0, $maxLen = null): bool
     {
-        if (!\is_string($val) && !\is_array($val)) {
+        if (!is_string($val) && !is_array($val)) {
             return false;
         }
 
@@ -544,11 +583,11 @@ class Validators
      */
     public static function fixedSize($val, $size): bool
     {
-        if (!\is_int($val)) {
-            if (\is_string($val)) {
-                $val = Helper::strlen(\trim($val));
-            } elseif (\is_array($val)) {
-                $val = \count($val);
+        if (!is_int($val)) {
+            if (is_string($val)) {
+                $val = Helper::strlen(trim($val));
+            } elseif (is_array($val)) {
+                $val = count($val);
             } else {
                 return false;
             }
@@ -593,17 +632,17 @@ class Validators
      */
     public static function contains($val, $needle): bool
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return false;
         }
 
-        if (\is_string($needle) || \is_int($needle)) {
-            return \stripos($val, (string)$needle) !== false;
+        if (is_string($needle) || is_int($needle)) {
+            return stripos($val, (string)$needle) !== false;
         }
 
-        if (\is_array($needle)) {
+        if (is_array($needle)) {
             foreach ((array)$needle as $item) {
-                if (\stripos($val, $item) !== false) {
+                if (stripos($val, $item) !== false) {
                     return true;
                 }
             }
@@ -631,7 +670,7 @@ class Validators
             $options['default'] = $default;
         }
 
-        return (bool)\filter_var($val, \FILTER_VALIDATE_REGEXP, ['options' => $options]);
+        return (bool)filter_var($val, FILTER_VALIDATE_REGEXP, ['options' => $options]);
     }
 
     /**
@@ -669,7 +708,7 @@ class Validators
             $settings['options']['default'] = $default;
         }
 
-        return (bool)\filter_var($val, \FILTER_VALIDATE_URL, $settings);
+        return (bool)filter_var($val, FILTER_VALIDATE_URL, $settings);
     }
 
     /**
@@ -688,7 +727,7 @@ class Validators
             $options['default'] = $default;
         }
 
-        return (bool)\filter_var($val, \FILTER_VALIDATE_EMAIL, ['options' => $options]);
+        return (bool)filter_var($val, FILTER_VALIDATE_EMAIL, ['options' => $options]);
     }
 
     /**
@@ -712,7 +751,7 @@ class Validators
             $settings['options']['default'] = (bool)$default;
         }
 
-        return (bool)\filter_var($val, \FILTER_VALIDATE_IP, $settings);
+        return (bool)filter_var($val, FILTER_VALIDATE_IP, $settings);
     }
 
     /**
@@ -724,7 +763,7 @@ class Validators
      */
     public static function ipv4($val): bool
     {
-        return self::ip($val, false, \FILTER_FLAG_IPV4);
+        return self::ip($val, false, FILTER_FLAG_IPV4);
     }
 
     /**
@@ -736,7 +775,7 @@ class Validators
      */
     public static function ipv6($val): bool
     {
-        return self::ip($val, false, \FILTER_FLAG_IPV6);
+        return self::ip($val, false, FILTER_FLAG_IPV6);
     }
 
     /**
@@ -748,11 +787,11 @@ class Validators
      */
     public static function macAddress($input): bool
     {
-        if (!\is_string($input) || !$input) {
+        if (!is_string($input) || !$input) {
             return false;
         }
 
-        return \preg_match('/^(([0-9a-fA-F]{2}-){5}|([0-9a-fA-F]{2}:){5})[0-9a-fA-F]{2}$/', $input);
+        return preg_match('/^(([0-9a-fA-F]{2}-){5}|([0-9a-fA-F]{2}:){5})[0-9a-fA-F]{2}$/', $input);
     }
 
     /**
@@ -764,11 +803,11 @@ class Validators
      */
     public static function english($val): bool
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return false;
         }
 
-        return 1 === \preg_match('/^[A-Za-z]+$/', $val);
+        return 1 === preg_match('/^[A-Za-z]+$/', $val);
     }
 
     /**
@@ -781,7 +820,7 @@ class Validators
      */
     public static function json($val, $strict = true): bool
     {
-        if (!$val || (!\is_string($val) && !\method_exists($val, '__toString'))) {
+        if (!$val || (!is_string($val) && !method_exists($val, '__toString'))) {
             return false;
         }
 
@@ -792,9 +831,9 @@ class Validators
             return false;
         }
 
-        \json_decode($val);
+        json_decode($val);
 
-        return \json_last_error() === \JSON_ERROR_NONE;
+        return json_last_error() === JSON_ERROR_NONE;
     }
 
     /*******************************************************************************
@@ -810,7 +849,7 @@ class Validators
      */
     public static function isArray($val): bool
     {
-        return \is_array($val);
+        return is_array($val);
     }
 
     /**
@@ -822,14 +861,14 @@ class Validators
      */
     public static function isMap($val): bool
     {
-        if (!\is_array($val)) {
+        if (!is_array($val)) {
             return false;
         }
 
         /** @var array $val */
-        $keys = \array_keys($val);
+        $keys = array_keys($val);
 
-        return \array_keys($keys) !== $keys;
+        return array_keys($keys) !== $keys;
     }
 
     /**
@@ -841,14 +880,14 @@ class Validators
      */
     public static function isList($val): bool
     {
-        if (!\is_array($val) || !isset($val[0])) {
+        if (!is_array($val) || !isset($val[0])) {
             return false;
         }
 
         /** @var array $val */
-        $keys = \array_keys($val);
+        $keys = array_keys($val);
 
-        return \array_keys($keys) === $keys;
+        return array_keys($keys) === $keys;
     }
 
     /**
@@ -860,7 +899,7 @@ class Validators
      */
     public static function intList($val): bool
     {
-        if (!\is_array($val) || !isset($val[0])) {
+        if (!is_array($val) || !isset($val[0])) {
             return false;
         }
 
@@ -868,11 +907,11 @@ class Validators
 
         /** @var array $val */
         foreach ($val as $k => $v) {
-            if (!\is_int($k) || $k !== $lastK + 1) {
+            if (!is_int($k) || $k !== $lastK + 1) {
                 return false;
             }
 
-            if (!\is_numeric($v)) {
+            if (!is_numeric($v)) {
                 return false;
             }
 
@@ -891,7 +930,7 @@ class Validators
      */
     public static function numList($val): bool
     {
-        if (!\is_array($val) || !isset($val[0])) {
+        if (!is_array($val) || !isset($val[0])) {
             return false;
         }
 
@@ -899,11 +938,11 @@ class Validators
 
         /** @var array $val */
         foreach ($val as $k => $v) {
-            if (!\is_int($k) || $k !== $lastK + 1) {
+            if (!is_int($k) || $k !== $lastK + 1) {
                 return false;
             }
 
-            if (!\is_numeric($v) || $v <= 0) {
+            if (!is_numeric($v) || $v <= 0) {
                 return false;
             }
 
@@ -922,7 +961,7 @@ class Validators
      */
     public static function strList($val): bool
     {
-        if (!$val || !\is_array($val)) {
+        if (!$val || !is_array($val)) {
             return false;
         }
 
@@ -930,11 +969,11 @@ class Validators
 
         /** @var array $val */
         foreach ($val as $k => $v) {
-            if (!\is_int($k) || $k !== $lastK + 1) {
+            if (!is_int($k) || $k !== $lastK + 1) {
                 return false;
             }
 
-            if (!\is_string($v)) {
+            if (!is_string($v)) {
                 return false;
             }
 
@@ -953,13 +992,13 @@ class Validators
      */
     public static function arrList($val): bool
     {
-        if (!$val || !\is_array($val)) {
+        if (!$val || !is_array($val)) {
             return false;
         }
 
         /** @var array $val */
         foreach ($val as $k => $v) {
-            if (!\is_array($v)) {
+            if (!is_array($v)) {
                 return false;
             }
         }
@@ -975,18 +1014,18 @@ class Validators
      */
     public static function hasKey($val, $key): bool
     {
-        if (!$val || !\is_array($val)) {
+        if (!$val || !is_array($val)) {
             return false;
         }
 
-        if (\is_string($key) || \is_int($key)) {
-            return \array_key_exists($key, $val);
+        if (is_string($key) || is_int($key)) {
+            return array_key_exists($key, $val);
         }
 
-        if (\is_array($key)) {
-            $keys = \array_keys($val);
+        if (is_array($key)) {
+            $keys = array_keys($val);
 
-            return !\array_diff($key, $keys);
+            return !array_diff($key, $keys);
         }
 
         return false;
@@ -1002,11 +1041,11 @@ class Validators
      */
     public static function distinct($val): bool
     {
-        if (!$val || !\is_array($val)) {
+        if (!$val || !is_array($val)) {
             return false;
         }
 
-        return \array_unique($val) === $val;
+        return array_unique($val) === $val;
     }
 
     /**
@@ -1018,12 +1057,12 @@ class Validators
      */
     public static function enum($val, $dict, $strict = false): bool
     {
-        if (\is_string($dict)) {
+        if (is_string($dict)) {
             // $dict = array_map('trim', explode(',', $dict));
-            return false !== ($strict ? \strpos($dict, (string)$val) : \stripos($dict, (string)$val));
+            return false !== ($strict ? strpos($dict, (string)$val) : stripos($dict, (string)$val));
         }
 
-        return \in_array($val, (array)$dict, $strict);
+        return in_array($val, (array)$dict, $strict);
     }
 
     /**
@@ -1049,11 +1088,11 @@ class Validators
      */
     public static function notIn($val, $dict, $strict = false): bool
     {
-        if (\is_string($dict) && \strpos($dict, ',')) {
-            $dict = \array_map('trim', \explode(',', $dict));
+        if (is_string($dict) && strpos($dict, ',')) {
+            $dict = array_map('trim', explode(',', $dict));
         }
 
-        return !\in_array($val, (array)$dict, $strict);
+        return !in_array($val, (array)$dict, $strict);
     }
 
     /*******************************************************************************
@@ -1073,12 +1112,12 @@ class Validators
             return false;
         }
 
-        if (\is_string($val)) {
-            return ($strict ? \strpos($val, $start) : \stripos($val, $start)) === 0;
+        if (is_string($val)) {
+            return ($strict ? strpos($val, $start) : stripos($val, $start)) === 0;
         }
 
-        if (\is_array($val)) {
-            $first = \array_shift($val);
+        if (is_array($val)) {
+            $first = array_shift($val);
 
             return $strict ? $first === $start : (string)$first === $start;
         }
@@ -1098,10 +1137,10 @@ class Validators
         $last = null;
         $end  = (string)$end;
 
-        if (\is_string($val)) {
-            $last = \substr($val, -Helper::strlen($end));
-        } elseif (\is_array($val)) {
-            $last = \array_pop($val);
+        if (is_string($val)) {
+            $last = substr($val, -Helper::strlen($end));
+        } elseif (is_array($val)) {
+            $last = array_pop($val);
         } else {
             return false;
         }
@@ -1123,7 +1162,7 @@ class Validators
     public static function date($val): bool
     {
         // strtotime 转换不对，日期格式显然不对。
-        return \strtotime((string)$val) ? true : false;
+        return strtotime((string)$val) ? true : false;
     }
 
     /**
@@ -1136,11 +1175,11 @@ class Validators
      */
     public static function dateEquals($val, $date): bool
     {
-        if (!$val || (!$time = \strtotime($val))) {
+        if (!$val || (!$time = strtotime($val))) {
             return false;
         }
 
-        return $date ? $time === \strtotime((string)$date) : false;
+        return $date ? $time === strtotime((string)$date) : false;
     }
 
     /**
@@ -1153,12 +1192,12 @@ class Validators
      */
     public static function dateFormat($val, $format = 'Y-m-d'): bool
     {
-        if (!$val || !($unixTime = \strtotime($val))) {
+        if (!$val || !($unixTime = strtotime($val))) {
             return false;
         }
 
         // 校验日期的格式有效性
-        return \date($format, $unixTime) === $val;
+        return date($format, $unixTime) === $val;
     }
 
     /**
@@ -1172,15 +1211,15 @@ class Validators
      */
     public static function beforeDate($val, $beforeDate = '', $symbol = '<'): bool
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return false;
         }
 
-        if (!$valueTime = \strtotime($val)) {
+        if (!$valueTime = strtotime($val)) {
             return false;
         }
 
-        $beforeTime = $beforeDate ? \strtotime($beforeDate) : \time();
+        $beforeTime = $beforeDate ? strtotime($beforeDate) : time();
 
         if ($symbol === '<') {
             return $valueTime < $beforeTime;
@@ -1213,15 +1252,15 @@ class Validators
      */
     public static function afterDate($val, $afterDate, $symbol = '>'): bool
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return false;
         }
 
-        if (!$valueTime = \strtotime($val)) {
+        if (!$valueTime = strtotime($val)) {
             return false;
         }
 
-        $afterTime = $afterDate ? \strtotime($afterDate) : \time();
+        $afterTime = $afterDate ? strtotime($afterDate) : time();
 
         if ($symbol === '>') {
             return $valueTime > $afterTime;
@@ -1265,7 +1304,7 @@ class Validators
      */
     public static function isDateFormat($date): bool
     {
-        return (bool)\preg_match(
+        return (bool)preg_match(
             '/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
             $date
         );
@@ -1280,12 +1319,12 @@ class Validators
      */
     public static function isDate($date): bool
     {
-        if (!\preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
+        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
             $date, $matches)) {
             return false;
         }
 
-        return \checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1]);
+        return checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1]);
     }
 
     /*******************************************************************************
@@ -1299,7 +1338,7 @@ class Validators
      */
     public static function phone($val): bool
     {
-        return 1 === \preg_match('/^1[2-9]\d{9}$/', $val);
+        return 1 === preg_match('/^1[2-9]\d{9}$/', $val);
     }
 
     // public static function telNumber($val)
@@ -1314,7 +1353,7 @@ class Validators
      */
     public static function postCode($val): bool
     {
-        return $val && \is_string($val) && \preg_match('/^\d{6}$/', $val);
+        return $val && is_string($val) && preg_match('/^\d{6}$/', $val);
     }
 
     /**
@@ -1326,7 +1365,7 @@ class Validators
      */
     public static function price($price): bool
     {
-        return 1 === \preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
     }
 
     /**
@@ -1338,7 +1377,7 @@ class Validators
      */
     public static function negativePrice($price): bool
     {
-        return 1 === \preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
     }
 
     /**
@@ -1350,7 +1389,7 @@ class Validators
      */
     public static function isFloat($float): bool
     {
-        if (!\is_scalar($float)) {
+        if (!is_scalar($float)) {
             return false;
         }
 
@@ -1359,7 +1398,7 @@ class Validators
 
     public static function isUnsignedFloat($float): bool
     {
-        if (!\is_scalar($float)) {
+        if (!is_scalar($float)) {
             return false;
         }
 
@@ -1399,11 +1438,11 @@ class Validators
      */
     public static function md5($val): bool
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return false;
         }
 
-        return 1 === \preg_match('/^[a-f0-9A-F]{32}$/', $val);
+        return 1 === preg_match('/^[a-f0-9A-F]{32}$/', $val);
     }
 
     /**
@@ -1415,11 +1454,11 @@ class Validators
      */
     public static function sha1($val): bool
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return false;
         }
 
-        return 1 === \preg_match('/^[a-fA-F0-9]{40}$/', $val);
+        return 1 === preg_match('/^[a-fA-F0-9]{40}$/', $val);
     }
 
     /**
@@ -1431,11 +1470,11 @@ class Validators
      */
     public static function color($val): bool
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return false;
         }
 
-        return 1 === \preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $val);
+        return 1 === preg_match('/^(#[0-9a-fA-F]{6}|[a-zA-Z0-9-]*)$/', $val);
     }
 
     /**
@@ -1447,11 +1486,11 @@ class Validators
      */
     public static function absoluteUrl($url): bool
     {
-        if (!$url || !\is_string($url)) {
+        if (!$url || !is_string($url)) {
             return false;
         }
 
-        return 1 === \preg_match('/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/', $url);
+        return 1 === preg_match('/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/', $url);
     }
 
     /**
@@ -1463,11 +1502,11 @@ class Validators
      */
     public static function fileName($name): bool
     {
-        if (!$name || !\is_string($name)) {
+        if (!$name || !is_string($name)) {
             return false;
         }
 
-        return 1 === \preg_match('/^[a-zA-Z0-9_.-]+$/', $name);
+        return 1 === preg_match('/^[a-zA-Z0-9_.-]+$/', $name);
     }
 
     /**
@@ -1479,10 +1518,10 @@ class Validators
      */
     public static function dirName($dir): bool
     {
-        if (!$dir || !\is_string($dir)) {
+        if (!$dir || !is_string($dir)) {
             return false;
         }
 
-        return 1 === \preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
+        return 1 === preg_match('/^[a-zA-Z0-9_.-]*$/', $dir);
     }
 }

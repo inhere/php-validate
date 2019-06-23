@@ -8,11 +8,13 @@
 
 namespace Inhere\ValidateTest\Sample;
 
+use Inhere\Validate\Validation;
+
 /**
  * Class RuleSample
  * @package Inhere\ValidateTest\Sample
  */
-class RuleSample extends \Inhere\Validate\Validation
+class RuleSample extends Validation
 {
 
 }

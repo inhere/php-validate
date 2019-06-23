@@ -8,6 +8,10 @@
 
 namespace Inhere\Validate\Filter;
 
+use function array_merge;
+use InvalidArgumentException;
+use function is_string;
+
 /**
  * Class Filtration
  * @package Inhere\Validate\Filter
@@ -59,7 +63,7 @@ class Filtration
      */
     public function load(array $data): self
     {
-        $this->_data = \array_merge($this->_data, $data);
+        $this->_data = array_merge($this->_data, $data);
         return $this;
     }
 
@@ -67,7 +71,7 @@ class Filtration
      * @param array $rules
      *
      * @return array
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function filtering(array $rules = []): array
     {
@@ -81,7 +85,7 @@ class Filtration
      * @param array $data
      *
      * @return array 返回过滤后的数据
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function applyRules(array $rules = [], array $data = []): array
     {
@@ -99,7 +103,7 @@ class Filtration
                 continue;
             }
 
-            $fields = \is_string($fields) ? Filters::explode($fields) : (array)$fields;
+            $fields = is_string($fields) ? Filters::explode($fields) : (array)$fields;
 
             foreach ($fields as $field) {
                 if (!isset($data[$field])) {
@@ -120,7 +124,7 @@ class Filtration
      * @param string|array $filters
      *
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function sanitize($value, $filters)
     {
@@ -135,7 +139,7 @@ class Filtration
      * @param mixed        $default
      *
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function get($field, $filters = null, $default = null)
     {

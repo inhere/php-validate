@@ -8,9 +8,22 @@
 
 namespace Inhere\Validate\Traits;
 
+use function array_shift;
+use function function_exists;
+use function getimagesize;
+use function in_array;
 use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Helper;
 use Inhere\Validate\Validators;
+use InvalidArgumentException;
+use function is_object;
+use function is_string;
+use function method_exists;
+use function strpos;
+use function strrchr;
+use function strtolower;
+use function trim;
+use const UPLOAD_ERR_OK;
 
 /**
  * trait ScopedValidatorsTrait - deps the current validation instance.
@@ -66,7 +79,7 @@ trait ScopedValidatorsTrait
      */
     public function setValidator(string $name, callable $callback, string $message = ''): self
     {
-        if ($name = \trim($name)) {
+        if ($name = trim($name)) {
             $this->_validators[$name] = $callback;
 
             if ($message) {
@@ -186,7 +199,7 @@ trait ScopedValidatorsTrait
         if (isset($this->data[$anotherField])) {
             $anotherVal = $this->data[$anotherField];
 
-            if (\in_array($anotherVal, (array)$values, true)) {
+            if (in_array($anotherVal, (array)$values, true)) {
                 return $this->required($field, $fieldVal);
             }
         }
@@ -210,7 +223,7 @@ trait ScopedValidatorsTrait
         if (isset($this->data[$anotherField])) {
             $anotherVal = $this->data[$anotherField];
 
-            if (\in_array($anotherVal, (array)$values, true)) {
+            if (in_array($anotherVal, (array)$values, true)) {
                 return null;
             }
         }
@@ -329,7 +342,7 @@ trait ScopedValidatorsTrait
             return false;
         }
 
-        if (!isset($file['error']) || ($file['error'] !== \UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
             return false;
         }
 
@@ -337,13 +350,13 @@ trait ScopedValidatorsTrait
             return true;
         }
 
-        if (!$suffix = \trim(\strrchr($file['name'], '.'), '.')) {
+        if (!$suffix = trim(strrchr($file['name'], '.'), '.')) {
             return false;
         }
 
-        $suffixes = \is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
+        $suffixes = is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
 
-        return \in_array(\strtolower($suffix), $suffixes, true);
+        return in_array(strtolower($suffix), $suffixes, true);
     }
 
     /**
@@ -360,7 +373,7 @@ trait ScopedValidatorsTrait
             return false;
         }
 
-        if (!isset($file['error']) || ($file['error'] !== \UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
             return false;
         }
 
@@ -371,13 +384,13 @@ trait ScopedValidatorsTrait
         // getimagesize() 判定某个文件是否为图片的有效手段, 常用在文件上传验证
         // Note: 本函数不需要 GD 图像库
         // list($width, $height, $type, $attr) = getimagesize("img/flag.jpg");
-        $imgInfo = @\getimagesize($tmpFile);
+        $imgInfo = @getimagesize($tmpFile);
 
         if ($imgInfo && $imgInfo[2]) {
-            $mime = \strtolower($imgInfo['mime']); // 支持不标准扩展名
+            $mime = strtolower($imgInfo['mime']); // 支持不标准扩展名
 
             // 是否是图片
-            if (!\in_array($mime, Helper::$imgMimeTypes, true)) {
+            if (!in_array($mime, Helper::$imgMimeTypes, true)) {
                 return false;
             }
 
@@ -386,9 +399,9 @@ trait ScopedValidatorsTrait
             }
 
             $suffix   = Helper::getImageExtByMime($mime);
-            $suffixes = \is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
+            $suffixes = is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
 
-            return \in_array($suffix, $suffixes, true);
+            return in_array($suffix, $suffixes, true);
         }
 
         return false;
@@ -409,7 +422,7 @@ trait ScopedValidatorsTrait
             return false;
         }
 
-        if (!isset($file['error']) || ($file['error'] !== \UPLOAD_ERR_OK)) {
+        if (!isset($file['error']) || ($file['error'] !== UPLOAD_ERR_OK)) {
             return false;
         }
 
@@ -418,9 +431,9 @@ trait ScopedValidatorsTrait
         }
 
         $mime  = Helper::getMimeType($tmpFile);
-        $types = \is_string($types) ? Filters::explode($types) : (array)$types;
+        $types = is_string($types) ? Filters::explode($types) : (array)$types;
 
-        return \in_array($mime, $types, true);
+        return in_array($mime, $types, true);
     }
 
     /**
@@ -591,20 +604,20 @@ trait ScopedValidatorsTrait
      *  - ... args for $validator
      *
      * @return bool
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function eachValidator(array $values, ...$args): bool
     {
-        if (!$validator = \array_shift($args)) {
-            throw new \InvalidArgumentException('must setting a validator for \'each\' validate.');
+        if (!$validator = array_shift($args)) {
+            throw new InvalidArgumentException('must setting a validator for \'each\' validate.');
         }
 
         foreach ($values as $value) {
             $passed = false;
 
-            if (\is_object($validator) && \method_exists($validator, '__invoke')) {
+            if (is_object($validator) && method_exists($validator, '__invoke')) {
                 $passed = $validator($value, ...$args);
-            } elseif (\is_string($validator)) {
+            } elseif (is_string($validator)) {
                 // special for required
                 if ('required' === $validator) {
                     $passed = !Validators::isEmpty($value);
@@ -613,17 +626,17 @@ trait ScopedValidatorsTrait
                     $callback = $this->_validators[$validator];
                     $passed   = $callback($value, ...$args);
 
-                } elseif (\method_exists($this, $method = $validator . 'Validator')) {
+                } elseif (method_exists($this, $method = $validator . 'Validator')) {
                     $passed = $this->$method($value, ...$args);
 
-                } elseif (\method_exists(Validators::class, $validator)) {
+                } elseif (method_exists(Validators::class, $validator)) {
                     $passed = Validators::$validator($value, ...$args);
 
                     // it is function name
-                } elseif (\function_exists($validator)) {
+                } elseif (function_exists($validator)) {
                     $passed = $validator($value, ...$args);
                 } else {
-                    throw new \InvalidArgumentException("The validator [$validator] don't exists!");
+                    throw new InvalidArgumentException("The validator [$validator] don't exists!");
                 }
             }
 
@@ -646,7 +659,7 @@ trait ScopedValidatorsTrait
      */
     public static function isCheckFile(string $name): bool
     {
-        return false !== \strpos(Helper::$fileValidators, '|' . $name . '|');
+        return false !== strpos(Helper::$fileValidators, '|' . $name . '|');
     }
 
     /**
@@ -656,7 +669,7 @@ trait ScopedValidatorsTrait
      */
     public static function isCheckRequired(string $name): bool
     {
-        return 0 === \strpos($name, 'required');
+        return 0 === strpos($name, 'required');
     }
 
     /**

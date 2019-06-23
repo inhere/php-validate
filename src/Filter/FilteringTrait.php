@@ -8,7 +8,13 @@
 
 namespace Inhere\Validate\Filter;
 
+use function function_exists;
 use Inhere\Validate\Helper;
+use InvalidArgumentException;
+use function is_object;
+use function is_string;
+use function method_exists;
+use function trim;
 
 /**
  * Trait FilteringTrait
@@ -39,23 +45,23 @@ trait FilteringTrait
      *  ]
      *
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function valueFiltering($value, $filters)
     {
-        $filters = \is_string($filters) ? Filters::explode($filters, '|') : $filters;
+        $filters = is_string($filters) ? Filters::explode($filters, '|') : $filters;
 
         foreach ($filters as $key => $filter) {
             // key is a filter. ['myFilter' => ['arg1', 'arg2']]
-            if (\is_string($key)) {
+            if (is_string($key)) {
                 $args  = (array)$filter;
                 $value = $this->callStringCallback($key, $value, ...$args);
 
                 // closure
-            } elseif (\is_object($filter) && \method_exists($filter, '__invoke')) {
+            } elseif (is_object($filter) && method_exists($filter, '__invoke')) {
                 $value = $filter($value);
                 // string, trim, ....
-            } elseif (\is_string($filter)) {
+            } elseif (is_string($filter)) {
                 $value = $this->callStringCallback($filter, $value);
 
                 // e.g ['Class', 'method'],
@@ -72,7 +78,7 @@ trait FilteringTrait
      * @param array ...$args
      *
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function callStringCallback(string $filter, ...$args)
     {
@@ -83,7 +89,7 @@ trait FilteringTrait
         if ($callback = $this->getFilter($filter)) {
             $value = $callback(...$args);
             // if $filter is a custom method of the subclass.
-        } elseif (\method_exists($this, $filter . 'Filter')) {
+        } elseif (method_exists($this, $filter . 'Filter')) {
             $filter .= 'Filter';
             $value  = $this->$filter(...$args);
 
@@ -93,14 +99,14 @@ trait FilteringTrait
 
             // if $filter is a custom add callback in the property {@see $_filters}.
             // $filter is a method of the class 'FilterList'
-        } elseif (\method_exists(Filters::class, $filterName)) {
+        } elseif (method_exists(Filters::class, $filterName)) {
             $value = Filters::$filterName(...$args);
 
             // it is function name
-        } elseif (\function_exists($filter)) {
+        } elseif (function_exists($filter)) {
             $value = $filter(...$args);
         } else {
-            throw new \InvalidArgumentException("The filter [$filter] don't exists!");
+            throw new InvalidArgumentException("The filter [$filter] don't exists!");
         }
 
         return $value;
@@ -139,7 +145,7 @@ trait FilteringTrait
      */
     public function setFilter(string $name, callable $filter)
     {
-        if ($name = \trim($name)) {
+        if ($name = trim($name)) {
             $this->_filters[$name] = $filter;
         }
 

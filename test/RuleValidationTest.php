@@ -1,8 +1,12 @@
 <?php
 
+namespace Inhere\ValidateTest;
+
 use Inhere\Validate\RuleValidation;
 use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Runner\Version;
+use function version_compare;
 
 /**
  * Class RuleValidationTest
@@ -290,14 +294,14 @@ class RuleValidationTest extends TestCase
         $out = ob_get_clean();
 
         $needle = 'use when pre-check';
-        if (\version_compare(\PHPUnit\Runner\Version::id(), '7.0.0', '<')) {
+        if (version_compare(Version::id(), '7.0.0', '<')) {
             $this->assertContains($needle, $out);
         } else {
             $this->assertStringContainsString($needle, $out);
         }
 
         $needle = 'use custom validate';
-        if (\version_compare(\PHPUnit\Runner\Version::id(), '7.0.0', '<')) {
+        if (version_compare(Version::id(), '7.0.0', '<')) {
             $this->assertContains($needle, $out);
         } else {
             $this->assertStringContainsString($needle, $out);

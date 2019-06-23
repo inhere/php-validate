@@ -8,11 +8,13 @@
 
 namespace Inhere\ValidateTest\Sample;
 
+use Inhere\Validate\FieldValidation;
+
 /**
  * Class FieldSample
  * @package Inhere\ValidateTest\Sample
  */
-class FieldSample extends \Inhere\Validate\FieldValidation
+class FieldSample extends FieldValidation
 {
     public function rules(): array
     {

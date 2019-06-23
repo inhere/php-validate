@@ -8,6 +8,8 @@
 
 namespace Inhere\Validate\Validator;
 
+use function trim;
+
 /**
  * Class UserValidators - user custom add global validators
  * @package Inhere\Validate\Validator
@@ -27,7 +29,7 @@ final class UserValidators
      */
     public static function set(string $name, callable $callback)
     {
-        if ($name = \trim($name)) {
+        if ($name = trim($name)) {
             self::$validators[$name] = $callback;
         }
     }

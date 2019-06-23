@@ -8,7 +8,32 @@
 
 namespace Inhere\Validate;
 
+use function array_key_exists;
+use function array_search;
+use function count;
+use const ENT_COMPAT;
+use function explode;
+use function file_exists;
+use function finfo_file;
+use function finfo_open;
+use function function_exists;
+use function gettype;
+use function html_entity_decode;
 use Inhere\Validate\Filter\Filters;
+use InvalidArgumentException;
+use function is_array;
+use function is_int;
+use function is_object;
+use function is_string;
+use function mb_strlen;
+use function mb_strpos;
+use function mb_strrpos;
+use function method_exists;
+use function mime_content_type;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function strrpos;
 
 /**
  * Class Helper
@@ -68,7 +93,7 @@ class Helper
      */
     public static function getImageExtByMime(string $mime): string
     {
-        $key = \array_search($mime, self::$imgMimeTypes, true);
+        $key = array_search($mime, self::$imgMimeTypes, true);
         return (string)$key;
     }
 
@@ -79,16 +104,16 @@ class Helper
      */
     public static function getMimeType(string $file): string
     {
-        if (!\file_exists($file)) {
+        if (!file_exists($file)) {
             return '';
         }
 
-        if (\function_exists('mime_content_type')) {
-            return \mime_content_type($file);
+        if (function_exists('mime_content_type')) {
+            return mime_content_type($file);
         }
 
-        if (\function_exists('finfo_file')) {
-            return (string)\finfo_file(\finfo_open(FILEINFO_MIME_TYPE), $file);
+        if (function_exists('finfo_file')) {
+            return (string)finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
         }
 
         return '';
@@ -101,15 +126,15 @@ class Helper
      */
     public static function length($val): int
     {
-        if (\is_int($val)) {
+        if (is_int($val)) {
             return $val;
         }
 
-        if (\is_string($val)) {
+        if (is_string($val)) {
             return self::strlen($val);
         }
 
-        return \is_array($val) ? \count($val) : -1;
+        return is_array($val) ? count($val) : -1;
     }
 
     /**
@@ -120,13 +145,13 @@ class Helper
      */
     public static function strlen(string $str, string $encoding = 'UTF-8'): int
     {
-        $str = \html_entity_decode($str, \ENT_COMPAT, 'UTF-8');
+        $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
 
-        if (\function_exists('mb_strlen')) {
-            return \mb_strlen($str, $encoding);
+        if (function_exists('mb_strlen')) {
+            return mb_strlen($str, $encoding);
         }
 
-        return \strlen($str);
+        return strlen($str);
     }
 
     /**
@@ -139,11 +164,11 @@ class Helper
      */
     public static function strPos(string $str, $find, int $offset = 0, $encoding = 'UTF-8')
     {
-        if (\function_exists('mb_strpos')) {
-            return \mb_strpos($str, $find, $offset, $encoding);
+        if (function_exists('mb_strpos')) {
+            return mb_strpos($str, $find, $offset, $encoding);
         }
 
-        return \strpos($str, $find, $offset);
+        return strpos($str, $find, $offset);
     }
 
     /**
@@ -156,11 +181,11 @@ class Helper
      */
     public static function strrpos(string $str, $find, int $offset = 0, string $encoding = 'utf-8')
     {
-        if (\function_exists('mb_strrpos')) {
-            return \mb_strrpos($str, $find, $offset, $encoding);
+        if (function_exists('mb_strrpos')) {
+            return mb_strrpos($str, $find, $offset, $encoding);
         }
 
-        return \strrpos($str, $find, $offset);
+        return strrpos($str, $find, $offset);
     }
 
     /**
@@ -172,7 +197,7 @@ class Helper
     {
         $str = Filters::snakeCase($field, ' ');
 
-        return \strpos($str, '_') ? \str_replace('_', ' ', $str) : $str;
+        return strpos($str, '_') ? str_replace('_', ' ', $str) : $str;
     }
 
     /**
@@ -190,17 +215,17 @@ class Helper
             return $array;
         }
 
-        if (\array_key_exists($key, $array)) {
+        if (array_key_exists($key, $array)) {
             return $array[$key];
         }
 
-        if (!\strpos($key, '.')) {
+        if (!strpos($key, '.')) {
             return $default;
         }
 
         $found = false;
-        foreach (\explode('.', $key) as $segment) {
-            if (\is_array($array) && \array_key_exists($segment, $array)) {
+        foreach (explode('.', $key) as $segment) {
+            if (is_array($array) && array_key_exists($segment, $array)) {
                 $found = true;
                 $array = $array[$segment];
             } else {
@@ -216,29 +241,29 @@ class Helper
      * @param array          $args
      *
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function call($cb, ...$args)
     {
-        if (\is_string($cb)) {
+        if (is_string($cb)) {
             // className::method
-            if (\strpos($cb, '::') > 0) {
-                $cb = \explode('::', $cb, 2);
+            if (strpos($cb, '::') > 0) {
+                $cb = explode('::', $cb, 2);
                 // function
-            } elseif (\function_exists($cb)) {
+            } elseif (function_exists($cb)) {
                 return $cb(...$args);
             }
-        } elseif (\is_object($cb) && \method_exists($cb, '__invoke')) {
+        } elseif (is_object($cb) && method_exists($cb, '__invoke')) {
             return $cb(...$args);
         }
 
-        if (\is_array($cb)) {
+        if (is_array($cb)) {
             list($obj, $mhd) = $cb;
 
-            return \is_object($obj) ? $obj->$mhd(...$args) : $obj::$mhd(...$args);
+            return is_object($obj) ? $obj->$mhd(...$args) : $obj::$mhd(...$args);
         }
 
-        throw new \InvalidArgumentException('The parameter is not a callable');
+        throw new InvalidArgumentException('The parameter is not a callable');
     }
 
     /**
@@ -256,7 +281,7 @@ class Helper
     public static function compareSize($val, string $operator, $expected): bool
     {
         // type must be same
-        if (\gettype($val) !== \gettype($expected)) {
+        if (gettype($val) !== gettype($expected)) {
             return false;
         }
 

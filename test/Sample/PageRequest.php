@@ -8,10 +8,12 @@
 
 namespace Inhere\ValidateTest\Sample;
 
+use Inhere\Validate\Validation;
+
 /**
  * Class PageRequest
  */
-class PageRequest extends \Inhere\Validate\Validation
+class PageRequest extends Validation
 {
     public function rules()
     {

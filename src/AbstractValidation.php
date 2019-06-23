@@ -8,6 +8,9 @@
 
 namespace Inhere\Validate;
 
+use InvalidArgumentException;
+use RuntimeException;
+
 /**
  * Class AbstractValidation
  * @package Inhere\Validate
@@ -32,8 +35,8 @@ abstract class AbstractValidation implements ValidationInterface
      * @param string $scene
      * @param bool   $startValidate 立即开始验证
      *
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function __construct(
         array $data = [],
@@ -73,8 +76,8 @@ abstract class AbstractValidation implements ValidationInterface
      * @param bool   $startValidate 立即开始验证
      *
      * @return static
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public static function make(
         array $data,
@@ -95,8 +98,8 @@ abstract class AbstractValidation implements ValidationInterface
      * @param string $scene
      *
      * @return static
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public static function makeAndValidate(array $data, array $rules = [], array $translates = [], string $scene = '')
     {
@@ -112,8 +115,8 @@ abstract class AbstractValidation implements ValidationInterface
      * @param string $scene
      *
      * @return static
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public static function check(array $data, array $rules = [], array $translates = [], string $scene = '')
     {

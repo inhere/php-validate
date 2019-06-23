@@ -6,8 +6,48 @@
 
 namespace Inhere\Validate\Filter;
 
+use function abs;
+use function array_map;
+use function array_unique;
+use function explode;
+use const FILTER_CALLBACK;
+use const FILTER_FLAG_ALLOW_FRACTION;
+use const FILTER_NULL_ON_FAILURE;
+use const FILTER_SANITIZE_EMAIL;
+use const FILTER_SANITIZE_ENCODED;
+use const FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+use const FILTER_SANITIZE_MAGIC_QUOTES;
+use const FILTER_SANITIZE_NUMBER_FLOAT;
+use const FILTER_SANITIZE_NUMBER_INT;
+use const FILTER_SANITIZE_SPECIAL_CHARS;
+use const FILTER_SANITIZE_URL;
+use const FILTER_UNSAFE_RAW;
+use const FILTER_VALIDATE_BOOLEAN;
+use function filter_var;
+use function function_exists;
 use Inhere\Validate\Helper;
 use Inhere\Validate\Traits\NameAliasTrait;
+use function is_array;
+use function is_int;
+use function is_scalar;
+use function is_string;
+use const MB_CASE_TITLE;
+use function mb_convert_case;
+use function mb_strtolower;
+use function mb_strtoupper;
+use function mb_substr;
+use function preg_replace;
+use function preg_replace_callback;
+use function round;
+use function str_replace;
+use function strip_tags;
+use function strpos;
+use function strtolower;
+use function strtotime;
+use function strtoupper;
+use function substr;
+use function trim;
+use function ucwords;
 
 /**
  * Class Filters
@@ -49,12 +89,12 @@ final class Filters
      */
     public static function boolean($val, $nullAsFalse = false)
     {
-        if ($val !== null && !\is_scalar($val)) {
+        if ($val !== null && !is_scalar($val)) {
             return (bool)$val;
         }
 
-        return \filter_var($val, \FILTER_VALIDATE_BOOLEAN, [
-            'flags' => $nullAsFalse ? \FILTER_NULL_ON_FAILURE : 0
+        return filter_var($val, FILTER_VALIDATE_BOOLEAN, [
+            'flags' => $nullAsFalse ? FILTER_NULL_ON_FAILURE : 0
         ]);
     }
 
@@ -77,11 +117,11 @@ final class Filters
      */
     public static function integer($val)
     {
-        if (\is_array($val)) {
-            return \array_map(self::class . '::integer', $val);
+        if (is_array($val)) {
+            return array_map(self::class . '::integer', $val);
         }
 
-        return (int)\filter_var($val, \FILTER_SANITIZE_NUMBER_INT);
+        return (int)filter_var($val, FILTER_SANITIZE_NUMBER_INT);
     }
 
     /**
@@ -100,7 +140,7 @@ final class Filters
      */
     public static function abs($val): int
     {
-        return \abs((int)$val);
+        return abs((int)$val);
     }
 
     /**
@@ -116,15 +156,15 @@ final class Filters
      *
      * @return mixed
      */
-    public static function float($val, $decimal = null, $flags = \FILTER_FLAG_ALLOW_FRACTION)
+    public static function float($val, $decimal = null, $flags = FILTER_FLAG_ALLOW_FRACTION)
     {
         $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
-        $ret = \filter_var($val, \FILTER_SANITIZE_NUMBER_FLOAT, $options);
-        $new = \strpos($ret, '.') ? (float)$ret : $ret;
+        $ret = filter_var($val, FILTER_SANITIZE_NUMBER_FLOAT, $options);
+        $new = strpos($ret, '.') ? (float)$ret : $ret;
 
-        if (\is_int($decimal)) {
-            return \round($new, $decimal);
+        if (is_int($decimal)) {
+            return round($new, $decimal);
         }
 
         return $new;
@@ -146,13 +186,13 @@ final class Filters
      */
     public static function string($val, $flags = 0)
     {
-        if (\is_array($val)) {
-            return \array_map(self::class . '::string', $val);
+        if (is_array($val)) {
+            return array_map(self::class . '::string', $val);
         }
 
         $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
-        return (string)\filter_var($val, \FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options);
+        return (string)filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options);
     }
 
     /**
@@ -173,7 +213,7 @@ final class Filters
      */
     public static function nl2br($str): string
     {
-        return \str_replace(["\r\n", "\r", "\n"], '<br/>', (string)$str);
+        return str_replace(["\r\n", "\r", "\n"], '<br/>', (string)$str);
     }
 
     /**
@@ -185,9 +225,9 @@ final class Filters
      */
     public static function trim($val)
     {
-        return \is_array($val) ? \array_map(function ($val) {
-            return \is_string($val) ? \trim($val) : $val;
-        }, $val) : \trim((string)$val);
+        return is_array($val) ? array_map(function ($val) {
+            return is_string($val) ? trim($val) : $val;
+        }, $val) : trim((string)$val);
     }
 
     /**
@@ -199,7 +239,7 @@ final class Filters
      */
     public static function clearSpace($val): string
     {
-        return \str_replace(' ', '', \trim((string)$val));
+        return str_replace(' ', '', trim((string)$val));
     }
 
     /**
@@ -211,7 +251,7 @@ final class Filters
      */
     public static function clearNewline($val): string
     {
-        return \str_replace(["\r\n", "\r", "\n"], '', \trim((string)$val));
+        return str_replace(["\r\n", "\r", "\n"], '', trim((string)$val));
     }
 
     /**
@@ -235,15 +275,15 @@ final class Filters
      */
     public static function lowercase($val): string
     {
-        if (!$val || !\is_string($val)) {
-            return \is_int($val) ? $val : '';
+        if (!$val || !is_string($val)) {
+            return is_int($val) ? $val : '';
         }
 
-        if (\function_exists('mb_strtolower')) {
-            return \mb_strtolower($val, 'utf-8');
+        if (function_exists('mb_strtolower')) {
+            return mb_strtolower($val, 'utf-8');
         }
 
-        return \strtolower($val);
+        return strtolower($val);
     }
 
     /**
@@ -267,15 +307,15 @@ final class Filters
      */
     public static function uppercase($str): string
     {
-        if (!$str || !\is_string($str)) {
-            return \is_int($str) ? $str : '';
+        if (!$str || !is_string($str)) {
+            return is_int($str) ? $str : '';
         }
 
-        if (\function_exists('mb_strtoupper')) {
-            return \mb_strtoupper($str, 'utf-8');
+        if (function_exists('mb_strtoupper')) {
+            return mb_strtoupper($str, 'utf-8');
         }
 
-        return \strtoupper($str);
+        return strtoupper($str);
     }
 
     /**
@@ -285,7 +325,7 @@ final class Filters
      */
     public static function ucfirst($str): string
     {
-        if (!$str || !\is_string($str)) {
+        if (!$str || !is_string($str)) {
             return '';
         }
 
@@ -299,15 +339,15 @@ final class Filters
      */
     public static function ucwords($str): string
     {
-        if (!$str || !\is_string($str)) {
+        if (!$str || !is_string($str)) {
             return '';
         }
 
-        if (\function_exists('mb_convert_case')) {
-            return \mb_convert_case($str, \MB_CASE_TITLE);
+        if (function_exists('mb_convert_case')) {
+            return mb_convert_case($str, MB_CASE_TITLE);
         }
 
-        return \ucwords(self::lowercase($str));
+        return ucwords(self::lowercase($str));
     }
 
     /**
@@ -335,13 +375,13 @@ final class Filters
      */
     public static function snakeCase($val, string $sep = '_'): string
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return '';
         }
 
-        $val = \preg_replace('/([A-Z][a-z])/', $sep . '$1', $val);
+        $val = preg_replace('/([A-Z][a-z])/', $sep . '$1', $val);
 
-        return self::lowercase(\trim($val, $sep));
+        return self::lowercase(trim($val, $sep));
     }
 
     /**
@@ -367,7 +407,7 @@ final class Filters
      */
     public static function camelCase($val, $ucFirst = false): string
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return '';
         }
 
@@ -377,8 +417,8 @@ final class Filters
             $str = self::ucfirst($str);
         }
 
-        return \preg_replace_callback('/_+([a-z])/', function ($c) {
-            return \strtoupper($c[1]);
+        return preg_replace_callback('/_+([a-z])/', function ($c) {
+            return strtoupper($c[1]);
         }, $str);
     }
 
@@ -403,11 +443,11 @@ final class Filters
      */
     public static function strToTime($val): int
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return 0;
         }
 
-        return (int)\strtotime($val);
+        return (int)strtotime($val);
     }
 
     /**
@@ -422,11 +462,11 @@ final class Filters
     {
         $length = $length === 0 ? Helper::strlen($str) : $length;
 
-        if (\function_exists('mb_substr')) {
-            return \mb_substr($str, $start, $length, $encoding);
+        if (function_exists('mb_substr')) {
+            return mb_substr($str, $start, $length, $encoding);
         }
 
-        return \substr($str, $start, $length);
+        return substr($str, $start, $length);
     }
 
     /**
@@ -438,16 +478,16 @@ final class Filters
      */
     public static function explode(string $string, string $delimiter = ',', int $limit = 0): array
     {
-        $string = \trim($string, "$delimiter ");
+        $string = trim($string, "$delimiter ");
         if ($string === '') {
             return [];
         }
 
         $values  = [];
-        $rawList = $limit < 1 ? \explode($delimiter, $string) : \explode($delimiter, $string, $limit);
+        $rawList = $limit < 1 ? explode($delimiter, $string) : explode($delimiter, $string, $limit);
 
         foreach ($rawList as $val) {
-            if (($val = \trim($val)) !== '') {
+            if (($val = trim($val)) !== '') {
                 $values[] = $val;
             }
         }
@@ -484,11 +524,11 @@ final class Filters
      */
     public static function stripTags($val, $allowedTags = null): string
     {
-        if (!$val || !\is_string($val)) {
+        if (!$val || !is_string($val)) {
             return '';
         }
 
-        return $allowedTags ? \strip_tags($val, $allowedTags) : \strip_tags($val);
+        return $allowedTags ? strip_tags($val, $allowedTags) : strip_tags($val);
     }
 
     /**
@@ -508,7 +548,7 @@ final class Filters
     {
         $settings = $flags !== 0 ? ['flags' => $flags] : [];
 
-        return (string)\filter_var($val, \FILTER_SANITIZE_ENCODED, $settings);
+        return (string)filter_var($val, FILTER_SANITIZE_ENCODED, $settings);
     }
 
     /**
@@ -520,7 +560,7 @@ final class Filters
      */
     public static function quotes(string $val): string
     {
-        return (string)\filter_var($val, \FILTER_SANITIZE_MAGIC_QUOTES);
+        return (string)filter_var($val, FILTER_SANITIZE_MAGIC_QUOTES);
     }
 
     /**
@@ -538,7 +578,7 @@ final class Filters
     {
         $settings = $flags !== 0 ? ['flags' => $flags] : [];
 
-        return (string)\filter_var($val, \FILTER_SANITIZE_SPECIAL_CHARS, $settings);
+        return (string)filter_var($val, FILTER_SANITIZE_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -564,7 +604,7 @@ final class Filters
     {
         $settings = $flags !== 0 ? ['flags' => $flags] : [];
 
-        return (string)\filter_var($val, \FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
+        return (string)filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $settings);
     }
 
     /**
@@ -578,7 +618,7 @@ final class Filters
      */
     public static function stringCute($string, $start = 0, $end = null): string
     {
-        if (!\is_string($string)) {
+        if (!is_string($string)) {
             return '';
         }
 
@@ -608,11 +648,11 @@ final class Filters
      */
     public static function url($val): string
     {
-        if (!\is_string($val)) {
+        if (!is_string($val)) {
             return '';
         }
 
-        return (string)\filter_var($val, \FILTER_SANITIZE_URL);
+        return (string)filter_var($val, FILTER_SANITIZE_URL);
     }
 
     /**
@@ -624,11 +664,11 @@ final class Filters
      */
     public static function email($val): string
     {
-        if (!\is_string($val)) {
+        if (!is_string($val)) {
             return '';
         }
 
-        return (string)\filter_var($val, \FILTER_SANITIZE_EMAIL);
+        return (string)filter_var($val, FILTER_SANITIZE_EMAIL);
     }
 
     /**
@@ -650,7 +690,7 @@ final class Filters
     {
         $settings = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
-        return \filter_var($string, \FILTER_UNSAFE_RAW, $settings);
+        return filter_var($string, FILTER_UNSAFE_RAW, $settings);
     }
 
     /**
@@ -663,7 +703,7 @@ final class Filters
      */
     public static function callback($val, $callback)
     {
-        return \filter_var($val, \FILTER_CALLBACK, ['options' => $callback]);
+        return filter_var($val, FILTER_CALLBACK, ['options' => $callback]);
     }
 
     /**
@@ -675,10 +715,10 @@ final class Filters
      */
     public static function unique($val): array
     {
-        if (!$val || !\is_array($val)) {
+        if (!$val || !is_array($val)) {
             return (array)$val;
         }
 
-        return \array_unique($val);
+        return array_unique($val);
     }
 }

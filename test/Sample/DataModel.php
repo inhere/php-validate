@@ -2,12 +2,14 @@
 
 namespace Inhere\ValidateTest\Sample;
 
+use Inhere\Validate\ValidationTrait;
+
 /**
  * Class DataModel - custom extend the trait 'ValidationTrait' like the class 'Validation'
  */
 class DataModel
 {
-    use \Inhere\Validate\ValidationTrait;
+    use ValidationTrait;
 
     protected $data = [];
 
@@ -27,7 +29,7 @@ class DataModel
 
     public function create()
     {
-        if ($this->validate()->fail()) {
+        if ($this->validate()->isFail()) {
             return false;
         }
 

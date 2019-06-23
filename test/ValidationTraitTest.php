@@ -4,6 +4,7 @@ namespace Inhere\ValidateTest;
 
 use Inhere\Validate\Validation;
 use Inhere\Validate\ValidationTrait;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,7 +21,7 @@ class ValidationTraitTest extends TestCase
         };
 
         // want data property
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $v->validate();
 
         $v = Validation::check(['name' => 'inhere'], [

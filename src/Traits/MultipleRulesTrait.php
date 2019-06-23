@@ -8,7 +8,19 @@
 
 namespace Inhere\Validate\Traits;
 
+use function array_map;
+use function array_merge;
+use function array_shift;
+use function explode;
+use Generator;
+use function in_array;
 use Inhere\Validate\Filter\Filters;
+use InvalidArgumentException;
+use function is_array;
+use function is_object;
+use function is_string;
+use function strpos;
+use function trim;
 
 /**
  * Trait MultipleRulesTrait - allow add multiple rules like Laravel.
@@ -32,8 +44,8 @@ trait MultipleRulesTrait
     */
 
     /**
-     * @return \Generator
-     * @throws \InvalidArgumentException
+     * @return Generator
+     * @throws InvalidArgumentException
      */
     protected function collectRules()
     {
@@ -43,12 +55,12 @@ trait MultipleRulesTrait
         foreach ($this->getRules() as $rule) {
             // check field
             if (!isset($rule[0]) || !$rule[0]) {
-                throw new \InvalidArgumentException('Please setting the field(string) to wait validate! position: rule[0].');
+                throw new InvalidArgumentException('Please setting the field(string) to wait validate! position: rule[0].');
             }
 
             // check validators
             if (!isset($rule[1]) || !$rule[1]) {
-                throw new \InvalidArgumentException('The field validators must be is a validator name(s) string! position: rule[1].');
+                throw new InvalidArgumentException('The field validators must be is a validator name(s) string! position: rule[1].');
             }
 
             // an rule for special scene.
@@ -57,9 +69,9 @@ trait MultipleRulesTrait
                     continue;
                 }
 
-                $sceneList = \is_string($rule['on']) ? Filters::explode($rule['on']) : (array)$rule['on'];
+                $sceneList = is_string($rule['on']) ? Filters::explode($rule['on']) : (array)$rule['on'];
 
-                if (!\in_array($scene, $sceneList, true)) {
+                if (!in_array($scene, $sceneList, true)) {
                     continue;
                 }
 
@@ -68,14 +80,14 @@ trait MultipleRulesTrait
 
             $this->_usedRules[] = $rule;
             // field
-            $field = \array_shift($rule);
+            $field = array_shift($rule);
 
             // if is a Closure
-            if (\is_object($rule[0])) {
+            if (is_object($rule[0])) {
                 yield $field => $rule;
             } else {
                 // 'required|string:5,10;' OR 'required|in:5,10'
-                $rules = \is_array($rule[0]) ? $rule[0] : \array_map('trim', \explode('|', $rule[0]));
+                $rules = is_array($rule[0]) ? $rule[0] : array_map('trim', explode('|', $rule[0]));
 
                 foreach ($rules as $aRule) {
                     $rule = $this->parseRule($aRule, $rule);
@@ -93,15 +105,15 @@ trait MultipleRulesTrait
      */
     protected function parseRule(string $rule, array $row): array
     {
-        $rule = \trim($rule, ': ');
+        $rule = trim($rule, ': ');
 
-        if (false === \strpos($rule, ':')) {
+        if (false === strpos($rule, ':')) {
             $row[0] = $rule;
             return $row;
         }
 
         list($name, $args) = Filters::explode($rule, ':', 2);
-        $args   = \trim($args, ', ');
+        $args   = trim($args, ', ');
         $row[0] = $name;
 
         switch ($name) {
@@ -115,14 +127,14 @@ trait MultipleRulesTrait
             case 'range':
             case 'string':
             case 'between':
-                if (\strpos($args, ',')) {
+                if (strpos($args, ',')) {
                     list($row['min'], $row['max']) = Filters::explode($args, ',', 2);
                 } else {
                     $row['min'] = $args;
                 }
                 break;
             default:
-                $row = \array_merge($row, Filters::explode($args));
+                $row = array_merge($row, Filters::explode($args));
                 break;
         }
 

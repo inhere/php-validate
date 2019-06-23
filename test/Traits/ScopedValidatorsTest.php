@@ -9,7 +9,11 @@
 namespace Inhere\ValidateTest\Traits;
 
 use Inhere\Validate\Validation;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use stdClass;
+use const UPLOAD_ERR_INI_SIZE;
+use const UPLOAD_ERR_OK;
 
 /**
  * Class ScopedValidatorsTest
@@ -106,7 +110,7 @@ class ScopedValidatorsTest extends TestCase
             'null'     => null,
             'emptyStr' => '',
             'emptyArr' => [],
-            'emptyObj' => new \stdClass(),
+            'emptyObj' => new stdClass(),
         ]);
 
         $samples = [
@@ -156,17 +160,17 @@ class ScopedValidatorsTest extends TestCase
             'file1'      => [
                 'name'     => 'some.jpg',
                 'tmp_name' => '/tmp/some.jpg',
-                'error'    => \UPLOAD_ERR_OK,
+                'error'    => UPLOAD_ERR_OK,
             ],
             'err_file'   => [
                 'name'     => 'some.jpg',
                 'tmp_name' => '/tmp/some.jpg',
-                'error'    => \UPLOAD_ERR_INI_SIZE,
+                'error'    => UPLOAD_ERR_INI_SIZE,
             ],
             'err_suffix' => [
                 'name'     => 'some-no-ext',
                 'tmp_name' => '/tmp/some.jpg',
-                'error'    => \UPLOAD_ERR_OK,
+                'error'    => UPLOAD_ERR_OK,
             ],
         ]);
 
@@ -206,7 +210,7 @@ class ScopedValidatorsTest extends TestCase
             return true;
         }));
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->assertTrue($v->eachValidator([]));
     }
 }

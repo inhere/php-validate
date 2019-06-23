@@ -10,6 +10,7 @@ namespace Inhere\ValidateTest;
 
 use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Helper;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -85,7 +86,7 @@ class HelperTest extends TestCase
         $this->assertSame(34, Helper::call($callabled, '34'));
 
         // invalid
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         Helper::call('oo-invalid');
     }
 }

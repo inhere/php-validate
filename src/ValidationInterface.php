@@ -6,6 +6,9 @@
 
 namespace Inhere\Validate;
 
+use RuntimeException;
+use stdClass;
+
 /**
  * Interface ValidationInterface
  * @package Inhere\Validate
@@ -36,7 +39,7 @@ interface ValidationInterface
      * @param bool|null $stopOnError 是否出现错误即停止验证
      *
      * @return static
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function validate(array $onlyChecked = [], bool $stopOnError = null);
 
@@ -92,7 +95,7 @@ interface ValidationInterface
     public function getMessages(): array;
 
     /**
-     * @return array|\stdClass
+     * @return array|stdClass
      */
     public function getSafeData();
 }
