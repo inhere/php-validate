@@ -246,6 +246,14 @@ trait ValidationTrait
 
             $value = $this->getByPath($field, $defValue);
 
+            // Field value filtering(有通配符`*`的字段, 不应用过滤器)
+            if ($filters && null !== $value && !\strpos($field, '.*')) {
+                $value = $this->valueFiltering($value, $filters);
+                // save
+                $this->data[$field] = $value;
+            }
+
+            // Field value validate
             if (\is_string($validator)) {
                 if ($validator === 'safe') {
                     $this->setSafe($field, $value);
@@ -266,13 +274,6 @@ trait ValidationTrait
             // skip On Empty && The value is empty
             if ($skipOnEmpty && Helper::call($isEmpty, $value)) {
                 continue;
-            }
-
-            // Field value filtering(有通配符`*`的字段, 不应用过滤器)
-            if ($filters && !\strpos($field, '.*')) {
-                $value = $this->valueFiltering($value, $filters);
-                // save
-                $this->data[$field] = $value;
             }
 
             // Field value verification check
@@ -359,7 +360,7 @@ trait ValidationTrait
                 // if $validator is a custom method of the subclass.
             } elseif (\method_exists($this, $method = $validator . 'Validator')) {
                 $passed = $this->$method($value, ...$args);
-                // if $validator is a custom validator {@see $_validators}.
+                // if $validator is a global custom validator {@see UserValidators::$validators}.
             } elseif ($callback = UserValidators::get($validator)) {
                 $args[] = $this->data;
                 $passed = $callback($value, ...$args);
