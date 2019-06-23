@@ -2,11 +2,11 @@
 
 namespace Inhere\ValidateTest\Filter;
 
+use Inhere\Validate\Filter\Filters;
+use PHPUnit\Framework\TestCase;
 use const FILTER_FLAG_ENCODE_HIGH;
 use const FILTER_FLAG_ENCODE_LOW;
 use const FILTER_FLAG_STRIP_HIGH;
-use Inhere\Validate\Filter\Filters;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class FiltersTest

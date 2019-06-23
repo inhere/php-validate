@@ -8,8 +8,8 @@
 
 namespace Inhere\Validate\Filter;
 
-use function array_merge;
 use InvalidArgumentException;
+use function array_merge;
 use function is_string;
 
 /**

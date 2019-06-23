@@ -8,9 +8,9 @@
 
 namespace Inhere\Validate\Filter;
 
-use function function_exists;
 use Inhere\Validate\Helper;
 use InvalidArgumentException;
+use function function_exists;
 use function is_object;
 use function is_string;
 use function method_exists;

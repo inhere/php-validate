@@ -2,15 +2,15 @@
 
 namespace Inhere\Validate\Traits;
 
-use function array_merge;
-use function array_pop;
-use function array_shift;
 use Closure;
-use function count;
-use function implode;
 use Inhere\Validate\Helper;
 use Inhere\Validate\Validator\GlobalMessage;
 use Inhere\Validate\Validators;
+use function array_merge;
+use function array_pop;
+use function array_shift;
+use function count;
+use function implode;
 use function is_array;
 use function is_int;
 use function is_string;

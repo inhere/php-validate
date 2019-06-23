@@ -6,32 +6,18 @@
 
 namespace Inhere\Validate\Filter;
 
+use Inhere\Validate\Helper;
+use Inhere\Validate\Traits\NameAliasTrait;
 use function abs;
 use function array_map;
 use function array_unique;
 use function explode;
-use const FILTER_CALLBACK;
-use const FILTER_FLAG_ALLOW_FRACTION;
-use const FILTER_NULL_ON_FAILURE;
-use const FILTER_SANITIZE_EMAIL;
-use const FILTER_SANITIZE_ENCODED;
-use const FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-use const FILTER_SANITIZE_MAGIC_QUOTES;
-use const FILTER_SANITIZE_NUMBER_FLOAT;
-use const FILTER_SANITIZE_NUMBER_INT;
-use const FILTER_SANITIZE_SPECIAL_CHARS;
-use const FILTER_SANITIZE_URL;
-use const FILTER_UNSAFE_RAW;
-use const FILTER_VALIDATE_BOOLEAN;
 use function filter_var;
 use function function_exists;
-use Inhere\Validate\Helper;
-use Inhere\Validate\Traits\NameAliasTrait;
 use function is_array;
 use function is_int;
 use function is_scalar;
 use function is_string;
-use const MB_CASE_TITLE;
 use function mb_convert_case;
 use function mb_strtolower;
 use function mb_strtoupper;
@@ -48,6 +34,20 @@ use function strtoupper;
 use function substr;
 use function trim;
 use function ucwords;
+use const FILTER_CALLBACK;
+use const FILTER_FLAG_ALLOW_FRACTION;
+use const FILTER_NULL_ON_FAILURE;
+use const FILTER_SANITIZE_EMAIL;
+use const FILTER_SANITIZE_ENCODED;
+use const FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+use const FILTER_SANITIZE_MAGIC_QUOTES;
+use const FILTER_SANITIZE_NUMBER_FLOAT;
+use const FILTER_SANITIZE_NUMBER_INT;
+use const FILTER_SANITIZE_SPECIAL_CHARS;
+use const FILTER_SANITIZE_URL;
+use const FILTER_UNSAFE_RAW;
+use const FILTER_VALIDATE_BOOLEAN;
+use const MB_CASE_TITLE;
 
 /**
  * Class Filters

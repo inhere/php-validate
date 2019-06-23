@@ -9,6 +9,7 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Traits\NameAliasTrait;
 use function array_diff;
 use function array_key_exists;
 use function array_keys;
@@ -20,18 +21,9 @@ use function checkdate;
 use function count;
 use function date;
 use function explode;
-use const FILTER_FLAG_IPV4;
-use const FILTER_FLAG_IPV6;
-use const FILTER_VALIDATE_EMAIL;
-use const FILTER_VALIDATE_FLOAT;
-use const FILTER_VALIDATE_INT;
-use const FILTER_VALIDATE_IP;
-use const FILTER_VALIDATE_REGEXP;
-use const FILTER_VALIDATE_URL;
 use function filter_var;
 use function get_object_vars;
 use function in_array;
-use Inhere\Validate\Traits\NameAliasTrait;
 use function is_array;
 use function is_int;
 use function is_numeric;
@@ -39,7 +31,6 @@ use function is_object;
 use function is_scalar;
 use function is_string;
 use function json_decode;
-use const JSON_ERROR_NONE;
 use function json_last_error;
 use function method_exists;
 use function preg_match;
@@ -49,6 +40,15 @@ use function strtotime;
 use function substr;
 use function time;
 use function trim;
+use const FILTER_FLAG_IPV4;
+use const FILTER_FLAG_IPV6;
+use const FILTER_VALIDATE_EMAIL;
+use const FILTER_VALIDATE_FLOAT;
+use const FILTER_VALIDATE_INT;
+use const FILTER_VALIDATE_IP;
+use const FILTER_VALIDATE_REGEXP;
+use const FILTER_VALIDATE_URL;
+use const JSON_ERROR_NONE;
 
 /**
  * Class Validators

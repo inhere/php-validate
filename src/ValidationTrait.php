@@ -8,31 +8,31 @@
 
 namespace Inhere\Validate;
 
-use function array_keys;
-use function array_merge;
-use function array_shift;
-use function array_values;
 use Closure;
-use function explode;
-use function function_exists;
-use function in_array;
 use Inhere\Validate\Filter\FilteringTrait;
 use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Traits\ErrorMessageTrait;
 use Inhere\Validate\Traits\ScopedValidatorsTrait;
 use Inhere\Validate\Validator\UserValidators;
 use InvalidArgumentException;
+use RuntimeException;
+use stdClass;
+use function array_keys;
+use function array_merge;
+use function array_shift;
+use function array_values;
+use function explode;
+use function function_exists;
+use function in_array;
 use function is_array;
 use function is_object;
 use function is_string;
 use function method_exists;
-use const PHP_INT_MIN;
 use function property_exists;
-use RuntimeException;
-use stdClass;
 use function strpos;
 use function substr;
 use function trim;
+use const PHP_INT_MIN;
 
 /**
  * Trait ValidationTrait
@@ -358,11 +358,11 @@ trait ValidationTrait
     /**
      * field value validate 字段值验证
      *
-     * @param string                $field Field name
-     * @param mixed                 $value Field value
+     * @param string               $field Field name
+     * @param mixed                $value Field value
      * @param Closure|string|mixed $validator Validator
-     * @param array                 $args Arguments for validate
-     * @param string                $defMsg
+     * @param array                $args Arguments for validate
+     * @param string               $defMsg
      *
      * @return bool
      * @throws InvalidArgumentException

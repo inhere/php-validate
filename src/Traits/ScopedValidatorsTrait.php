@@ -8,14 +8,14 @@
 
 namespace Inhere\Validate\Traits;
 
-use function array_shift;
-use function function_exists;
-use function getimagesize;
-use function in_array;
 use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Helper;
 use Inhere\Validate\Validators;
 use InvalidArgumentException;
+use function array_shift;
+use function function_exists;
+use function getimagesize;
+use function in_array;
 use function is_object;
 use function is_string;
 use function method_exists;

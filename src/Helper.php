@@ -8,10 +8,11 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Filter\Filters;
+use InvalidArgumentException;
 use function array_key_exists;
 use function array_search;
 use function count;
-use const ENT_COMPAT;
 use function explode;
 use function file_exists;
 use function finfo_file;
@@ -19,8 +20,6 @@ use function finfo_open;
 use function function_exists;
 use function gettype;
 use function html_entity_decode;
-use Inhere\Validate\Filter\Filters;
-use InvalidArgumentException;
 use function is_array;
 use function is_int;
 use function is_object;
@@ -34,6 +33,7 @@ use function str_replace;
 use function strlen;
 use function strpos;
 use function strrpos;
+use const ENT_COMPAT;
 
 /**
  * Class Helper

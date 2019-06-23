@@ -8,14 +8,14 @@
 
 namespace Inhere\Validate\Traits;
 
+use Generator;
+use Inhere\Validate\Filter\Filters;
+use InvalidArgumentException;
 use function array_map;
 use function array_merge;
 use function array_shift;
 use function explode;
-use Generator;
 use function in_array;
-use Inhere\Validate\Filter\Filters;
-use InvalidArgumentException;
 use function is_array;
 use function is_object;
 use function is_string;
