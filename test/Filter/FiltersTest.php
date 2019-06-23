@@ -81,6 +81,20 @@ class FiltersTest extends TestCase
         self::assertSame('tom', Filters::string('tom'));
         self::assertSame('tom', Filters::stripped('tom'));
         self::assertSame('abc&amp;', Filters::string('abc&'));
+        self::assertSame(['abc&amp;', '1'], Filters::string(['abc&', 1]));
+
+        // quotes
+        self::assertSame("O\'Reilly?", Filters::quotes("O'Reilly?"));
+
+        // email
+        self::assertSame('', Filters::email([]));
+
+        // url
+        self::assertSame('', Filters::url([]));
+        self::assertSame('abc/hi', Filters::url('abc/hi'));
+
+        // unsafeRaw
+        self::assertSame('abc/hi', Filters::unsafeRaw('abc/hi'));
     }
 
     public function testNl2br()
@@ -171,6 +185,7 @@ class FiltersTest extends TestCase
 
     public function testUnique()
     {
+        $this->assertSame([1], Filters::unique(1));
         $this->assertSame([1], Filters::unique([1, 1]));
         $this->assertSame(['a', 'b'], Filters::unique(['a', 'b', 'a']));
         $this->assertSame(['a', 2 => 'b'], Filters::unique(['a', 'a', 'b', 'a']));
