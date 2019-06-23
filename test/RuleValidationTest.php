@@ -244,23 +244,27 @@ class RuleValidationTest extends TestCase
 
     public function testValidatePassed()
     {
-        $data           = $this->data;
+        $data = $this->data;
+        // change value
         $data['userId'] = '456';
-        $rules          = [
+
+        $rules = [
             // ['tagId,userId,freeTime', 'required'],// set message
             ['tagId,userId,freeTime', 'number', 'filter' => 'int'],
             ['tagId', 'size', 'max' => 567, 'min' => 4, 'filter' => 'int'], // 4<= tagId <=567
             // ['goods', 'isList'],
             ['goods.pear', 'max', 60],
+            ['insertTime', 'safe']
         ];
-        $v              = RuleValidation::make($data, $rules)
-            ->setTranslates([
-                'goods.pear' => '梨子'
-            ])
-            ->setMessages([
-                'freeTime.required' => 'freeTime is required!!!!'
-            ])
-            ->validate([], false);
+
+        $v = RuleValidation::make($data, $rules);
+        $v->setTranslates([
+            'goods.pear' => '梨子'
+        ])
+          ->setMessages([
+              'freeTime.required' => 'freeTime is required!!!!'
+          ])
+          ->validate([], false);
 
         $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
@@ -274,25 +278,26 @@ class RuleValidationTest extends TestCase
     {
         $rules = $this->someRules();
         ob_start();
-        $v   = RuleValidation::make($this->data, $rules)
-            ->setTranslates([
-                'goods.pear' => '梨子'
-            ])
-            ->setMessages([
-                'freeTime.required' => 'freeTime is required!!!!'
-            ])
-            ->validate([], false);
+        $v = RuleValidation::make($this->data, $rules);
+        $v->setTranslates([
+            'goods.pear' => '梨子'
+        ])
+          ->setMessages([
+              'freeTime.required' => 'freeTime is required!!!!'
+          ])
+          ->validate([], false);
+
         $out = ob_get_clean();
 
         $needle = 'use when pre-check';
-        if (\version_compare(\PHPUnit\Runner\Version::id(), '7.0.0', '<') ) {
+        if (\version_compare(\PHPUnit\Runner\Version::id(), '7.0.0', '<')) {
             $this->assertContains($needle, $out);
         } else {
             $this->assertStringContainsString($needle, $out);
         }
 
         $needle = 'use custom validate';
-        if (\version_compare(\PHPUnit\Runner\Version::id(), '7.0.0', '<') ) {
+        if (\version_compare(\PHPUnit\Runner\Version::id(), '7.0.0', '<')) {
             $this->assertContains($needle, $out);
         } else {
             $this->assertStringContainsString($needle, $out);
@@ -478,10 +483,10 @@ class RuleValidationTest extends TestCase
             ['num', 'range', 'min' => 1, 'max' => 100],
             ['id', 'range', 'min' => 1, 'max' => 100],
         ])
-            ->setMessages([
-                'id.range' => 'range error message',
-            ])
-            ->validate();
+                           ->setMessages([
+                               'id.range' => 'range error message',
+                           ])
+                           ->validate();
 
         $this->assertFalse($v->isOk());
         $this->assertCount(1, $v->getErrors());
