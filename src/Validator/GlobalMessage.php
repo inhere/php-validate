@@ -14,7 +14,11 @@ final class GlobalMessage
      */
     private static $messages = [
         // 'int' 'integer'
-        'integer'    => '{attr} must be an integer!',
+        'integer'    => [
+            '{attr} must be an integer!',
+            '{attr} must be an integer and minimum value is {min}',
+            '{attr} must be an integer and value range {min} ~ {max}',
+        ],
         // 'num'
         'number'     => [
             '{attr} must be an integer greater than 0!',

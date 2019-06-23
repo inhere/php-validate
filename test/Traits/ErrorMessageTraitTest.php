@@ -3,6 +3,7 @@
 namespace Inhere\ValidateTest\Traits;
 
 use Inhere\Validate\FieldValidation;
+use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -102,5 +103,20 @@ class ErrorMessageTraitTest extends TestCase
         // clearTranslates
         $v->clearTranslates();
         $this->assertEmpty($v->getTranslates());
+    }
+
+    /**
+     * for https://github.com/inhere/php-validate/issues/10
+     */
+    public function testForIssues10()
+    {
+        $v = Validation::check([
+            'page' => 0
+        ], [
+            ['page', 'integer', 'min' => 1]
+        ]);
+
+        $this->assertTrue($v->isFail());
+        $this->assertSame('page must be an integer and minimum value is 1', $v->firstError());
     }
 }

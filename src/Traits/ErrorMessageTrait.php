@@ -338,6 +338,11 @@ trait ErrorMessageTrait
         $fullKey  = $field . '.' . $rawName;
         $realName = Validators::realName($rawName);
 
+        // get from default
+        if (!$this->_messages) {
+            return GlobalMessage::get($realName);
+        }
+
         if (isset($this->_messages[$fullKey])) {
             $message = $this->_messages[$fullKey];
             // eg 'required' => 'some message ...'
