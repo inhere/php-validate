@@ -610,32 +610,31 @@ final class Filters
     /**
      * 字符串长度过滤截取
      *
-     * @param string  $string 字符串
-     * @param integer $start 起始长度
-     * @param int     $end 结束位置
+     * @param string  $string
+     * @param integer $start
+     * @param int     $length
      *
      * @return string
      */
-    public static function stringCute($string, $start = 0, $end = null): string
+    public static function stringCute($string, $start = 0, $length = 0): string
     {
         if (!is_string($string)) {
             return '';
         }
 
-        // $length    = Helper::strlen($string);
-        return self::subStr($string, $start, $end);
+        return self::subStr($string, (int)$start, (int)$length);
     }
 
     /**
      * @param string $string
      * @param int    $start
-     * @param null   $end
+     * @param int    $length
      *
      * @return string
      */
-    public static function cut($string, $start = 0, $end = null): string
+    public static function cut($string, $start = 0, $length = 0): string
     {
-        return self::stringCute($string, $start, $end);
+        return self::stringCute($string, $start, $length);
     }
 
     /**

@@ -109,10 +109,12 @@ class Helper
         }
 
         if (function_exists('mime_content_type')) {
+            /** @noinspection PhpComposerExtensionStubsInspection */
             return mime_content_type($file);
         }
 
         if (function_exists('finfo_file')) {
+            /** @noinspection PhpComposerExtensionStubsInspection */
             return (string)finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
         }
 
