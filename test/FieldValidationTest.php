@@ -5,7 +5,12 @@ namespace Inhere\ValidateTest;
 use Inhere\Validate\FieldValidation;
 use Inhere\ValidateTest\Sample\FieldSample;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
+/**
+ * Class FieldValidationTest
+ * @package Inhere\ValidateTest
+ */
 class FieldValidationTest extends TestCase
 {
     public $data = [
@@ -25,6 +30,27 @@ class FieldValidationTest extends TestCase
             'pear'  => 50,
         ],
     ];
+
+    public function testRuleCollectError(): void
+    {
+        $rv = FieldValidation::make(['name' => 'inhere'], [
+            []
+        ]);
+        try {
+            $rv->validate();
+        } catch (Throwable $e) {
+            $this->assertSame('Please setting the field(string) to wait validate! position: rule[0]', $e->getMessage());
+        }
+
+        $rv = FieldValidation::make(['name' => 'inhere'], [
+            ['name']
+        ]);
+        try {
+            $rv->validate();
+        } catch (Throwable $e) {
+            $this->assertSame('The field validators must be is a validator name(s) string! position: rule[1]', $e->getMessage());
+        }
+    }
 
     public function testValidateField(): void
     {
@@ -77,6 +103,24 @@ class FieldValidationTest extends TestCase
             'title must be a string and length range must be 1 ~ 3',
             $v->firstError()
         );
+    }
+
+    public function testOnScene(): void
+    {
+        $data = [
+            'user' => 'inhere',
+            'pwd'  => '123456',
+            'code' => '1234',
+        ];
+
+        $v = FieldValidation::make($data, [
+            ['user', 'required|string', 'on' => 's1'],
+            ['code', 'required|int', 'filter' => 'int', 'on' => 's2'],
+        ]);
+
+        $v->atScene('s1')->validate();
+
+        $this->assertCount(1, $v->getUsedRules());
     }
 
     public function testScenarios(): void

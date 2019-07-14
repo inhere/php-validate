@@ -55,12 +55,12 @@ trait MultipleRulesTrait
         foreach ($this->getRules() as $rule) {
             // check field
             if (!isset($rule[0]) || !$rule[0]) {
-                throw new InvalidArgumentException('Please setting the field(string) to wait validate! position: rule[0].');
+                throw new InvalidArgumentException('Please setting the field(string) to wait validate! position: rule[0]');
             }
 
             // check validators
             if (!isset($rule[1]) || !$rule[1]) {
-                throw new InvalidArgumentException('The field validators must be is a validator name(s) string! position: rule[1].');
+                throw new InvalidArgumentException('The field validators must be is a validator name(s) string! position: rule[1]');
             }
 
             // an rule for special scene.

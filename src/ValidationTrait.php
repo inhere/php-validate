@@ -462,12 +462,12 @@ trait ValidationTrait
         foreach ($this->getRules() as $rule) {
             // check fields
             if (!isset($rule[0]) || !$rule[0]) {
-                throw new InvalidArgumentException('Please setting the fields(string|array) to wait validate! position: rule[0].');
+                throw new InvalidArgumentException('Please setting the fields(string|array) to wait validate! position: rule[0]');
             }
 
             // check validator
             if (!isset($rule[1]) || !$rule[1]) {
-                throw new InvalidArgumentException('The rule validator is must be setting! position: rule[1].');
+                throw new InvalidArgumentException('The rule validator is must be setting! position: rule[1]');
             }
 
             // only use to special scene.

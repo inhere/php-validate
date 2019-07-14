@@ -6,6 +6,7 @@ use Inhere\Validate\RuleValidation;
 use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Version;
+use Throwable;
 use function version_compare;
 
 /**
@@ -28,6 +29,24 @@ class RuleValidationTest extends TestCase
         $this->assertTrue($v->has('key1'));
 
         $this->assertFalse($v->hasRule());
+
+        $rv = RuleValidation::make(['name' => 'inhere'], [
+            []
+        ]);
+        try {
+            $rv->validate();
+        } catch (Throwable $e) {
+            $this->assertSame('Please setting the fields(string|array) to wait validate! position: rule[0]', $e->getMessage());
+        }
+
+        $rv = RuleValidation::make(['name' => 'inhere'], [
+            ['name']
+        ]);
+        try {
+            $rv->validate();
+        } catch (Throwable $e) {
+            $this->assertSame('The rule validator is must be setting! position: rule[1]', $e->getMessage());
+        }
     }
 
     public function testRequired(): void
