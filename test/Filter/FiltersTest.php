@@ -85,25 +85,43 @@ class FiltersTest extends TestCase
         self::assertSame('tom', Filters::stripped('tom'));
         self::assertSame('abc&amp;', Filters::string('abc&'));
         self::assertSame(['abc&amp;', '1'], Filters::string(['abc&', 1]));
+    }
 
+    public function testStringFilter(): void
+    {
         // quotes
-        self::assertSame("O\'Reilly?", Filters::quotes("O'Reilly?"));
+        $this->assertSame("O\'Reilly?", Filters::quotes("O'Reilly?"));
 
         // email
-        self::assertSame('', Filters::email([]));
+        $this->assertSame('', Filters::email([]));
 
         // url
-        self::assertSame('', Filters::url([]));
-        self::assertSame('abc/hi', Filters::url('abc/hi'));
+        $this->assertSame('', Filters::url([]));
+        $this->assertSame('abc/hi', Filters::url('abc/hi'));
 
         // unsafeRaw
-        self::assertSame('abc/hi', Filters::unsafeRaw('abc/hi'));
+        $this->assertSame('abc/hi', Filters::unsafeRaw('abc/hi'));
+
+        // specialChars
+        $this->assertSame('&#60;a&#62;link&#60;/a&#62; hello, a &#38; b', Filters::escape('<a>link</a> hello, a & b'));
+        $this->assertSame('abc', Filters::specialChars('abc'));
+
+        // fullSpecialChars
+        $this->assertSame('hello, a &amp; b', Filters::fullSpecialChars('hello, a & b'));
     }
 
     public function testNl2br(): void
     {
-        self::assertSame('a<br/>b', Filters::nl2br("a\nb"));
-        self::assertSame('a<br/>b', Filters::nl2br("a\r\nb"));
+        $this->assertSame('a<br/>b', Filters::nl2br("a\nb"));
+        $this->assertSame('a<br/>b', Filters::nl2br("a\r\nb"));
+    }
+
+    public function testStringCut(): void
+    {
+        $this->assertSame('cDE', Filters::stringCute('abcDEFgh', 2, 3));
+        $this->assertSame('abcDEFgh', Filters::cut('abcDEFgh'));
+        $this->assertSame('cDEFgh', Filters::cut('abcDEFgh', 2));
+        $this->assertSame('abcDEFgh', Filters::cut('abcDEFgh', 0, 12));
     }
 
     public function testClearXXX(): void
@@ -218,11 +236,20 @@ class FiltersTest extends TestCase
         $this->assertSame('abc.com%3Fa%3D7%2B9%26b%3D%E4%BD%A0',
             Filters::encoded('abc.com?a=7+9&b=你', FILTER_FLAG_ENCODE_HIGH));
 
+        // url
         $this->assertSame('', Filters::url(''));
         $this->assertSame('abc.com?a=7+9', Filters::url('abc.com?a=7+9'));
         $this->assertSame('abc.com?a=7+9&b=', Filters::url('abc.com?a=7+9&b=你'));
 
+        // email
         $this->assertSame('', Filters::email(''));
         $this->assertSame('abc@email.com', Filters::email('abc@email.com'));
+    }
+
+    public function testCallback(): void
+    {
+        $this->assertSame('abc', Filters::callback('ABC', 'strtolower'));
+        $this->assertSame('abc', Filters::callback('ABC', [Filters::class, 'lower']));
+        $this->assertSame('abc', Filters::callback('ABC', Filters::class . '::' . 'lower'));
     }
 }
