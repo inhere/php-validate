@@ -79,12 +79,12 @@ class Filtration
     }
 
     /**
-     * 对数据应用给的一系列过滤规则
+     * Apply a series of filtering rules to the input data
      *
      * @param array $rules
      * @param array $data
      *
-     * @return array 返回过滤后的数据
+     * @return array Return filtered data
      * @throws InvalidArgumentException
      */
     public function applyRules(array $rules = [], array $data = []): array
@@ -106,8 +106,8 @@ class Filtration
             $fields = is_string($fields) ? Filters::explode($fields) : (array)$fields;
 
             foreach ($fields as $field) {
-                if (!isset($data[$field])) {
-                    $filtered[$field] = $rule['default'] ?? null;
+                if (!isset($data[$field]) && isset($rule['default'])) {
+                    $filtered[$field] = $rule['default'];
                 } else {
                     $filtered[$field] = $this->valueFiltering($data[$field], $rule[1]);
                 }
@@ -118,7 +118,7 @@ class Filtration
     }
 
     /**
-     * value sanitize 直接对给的值进行过滤
+     * value sanitize Filter the value directly
      *
      * @param mixed        $value
      * @param string|array $filters

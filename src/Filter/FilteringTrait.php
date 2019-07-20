@@ -11,6 +11,7 @@ namespace Inhere\Validate\Filter;
 use Inhere\Validate\Helper;
 use InvalidArgumentException;
 use function function_exists;
+use function is_array;
 use function is_object;
 use function is_string;
 use function method_exists;
@@ -50,6 +51,11 @@ trait FilteringTrait
     protected function valueFiltering($value, $filters)
     {
         $filters = is_string($filters) ? Filters::explode($filters, '|') : $filters;
+
+        // fix: must ensure is array
+        if (!is_array($filters)) {
+            $filters = [$filters];
+        }
 
         foreach ($filters as $key => $filter) {
             // key is a filter. ['myFilter' => ['arg1', 'arg2']]

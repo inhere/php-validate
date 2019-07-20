@@ -604,4 +604,42 @@ class RuleValidationTest extends TestCase
         $this->assertEquals('arr val must be an array of nature', $v->firstError());
         $this->assertEquals('list val must be an array', $v->lastError());
     }
+
+    public function testIssue13(): void
+    {
+        $rule = [
+            ['goods_id', 'list', 'msg' => '商品id数组为空或不合法'],
+            ['goods_id.*', 'each', 'integer', 'msg' => '商品分类id必须是一串数字']
+        ];
+
+        $v = Validation::check([
+            'goods_id' => [
+                1144181460261978556, 114418146, 1144
+            ]
+        ], $rule);
+
+        $this->assertTrue($v->isOk());
+        $this->assertFalse($v->isFail());
+
+        // not array
+        $v = Validation::check([
+            'goods_id' => 'string'
+        ], $rule);
+        $this->assertFalse($v->isOk());
+        $this->assertSame('商品id数组为空或不合法', $v->firstError());
+
+        // not list
+        $v = Validation::check([
+            'goods_id' => ['k' => 'v']
+        ], $rule);
+        $this->assertFalse($v->isOk());
+        $this->assertSame('商品id数组为空或不合法', $v->firstError());
+
+        // value not int
+        $v = Validation::check([
+            'goods_id' => ['v']
+        ], $rule);
+        $this->assertFalse($v->isOk());
+        $this->assertSame('商品分类id必须是一串数字', $v->firstError());
+    }
 }

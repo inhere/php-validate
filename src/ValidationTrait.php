@@ -281,7 +281,7 @@ trait ValidationTrait
                 $this->data[$field] = $value;
             }
 
-            // Field value validate
+            // Field name validate
             if (is_string($validator)) {
                 if ($validator === 'safe') {
                     $this->setSafe($field, $value);

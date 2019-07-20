@@ -739,13 +739,10 @@ public function addValidator(string $name, \Closure $callback, string $msg = '')
 ```
 // 验证失败
 public function isFail()
-public function fail() // isFail() 的别名方法
-public function failed() // isFail() 的别名方法
 public function hasError() // isFail() 的别名方法
 
 // 成功通过验证
-public function ok() 
-public function isOk() 
+public function isOk()
 public function isPassed()
 ```
 
