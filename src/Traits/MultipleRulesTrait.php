@@ -90,8 +90,7 @@ trait MultipleRulesTrait
                 $rules = is_array($rule[0]) ? $rule[0] : array_map('trim', explode('|', $rule[0]));
 
                 foreach ($rules as $aRule) {
-                    $rule = $this->parseRule($aRule, $rule);
-                    yield $field => $rule;
+                    yield $field => $this->parseRule($aRule, $rule);
                 }
             }
         }
