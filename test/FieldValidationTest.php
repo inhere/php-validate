@@ -77,6 +77,11 @@ class FieldValidationTest extends TestCase
         $this->assertSame('freeTime is required!!!!', $v->getErrors('freeTime')[0]);
 
         $v = FieldValidation::check($this->data, [
+            ['goods.pear', 'required|int|min:30|max:60']
+        ]);
+        $this->assertTrue($v->isOk());
+
+        $v = FieldValidation::check($this->data, [
             ['userId', 'required|int'],
             ['userId', 'min:1'],
         ]);
