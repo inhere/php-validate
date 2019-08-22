@@ -16,7 +16,6 @@ use Inhere\Validate\Traits\ErrorMessageTrait;
 use Inhere\Validate\Traits\ScopedValidatorsTrait;
 use Inhere\Validate\Validator\UserValidators;
 use InvalidArgumentException;
-use RuntimeException;
 use stdClass;
 use function array_keys;
 use function array_merge;
@@ -186,7 +185,6 @@ trait ValidationTrait
      *
      * @return static
      * @throws InvalidArgumentException
-     * @throws RuntimeException
      */
     public function validate(array $onlyChecked = [], bool $stopOnError = null)
     {
@@ -570,7 +568,7 @@ trait ValidationTrait
         $result = [];
 
         foreach ($recently as $item) {
-            if (isset($item[$field])) {
+            if (is_array($item) && isset($item[$field])) {
                 $result[] = $item[$field];
             }
         }

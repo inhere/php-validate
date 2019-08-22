@@ -6,7 +6,6 @@
 
 namespace Inhere\Validate;
 
-use RuntimeException;
 use stdClass;
 
 /**
@@ -39,7 +38,6 @@ interface ValidationInterface
      * @param bool|null $stopOnError 是否出现错误即停止验证
      *
      * @return static
-     * @throws RuntimeException
      */
     public function validate(array $onlyChecked = [], bool $stopOnError = null);
 

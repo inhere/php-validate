@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class ValidationTraitTest
+ *
  * @package Inhere\ValidateTest
  */
 class ValidationTraitTest extends TestCase
@@ -23,10 +24,35 @@ class ValidationTraitTest extends TestCase
         // want data property
         $this->expectException(InvalidArgumentException::class);
         $v->validate();
+    }
 
-        $v = Validation::check(['name' => 'inhere'], [
-            ['name', 'requred']
+    public function testGetByPath(): void
+    {
+        $v = Validation::make([
+            'prod' => [
+                'key0' => 'val0',
+                [
+                    'attr' => [
+                        'wid' => 1
+                    ]
+                ]
+            ]
         ]);
+
+        $val = $v->getByPath('prod.key0');
+        $this->assertSame('val0', $val);
+
+        $val = $v->getByPath('prod.0.attr');
+        $this->assertSame(['wid' => 1], $val);
+
+        $val = $v->getByPath('prod.0.attr.wid');
+        $this->assertSame(1, $val);
+
+        $val = $v->getByPath('prod.*.attr');
+        $this->assertSame([['wid' => 1]], $val);
+
+        // $val = $v->getByPath('prod.*.attr.wid');
+        // $this->assertSame([1], $val);
     }
 
     public function testBeforeAndAfter(): void

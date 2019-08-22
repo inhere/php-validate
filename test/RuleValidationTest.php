@@ -132,8 +132,6 @@ class RuleValidationTest extends TestCase
             ['userId', 'requiredWith', ['status', 'someField']],
         ]);
 
-        // var_dump($v->getErrors());
-
         $this->assertCount(1, $v->getErrors());
         $this->assertFalse($v->inError('targetId'));
         $this->assertTrue($v->inError('userId'));
@@ -154,8 +152,6 @@ class RuleValidationTest extends TestCase
             ['targetId', 'requiredWithAll', 'status'],
             ['userId', 'requiredWithAll', ['status', 'someField']],
         ]);
-
-        // var_dump($v->getErrors());
 
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('targetId'));
@@ -178,8 +174,6 @@ class RuleValidationTest extends TestCase
             ['userId', 'requiredWithout', ['status', 'someField']],
         ]);
 
-        // var_dump($v->getErrors());
-
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('userId'));
         $this->assertFalse($v->inError('targetId'));
@@ -200,8 +194,6 @@ class RuleValidationTest extends TestCase
             ['targetId', 'requiredWithoutAll', 'someField'],
             ['userId', 'requiredWithoutAll', ['status', 'someField']],
         ]);
-
-        // var_dump($v->getErrors());
 
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('targetId'));
@@ -388,7 +380,6 @@ class RuleValidationTest extends TestCase
             ['log_data1', 'json', false],
         ])->validate();
 
-        // var_dump($v->getErrors());
         $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
 
@@ -434,7 +425,6 @@ class RuleValidationTest extends TestCase
                 function () {
                     echo "  use custom validate to check userId \n";
 
-                    // var_dump($value, $data);
                     // echo __LINE__ . "\n";
 
                     return false;
@@ -469,7 +459,6 @@ class RuleValidationTest extends TestCase
             ['options.opt1, options.opt4', 'bool'],
             ['options.opt1, options.opt4', 'in', [true, false]],
         ]);
-        // var_dump($v->getErrors());die;
 
         $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
@@ -532,7 +521,6 @@ class RuleValidationTest extends TestCase
             ['users.*.id', 'distinct'],
         ]);
 
-        // var_dump($v->getErrors());
         $this->assertFalse($v->isOk());
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('tags'));
@@ -555,15 +543,32 @@ class RuleValidationTest extends TestCase
             ['users.*.name', 'each', 'string', 'min' => 5],
         ]);
 
-        // var_dump($v->getErrors());
         $this->assertFalse($v->isOk());
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('users.*.name'));
     }
 
-    /**
-     * @covers \Inhere\Validate\RuleValidation::getMessage()
-     */
+    public function testMultiLevelData(): void
+    {
+        $v = RuleValidation::check([
+            'prod' => [
+                'key0' => 'val0',
+                [
+                    'attr' => [
+                        'wid' => 1
+                    ]
+                ]
+            ]
+        ], [
+            ['prod.*.attr', 'each', 'required'],
+            // ['prod.*.attr.wid', 'each', 'required'],
+            ['prod.0.attr.wid', 'number'],
+        ]);
+
+        $this->assertTrue($v->isOk());
+        $this->assertNotEmpty($v->getSafeData());
+    }
+
     public function testGetMessage(): void
     {
         $v = Validation::check([
@@ -572,7 +577,7 @@ class RuleValidationTest extends TestCase
             ['inTest', 'in', [1, 2]],
         ]);
 
-        $this->assertFalse($v->ok());
+        $this->assertFalse($v->isOk());
         $this->assertEquals('in test must in (1,2)', $v->firstError());
     }
 
@@ -585,7 +590,7 @@ class RuleValidationTest extends TestCase
             ['arrTest', 'array'],
         ]);
 
-        $this->assertTrue($v->ok());
+        $this->assertTrue($v->isOk());
 
         $v = Validation::make([
             'arrVal'  => 'string',
