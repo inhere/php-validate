@@ -85,7 +85,7 @@ class SomeController
             ['freeTime', 'number'],
         ]);
 
-        if ($v->fail()) {
+        if ($v->isFail()) {
             var_dump($v->getErrors());
             var_dump($v->firstError());
         }
@@ -199,7 +199,7 @@ class PageRequest extends Validation
 $v = PageRequest::check($_POST);
 
 // 验证失败
-if ($v->fail()) {
+if ($v->isFail()) {
     var_dump($v->getErrors());
     var_dump($v->firstError());
 }
@@ -242,7 +242,7 @@ class DataModel
 
     public function create()
     {
-        if ($this->validate()->fail()) {
+        if ($this->validate()->isFail()) {
             return false;
         }
 
