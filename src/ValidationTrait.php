@@ -547,32 +547,66 @@ trait ValidationTrait
     /**
      * @param string     $path 'users.*.id' 'goods.*' 'foo.bar.*.id'
      * @param null|mixed $default
+     * @param array      $data
+     * @param bool       $startWithWildcard
      *
      * @return mixed
      */
-    protected function getByWildcard(string $path, $default = null)
+    protected function getByWildcard(string $path, $default = null, array $data = null, bool $startWithWildcard = false)
     {
-        [$first, $last] = explode('.*', $path, 2);
-        $recently = Helper::getValueOfArray($this->data, $first, $default);
+        $data = $data ?: $this->data;
+        if ($startWithWildcard) {
+            $recently = $data;
+            // '*.x'
+            $last = substr($path, 2);
+        } else {
+            [$first, $last] = explode('.*', $path, 2);
+            $recently = Helper::getValueOfArray($data, $first, $default);
 
-        // 'goods.*'
-        if ('' === $last) {
-            return $recently;
+            // 'goods.*'
+            if ('' === $last) {
+                return $recently;
+            }
+
+            if (!$recently || !is_array($recently)) {
+                return $default;
+            }
         }
 
-        if (!$recently || !is_array($recently)) {
-            return $default;
-        }
-
+        $newPath = '';
         $field  = trim($last, '.');
-        $result = [];
 
+        if (strpos($field, '.')) {
+            [$field, $newPath] = explode('.', $field, 2);
+        }
+
+        $result = [];
         foreach ($recently as $item) {
             if (is_array($item) && isset($item[$field])) {
                 $result[] = $item[$field];
             }
         }
-        return $result;
+
+        if ('' === $newPath) {
+            return $result;
+        } elseif (empty($result)) {
+            return $default;
+        }
+
+        if (false !== strpos($newPath, '*')) {
+            $data = [];
+            foreach ($result as $item) {
+                $data = array_merge($data, $item);
+            }
+            return $this->getByPath($newPath, $default, $data);
+        }
+
+        $children = [];
+        foreach ($result as $item) {
+            $children[] = Helper::getValueOfArray($item, $newPath, $default);
+        }
+
+        return $children;
     }
 
     /**
@@ -746,17 +780,22 @@ trait ValidationTrait
      *
      * @param string $key The data key
      * @param mixed  $default The default value
+     * @param array  $data
      *
      * @return mixed The key's value, or the default value
      */
-    public function getByPath(string $key, $default = null)
+    public function getByPath(string $key, $default = null, array $data = null)
     {
-        // eg. 'users.*.id'
-        if (strpos($key, '.*') > 0) {
-            return $this->getByWildcard($key);
+        $data = $data ?: $this->data;
+
+        if (strlen($key) > 2) {
+            // eg. 'users.*.id' or '*.id'
+            if (($startWithWildcard = 0 === strpos($key, '*.')) || strpos($key, '.*') > 0) {
+                return $this->getByWildcard($key, $default, $data, $startWithWildcard);
+            }
         }
 
-        return Helper::getValueOfArray($this->data, $key, $default);
+        return Helper::getValueOfArray($data, $key, $default);
     }
 
     /**

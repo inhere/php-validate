@@ -33,9 +33,19 @@ class ValidationTraitTest extends TestCase
                 'key0' => 'val0',
                 [
                     'attr' => [
-                        'wid' => 1
+                        'wid' => 1,
                     ]
-                ]
+                ],
+                [
+                    'attr' => [
+                        'wid' => 2,
+                    ]
+                ],
+                [
+                    'attr' => [
+                        'wid' => 3,
+                    ]
+                ],
             ]
         ]);
 
@@ -49,10 +59,113 @@ class ValidationTraitTest extends TestCase
         $this->assertSame(1, $val);
 
         $val = $v->getByPath('prod.*.attr');
-        $this->assertSame([['wid' => 1]], $val);
+        $this->assertSame([['wid' => 1], ['wid' => 2], ['wid' => 3]], $val);
 
-        // $val = $v->getByPath('prod.*.attr.wid');
-        // $this->assertSame([1], $val);
+        $val = $v->getByPath('prod.*.attr.wid');
+        $this->assertSame([1, 2, 3], $val);
+    }
+
+    public function testIndexedArrayGetByPath(): void
+    {
+        $v = Validation::make([
+            ['attr' => ['wid' => 1]],
+            ['attr' => ['wid' => 2]],
+            ['attr' => ['wid' => 3]],
+        ]);
+
+        $val = $v->GetByPath('0.attr');
+        $this->assertSame(['wid' => 1], $val);
+
+        $val = $v->getByPath('0.attr.wid');
+        $this->assertSame(1, $val);
+
+        $val = $v->getByPath('*.attr');
+        $this->assertSame([['wid' => 1], ['wid' => 2], ['wid' => 3]], $val);
+
+        $val = $v->getByPath('*.attr.wid');
+        $this->assertSame([1, 2, 3], $val);
+    }
+
+    public function testMultidimensionalArray(): void
+    {
+        $v = Validation::make([
+            'companies' => [
+                [
+                    'name' => 'ms',
+                    'departments' => [
+                        [
+                            'name' => '111',
+                            'employees' => [
+                                [
+                                    'name' => 'aaa',
+                                    'manage' => false,
+                                ],
+                                [
+                                    'name' => 'bbb',
+                                    'manage' => true,
+                                ],
+                            ],
+                        ],
+                        [
+                            'name' => '222',
+                            'employees' => [
+                                [
+                                    'name' => 'ccc',
+                                    'manage' => true,
+                                ],
+                                [
+                                    'name' => 'ddd',
+                                    'manage' => false,
+                                ],
+                            ],
+                        ],
+                        [
+                            'name' => '333',
+                            'employees' => [
+                                [
+                                    'name' => 'eee',
+                                    'manage' => false,
+                                ],
+                                [
+                                    'name' => 'fff',
+                                    'manage' => true,
+                                ],
+                            ],
+                        ],
+                    ]
+                ],
+                [
+                    'name' => 'google',
+                    'departments' => [
+                        [
+                            'name' => '444',
+                            'employees' => [
+                                [
+                                    'name' => 'xxx',
+                                    'manage' => false,
+                                ],
+                                [
+                                    'name' => 'yyy',
+                                    'manage' => true,
+                                ],
+                            ],
+                        ],
+                    ]
+                ],
+            ],
+        ]);
+
+        $val = $v->getByPath('companies.*.name');
+        $this->assertSame(['ms', 'google'], $val);
+
+        $val = $v->getByPath('companies.0.departments.*.employees.0.manage');
+        $this->assertSame([false, true, false], $val);
+
+        $val = $v->getByPath('companies.0.departments.*.employees.*.manage');
+        $this->assertSame([false, true, true, false, false, true], $val);
+
+        $val = $v->getByPath('companies.*.departments.*.employees.*.name');
+        $this->assertSame(['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'fff', 'xxx', 'yyy'], $val);
     }
 
     public function testBeforeAndAfter(): void
