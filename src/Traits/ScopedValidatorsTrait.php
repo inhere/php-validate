@@ -199,7 +199,8 @@ trait ScopedValidatorsTrait
         if (isset($this->data[$anotherField])) {
             $anotherVal = $this->data[$anotherField];
 
-            if (in_array($anotherVal, (array)$values, true)) {
+            // if (in_array($anotherVal, (array)$values, true)) {
+            if (Helper::inArray($anotherVal, (array)$values)) {
                 return $this->required($field, $fieldVal);
             }
         }
@@ -223,7 +224,8 @@ trait ScopedValidatorsTrait
         if (isset($this->data[$anotherField])) {
             $anotherVal = $this->data[$anotherField];
 
-            if (in_array($anotherVal, (array)$values, true)) {
+            // if (in_array($anotherVal, (array)$values, true)) {
+            if (Helper::inArray($anotherVal, (array)$values)) {
                 return null;
             }
         }
