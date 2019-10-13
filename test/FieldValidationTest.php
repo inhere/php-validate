@@ -3,6 +3,7 @@
 namespace Inhere\ValidateTest;
 
 use Inhere\Validate\FieldValidation;
+use Inhere\Validate\FV;
 use Inhere\ValidateTest\Sample\FieldSample;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -153,5 +154,57 @@ class FieldValidationTest extends TestCase
         $v = FieldSample::quick($data, 'update')->validate();
         $this->assertTrue($v->isOk());
         $this->assertEmpty($v->getErrors());
+    }
+
+    /**
+     * @link https://github.com/inhere/php-validate/issues/22
+     */
+    public function testIssues22(): void
+    {
+        $rs = [
+            ['id', 'required'],
+            ['name', 'required|string:5,10', 'msg' => '5~10位的字符串'],
+            ['sex', 'required|enum:0,1'],
+            ['age', 'requiredIf:sex,0|int']
+        ];
+
+        $v = FV::check([
+            'id' => 1,
+            'name' => '12345',
+            'sex' => 0,
+            'age' => 25,
+        ], $rs);
+
+        $this->assertTrue($v->isOk());
+
+        $v = FV::check([
+            'id' => 1,
+            'name' => '12345',
+            'sex' => 1,
+            // 'age' => 25,
+        ], $rs);
+
+        $this->assertTrue($v->isOk());
+
+        $v = FV::check([
+            'id' => 1,
+            'name' => '12345',
+            'sex' => 0,
+            // 'age' => 25,
+            // 'age' => 'string',
+        ], $rs);
+
+        $this->assertFalse($v->isOk());
+        $this->assertSame('parameter age is required!', $v->firstError());
+
+        $v = FV::check([
+            'id' => 1,
+            'name' => '12345',
+            'sex' => 0,
+            'age' => 'string',
+        ], $rs);
+
+        $this->assertFalse($v->isOk());
+        $this->assertSame('age must be an integer!', $v->firstError());
     }
 }
