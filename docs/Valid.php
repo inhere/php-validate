@@ -18,7 +18,7 @@ class Valid
      *
      * @return Valid
      */
-    public static function new(array $data): self
+    public static function create(array $data): self
     {
         return new static($data);
     }
@@ -33,9 +33,9 @@ class Valid
         $this->data = $data;
     }
 
-    public function getInt(string $field, $min = null, $max = null, $default = null): int
+    public function getInt(string $field, $min = null, $max = null, $default = 0): int
     {
-
+        return 0;
     }
 
     /**

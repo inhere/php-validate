@@ -23,6 +23,7 @@ use function html_entity_decode;
 use function is_array;
 use function is_int;
 use function is_object;
+use function is_scalar;
 use function is_string;
 use function mb_strlen;
 use function mb_strpos;
@@ -312,5 +313,45 @@ class Helper
         }
 
         return $ok;
+    }
+
+    /**
+     * @param mixed  $val
+     * @param array $list
+     *
+     * @return bool
+     */
+    public static function inArray($val, array $list): bool
+    {
+        if (!is_scalar($val)) {
+            return false;
+        }
+
+        $valType = gettype($val);
+        foreach ($list as $item) {
+            if (!is_scalar($item)) {
+                continue;
+            }
+
+            // compare value
+            switch ($valType) {
+                case 'integer':
+                    $exist = $val === (int)$item;
+                    break;
+                case 'float':
+                case 'double':
+                case 'string':
+                    $exist = (string)$val === (string)$item;
+                    break;
+                default:
+                    return false;
+            }
+
+            if ($exist) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -36,6 +36,7 @@ final class GlobalMessage
         'ipv4'       => '{attr} is not a IPv4 address!',
         'ipv6'       => '{attr} is not a IPv6 address!',
         'required'   => 'parameter {attr} is required!',
+        'requiredIf' => 'parameter {attr} is required!',
         'length'     => [
             '{attr} length validation is not through!',
             '{attr} must be an string/array and minimum length is {min}',

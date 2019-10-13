@@ -3,6 +3,7 @@
 namespace Inhere\ValidateTest;
 
 use Inhere\Validate\RuleValidation;
+use Inhere\Validate\RV;
 use Inhere\Validate\Validation;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Version;
@@ -610,6 +611,9 @@ class RuleValidationTest extends TestCase
         $this->assertEquals('list val must be an array', $v->lastError());
     }
 
+    /**
+     * @link https://github.com/inhere/php-validate/issues/13
+     */
     public function testIssue13(): void
     {
         $rule = [
@@ -619,7 +623,9 @@ class RuleValidationTest extends TestCase
 
         $v = Validation::check([
             'goods_id' => [
-                1144181460261978556, 114418146, 1144
+                // 1144181460261978556,
+                114418146,
+                1144
             ]
         ], $rule);
 
@@ -646,5 +652,44 @@ class RuleValidationTest extends TestCase
         ], $rule);
         $this->assertFalse($v->isOk());
         $this->assertSame('商品分类id必须是一串数字', $v->firstError());
+    }
+
+    /**
+     * @link https://github.com/inhere/php-validate/issues/21
+     */
+    public function tIssues21(): void
+    {
+        $rs = [
+            ['users.*.id', 'required'],
+            ['users.*.id', 'each', 'required'],
+            // ['users.*.id', 'each', 'string']
+        ];
+
+        $v = RV::check([
+            'users' => [
+                ['name' => 'n1'],
+                ['name' => 'n1'],
+            ],
+        ], $rs);
+
+        $this->assertFalse($v->isOk());
+        $this->assertSame('parameter users.*.id is required!', $v->firstError());
+
+        $v = RV::check([
+            'users' => [
+                ['name' => 'n1'],
+                ['id' => 2, 'name' => 'n1'],
+            ],
+        ], $rs);
+
+        $this->assertFalse($v->isOk());
+        $this->assertSame('', $v->firstError());
+
+        $v = RV::check([
+            'users' => [
+                ['id' => 1, 'name' => 'n1'],
+                ['id' => 2, 'name' => 'n1'],
+            ],
+        ], $rs);
     }
 }
