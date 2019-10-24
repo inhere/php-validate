@@ -116,7 +116,8 @@ class Validators
     {
         if (is_string($val)) {
             $val = trim($val);
-
+        } elseif ($val instanceof ArrayValueNotExists) {
+            $val = '';
         } elseif (is_object($val)) {
             $val = get_object_vars($val);
         }

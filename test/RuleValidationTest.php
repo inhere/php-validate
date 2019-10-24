@@ -547,6 +547,20 @@ class RuleValidationTest extends TestCase
         $this->assertFalse($v->isOk());
         $this->assertCount(1, $v->getErrors());
         $this->assertTrue($v->inError('users.*.name'));
+
+        $v = RuleValidation::check([
+            'users' => [
+                ['id' => 34, 'name' => 'tom'],
+                ['name' => 'john'],
+            ],
+        ], [
+            ['users.*.id', 'each', 'required'],
+            ['users.*.id', 'each', 'number', 'min' => 34],
+        ]);
+
+        $this->assertFalse($v->isOk());
+        $this->assertCount(1, $v->getErrors());
+        $this->assertTrue($v->inError('users.*.id'));
     }
 
     public function testMultiLevelData(): void
