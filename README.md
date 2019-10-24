@@ -45,7 +45,7 @@ validate 同时支持两种规则配置方式，对应了两种规则的收集�
 ```php
 [
     ['field', 'required|string:5,10|...', ...],
-    // ... ... 
+    // ... ...
 ]
 ```
 
@@ -115,45 +115,45 @@ class PageRequest extends Validation
         return [
             // 字段必须存在且不能为空
             ['tagId,title,userId,freeTime', 'required'],
-            
+
             // 4<= tagId <=567
-            ['tagId', 'size', 'min'=>4, 'max'=>567, 'filter' => 'int'], 
-            
+            ['tagId', 'size', 'min'=>4, 'max'=>567, 'filter' => 'int'],
+
             // title length >= 40. 注意只需一个参数的验证，无需加 key, 如这里的 40
             ['title', 'min', 40, 'filter' => 'trim'],
- 
+
             // 大于 0
             ['freeTime', 'number'],
- 
+
             // 含有前置条件
             ['tagId', 'number', 'when' => function($data) {
                 return isset($data['status']) && $data['status'] > 2;
             }],
-            
+
             // 在验证前会先过滤转换为 int。并且仅会在指明场景名为 'scene1' 时规则有效
             ['userId', 'number', 'on' => 'scene1', 'filter' => 'int'],
             ['username', 'string', 'on' => 'scene2', 'filter' => 'trim'],
-            
+
             // 使用自定义正则表达式
             ['username', 'regexp' ,'/^[a-z]\w{2,12}$/'],
-            
+
             // 自定义验证器，并指定当前规则的消息
-            ['title', 'custom', 'msg' => '{attr} error msg!' ], 
-            
+            ['title', 'custom', 'msg' => '{attr} error msg!' ],
+
             // 直接使用闭包验证
-            ['status', function($status) { 
+            ['status', function($status) {
                 if (is_int($status) && $status > 3) {
                     return true;
                 }
                 return false;
             }],
-            
+
             // 标记字段是安全可靠的 无需验证
             ['createdAt, updatedAt', 'safe'],
         ];
     }
-    
-    // 定义不同场景需要验证的字段。 
+
+    // 定义不同场景需要验证的字段。
     // 功能跟规则里的 'on' 类似，两者尽量不要同时使用，以免混淆。
     public function scenarios(): array
     {
@@ -180,7 +180,7 @@ class PageRequest extends Validation
           'title.required' => 'O, 标题是必填项。are you known?',
         ];
     }
-    
+
     // 添加一个验证器。必须返回一个布尔值标明验证失败或成功
     protected function customValidator($title): bool
     {
@@ -270,7 +270,7 @@ class UserModel extends DataModel
 }
 
 // on controller action ...
-class UserController 
+class UserController
 {
     // in action
     // @api /user/add
@@ -319,7 +319,7 @@ $v = Validation::make($_POST,[
         if ($status > 3) {
             return true;
         }
-        
+
         return false;
     }]
 ```
@@ -328,7 +328,7 @@ $v = Validation::make($_POST,[
 
 一个完整的规则示例, 包含了所有可添加的项。
 
-**注意：** 
+**注意：**
 
 - 每条规则的第一个元素**必须**是 _要验证的字段_(可以同时配置多个，可以是数组. type:`string|array`)
 - 第二个元素**必须**是**一个**验证器(字符串，闭包，可回调的对象或数组. type:`string|Closure|callable`)
@@ -339,15 +339,15 @@ $v = Validation::make($_POST,[
 // a full rule
 [
  // basic validate setting
- 'field0,field1,...', 'validator', 'arg0', 'arg1', ..., 
+ 'field0,field1,...', 'validator', 'arg0', 'arg1', ...,
 
  // some extended option settings
- 'skipOnEmpty' => 'bool', 
- 'msg' => 'string|array', 
- 'default' => 'mixed', 
- 'on' => 'string|array' 
- 'isEmpty' => 'callback(string|closure)', 
- 'when' => 'callback(string|closure)', 
+ 'skipOnEmpty' => 'bool',
+ 'msg' => 'string|array',
+ 'default' => 'mixed',
+ 'on' => 'string|array'
+ 'isEmpty' => 'callback(string|closure)',
+ 'when' => 'callback(string|closure)',
  'filter' => 'callback(string|array|closure)'
 ]
 ```
@@ -444,7 +444,7 @@ $v = Validation::make($_POST,[
 提交的数据中 没有 `name` 字段或者 `$data['name']` 等于空都不会进行 `string` 验证;
 只有当 `$data['name']` **有值且不为空** 时才会验证是否是 `string`
 
-如果要想为空时也检查, 请将此字段同时加入 `required` 规则中. 
+如果要想为空时也检查, 请将此字段同时加入 `required` 规则中.
 
 ```php
 ['name', 'required' ]
@@ -469,6 +469,17 @@ $v = Validation::make($_POST,[
 ['name', 'string', 'isEmpty' => function($value) {
     return true or false;
  }]
+```
+
+自定义 isEmpty 验证时，应留意 $value 是否为 ArrayValueNotExists 实例
+
+```php
+['users.*.id', 'each', 'required', 'isEmpty' => function($value) {
+    if ($value instanceof \Inhere\Validate\ArrayValueNotExists) {
+        return true;
+    }
+    // your code here ...
+}]
 ```
 
 ### `filter` -- 使用过滤器
@@ -641,7 +652,7 @@ $v = Validation::make($_POST,[
 
 ```php
 $v = Validation::make($_POST, [
-    // [...], 
+    // [...],
     // some rules ...
 ])
 ->setUploadedFiles($_FILES)
@@ -653,9 +664,9 @@ $v = Validation::make($_POST, [
 
 - **请将 `required*` 系列规则写在规则列表的最前面**
 - 规则上都支持添加过滤器
-- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的 
+- 验证大小范围 `int` 是比较大小。 `string` 和 `array` 是检查长度。大小范围 是包含边界值的
 - `size/range` `length` 可以只定义 `min` 或者  `max` 值
-- 支持对数组的子级值验证 
+- 支持对数组的子级值验证
 
 ```php
 [
@@ -672,7 +683,7 @@ $v = Validation::make($_POST, [
     ['goods.pear', 'max', 30], //goods 下的 pear 值最大不能超过 30
 ```
 
-- 支持对数组的子级值进行遍历验证 
+- 支持对数组的子级值进行遍历验证
 
 ```php
 [
@@ -691,7 +702,7 @@ $v = Validation::make($_POST, [
     ['goods.*', 'each', 'number'], //goods 下的 每个值 都必须为大于0 的整数
     // 写法是等效的
     // ['goods', 'each', 'number'], //goods 下的 每个值 都必须为大于0 的整数
-    
+
     // 多维数组
     ['users.*.id', 'each', 'required'],
     ['users.*.id', 'each', 'number', 'min' => 34],
@@ -756,7 +767,7 @@ public function getErrors(): array
 
 获取所有的错误信息, 包含所有错误的字段和错误信息的多维数组。 eg:
 
-```php 
+```php
 [
     ['name' => 'field1', 'msg' => 'error Message1' ],
     ['name' => 'field2', 'msg' => 'error Message2' ],
@@ -788,7 +799,7 @@ public function lastError($onlyMsg = true)
 public function getSafeData(): array|\stdClass
 ```
 
-获取所有 **验证通过** 的安全数据. 
+获取所有 **验证通过** 的安全数据.
 
 - 此数据数组只包含加入了规则验证的字段数据，不会含有额外的字段。(可直接省去后续的字段收集)
 - 推荐使用此数据进行后续操作，比如存入数据库等。
@@ -800,7 +811,7 @@ public function getSafeData(): array|\stdClass
 ```php
 public function val(string $key, $default = null) // getSafe() 的别名方法
 public function getValid(string $key, $default = null) // getSafe() 的别名方法
-public function getSafe(string $key, $default = null) 
+public function getSafe(string $key, $default = null)
 ```
 
 从 **验证通过** 的数据中取出对应 key 的值
@@ -823,7 +834,7 @@ public function getRaw(string $key, $default = null)
 
 ## 代码示例
 
-可运行示例请看 `example` 
+可运行示例请看 `example`
 
 ## 单元测试
 
