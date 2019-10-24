@@ -568,8 +568,8 @@ trait ValidationTrait
         $result = [];
 
         foreach ($recently as $item) {
-            if (is_array($item) && isset($item[$field])) {
-                $result[] = $item[$field];
+            if (is_array($item)) {
+                $result[] = isset($item[$field]) ? $item[$field] : '';
             }
         }
         return $result;
