@@ -332,7 +332,8 @@ trait ValidationTrait
 
             // File resource check
         } elseif (self::isCheckFile($validator)) {
-            $passed = $this->$validator($field, ...array_values($args));
+            $method = "{$validator}Validator";
+            $passed = $this->$method($field, ...array_values($args));
 
             // other required* methods
         } elseif (method_exists($this, $validator)) {
