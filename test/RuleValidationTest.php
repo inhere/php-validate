@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Version;
 use Throwable;
 use function version_compare;
+use Inhere\ValidateTest\Validator\AdemoValidatorTest as AdemoValidator;
 
 /**
  * Class RuleValidationTest
@@ -432,8 +433,31 @@ class RuleValidationTest extends TestCase
                 },
                 'msg' => 'userId check failure by closure!'
             ],
+                        
         ];
     }
+
+    /**
+     * 测试自定义验证器
+     */
+    public function testValidator()
+    {
+        $rule=[
+            [
+                'user',
+                new AdemoValidator(),
+                'msg' => 'userId check failure by closure!'
+            ],
+        ];
+        $data=[
+            'user'=>1
+        ];
+        $validation = Validation::makeAndValidate($data, $rule);
+        $this->assertTrue($validation->isOk());
+        $validation = Validation::makeAndValidate(['user'=>2], $rule);
+        $this->assertTrue($validation->isFail());
+    }
+
 
     public function testArrayValidate(): void
     {
