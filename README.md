@@ -324,6 +324,30 @@ $v = Validation::make($_POST,[
     }]
 ```
 
+- **方式4**定义一个闭包验证类进行验证,这种方法能提高验证方法的复用性
+
+> 别忘了继承 `\Inhere\Validate\Validator\AbstractValidator`,和实现必须方法`validate`
+
+```php
+
+class AdemoValidator extends \Inhere\Validate\Validator\AbstractValidator
+{
+
+   
+    public function validate($value, $data): bool 
+    {
+        if ($value == 1) {
+            return true;
+        }
+        return false;
+    }
+
+}
+
+    ['status', new AdemoValidator()]
+```
+
+
 ## 一个完整的规则示例
 
 一个完整的规则示例, 包含了所有可添加的项。
