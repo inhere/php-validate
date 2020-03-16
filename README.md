@@ -12,6 +12,7 @@
 - 支持前置验证检查, 自定义如何判断非空
 - 支持将规则按场景进行分组设置。或者部分验证
 - 支持在进行验证前对值使用过滤器进行净化过滤[内置过滤器](#built-in-filters)
+- 支持在进行验证前置处理和后置处理[独立验证处理](#on-in-Validation)
 - 支持自定义每个验证的错误消息，字段翻译，消息翻译，支持默认值
 - 支持基本的数组检查，数组的子级(`'goods.apple'`)值检查, 通配符的子级检查 (`'users.*.id' 'goods.*'`)
 - 方便的获取错误信息，验证后的安全数据获取(只会收集有规则检查过的数据)
@@ -110,6 +111,18 @@ use Inhere\Validate\Validation;
 
 class PageRequest extends Validation
 {
+    # 进行验证前处理,返回false则停止验证,但没有错误信息,可以在逻辑中调用 addError 增加错误信息
+    public function beforeValidate(): bool
+    {
+        return true;
+    }
+    # 进行验证后处理,该干啥干啥
+    public function afterValidate(): bool
+    {
+        return true;
+    }
+
+
     public function rules(): array
     {
         return [
@@ -347,6 +360,48 @@ class AdemoValidator extends \Inhere\Validate\Validator\AbstractValidator
     ['status', new AdemoValidator()]
 ```
 
+<a name="on-in-Validation"></a>
+## **验证前置/后置**处理
+
+* 方式1: 在 `Validation` 中
+
+> 该方法与`onBeforeValidate`&`onAfterValidate`有冲突
+
+```php
+use Inhere\Validate\Validation;
+
+class PageValidation extends Validation
+{
+    # 进行验证前处理,返回false则停止验证,但没有错误信息,可以在逻辑中调用 addError 增加错误信息
+    public function beforeValidate(): bool
+    {
+        return true;
+    }
+    # 进行验证后处理,该干啥干啥
+    public function afterValidate(): bool
+    {
+        return true;
+    }
+}
+```
+* 方式2: `onBeforeValidate`&`onAfterValidate`
+```php
+use Inhere\Validate\Validation;
+
+$v = Validation::make(['name' => 'inhere'], [
+    ['name', 'string', 'min' => 3, 'filter' => 'trim|upper']
+]);
+
+$v->onBeforeValidate(function (Validation $v) {
+    return true;
+});
+
+$v->onAfterValidate(function (Validation $v) {
+    
+});
+
+$v->validate();
+```
 
 ## 一个完整的规则示例
 
