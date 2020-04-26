@@ -7,7 +7,7 @@ use function is_int;
 use function is_numeric;
 
 /**
- * Class Valid - Simple Data Validator
+ * Class Valid - Simple Data Validator TODO
  *
  * @package Inhere\Validate
  */
@@ -42,9 +42,9 @@ class Valid
         return self::$data;
     }
 
-    /**********************************************************************************************
+    /*************************************************************************
      * =========== validate data field value and return
-     *********************************************************************************************/
+     *************************************************************************/
 
     /**
      * @param string   $field

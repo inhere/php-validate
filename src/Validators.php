@@ -59,6 +59,12 @@ class Validators
 {
     use NameAliasTrait;
 
+    public const REGEX_DATE = '/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/';
+
+    public const REGEX_DATE_FMT = '/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/';
+
+    public const REGEX_ABS_URL = '/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/';
+
     /**
      * @var array
      */
@@ -1290,33 +1296,33 @@ class Validators
     /**
      * Check for date format
      *
-     * @param string $date Date to validate
+     * @param string|mixed $date Date to validate
      *
      * @return bool Validity is ok or not
      */
     public static function isDateFormat($date): bool
     {
-        return (bool)preg_match(
-            '/^([\d]{4})-((0?[\d])|(1[0-2]))-((0?[\d])|([1-2][\d])|(3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
-            $date
-        );
+        if (!$date || !is_string($date)) {
+            return false;
+        }
+
+        return 1 === preg_match(self::REGEX_DATE_FMT, $date);
     }
 
     /**
      * Check for date validity
      *
-     * @param string $date Date to validate
+     * @param string|mixed $date Date to validate
      *
      * @return bool Validity is ok or not
      */
     public static function isDate($date): bool
     {
-        if (!preg_match(
-            '/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
-            $date,
-            $matches
-        )
-        ) {
+        if (!$date || !is_string($date)) {
+            return false;
+        }
+
+        if (!preg_match(self::REGEX_DATE, $date, $matches)) {
             return false;
         }
 
@@ -1392,6 +1398,11 @@ class Validators
         return (string)((float)$float) === (string)$float;
     }
 
+    /**
+     * @param float|mixed $float
+     *
+     * @return bool
+     */
     public static function isUnsignedFloat($float): bool
     {
         if (!is_scalar($float)) {
@@ -1486,7 +1497,7 @@ class Validators
             return false;
         }
 
-        return 1 === preg_match('/^(https?:)?\/\/[$~:;#,%&_=\(\)\[\]\.\? \+\-@\/a-zA-Z0-9]+$/', $url);
+        return 1 === preg_match(self::REGEX_ABS_URL, $url);
     }
 
     /**
