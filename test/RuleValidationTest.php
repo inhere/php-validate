@@ -5,11 +5,11 @@ namespace Inhere\ValidateTest;
 use Inhere\Validate\RuleValidation;
 use Inhere\Validate\RV;
 use Inhere\Validate\Validation;
+use Inhere\ValidateTest\Validator\AdemoValidatorTest as AdemoValidator;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Version;
 use Throwable;
 use function version_compare;
-use Inhere\ValidateTest\Validator\AdemoValidatorTest as AdemoValidator;
 
 /**
  * Class RuleValidationTest
@@ -38,7 +38,10 @@ class RuleValidationTest extends TestCase
         try {
             $rv->validate();
         } catch (Throwable $e) {
-            $this->assertSame('Please setting the fields(string|array) to wait validate! position: rule[0]', $e->getMessage());
+            $this->assertSame(
+                'Please setting the fields(string|array) to wait validate! position: rule[0]',
+                $e->getMessage()
+            );
         }
 
         $rv = RuleValidation::make(['name' => 'inhere'], [
@@ -277,11 +280,9 @@ class RuleValidationTest extends TestCase
         $v = RuleValidation::make($data, $rules);
         $v->setTranslates([
             'goods.pear' => '梨子'
-        ])
-          ->setMessages([
-              'freeTime.required' => 'freeTime is required!!!!'
-          ])
-          ->validate([], false);
+        ])->setMessages([
+                'freeTime.required' => 'freeTime is required!!!!'
+            ])->validate([], false);
 
         $this->assertTrue($v->isOk());
         $this->assertFalse($v->failed());
@@ -298,11 +299,9 @@ class RuleValidationTest extends TestCase
         $v = RuleValidation::make($this->data, $rules);
         $v->setTranslates([
             'goods.pear' => '梨子'
-        ])
-          ->setMessages([
-              'freeTime.required' => 'freeTime is required!!!!'
-          ])
-          ->validate([], false);
+        ])->setMessages([
+                'freeTime.required' => 'freeTime is required!!!!'
+            ])->validate([], false);
 
         $out = ob_get_clean();
 
@@ -442,19 +441,19 @@ class RuleValidationTest extends TestCase
      */
     public function testValidator()
     {
-        $rule=[
+        $rule       = [
             [
                 'user',
                 new AdemoValidator(),
                 'msg' => 'userId check failure by closure!'
             ],
         ];
-        $data=[
-            'user'=>1
+        $data       = [
+            'user' => 1
         ];
         $validation = Validation::makeAndValidate($data, $rule);
         $this->assertTrue($validation->isOk());
-        $validation = Validation::makeAndValidate(['user'=>2], $rule);
+        $validation = Validation::makeAndValidate(['user' => 2], $rule);
         $this->assertTrue($validation->isFail());
     }
 
@@ -518,11 +517,9 @@ class RuleValidationTest extends TestCase
         ], [
             ['num', 'range', 'min' => 1, 'max' => 100],
             ['id', 'range', 'min' => 1, 'max' => 100],
-        ])
-                           ->setMessages([
-                               'id.range' => 'range error message',
-                           ])
-                           ->validate();
+        ])->setMessages([
+                'id.range' => 'range error message',
+            ])->validate();
 
         $this->assertFalse($v->isOk());
         $this->assertCount(1, $v->getErrors());
@@ -694,26 +691,37 @@ class RuleValidationTest extends TestCase
     /**
      * @link https://github.com/inhere/php-validate/issues/17
      */
-    public function tIssues17(): void
+    public function testIssues17(): void
     {
-        $rs = [
-            ['users.*.id', 'required'],
-            ['users.*.id', 'each', 'required'],
-            ['users.*.id', 'each', 'number', 'min' => 34, 'msg' => [
-                'min' 	 => 'xxx error',
-                'number' => 'xxx error',
-            ]],
-        ];
-
-        $v = RV::check([
+        $data = [
             'users' => [
                 ['id' => 12,],
-                ['id' => 23],
+                ['id' => 23,],
             ],
-        ], $rs);
+        ];
 
+        $rules = [
+            ['users.*.id', 'required'],
+            ['users.*.id', 'each', 'required'],
+        ];
+
+        $v = RV::check($data, $rules);
+        $this->assertTrue($v->isOk());
+
+        $rules = [
+            [
+                'users.*.id',
+                'each',
+                'number',
+                'min' => 34,
+                'msg' => 'xxx error'
+            ],
+        ];
+
+        $v = RV::check($data, $rules);
         $this->assertFalse($v->isOk());
-        $this->assertSame('parameter users.*.id is required!', $v->firstError());
+
+        $this->assertSame('xxx error', $v->firstError());
     }
 
     /**

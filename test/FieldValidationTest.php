@@ -10,6 +10,7 @@ use Throwable;
 
 /**
  * Class FieldValidationTest
+ *
  * @package Inhere\ValidateTest
  */
 class FieldValidationTest extends TestCase
@@ -49,7 +50,10 @@ class FieldValidationTest extends TestCase
         try {
             $rv->validate();
         } catch (Throwable $e) {
-            $this->assertSame('The field validators must be is a validator name(s) string! position: rule[1]', $e->getMessage());
+            $this->assertSame(
+                'The field validators must be is a validator name(s) string! position: rule[1]',
+                $e->getMessage()
+            );
         }
     }
 
@@ -66,8 +70,7 @@ class FieldValidationTest extends TestCase
         $v = FieldValidation::make($this->data, $rules);
         $v->setMessages([
             'freeTime.required' => 'freeTime is required!!!!'
-        ])
-          ->validate([], false);
+        ])->validate([], false);
 
         $this->assertFalse($v->isOk());
         $this->assertTrue($v->failed());
@@ -105,10 +108,7 @@ class FieldValidationTest extends TestCase
             ['title', 'required|string:1,3']
         ]);
         $this->assertTrue($v->isFail());
-        $this->assertSame(
-            'title must be a string and length range must be 1 ~ 3',
-            $v->firstError()
-        );
+        $this->assertSame('title must be a string and length range must be 1 ~ 3', $v->firstError());
     }
 
     public function testOnScene(): void
@@ -169,27 +169,27 @@ class FieldValidationTest extends TestCase
         ];
 
         $v = FV::check([
-            'id' => 1,
+            'id'   => 1,
             'name' => '12345',
-            'sex' => 0,
-            'age' => 25,
+            'sex'  => 0,
+            'age'  => 25,
         ], $rs);
 
         $this->assertTrue($v->isOk());
 
         $v = FV::check([
-            'id' => 1,
+            'id'   => 1,
             'name' => '12345',
-            'sex' => 1,
+            'sex'  => 1,
             // 'age' => 25,
         ], $rs);
 
         $this->assertTrue($v->isOk());
 
         $v = FV::check([
-            'id' => 1,
+            'id'   => 1,
             'name' => '12345',
-            'sex' => 0,
+            'sex'  => 0,
             // 'age' => 25,
             // 'age' => 'string',
         ], $rs);
@@ -198,10 +198,10 @@ class FieldValidationTest extends TestCase
         $this->assertSame('parameter age is required!', $v->firstError());
 
         $v = FV::check([
-            'id' => 1,
+            'id'   => 1,
             'name' => '12345',
-            'sex' => 0,
-            'age' => 'string',
+            'sex'  => 0,
+            'age'  => 'string',
         ], $rs);
 
         $this->assertFalse($v->isOk());

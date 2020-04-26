@@ -36,6 +36,7 @@ use const PHP_INT_MIN;
 
 /**
  * Trait ValidationTrait
+ *
  * @package Inhere\Validate
  * property array $data To verify the data list. please define it on main class. 待验证的数据列表
  */
@@ -48,6 +49,9 @@ trait ValidationTrait
 
     /** @var array Through the validation of the data */
     private $_safeData = [];
+
+    /** @var array The cached values. like get 'users.*.id' */
+    private $_dataCaches = [];
 
     /** @var bool Mark validate has running */
     private $_validated = false;
@@ -64,6 +68,7 @@ trait ValidationTrait
     /**
      * Whether to skip when empty(When not required)
      * default is TRUE, need you manual add 'required'.
+     *
      * @var bool
      */
     private $_skipOnEmpty = true;
@@ -76,6 +81,7 @@ trait ValidationTrait
      * - 通常可以根据控制器的 action name(add, edit, register) 来区分。
      * - 或者根据模型的场景(create, update, delete) 来区分。
      * )
+     *
      * @var string
      */
     protected $scene = '';
@@ -90,6 +96,7 @@ trait ValidationTrait
 
     /**
      * define attribute field translate list
+     *
      * @return array
      */
     public function translates(): array
@@ -103,6 +110,7 @@ trait ValidationTrait
     /**
      * 自定义验证器的默认错误消息格式
      * custom validator's message, to override default message.
+     *
      * @return array
      */
     public function messages(): array
@@ -116,6 +124,7 @@ trait ValidationTrait
 
     /**
      * The field that the current scene needs to collect
+     *
      * @return array
      */
     public function scenarios(): array
@@ -132,7 +141,7 @@ trait ValidationTrait
      *
      * @param Closure $cb
      *
-     * @return static
+     * @return $this|mixed
      */
     public function onBeforeValidate(Closure $cb)
     {
@@ -143,7 +152,6 @@ trait ValidationTrait
     public function beforeValidate(): bool
     {
         $ok = true;
-
         if ($cb = $this->_beforeHandler) {
             $ok = $cb($this);
         }
@@ -157,7 +165,7 @@ trait ValidationTrait
      *
      * @param Closure $cb
      *
-     * @return static
+     * @return $this|mixed
      */
     public function onAfterValidate(Closure $cb)
     {
@@ -183,7 +191,7 @@ trait ValidationTrait
      * @param array     $onlyChecked You can set this field that needs verification
      * @param bool|null $stopOnError Stop verification if there is an error
      *
-     * @return static
+     * @return $this|mixed
      * @throws InvalidArgumentException
      */
     public function validate(array $onlyChecked = [], bool $stopOnError = null)
@@ -208,11 +216,12 @@ trait ValidationTrait
             $onlyChecked = $this->getSceneFields();
         }
 
+        $stopOnError = $this->isStopOnError();
         foreach ($this->collectRules() as $fields => $rule) {
-            $this->applyRule($fields, $rule, $onlyChecked);
+            $this->applyRule($fields, $rule, $onlyChecked, $stopOnError);
 
             // There is an error an immediate end to verify
-            if ($this->isStopOnError() && $this->isFail()) {
+            if ($stopOnError && $this->isFail()) {
                 break;
             }
         }
@@ -235,8 +244,9 @@ trait ValidationTrait
      * @param string|array $fields
      * @param array        $rule
      * @param array        $onlyChecked
+     * @param bool         $stopOnError
      */
-    protected function applyRule($fields, array $rule, array $onlyChecked): void
+    protected function applyRule($fields, array $rule, array $onlyChecked, bool $stopOnError): void
     {
         $fields    = is_string($fields) ? Filters::explode($fields) : (array)$fields;
         $validator = array_shift($rule);
@@ -255,16 +265,18 @@ trait ValidationTrait
 
         // Whether to skip when empty(When not required). ref yii2
         $skipOnEmpty = $rule['skipOnEmpty'] ?? $this->_skipOnEmpty;
-        $filters     = $rule['filter'] ?? null;  // filter
-        $defMsg      = $rule['msg'] ?? null; // Custom error message
-        $defValue    = $rule['default'] ?? null;// Allow default
+
+        $filters  = $rule['filter'] ?? null;  // filter
+        $defMsg   = $rule['msg'] ?? null; // Custom error message
+        $defValue = $rule['default'] ?? null; // Allow default
+        $before   = $rule['before'] ?? null; // Before validate function
+        $after    = $rule['after'] ?? null;  // After validate function
 
         // clear all keywords options. 0 is the validator
-        unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter']);
+        unset($rule['msg'], $rule['default'], $rule['skipOnEmpty'], $rule['isEmpty'], $rule['when'], $rule['filter'], $rule['before'], $rule['after']);
 
         // The rest are validator parameters. Some validators require parameters. e.g. size()
         $args = $rule;
-
         foreach ($fields as $field) {
             if (!$field || ($onlyChecked && !in_array($field, $onlyChecked, true))) {
                 continue;
@@ -275,8 +287,16 @@ trait ValidationTrait
             // Field value filtering(有通配符`*`的字段, 不应用过滤器)
             if ($filters && null !== $value && !strpos($field, '.*')) {
                 $value = $this->valueFiltering($value, $filters);
-                // save
+                // Update value
                 $this->data[$field] = $value;
+            }
+
+            // Has before func
+            if ($before) {
+                $result = Helper::call($before, $value, $field, $this);
+                if (false === $result && $stopOnError) {
+                    break;
+                }
             }
 
             // Field name validate
@@ -289,22 +309,30 @@ trait ValidationTrait
                 // required*系列字段检查 || 文件资源检查
                 if (self::isCheckRequired($validator) || self::isCheckFile($validator)) {
                     $result = $this->fieldValidate($field, $value, $validator, $args, $defMsg);
-
-                    if (false === $result && $this->isStopOnError()) {
+                    if (false === $result && $stopOnError) {
                         break;
                     }
                     continue;
                 }
             }
 
-            // skip On Empty && The value is empty
+            // Skip On Empty && The value is empty
             if ($skipOnEmpty && Helper::call($isEmpty, $value)) {
                 continue;
             }
 
             // Field value verification check
-            if (!$this->valueValidate($field, $value, $validator, $args, $defMsg) && $this->isStopOnError()) {
+            $result = $this->valueValidate($field, $value, $validator, $args, $defMsg);
+            if (false === $result && $stopOnError) {
                 break;
+            }
+
+            // Has after func
+            if ($after) {
+                $result = Helper::call($after, $value, $field, $this);
+                if (false === $result && $stopOnError) {
+                    break;
+                }
             }
         }
     }
@@ -312,10 +340,10 @@ trait ValidationTrait
     /**
      * field require/exists validate 字段存在检查
      *
-     * @param string       $field Attribute name
-     * @param mixed        $value Attribute value
+     * @param string       $field     Attribute name
+     * @param mixed        $value     Attribute value
      * @param string       $validator required* Validator name
-     * @param array        $args Verify the required parameters
+     * @param array        $args      Verify the required parameters
      * @param string|array $defMsg
      *
      * @return bool|null
@@ -358,10 +386,10 @@ trait ValidationTrait
     /**
      * field value validate 字段值验证
      *
-     * @param string               $field Field name
-     * @param mixed                $value Field value
+     * @param string               $field     Field name
+     * @param mixed                $value     Field value
      * @param Closure|string|mixed $validator Validator
-     * @param array                $args Arguments for validate
+     * @param array                $args      Arguments for validate
      * @param string               $defMsg
      *
      * @return bool
@@ -442,7 +470,7 @@ trait ValidationTrait
     public function resetValidation(bool $clearErrors = true): void
     {
         $this->_validated = false;
-        $this->_safeData  = $this->_usedRules = [];
+        $this->_safeData  = $this->_usedRules = $this->_dataCaches = [];
 
         if ($clearErrors) {
             $this->clearErrors();
@@ -452,6 +480,7 @@ trait ValidationTrait
     /**
      * 收集当前场景可用的规则列表
      * Collect the current scenario of the available rules list
+     *
      * @throws InvalidArgumentException
      */
     protected function collectRules(): ?Generator
@@ -476,7 +505,6 @@ trait ValidationTrait
                 }
 
                 $sceneList = is_string($rule['on']) ? Filters::explode($rule['on']) : (array)$rule['on'];
-
                 if (!in_array($scene, $sceneList, true)) {
                     continue;
                 }
@@ -534,6 +562,7 @@ trait ValidationTrait
 
     /**
      * get fields for the scene.
+     *
      * @return array
      */
     public function getSceneFields(): array
@@ -570,7 +599,7 @@ trait ValidationTrait
 
         foreach ($recently as $item) {
             if (is_array($item)) {
-                $result[] = isset($item[$field]) ? $item[$field] : new ArrayValueNotExists();
+                $result[] = $item[$field] ?? new ArrayValueNotExists();
             }
         }
 
@@ -604,9 +633,9 @@ trait ValidationTrait
     /**
      * @param array $rules
      *
-     * @return $this
+     * @return $this|mixed
      */
-    public function setRules(array $rules): self
+    public function setRules(array $rules)
     {
         $this->_rules = $rules;
         return $this;
@@ -631,9 +660,9 @@ trait ValidationTrait
     /**
      * @param string $scene
      *
-     * @return self
+     * @return $this|mixed
      */
-    public function atScene(string $scene): self
+    public function atScene(string $scene)
     {
         $this->scene = trim($scene);
         return $this;
@@ -644,7 +673,7 @@ trait ValidationTrait
      *
      * @param string $scene
      *
-     * @return static
+     * @return $this|mixed
      */
     public function setScene(string $scene)
     {
@@ -656,7 +685,7 @@ trait ValidationTrait
      *
      * @param string $scene
      *
-     * @return static
+     * @return $this|mixed
      */
     public function onScene(string $scene)
     {
@@ -666,7 +695,7 @@ trait ValidationTrait
     /**
      * @param bool $_skipOnEmpty
      *
-     * @return static
+     * @return $this|mixed
      */
     public function setSkipOnEmpty(bool $_skipOnEmpty)
     {
@@ -676,6 +705,7 @@ trait ValidationTrait
 
     /**
      * Get all items in collection
+     *
      * @return array The collection's source data
      */
     public function all(): array
@@ -698,7 +728,7 @@ trait ValidationTrait
     /**
      * Get data item by key
      *
-     * @param string $key The data key
+     * @param string $key     The data key
      * @param mixed  $default The default value to return if data key does not exist
      *
      * @return mixed The key's value, or the default value
@@ -722,12 +752,12 @@ trait ValidationTrait
     /**
      * Set data item by key
      *
-     * @param string $key The data key
+     * @param string $key   The data key
      * @param mixed  $value The data value
      *
-     * @return $this
+     * @return $this|mixed
      */
-    public function setRaw(string $key, $value): self
+    public function setRaw(string $key, $value)
     {
         $this->data[$key] = $value;
         return $this;
@@ -735,9 +765,13 @@ trait ValidationTrait
 
     /**
      * alias of the setRow()
-     * {@inheritdoc}
+     *
+     * @param string $key
+     * @param        $value
+     *
+     * @return $this|mixed
      */
-    public function setValue(string $key, $value): self
+    public function setValue(string $key, $value)
     {
         return $this->setRaw($key, $value);
     }
@@ -746,19 +780,30 @@ trait ValidationTrait
      * Get data item by key
      *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
      *
-     * @param string $key The data key
+     * @param string $key     The data key
      * @param mixed  $default The default value
      *
      * @return mixed The key's value, or the default value
      */
     public function getByPath(string $key, $default = null)
     {
-        // eg. 'users.*.id'
-        if (strpos($key, '.*') > 0) {
-            return $this->getByWildcard($key);
+        if (isset($this->_dataCaches[$key])) {
+            return $this->_dataCaches[$key];
         }
 
-        return Helper::getValueOfArray($this->data, $key, $default);
+        // eg. 'users.*.id'
+        if (strpos($key, '.*') > 0) {
+            $value = $this->getByWildcard($key);
+        } else {
+            $value = Helper::getValueOfArray($this->data, $key, $default);
+        }
+
+        // add caches for path key
+        if (strpos($key, '.') > 0) {
+            $this->_dataCaches[$key] = $value;
+        }
+
+        return $value;
     }
 
     /**
@@ -844,6 +889,7 @@ trait ValidationTrait
 
     /**
      * Through the validation of the data keys
+     *
      * @return array
      */
     public function getSafeKeys(): array

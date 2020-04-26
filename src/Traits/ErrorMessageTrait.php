@@ -19,25 +19,29 @@ use function strtr;
 
 /**
  * trait ErrorMessageTrait
- * @author inhere
+ *
+ * @author  inhere
  * @package Inhere\Validate\Traits
  */
 trait ErrorMessageTrait
 {
     /**
      * error messages map
+     *
      * @var array
      */
     private $_messages = [];
 
     /**
      * attribute field translate list
+     *
      * @var array
      */
     private $_translates = [];
 
     /**
      * Save all validation error messages
+     *
      * @var array[]
      * [
      *     ['name' => 'field', 'msg' => 'error Message1' ],
@@ -50,12 +54,14 @@ trait ErrorMessageTrait
      * Whether there is error stop validation 是否出现验证失败就立即停止验证
      * True  -- 出现一个验证失败即停止验证,并退出
      * False -- 全部验证并将错误信息保存到 {@see $_errors}
+     *
      * @var boolean
      */
     private $_stopOnError = true;
 
     /**
      * prettify field name on get error message
+     *
      * @var bool
      */
     private $_prettifyName = true;
@@ -82,6 +88,7 @@ trait ErrorMessageTrait
 
     /**
      * Is there an error?
+     *
      * @return boolean
      */
     public function hasError(): bool
@@ -295,7 +302,7 @@ trait ErrorMessageTrait
      * @param string|Closure $validator 验证器
      * @param string         $field
      * @param array          $args
-     * @param string|array   $message 自定义提示消息
+     * @param string|array   $message   自定义提示消息
      *
      * @return string
      */

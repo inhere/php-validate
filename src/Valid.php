@@ -45,10 +45,10 @@ class Valid
      *********************************************************************************************/
 
     /**
-     * @param string $field
-     * @param null|int   $min
-     * @param null|int   $max
-     * @param null|int    $default
+     * @param string   $field
+     * @param null|int $min
+     * @param null|int $max
+     * @param null|int $default
      *
      * @return int
      */

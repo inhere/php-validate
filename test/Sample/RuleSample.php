@@ -12,6 +12,7 @@ use Inhere\Validate\Validation;
 
 /**
  * Class RuleSample
+ *
  * @package Inhere\ValidateTest\Sample
  */
 class RuleSample extends Validation

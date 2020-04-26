@@ -10,6 +10,7 @@ final class GlobalMessage
 {
     /**
      * Default error messages
+     *
      * @var array
      */
     private static $messages = [

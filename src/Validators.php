@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 /**
- * @date 2015.08.04
  * 验证器列表
- * @note 验证数据; 成功则返回预期的类型， 失败返回 false
+ * @date        2015.08.04
+ * @note        验证数据; 成功则返回预期的类型， 失败返回 false
  * @description INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV  几个输入数据常量中的值在请求时即固定下来了，
  * 后期通过类似 $_GET['test']='help'; 将不会存在 输入数据常量中(INPUT_GET 没有test项)。
  */
@@ -52,6 +52,7 @@ use const JSON_ERROR_NONE;
 
 /**
  * Class Validators
+ *
  * @package Inhere\Validate
  */
 class Validators
@@ -116,10 +117,12 @@ class Validators
     {
         if (is_string($val)) {
             $val = trim($val);
-        } elseif ($val instanceof ArrayValueNotExists) {
-            $val = '';
         } elseif (is_object($val)) {
-            $val = get_object_vars($val);
+            if ($val instanceof ArrayValueNotExists) {
+                $val = '';
+            } else {
+                $val = get_object_vars($val);
+            }
         }
 
         return $val === '' || $val === null || $val === [];
@@ -163,13 +166,13 @@ class Validators
     }
 
     /**
-     * @param mixed              $val 要验证的变量
-     * @param null|integer|float $min 最小值
-     * @param null|int|float     $max 最大值
-     * $options = [
-     *      'default' => 'default value',
-     *      'decimal' => 2
-     *  ]
+     * @param mixed              $val   要验证的变量
+     * @param null|integer|float $min   最小值
+     * @param null|int|float     $max   最大值
+     *                                  $options = [
+     *                                  'default' => 'default value',
+     *                                  'decimal' => 2
+     *                                  ]
      * @param int                $flags FILTER_FLAG_ALLOW_THOUSAND
      *
      * @return mixed
@@ -211,12 +214,12 @@ class Validators
     /**
      * int 验证 (所有的最小、最大都是包含边界值的)
      *
-     * @param mixed        $val 要验证的变量
-     * @param null|integer $min 最小值
-     * @param null|int     $max 最大值
+     * @param mixed        $val   要验证的变量
+     * @param null|integer $min   最小值
+     * @param null|int     $max   最大值
      * @param int          $flags 标志
-     *                    FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
-     *                    FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
+     *                            FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
+     *                            FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
      *
      * @return bool false
      * @example
@@ -327,6 +330,7 @@ class Validators
 
     /**
      * 验证的字段必须为 yes, on, 1, true 这在确认「服务条款」是否同意时相当有用。
+     *
      * @from laravel
      *
      * @param mixed $val
@@ -363,7 +367,7 @@ class Validators
      */
     public static function alphaNum($val): bool
     {
-        if (!is_string($val) || !is_numeric($val)) {
+        if (!is_string($val) && !is_numeric($val)) {
             return false;
         }
 
@@ -559,7 +563,7 @@ class Validators
     /**
      * 字符串/数组长度检查
      *
-     * @param string|array $val 字符串/数组
+     * @param string|array $val    字符串/数组
      * @param integer      $minLen 最小长度
      * @param int          $maxLen 最大长度
      *
@@ -655,7 +659,7 @@ class Validators
     /**
      * 用正则验证数据
      *
-     * @param string $val 要验证的数据
+     * @param string $val    要验证的数据
      * @param string $regexp 正则表达式 "/^M(.*)/"
      * @param null   $default
      *
@@ -691,13 +695,13 @@ class Validators
     /**
      * url地址验证
      *
-     * @param string $val 要验证的数据
+     * @param string $val     要验证的数据
      * @param mixed  $default 设置验证失败时返回默认值
-     * @param int    $flags 标志
-     *                    FILTER_FLAG_SCHEME_REQUIRED - 要求 URL 是 RFC 兼容 URL（比如 http://example）
-     *                    FILTER_FLAG_HOST_REQUIRED - 要求 URL 包含主机名（比如 http://www.example.com）
-     *                    FILTER_FLAG_PATH_REQUIRED - 要求 URL 在域名后存在路径（比如 www.example.com/example1/test2/）
-     *                    FILTER_FLAG_QUERY_REQUIRED - 要求 URL 存在查询字符串（比如 "example.php?name=Peter&age=37"）
+     * @param int    $flags   标志
+     *                        FILTER_FLAG_SCHEME_REQUIRED - 要求 URL 是 RFC 兼容 URL（比如 http://example）
+     *                        FILTER_FLAG_HOST_REQUIRED - 要求 URL 包含主机名（比如 http://www.example.com）
+     *                        FILTER_FLAG_PATH_REQUIRED - 要求 URL 在域名后存在路径（比如 www.example.com/example1/test2/）
+     *                        FILTER_FLAG_QUERY_REQUIRED - 要求 URL 存在查询字符串（比如 "example.php?name=Peter&age=37"）
      *
      * @return bool
      */
@@ -715,7 +719,7 @@ class Validators
     /**
      * email 地址验证
      *
-     * @param string $val 要验证的数据
+     * @param string $val     要验证的数据
      * @param mixed  $default 设置验证失败时返回默认值
      *
      * @return bool
@@ -734,13 +738,13 @@ class Validators
     /**
      * IP 地址验证
      *
-     * @param string $val 要验证的数据
+     * @param string $val     要验证的数据
      * @param mixed  $default 设置验证失败时返回默认值
-     * @param int    $flags 标志
-     *                    FILTER_FLAG_IPV4 - 要求值是合法的 IPv4 IP（比如 255.255.255.255）
-     *                    FILTER_FLAG_IPV6 - 要求值是合法的 IPv6 IP（比如 2001:0db8:85a3:08d3:1319:8a2e:0370:7334）
-     *                    FILTER_FLAG_NO_PRIV_RANGE - 要求值不在 RFC 指定的私有范围 IP 内（比如 192.168.0.1）
-     *                    FILTER_FLAG_NO_RES_RANGE - 要求值不在保留的 IP 范围内。该标志接受 IPV4 和 IPV6 值
+     * @param int    $flags   标志
+     *                        FILTER_FLAG_IPV4 - 要求值是合法的 IPv4 IP（比如 255.255.255.255）
+     *                        FILTER_FLAG_IPV6 - 要求值是合法的 IPv6 IP（比如 2001:0db8:85a3:08d3:1319:8a2e:0370:7334）
+     *                        FILTER_FLAG_NO_PRIV_RANGE - 要求值不在 RFC 指定的私有范围 IP 内（比如 192.168.0.1）
+     *                        FILTER_FLAG_NO_RES_RANGE - 要求值不在保留的 IP 范围内。该标志接受 IPV4 和 IPV6 值
      *
      * @return bool
      */
@@ -1186,7 +1190,7 @@ class Validators
     /**
      * 校验字段值是否是日期并且是否满足设定格式
      *
-     * @param string $val 日期
+     * @param string $val    日期
      * @param string $format 需要检验的格式数组
      *
      * @return boolean
@@ -1206,7 +1210,7 @@ class Validators
      *
      * @param string $val
      * @param string $beforeDate 若为空，将使用当前时间
-     * @param string $symbol allow '<' '<='
+     * @param string $symbol     allow '<' '<='
      *
      * @return bool
      */
@@ -1311,7 +1315,8 @@ class Validators
             '/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
             $date,
             $matches
-        )) {
+        )
+        ) {
             return false;
         }
 

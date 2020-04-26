@@ -10,6 +10,7 @@ namespace Inhere\Validate\Filter;
 
 /**
  * Class UserFilters - user custom add global filters
+ *
  * @package Inhere\Validate\Filter
  */
 final class UserFilters

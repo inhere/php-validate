@@ -15,6 +15,7 @@ use function trim;
 
 /**
  * Class FiltrationTest
+ *
  * @package Inhere\ValidateTest\Filter
  */
 class FiltrationTest extends TestCase
@@ -48,12 +49,12 @@ class FiltrationTest extends TestCase
         $fl = Filtration::make($this->data);
         $fl->clearFilters();
         $fl->addFilters([
-            'name1' => function () {
+            'name1'   => function () {
             },
             'newTrim' => function ($val) {
                 return trim($val);
             },
-            ''      => function () {
+            ''        => function () {
             },
         ]);
 
@@ -68,7 +69,7 @@ class FiltrationTest extends TestCase
 
         // use user filter
         $filtered = $fl->filtering([
-           ['name', 'newTrim']
+            ['name', 'newTrim']
         ]);
         $this->assertSame('tom', $filtered['name']);
 
@@ -117,10 +118,13 @@ class FiltrationTest extends TestCase
     {
         $fl = Filtration::make($this->data);
         $fl->setRules([
-            ['name', function ($val) {
-                $this->assertSame(' tom ', $val);
-                return trim($val);
-            }]
+            [
+                'name',
+                function ($val) {
+                    $this->assertSame(' tom ', $val);
+                    return trim($val);
+                }
+            ]
         ]);
 
         $cleaned = $fl->filtering();

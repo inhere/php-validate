@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class HelperTest
+ *
  * @package Inhere\ValidateTest
  */
 class HelperTest extends TestCase

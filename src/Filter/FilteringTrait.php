@@ -19,6 +19,7 @@ use function trim;
 
 /**
  * Trait FilteringTrait
+ *
  * @package Inhere\Validate\Filter
  */
 trait FilteringTrait
@@ -31,19 +32,19 @@ trait FilteringTrait
      *
      * @param mixed        $value
      * @param string|array $filters
-     * string:
-     *  'string|trim|upper'
-     * array:
-     *  [
-     *      'string',
-     *      'trim',
-     *      ['Class', 'method'],
-     *      // 追加额外参数. 传入时，第一个参数总是要过滤的字段值，其余的依次追加
-     *      'myFilter' => ['arg1', 'arg2'],
-     *      function($val) {
+     *          string:
+     *          'string|trim|upper'
+     *          array:
+     *          [
+     *          'string',
+     *          'trim',
+     *          ['Class', 'method'],
+     *          // 追加额外参数. 传入时，第一个参数总是要过滤的字段值，其余的依次追加
+     *          'myFilter' => ['arg1', 'arg2'],
+     *          function($val) {
      *          return str_replace(' ', '', $val);
-     *      },
-     *  ]
+     *          },
+     *          ]
      *
      * @return mixed
      * @throws InvalidArgumentException

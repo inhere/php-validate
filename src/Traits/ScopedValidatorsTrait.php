@@ -29,6 +29,7 @@ use const UPLOAD_ERR_OK;
  * trait ScopedValidatorsTrait - deps the current validation instance.
  * - user custom validators
  * - some validators of require context data.
+ *
  * @package Inhere\Validate\Traits
  */
 trait ScopedValidatorsTrait

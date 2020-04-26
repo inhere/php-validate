@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 /**
  * @author inhere
- * @date: 2015-08-11
+ * @date   : 2015-08-11
  */
 
 namespace Inhere\Validate;
@@ -10,6 +10,7 @@ use stdClass;
 
 /**
  * Interface ValidationInterface
+ *
  * @package Inhere\Validate
  */
 interface ValidationInterface
@@ -21,12 +22,14 @@ interface ValidationInterface
 
     /**
      * custom validator's message, to override default message.
+     *
      * @return array
      */
     public function messages(): array;
 
     /**
      * define attribute field translate list
+     *
      * @return array
      */
     public function translates(): array;
@@ -43,6 +46,7 @@ interface ValidationInterface
 
     /**
      * alias of the fail()
+     *
      * @return bool
      */
     public function isFail(): bool;

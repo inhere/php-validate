@@ -24,12 +24,14 @@ use function trim;
 
 /**
  * Trait MultipleRulesTrait - allow add multiple rules like Laravel.
+ *
  * @package Inhere\Validate\Traits
  */
 trait MultipleRulesTrait
 {
     /**
      * Add rules like Laravel
+     *
      * @return array
      */
     /*public function rules()
@@ -70,7 +72,6 @@ trait MultipleRulesTrait
                 }
 
                 $sceneList = is_string($rule['on']) ? Filters::explode($rule['on']) : (array)$rule['on'];
-
                 if (!in_array($scene, $sceneList, true)) {
                     continue;
                 }

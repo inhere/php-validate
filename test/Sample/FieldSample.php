@@ -12,6 +12,7 @@ use Inhere\Validate\FieldValidation;
 
 /**
  * Class FieldSample
+ *
  * @package Inhere\ValidateTest\Sample
  */
 class FieldSample extends FieldValidation

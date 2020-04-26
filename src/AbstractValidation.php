@@ -12,6 +12,7 @@ use InvalidArgumentException;
 
 /**
  * Class AbstractValidation
+ *
  * @package Inhere\Validate
  */
 abstract class AbstractValidation implements ValidationInterface
@@ -44,10 +45,7 @@ abstract class AbstractValidation implements ValidationInterface
         bool $startValidate = false
     ) {
         $this->data = $data;
-        $this
-            ->atScene($scene)
-            ->setRules($rules)
-            ->setTranslates($translates);
+        $this->atScene($scene)->setRules($rules)->setTranslates($translates);
 
         if ($startValidate) {
             $this->validate();

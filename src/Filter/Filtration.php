@@ -14,6 +14,7 @@ use function is_string;
 
 /**
  * Class Filtration
+ *
  * @package Inhere\Validate\Filter
  * usage:
  *

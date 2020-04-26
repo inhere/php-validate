@@ -10,6 +10,7 @@ namespace Inhere\Validate\Traits;
 
 /**
  * Trait NameAliasTrait
+ *
  * @package Inhere\Validate\Traits
  */
 trait NameAliasTrait

@@ -10,6 +10,7 @@ use const FILTER_FLAG_STRIP_HIGH;
 
 /**
  * Class FiltersTest
+ *
  * @package Inhere\ValidateTest\Filter
  */
 class FiltersTest extends TestCase

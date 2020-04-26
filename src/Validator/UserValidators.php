@@ -12,6 +12,7 @@ use function trim;
 
 /**
  * Class UserValidators - user custom add global validators
+ *
  * @package Inhere\Validate\Validator
  */
 final class UserValidators

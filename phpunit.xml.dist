@@ -9,15 +9,15 @@
          convertWarningsToExceptions="true"
          stopOnFailure="false"
 >
-    <testsuites>
-        <testsuite name="Php Validate-Filter Test Suite">
-            <directory>test</directory>
-        </testsuite>
-    </testsuites>
+  <testsuites>
+    <testsuite name="Php Validate-Filter Test Suite">
+      <directory>test</directory>
+    </testsuite>
+  </testsuites>
 
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
+  <filter>
+    <whitelist>
+      <directory suffix=".php">src</directory>
+    </whitelist>
+  </filter>
 </phpunit>

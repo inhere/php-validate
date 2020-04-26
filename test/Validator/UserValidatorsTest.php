@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class UserValidatorsTest
+ *
  * @package Inhere\ValidateTest\Validator
  */
 class UserValidatorsTest extends TestCase

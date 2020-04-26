@@ -9,6 +9,7 @@ use function version_compare;
 
 /**
  * Class GlobalMessageTest
+ *
  * @package Inhere\ValidateTest\Validator
  */
 class GlobalMessageTest extends TestCase

@@ -48,9 +48,11 @@ use const FILTER_SANITIZE_URL;
 use const FILTER_UNSAFE_RAW;
 use const FILTER_VALIDATE_BOOLEAN;
 use const MB_CASE_TITLE;
+use const PHP_VERSION_ID;
 
 /**
  * Class Filters
+ *
  * @package Inhere\Validate\Filter
  */
 final class Filters
@@ -109,6 +111,7 @@ final class Filters
 
     /**
      * 过滤器删除数字中所有非法的字符。
+     *
      * @note 该过滤器允许所有数字以及 . + -
      *
      * @param mixed $val 要过滤的变量
@@ -145,14 +148,15 @@ final class Filters
 
     /**
      * 过滤器删除浮点数中所有非法的字符。
+     *
      * @note 该过滤器默认允许所有数字以及 + -
      *
-     * @param mixed    $val 要过滤的变量
+     * @param mixed    $val   要过滤的变量
      * @param null|int $decimal
      * @param int      $flags 标志
-     *                    FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
-     *                    FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
-     *                    FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
+     *                        FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
+     *                        FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
+     *                        FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
      *
      * @return mixed
      */
@@ -175,12 +179,12 @@ final class Filters
      *
      * @param string|array $val
      * @param int          $flags 标志
-     *                    FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
-     *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 127 以上的字符
-     *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 127 以上的字符
-     *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
+     *                            FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
+     *                            FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
+     *                            FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 127 以上的字符
+     *                            FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
+     *                            FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 127 以上的字符
+     *                            FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
      *
      * @return string|array
      */
@@ -276,7 +280,7 @@ final class Filters
     public static function lowercase($val): string
     {
         if (!$val || !is_string($val)) {
-            return is_int($val) ? (string)$val: '';
+            return is_int($val) ? (string)$val : '';
         }
 
         if (function_exists('mb_strtolower')) {
@@ -533,14 +537,15 @@ final class Filters
 
     /**
      * 去除 URL 编码不需要的字符。
+     *
      * @note 与 urlencode() 函数很类似。
      *
-     * @param string $val 要过滤的数据
+     * @param string $val   要过滤的数据
      * @param int    $flags 标志
-     *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
-     *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
+     *                      FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
+     *                      FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
+     *                      FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
+     *                      FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
      *
      * @return string
      */
@@ -560,7 +565,13 @@ final class Filters
      */
     public static function quotes(string $val): string
     {
-        return (string)filter_var($val, FILTER_SANITIZE_MAGIC_QUOTES);
+        $flag = FILTER_SANITIZE_MAGIC_QUOTES;
+        if (PHP_VERSION_ID > 70300) {
+            /** @noinspection PhpElementIsNotAvailableInCurrentPhpVersionInspection */
+            $flag = FILTER_SANITIZE_ADD_SLASHES;
+        }
+
+        return (string)filter_var($val, $flag);
     }
 
     /**
@@ -568,9 +579,9 @@ final class Filters
      *
      * @param string $val
      * @param int    $flags 标志
-     *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
-     *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
+     *                      FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
+     *                      FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
+     *                      FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
      *
      * @return string
      */
@@ -639,6 +650,7 @@ final class Filters
 
     /**
      * url地址过滤 移除所有不符合 url 的字符
+     *
      * @note 该过滤器允许所有的字母、数字以及 $-_.+!*'(),{}|\^~[]`"><#%;/?:@&=
      *
      * @param string $val 要过滤的数据
@@ -677,11 +689,11 @@ final class Filters
      *
      * @param string $string
      * @param int    $flags 标志
-     *                    FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
-     *                    FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
-     *                    FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
-     *                    FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
+     *                      FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
+     *                      FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
+     *                      FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
+     *                      FILTER_FLAG_ENCODE_HIGH - 编码 ASCII 值在 32 以上的字符
+     *                      FILTER_FLAG_ENCODE_AMP - 把 & 字符编码为 &amp;
      *
      * @return string|mixed
      */

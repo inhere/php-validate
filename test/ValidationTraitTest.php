@@ -28,19 +28,22 @@ class ValidationTraitTest extends TestCase
     public function testGetByPath(): void
     {
         $v = Validation::make([
-            'prod' => [
+            'prod'  => [
                 'key0' => 'val0',
                 [
                     'attr' => [
                         'wid' => 1
                     ]
-                ],
-                'users' => [
-                    ['id' => 1,],
-                    ['id' => 2,]
                 ]
+            ],
+            'users' => [
+                ['id' => 1,],
+                ['id' => 2,]
             ]
         ]);
+
+        $val = $v->getByPath('users.*.id');
+        $this->assertSame([1, 2], $val);
 
         $val = $v->getByPath('prod.key0');
         $this->assertSame('val0', $val);
@@ -53,10 +56,6 @@ class ValidationTraitTest extends TestCase
 
         $val = $v->getByPath('prod.*.attr');
         $this->assertSame([['wid' => 1]], $val);
-
-        // TODO ..
-        // $val = $v->getByPath('users.*.id');
-        // $this->assertSame([1, 2], $val);
 
         // $val = $v->getByPath('prod.*.attr.wid');
         // $this->assertSame([1], $val);
@@ -88,5 +87,27 @@ class ValidationTraitTest extends TestCase
         $v->validate();
 
         $this->assertTrue($v->isValidated());
+    }
+
+    public function testRuleBeforeAndAfter(): void
+    {
+        $v = Validation::make(['name' => 'inhere'], [
+            [
+                'name',
+                'string',
+                'min'    => 3,
+                'before' => function ($value) {
+                    return $value === 'inhere';
+                },
+                'after' => function ($value) {
+                    \var_dump($value);
+                    $this->assertSame('inhere', $value);
+                    return true;
+                }
+            ]
+        ]);
+
+        $v->validate();
+        $this->assertTrue($v->isOk());
     }
 }

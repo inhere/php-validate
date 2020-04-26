@@ -18,6 +18,7 @@ namespace Inhere\Validate;
  *  ['field1, field3, ... ', 'validator', ...]
  * ]
  * ```
+ *
  * @package Inhere\Validate
  */
 class RuleValidation extends Validation

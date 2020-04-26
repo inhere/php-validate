@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class UserFiltersTest
+ *
  * @package Inhere\ValidateTest\Filter
  */
 class UserFiltersTest extends TestCase
