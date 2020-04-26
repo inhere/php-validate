@@ -10,20 +10,20 @@ namespace Inhere\Validate\Traits;
 
 use Generator;
 use Inhere\Validate\Filter\Filters;
+use Inhere\Validate\Helper;
 use InvalidArgumentException;
 use function array_map;
 use function array_merge;
 use function array_shift;
 use function explode;
-use function in_array;
 use function is_array;
 use function is_object;
-use function is_string;
 use function strpos;
 use function trim;
 
 /**
- * Trait MultipleRulesTrait - allow add multiple rules like Laravel.
+ * Trait MultipleRulesTrait
+ * - allow add multiple rules like Laravel.
  *
  * @package Inhere\Validate\Traits
  */
@@ -62,17 +62,12 @@ trait MultipleRulesTrait
 
             // check validators
             if (!isset($rule[1]) || !$rule[1]) {
-                throw new InvalidArgumentException('The field validators must be is a validator name(s) string! position: rule[1]');
+                throw new InvalidArgumentException('Please setting the validator(s) for validate field! position: rule[1]');
             }
 
-            // an rule for special scene.
-            if (!empty($rule['on'])) {
-                if (!$scene) {
-                    continue;
-                }
-
-                $sceneList = is_string($rule['on']) ? Filters::explode($rule['on']) : (array)$rule['on'];
-                if (!in_array($scene, $sceneList, true)) {
+            // rule only allow use to special scene.
+            if (isset($rule['on'])) {
+                if (!Helper::ruleIsAvailable($scene, $rule['on'])) {
                     continue;
                 }
 
@@ -106,7 +101,6 @@ trait MultipleRulesTrait
     protected function parseRule(string $rule, array $row): array
     {
         $rule = trim($rule, ': ');
-
         if (false === strpos($rule, ':')) {
             $row[0] = $rule;
             return $row;

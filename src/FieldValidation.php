@@ -25,7 +25,7 @@ class FieldValidation extends AbstractValidation
 {
     use MultipleRulesTrait;
 
-    /*
+    /* examples:
     public function rules()
     {
         return [
@@ -33,6 +33,7 @@ class FieldValidation extends AbstractValidation
             ['field0', ['required', 'string:5,10'], ...],
             ['field1', 'rule1|rule2|...', ...],
             ['field2', 'rule1|rule3|...', ...],
+            ['field3', function($val) {}, ...],
         ];
     }
     */

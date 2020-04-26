@@ -727,39 +727,47 @@ class RuleValidationTest extends TestCase
     /**
      * @link https://github.com/inhere/php-validate/issues/21
      */
-    public function tIssues21(): void
+    public function testIssues21(): void
     {
+        $d1 = [
+            // all items missing 'id' field
+            'users' => [
+                ['name' => 'n1'],
+                ['name' => 'n1'],
+            ],
+        ];
         $rs = [
-            ['users.*.id', 'required'],
+            ['users.*.id', 'required'], // will passed. values like: [ArrayValueNotExists, ArrayValueNotExists]
             ['users.*.id', 'each', 'required'],
-            // ['users.*.id', 'each', 'string']
         ];
 
-        $v = RV::check([
-            'users' => [
-                ['name' => 'n1'],
-                ['name' => 'n1'],
-            ],
-        ], $rs);
+        $v = RV::check($d1, $rs);
 
         $this->assertFalse($v->isOk());
-        $this->assertSame('parameter users.*.id is required!', $v->firstError());
+        $this->assertSame('users.*.id each value must be through the "required" verify', $v->firstError());
 
-        $v = RV::check([
+        $d2 = [
             'users' => [
-                ['name' => 'n1'],
-                ['id' => 2, 'name' => 'n1'],
+                ['name' => 'n1'], // missing id field
+                ['id' => 2, 'name' => 'n1'], // has id field
             ],
-        ], $rs);
+        ];
+        $v = RV::check($d2, $rs);
 
         $this->assertFalse($v->isOk());
-        $this->assertSame('', $v->firstError());
+        $this->assertSame('users.*.id each value must be through the "required" verify', $v->firstError());
 
-        $v = RV::check([
+        $d3 = [
             'users' => [
                 ['id' => 1, 'name' => 'n1'],
                 ['id' => 2, 'name' => 'n1'],
             ],
-        ], $rs);
+        ];
+
+        $rs[] = ['users.*.id', 'each', 'int', 'max' => 3];
+
+        $v = RV::check($d3, $rs);
+
+        $this->assertTrue($v->isOk());
     }
 }

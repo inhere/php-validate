@@ -20,16 +20,14 @@ namespace Inhere\Validate;
  *      ['userId', 'number'],
  *      ['name', 'regexp' ,'/^[a-z]\w{2,12}$/'],
  * ])->validate();
- * $vd->fail();// bool
+ *
+ * $vd->isFail();// bool
  * $vd->firstError(); // get first error message.
- * $vd->passed();// bool
+ * $vd->isOk();// bool
  */
 class Validation extends AbstractValidation
 {
-    /**
-     * @return array
-     */
-    /*
+    /* examples:
     public function rules()
     {
         return [

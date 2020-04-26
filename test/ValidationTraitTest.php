@@ -100,7 +100,6 @@ class ValidationTraitTest extends TestCase
                     return $value === 'inhere';
                 },
                 'after' => function ($value) {
-                    \var_dump($value);
                     $this->assertSame('inhere', $value);
                     return true;
                 }
@@ -109,5 +108,104 @@ class ValidationTraitTest extends TestCase
 
         $v->validate();
         $this->assertTrue($v->isOk());
+    }
+
+    public $deepData = [
+        'companies' => [
+            [
+                'name' => 'ms',
+                'departments' => [
+                    [
+                        'name' => '111',
+                        'employees' => [
+                            [
+                                'name' => 'aaa',
+                                'manage' => 1,
+                            ],
+                            [
+                                'name' => 'bbb',
+                                'manage' => 2,
+                            ],
+                        ],
+                    ],
+                    [
+                        'name' => '222',
+                        'employees' => [
+                            [
+                                'name' => 'ccc',
+                                'manage' => 3,
+                            ],
+                            [
+                                'name' => 'ddd',
+                                'manage' => 4,
+                            ],
+                        ],
+                    ],
+                    [
+                        'name' => '333',
+                        'employees' => [
+                            [
+                                'name' => 'eee',
+                                'manage' => 5,
+                            ],
+                            [
+                                'name' => 'fff',
+                                'manage' => 6,
+                            ],
+                        ],
+                    ],
+                ]
+            ],
+            [
+                'name' => 'google',
+                'departments' => [
+                    [
+                        'name' => '444',
+                        'employees' => [
+                            [
+                                'name' => 'xxx',
+                                'manage' => 7,
+                            ],
+                            [
+                                'name' => 'yyy',
+                                'manage' => 8,
+                            ],
+                        ],
+                    ],
+                ]
+            ],
+        ],
+    ];
+
+    public function testMultidimensionalArray(): void
+    {
+        $v = Validation::make($this->deepData);
+
+        $val = $v->getByPath('companies.*.name');
+        $this->assertSame(['ms', 'google'], $val);
+    }
+
+    public function testMultidimensionalArray1(): void
+    {
+        $v = Validation::make($this->deepData);
+
+        $val = $v->getByPath('companies.0.departments.*.employees.0.manage');
+        $this->assertSame([1, 3, 5], $val);
+    }
+
+    public function testMultidimensionalArray2(): void
+    {
+        $v = Validation::make($this->deepData);
+
+        $val = $v->getByPath('companies.0.departments.*.employees.*.manage');
+        $this->assertSame([1, 2, 3, 4, 5, 6], $val);
+    }
+
+    public function testMultidimensionalArray3(): void
+    {
+        $v = Validation::make($this->deepData);
+
+        $val = $v->getByPath('companies.*.departments.*.employees.*.name');
+        $this->assertSame(['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'fff', 'xxx', 'yyy'], $val);
     }
 }

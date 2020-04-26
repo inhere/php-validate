@@ -51,7 +51,7 @@ class FieldValidationTest extends TestCase
             $rv->validate();
         } catch (Throwable $e) {
             $this->assertSame(
-                'The field validators must be is a validator name(s) string! position: rule[1]',
+                'Please setting the validator(s) for validate field! position: rule[1]',
                 $e->getMessage()
             );
         }

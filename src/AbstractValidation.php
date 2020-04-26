@@ -33,7 +33,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @param array  $rules
      * @param array  $translates
      * @param string $scene
-     * @param bool   $startValidate 立即开始验证
+     * @param bool   $startValidate Start verification now
      *
      * @throws InvalidArgumentException
      */
@@ -57,9 +57,9 @@ abstract class AbstractValidation implements ValidationInterface
      * @param string $scene
      * @param bool   $startValidate
      *
-     * @return AbstractValidation
+     * @return self
      */
-    public static function quick(array $data, string $scene = '', bool $startValidate = false): AbstractValidation
+    public static function quick(array $data, string $scene = '', bool $startValidate = false): self
     {
         return new static($data, [], [], $scene, $startValidate);
     }
@@ -80,7 +80,7 @@ abstract class AbstractValidation implements ValidationInterface
         array $translates = [],
         string $scene = '',
         bool $startValidate = false
-    ) {
+    ): self {
         return new static($data, $rules, $translates, $scene, $startValidate);
     }
 
@@ -95,13 +95,13 @@ abstract class AbstractValidation implements ValidationInterface
      * @return static
      * @throws InvalidArgumentException
      */
-    public static function makeAndValidate(array $data, array $rules = [], array $translates = [], string $scene = '')
+    public static function makeAndValidate(array $data, array $rules = [], array $translates = [], string $scene = ''): self
     {
         return new static($data, $rules, $translates, $scene, true);
     }
 
     /**
-     * Create and start verification immediately
+     * Create and start verification immediately. alias of makeAndValidate()
      *
      * @param array  $data
      * @param array  $rules
@@ -111,7 +111,7 @@ abstract class AbstractValidation implements ValidationInterface
      * @return static
      * @throws InvalidArgumentException
      */
-    public static function check(array $data, array $rules = [], array $translates = [], string $scene = '')
+    public static function check(array $data, array $rules = [], array $translates = [], string $scene = ''): self
     {
         return new static($data, $rules, $translates, $scene, true);
     }

@@ -65,6 +65,9 @@ trait ValidationTrait
     /** @var array Used rules at current scene */
     protected $_usedRules = [];
 
+    /** @var ArrayValueNotExists */
+    private $_arrayNotKeyValue;
+
     /**
      * Whether to skip when empty(When not required)
      * default is TRUE, need you manual add 'required'.
@@ -215,6 +218,9 @@ trait ValidationTrait
         if (!$onlyChecked) {
             $onlyChecked = $this->getSceneFields();
         }
+
+        // Prepare an ArrayValueNotExists
+        $this->_arrayNotKeyValue = new ArrayValueNotExists();
 
         $stopOnError = $this->isStopOnError();
         foreach ($this->collectRules() as $fields => $rule) {
@@ -498,14 +504,9 @@ trait ValidationTrait
                 throw new InvalidArgumentException('The rule validator is must be setting! position: rule[1]');
             }
 
-            // only use to special scene.
-            if (!empty($rule['on'])) {
-                if (!$scene) {
-                    continue;
-                }
-
-                $sceneList = is_string($rule['on']) ? Filters::explode($rule['on']) : (array)$rule['on'];
-                if (!in_array($scene, $sceneList, true)) {
+            // rule only allow use to special scene.
+            if (isset($rule['on'])) {
+                if (!Helper::ruleIsAvailable($scene, $rule['on'])) {
                     continue;
                 }
 
@@ -528,9 +529,13 @@ trait ValidationTrait
     protected function prepareRule(array &$rule): void
     {
         $validator = $rule[0];
-
         if (!is_string($validator)) {
             return;
+        }
+
+        // eg: ['users.*.id', 'each', 'int', 'max' => 3]
+        if ($validator === 'each') {
+            $validator = $rule[1];
         }
 
         switch ($validator) {
@@ -575,31 +580,88 @@ trait ValidationTrait
     }
 
     /**
+     * Get data item by key
+     *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
+     *
+     * @param string $key     The data key
+     * @param mixed  $default The default value
+     *
+     * @return mixed The key's value, or the default value
+     */
+    public function getByPath(string $key, $default = null)
+    {
+        if (isset($this->_dataCaches[$key])) {
+            return $this->_dataCaches[$key];
+        }
+
+        // eg. 'users.*.id'
+        if (strpos($key, '.*') > 0) {
+            $value = $this->getByWildcard($key);
+        } else {
+            $value = Helper::getValueOfArray($this->data, $key, $default);
+        }
+
+        // add caches for path key
+        if (strpos($key, '.') > 0) {
+            $this->_dataCaches[$key] = $value;
+        }
+
+        return $value;
+    }
+
+    /**
      * @param string     $path 'users.*.id' 'goods.*' 'foo.bar.*.id'
      * @param null|mixed $default
+     * @param array      $data
      *
      * @return mixed
      */
-    protected function getByWildcard(string $path, $default = null)
+    protected function getByWildcard(string $path, $default = null, array $data = [])
     {
-        [$first, $last] = explode('.*', $path, 2);
-        $recently = Helper::getValueOfArray($this->data, $first, $default);
+        $data = $data ?: $this->data;
 
-        // 'goods.*'
-        if ('' === $last) {
+        [$first, $last] = explode('.*', $path, 2);
+        $recently = Helper::getValueOfArray($data, $first, $default);
+        $subPath  = trim($last, '.');
+
+        // like 'goods.*'
+        if ('' === $subPath) {
             return $recently;
         }
 
+        // invalid data
         if (!$recently || !is_array($recently)) {
             return $default;
         }
 
-        $field  = trim($last, '.');
         $result = [];
 
-        foreach ($recently as $item) {
-            if (is_array($item)) {
-                $result[] = $item[$field] ?? new ArrayValueNotExists();
+        // eg: "companies.*.departments.*.employees.*.name" => "departments.*.employees.*.name"
+        if (strpos($subPath, '.*') > 0) {
+            foreach ($recently as $item) {
+                if (is_array($item)) {
+                    // $result[] = $this->getByWildcard($subPath, $this->_arrayNotKeyValue, $item);
+                    $result[] = $this->getByWildcard($subPath, $this->_arrayNotKeyValue, $item);
+                }
+            }
+
+            // return $result;
+            return array_merge(...$result);
+        }
+
+        // eg: "companies.0.departments.*.employees.0.manage" => "employees.0.manage"
+        if (strpos($subPath, '.') > 0) {
+            foreach ($recently as $item) {
+                if (is_array($item)) {
+                    $result[] = Helper::getValueOfArray($item, $subPath, $this->_arrayNotKeyValue);
+                }
+            }
+        } else {
+            // eg: 'users.*.id' => 'id'
+            foreach ($recently as $item) {
+                if (is_array($item)) {
+                    $result[] = $item[$subPath] ?? $this->_arrayNotKeyValue;
+                }
             }
         }
 
@@ -774,36 +836,6 @@ trait ValidationTrait
     public function setValue(string $key, $value)
     {
         return $this->setRaw($key, $value);
-    }
-
-    /**
-     * Get data item by key
-     *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
-     *
-     * @param string $key     The data key
-     * @param mixed  $default The default value
-     *
-     * @return mixed The key's value, or the default value
-     */
-    public function getByPath(string $key, $default = null)
-    {
-        if (isset($this->_dataCaches[$key])) {
-            return $this->_dataCaches[$key];
-        }
-
-        // eg. 'users.*.id'
-        if (strpos($key, '.*') > 0) {
-            $value = $this->getByWildcard($key);
-        } else {
-            $value = Helper::getValueOfArray($this->data, $key, $default);
-        }
-
-        // add caches for path key
-        if (strpos($key, '.') > 0) {
-            $this->_dataCaches[$key] = $value;
-        }
-
-        return $value;
     }
 
     /**

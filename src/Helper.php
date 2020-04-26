@@ -20,6 +20,7 @@ use function finfo_open;
 use function function_exists;
 use function gettype;
 use function html_entity_decode;
+use function in_array;
 use function is_array;
 use function is_int;
 use function is_object;
@@ -208,6 +209,31 @@ class Helper
     }
 
     /**
+     * @param string       $scene Current scene value
+     * @param string|array $ruleOn
+     *
+     * @return bool
+     */
+    public static function ruleIsAvailable(string $scene, $ruleOn): bool
+    {
+        // - rule is not limit scene
+        if (!$ruleOn) {
+            return true;
+        }
+
+        // - $ruleOn is not empty
+
+        // current scene is empty
+        if (!$scene) {
+            return false;
+        }
+
+        $scenes = is_string($ruleOn) ? Filters::explode($ruleOn) : (array)$ruleOn;
+
+        return in_array($scene, $scenes, true);
+    }
+
+    /**
      * getValueOfArray 支持以 '.' 分割进行子级值获取 eg: 'goods.apple'
      *
      * @param array        $array
@@ -256,7 +282,7 @@ class Helper
             // className::method
             if (strpos($cb, '::') > 0) {
                 $cb = explode('::', $cb, 2);
-            // function
+                // function
             } elseif (function_exists($cb)) {
                 return $cb(...$args);
             }

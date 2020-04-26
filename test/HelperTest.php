@@ -54,6 +54,16 @@ class HelperTest extends TestCase
         $this->assertFalse(Helper::compareSize(5, 'invalid', 3));
     }
 
+    public function testRuleIsAvailable(): void
+    {
+        $this->assertTrue(Helper::ruleIsAvailable('', ''));
+        $this->assertTrue(Helper::ruleIsAvailable('create', ''));
+        $this->assertTrue(Helper::ruleIsAvailable('create', 'create'));
+        $this->assertTrue(Helper::ruleIsAvailable('create', 'create, update'));
+        $this->assertFalse(Helper::ruleIsAvailable('', 'create'));
+        $this->assertFalse(Helper::ruleIsAvailable('delete', 'create, update'));
+    }
+
     public function testGetValueOfArray(): void
     {
         $data = [

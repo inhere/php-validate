@@ -3,6 +3,8 @@
 namespace Inhere\Validate;
 
 use function array_merge;
+use function is_int;
+use function is_numeric;
 
 /**
  * Class Valid - Simple Data Validator
@@ -54,12 +56,37 @@ class Valid
      */
     public static function getInt(string $field, int $min = null, int $max = null, int $default = null): int
     {
-        return 0;
+        if (!isset(self::$data[$field])) {
+            if ($default === null) {
+                throw new ValidateException($field, 'is required and must be int');
+            }
+
+            return $default;
+        }
+
+        $val = self::$data[$field];
+        if (is_numeric($val)) {
+            $val = (int)$val;
+        }
+
+        if (!is_int($val)) {
+            throw new ValidateException($field, 'must be int value');
+        }
+
+        // check min and max value
+        if ($min !== null && $val < $min) {
+            throw new ValidateException($field, "must be greater or equal to $min");
+        }
+        if ($max !== null && $val > $max) {
+            throw new ValidateException($field, "must be less than or equal to $max");
+        }
+
+        return $val;
     }
 
-    public static function getInts(string $field, int $min = null, int $max = null, int $default = 0): int
+    public static function getInts(string $field, int $min = null, int $max = null, array $default = null): array
     {
-        return 0;
+        return [];
     }
 
     public static function getString(string $field, int $minLen = null, int $maxLen = null, string $default = null): int
@@ -67,8 +94,8 @@ class Valid
         return 0;
     }
 
-    public static function getStrings(string $field, int $min = null, int $max = null, array $default = null): int
+    public static function getStrings(string $field, int $min = null, int $max = null, array $default = null): array
     {
-        return 0;
+        return [];
     }
 }
