@@ -3,15 +3,16 @@
 namespace Inhere\Validate\Validator;
 
 /**
- *
- * 验证器借口
+ * Interface ValidatorInterface
  */
 interface ValidatorInterface
 {
     /**
-     * 验证方法，进行验证返回bool类型
-     * @param type $value 当前值
-     * @param type $data 全部的值
+     * Verification method, verify and return bool type
+     *
+     * @param mixed $value current value for field
+     * @param array $data  all data in the validation
+     *
      * @return bool
      */
     public function validate($value, $data): bool;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -74,8 +74,7 @@ class HelperTest extends TestCase
         // class:;method
         $this->assertSame(34, Helper::call(Filters::class . '::integer', '34'));
 
-        $callabled = new class
-        {
+        $callabled = new class {
             public function __invoke($str)
             {
                 return (int)$str;

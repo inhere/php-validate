@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\ValidateTest;
 
@@ -433,7 +433,7 @@ class RuleValidationTest extends TestCase
                 },
                 'msg' => 'userId check failure by closure!'
             ],
-                        
+
         ];
     }
 
@@ -457,7 +457,6 @@ class RuleValidationTest extends TestCase
         $validation = Validation::makeAndValidate(['user'=>2], $rule);
         $this->assertTrue($validation->isFail());
     }
-
 
     public function testArrayValidate(): void
     {

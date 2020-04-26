@@ -71,5 +71,4 @@ class Valid
     {
         return 0;
     }
-
 }

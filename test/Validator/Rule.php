@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -72,7 +72,6 @@ final class Rule
 
     public static function createByArray(array $config): void
     {
-
     }
 
     /**

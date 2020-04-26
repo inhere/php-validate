@@ -10,8 +10,10 @@ namespace Inhere\Validate;
 
 /**
  * Class Validation
+ *
  * @package Inhere\Validate
- * usage:
+ *
+ * Usage:
  * $vd = Validation::make($_POST, [
  *      ['tagId,userId,name,email,freeTime', 'required'],
  *      ['email', 'email'],

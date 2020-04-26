@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\ValidateTest;
 
@@ -16,8 +16,7 @@ class ValidationTraitTest extends TestCase
 {
     public function testNoDataProperty(): void
     {
-        $v = new class
-        {
+        $v = new class {
             use ValidationTrait;
         };
 

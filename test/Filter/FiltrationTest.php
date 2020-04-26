@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -117,7 +117,7 @@ class FiltrationTest extends TestCase
     {
         $fl = Filtration::make($this->data);
         $fl->setRules([
-            ['name', function($val) {
+            ['name', function ($val) {
                 $this->assertSame(' tom ', $val);
                 return trim($val);
             }]

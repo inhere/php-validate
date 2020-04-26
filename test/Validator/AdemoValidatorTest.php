@@ -1,21 +1,24 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\ValidateTest\Validator;
 
+use Inhere\Validate\Validator\AbstractValidator;
+
 /**
  * Class ClassValidator
+ *
  * @package Inhere\ValidateTest\Validator
  */
-class AdemoValidatorTest extends \Inhere\Validate\Validator\AbstractValidator 
+class AdemoValidatorTest extends AbstractValidator
 {
-
-   
-    public function validate($value, $data): bool 
+    /**
+     * @param mixed $value
+     * @param array $data
+     *
+     * @return bool
+     */
+    public function validate($value, $data): bool
     {
-        if ($value == 1) {
-            return true;
-        }
-        return false;
+        return $value === 1;
     }
-
 }
