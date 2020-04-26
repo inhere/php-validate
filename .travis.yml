@@ -13,8 +13,8 @@ php:
 
 install:
   - |
-    wget -O vendor/bin/php-cs-fixer "https://cs.symfony.com/download/php-cs-fixer-v2.phar"
-    chmod +x vendor/bin/php-cs-fixer
+    wget -O php-cs-fixer "https://cs.symfony.com/download/php-cs-fixer-v2.phar"
+    chmod +x php-cs-fixer
 
 before_script:
   - php -m
