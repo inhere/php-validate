@@ -163,8 +163,10 @@ class Validators
     }
 
     /**
+     * @param mixed $val
+     *
+     * @return bool
      * @see Validators::boolean()
-     * {@inheritdoc}
      */
     public static function bool($val): bool
     {
@@ -271,8 +273,13 @@ class Validators
     }
 
     /**
+     * @param int|mixed $val
+     * @param int|null $min
+     * @param int|null $max
+     * @param int  $flags
+     *
+     * @return bool
      * @see integer()
-     * {@inheritdoc}
      */
     public static function int($val, $min = null, $max = null, $flags = 0): bool
     {
@@ -303,8 +310,13 @@ class Validators
     }
 
     /**
+     * @param int|mixed $val
+     * @param int|null $min
+     * @param int|null $max
+     * @param int  $flags
+     *
+     * @return bool
      * @see number()
-     * {@inheritdoc}
      */
     public static function num($val, $min = null, $max = null, $flags = 0): bool
     {
@@ -549,8 +561,12 @@ class Validators
     }
 
     /**
+     * @param int|string|array|mixed $val
+     * @param int|null $min
+     * @param int|null $max
+     *
+     * @return bool
      * @see Validators::size()
-     * {@inheritdoc}
      */
     public static function between($val, $min = null, $max = null): bool
     {
@@ -558,8 +574,12 @@ class Validators
     }
 
     /**
+     * @param int|string|array|mixed $val
+     * @param int|null               $min
+     * @param int|null               $max
+     *
+     * @return bool
      * @see Validators::size()
-     * {@inheritdoc}
      */
     public static function range($val, $min = null, $max = null): bool
     {
@@ -842,8 +862,7 @@ class Validators
             return false;
         }
 
-        json_decode($val);
-
+        json_decode($val, true);
         return json_last_error() === JSON_ERROR_NONE;
     }
 
@@ -997,7 +1016,7 @@ class Validators
     /**
      * 验证字段值是否是一个 array list, 多维数组
      *
-     * @param $val
+     * @param array|mixed $val
      *
      * @return bool
      */
@@ -1007,7 +1026,6 @@ class Validators
             return false;
         }
 
-        /** @var array $val */
         foreach ($val as $k => $v) {
             if (!is_array($v)) {
                 return false;
