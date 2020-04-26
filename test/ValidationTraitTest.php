@@ -34,7 +34,17 @@ class ValidationTraitTest extends TestCase
                     'attr' => [
                         'wid' => 1
                     ]
-                ]
+                ],
+                [
+                    'attr' => [
+                        'wid' => 2,
+                    ]
+                ],
+                [
+                    'attr' => [
+                        'wid' => 3,
+                    ]
+                ],
             ],
             'users' => [
                 ['id' => 1,],
@@ -55,61 +65,31 @@ class ValidationTraitTest extends TestCase
         $this->assertSame(1, $val);
 
         $val = $v->getByPath('prod.*.attr');
-        $this->assertSame([['wid' => 1]], $val);
+        $this->assertSame([['wid' => 1], ['wid' => 2], ['wid' => 3],], $val);
 
-        // $val = $v->getByPath('prod.*.attr.wid');
-        // $this->assertSame([1], $val);
+        $val = $v->getByPath('prod.*.attr.wid');
+        $this->assertSame([1, 2, 3], $val);
     }
 
-    public function testBeforeAndAfter(): void
-    {
-        $v = Validation::make(['name' => 'inhere'], [
-            ['name', 'string', 'min' => 3, 'filter' => 'trim|upper']
-        ]);
+    // TODO key is must exists on data.
+    // public function testIndexedArrayGetByPath(): void
+    // {
+    //     $v = Validation::make([
+    //         ['attr' => ['wid' => 1]],
+    //         ['attr' => ['wid' => 2]],
+    //         ['attr' => ['wid' => 3]],
+    //     ]);
+    //
+    //     $val = $v->GetByPath('0.attr');
+    //     $this->assertSame(['wid' => 1], $val);
+    //
+    //     $val = $v->getByPath('0.attr.wid');
+    //     $this->assertSame(1, $val);
+    // }
 
-        $v->onBeforeValidate(function (Validation $v) {
-            $this->assertSame('inhere', $v->getRaw('name'));
-            $this->assertNull($v->getSafe('name'));
-
-            return true;
-        });
-
-        $v->onAfterValidate(function (Validation $v) {
-            $this->assertSame('INHERE', $v->getRaw('name'));
-            $this->assertSame('INHERE', $v->getSafe('name'));
-        });
-
-        $v->validate();
-
-        $this->assertTrue($v->isOk());
-        $this->assertTrue($v->isValidated());
-
-        $v->validate();
-
-        $this->assertTrue($v->isValidated());
-    }
-
-    public function testRuleBeforeAndAfter(): void
-    {
-        $v = Validation::make(['name' => 'inhere'], [
-            [
-                'name',
-                'string',
-                'min'    => 3,
-                'before' => function ($value) {
-                    return $value === 'inhere';
-                },
-                'after' => function ($value) {
-                    $this->assertSame('inhere', $value);
-                    return true;
-                }
-            ]
-        ]);
-
-        $v->validate();
-        $this->assertTrue($v->isOk());
-    }
-
+    /**
+     * @var \array[][] see PR https://github.com/inhere/php-validate/pull/19
+     */
     public $deepData = [
         'companies' => [
             [
@@ -207,5 +187,54 @@ class ValidationTraitTest extends TestCase
 
         $val = $v->getByPath('companies.*.departments.*.employees.*.name');
         $this->assertSame(['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'fff', 'xxx', 'yyy'], $val);
+    }
+
+    public function testBeforeAndAfter(): void
+    {
+        $v = Validation::make(['name' => 'inhere'], [
+            ['name', 'string', 'min' => 3, 'filter' => 'trim|upper']
+        ]);
+
+        $v->onBeforeValidate(function (Validation $v) {
+            $this->assertSame('inhere', $v->getRaw('name'));
+            $this->assertNull($v->getSafe('name'));
+
+            return true;
+        });
+
+        $v->onAfterValidate(function (Validation $v) {
+            $this->assertSame('INHERE', $v->getRaw('name'));
+            $this->assertSame('INHERE', $v->getSafe('name'));
+        });
+
+        $v->validate();
+
+        $this->assertTrue($v->isOk());
+        $this->assertTrue($v->isValidated());
+
+        $v->validate();
+
+        $this->assertTrue($v->isValidated());
+    }
+
+    public function testRuleBeforeAndAfter(): void
+    {
+        $v = Validation::make(['name' => 'inhere'], [
+            [
+                'name',
+                'string',
+                'min'    => 3,
+                'before' => function ($value) {
+                    return $value === 'inhere';
+                },
+                'after' => function ($value) {
+                    $this->assertSame('inhere', $value);
+                    return true;
+                }
+            ]
+        ]);
+
+        $v->validate();
+        $this->assertTrue($v->isOk());
     }
 }

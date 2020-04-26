@@ -636,32 +636,34 @@ trait ValidationTrait
 
         $result = [];
 
-        // eg: "companies.*.departments.*.employees.*.name" => "departments.*.employees.*.name"
+        // eg: "companies.*.departments.*.employees.*.name" => $subPath: "departments.*.employees.*.name"
         if (strpos($subPath, '.*') > 0) {
             foreach ($recently as $item) {
                 if (is_array($item)) {
-                    // $result[] = $this->getByWildcard($subPath, $this->_arrayNotKeyValue, $item);
                     $result[] = $this->getByWildcard($subPath, $this->_arrayNotKeyValue, $item);
                 }
             }
 
             // return $result;
+            // expand all sub-values one dimensional array. eg: [[1, 2], [3, 4]] => [1, 2, 3, 4]
             return array_merge(...$result);
         }
 
-        // eg: "companies.0.departments.*.employees.0.manage" => "employees.0.manage"
+        // eg: "companies.0.departments.*.employees.0.manage" => $subPath: "employees.0.manage"
         if (strpos($subPath, '.') > 0) {
             foreach ($recently as $item) {
                 if (is_array($item)) {
                     $result[] = Helper::getValueOfArray($item, $subPath, $this->_arrayNotKeyValue);
                 }
             }
-        } else {
-            // eg: 'users.*.id' => 'id'
-            foreach ($recently as $item) {
-                if (is_array($item)) {
-                    $result[] = $item[$subPath] ?? $this->_arrayNotKeyValue;
-                }
+
+            return $result;
+        }
+
+        // eg: 'users.*.id' => $subPath: 'id'
+        foreach ($recently as $item) {
+            if (is_array($item)) {
+                $result[] = $item[$subPath] ?? $this->_arrayNotKeyValue;
             }
         }
 

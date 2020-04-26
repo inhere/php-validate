@@ -282,7 +282,7 @@ class Helper
             // className::method
             if (strpos($cb, '::') > 0) {
                 $cb = explode('::', $cb, 2);
-                // function
+            // function
             } elseif (function_exists($cb)) {
                 return $cb(...$args);
             }
