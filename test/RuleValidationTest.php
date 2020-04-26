@@ -725,6 +725,39 @@ class RuleValidationTest extends TestCase
     }
 
     /**
+     * @link https://github.com/inhere/php-validate/issues/20
+     */
+    public function testIssues20(): void
+    {
+        $d = [
+            'product' => [
+                [
+                    'sku_id' => 1,
+                    'properties' => 'aaa'
+                ],
+                [
+                    'sku_id' => 2,
+                    'properties' => 'bbb'
+                ]
+            ]
+        ];
+        $r = [
+            ['product.*.properties', 'each', 'string', 'max' => 40],
+        ];
+
+        $v = RV::check($d, $r);
+        $this->assertTrue($v->isOk());
+
+        $r = [
+            ['product.*.properties', 'each', 'string', 'max' => 2],
+        ];
+
+        $v = RV::check($d, $r);
+        $this->assertFalse($v->isOk());
+        $this->assertSame('product.*.properties each value must be through the "string" verify', $v->firstError());
+    }
+
+    /**
      * @link https://github.com/inhere/php-validate/issues/21
      */
     public function testIssues21(): void
