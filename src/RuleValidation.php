@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -22,5 +22,4 @@ namespace Inhere\Validate;
  */
 class RuleValidation extends Validation
 {
-
 }

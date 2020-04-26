@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Validate;
 
@@ -8,5 +8,4 @@ namespace Inhere\Validate;
  */
 final class FV extends FieldValidation
 {
-
 }

@@ -1,37 +1,41 @@
 {
-    "name": "inhere/php-validate",
-    "type": "library",
-    "description": "an simple validate, filter library of the php",
-    "keywords": [
-        "php-library",
-        "library",
-        "validate",
-        "form-validate",
-        "validation"
-    ],
-    "homepage": "https://github.com/inhere/php-validate",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "inhere",
-            "email": "in.798@qq.com",
-            "homepage": "http://www.yzone.net/"
-        }
-    ],
-    "require": {
-        "php": ">7.1.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^7.5"
-    },
-    "autoload": {
-        "psr-4": {
-            "Inhere\\Validate\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Inhere\\ValidateTest\\": "test/"
-        }
+  "name": "inhere/php-validate",
+  "type": "library",
+  "description": "an simple validate, filter library of the php",
+  "keywords": [
+    "php-library",
+    "library",
+    "validate",
+    "form-validate",
+    "validation"
+  ],
+  "homepage": "https://github.com/inhere/php-validate",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "inhere",
+      "email": "in.798@qq.com",
+      "homepage": "http://www.yzone.net/"
     }
+  ],
+  "require": {
+    "php": ">7.1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Inhere\\Validate\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Inhere\\ValidateTest\\": "test/"
+    }
+  },
+  "scripts": {
+    "check-cs": "./bin/php-cs-fixer fix --dry-run --diff --diff-format=udiff",
+    "cs-fix": "./bin/php-cs-fixer fix"
+  }
 }

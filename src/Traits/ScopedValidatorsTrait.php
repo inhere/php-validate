@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -592,7 +592,6 @@ trait ScopedValidatorsTrait
      */
     public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>='): void
     {
-
     }
 
     /**
@@ -623,18 +622,15 @@ trait ScopedValidatorsTrait
                 // special for required
                 if ('required' === $validator) {
                     $passed = !Validators::isEmpty($value);
-
                 } elseif (isset($this->_validators[$validator])) {
                     $callback = $this->_validators[$validator];
                     $passed   = $callback($value, ...$args);
-
                 } elseif (method_exists($this, $method = $validator . 'Validator')) {
                     $passed = $this->$method($value, ...$args);
-
                 } elseif (method_exists(Validators::class, $validator)) {
                     $passed = Validators::$validator($value, ...$args);
 
-                    // it is function name
+                // it is function name
                 } elseif (function_exists($validator)) {
                     $passed = $validator($value, ...$args);
                 } else {
@@ -702,5 +698,4 @@ trait ScopedValidatorsTrait
         $this->uploadedFiles = (array)$uploadedFiles;
         return $this;
     }
-
 }

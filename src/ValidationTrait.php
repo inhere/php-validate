@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by sublime 3.
  * Auth: Inhere
@@ -330,12 +330,12 @@ trait ValidationTrait
         if ($validator === 'required') {
             $passed = $this->required($field, $value);
 
-            // File resource check
+        // File resource check
         } elseif (self::isCheckFile($validator)) {
             $method = "{$validator}Validator";
             $passed = $this->$method($field, ...array_values($args));
 
-            // other required* methods
+        // other required* methods
         } elseif (method_exists($this, $validator)) {
             $passed = $this->$validator($field, $value, ...array_values($args));
         } else {
@@ -388,10 +388,10 @@ trait ValidationTrait
             if ($callback = $this->getValidator($validator)) {
                 $args[] = $this->data;
                 $passed = $callback($value, ...$args);
-                // if $validator is a custom method of the subclass.
+            // if $validator is a custom method of the subclass.
             } elseif (method_exists($this, $method = $validator . 'Validator')) {
                 $passed = $this->$method($value, ...$args);
-                // if $validator is a global custom validator {@see UserValidators::$validators}.
+            // if $validator is a global custom validator {@see UserValidators::$validators}.
             } elseif ($callback = UserValidators::get($validator)) {
                 $args[] = $this->data;
                 $passed = $callback($value, ...$args);

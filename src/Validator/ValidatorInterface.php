@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Validate\Validator;
 
@@ -6,9 +6,8 @@ namespace Inhere\Validate\Validator;
  *
  * 验证器借口
  */
-interface ValidatorInterface 
+interface ValidatorInterface
 {
-
     /**
      * 验证方法，进行验证返回bool类型
      * @param type $value 当前值
@@ -16,5 +15,4 @@ interface ValidatorInterface
      * @return bool
      */
     public function validate($value, $data): bool;
-
 }

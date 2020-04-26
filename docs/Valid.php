@@ -2,8 +2,11 @@
 
 namespace Inhere\Validate;
 
+use function array_merge;
+
 /**
  * Class Valid - Simple Data Validator
+ *
  * @package Inhere\Validate
  */
 class Valid
@@ -11,31 +14,22 @@ class Valid
     /**
      * @var array
      */
-    protected $data = [];
+    protected static $data = [];
 
     /**
      * @param array $data
-     *
-     * @return Valid
      */
-    public static function create(array $data): self
+    public static function load(array $data): void
     {
-        return new static($data);
+        self::$data = $data;
     }
 
     /**
-     * Validator constructor.
-     *
      * @param array $data
      */
-    public function __construct(array $data)
+    public static function append(array $data): void
     {
-        $this->data = $data;
-    }
-
-    public function getInt(string $field, $min = null, $max = null, $default = 0): int
-    {
-        return 0;
+        self::$data = array_merge(self::$data, $data);
     }
 
     /**
@@ -43,14 +37,39 @@ class Valid
      */
     public function getData(): array
     {
-        return $this->data;
+        return self::$data;
     }
 
+    /**********************************************************************************************
+     * =========== validate data field value and return
+     *********************************************************************************************/
+
     /**
-     * @param array $data
+     * @param string $field
+     * @param null|int   $min
+     * @param null|int   $max
+     * @param null|int    $default
+     *
+     * @return int
      */
-    public function setData(array $data): void
+    public static function getInt(string $field, int $min = null, int $max = null, int $default = null): int
     {
-        $this->data = $data;
+        return 0;
     }
+
+    public static function getInts(string $field, int $min = null, int $max = null, int $default = 0): int
+    {
+        return 0;
+    }
+
+    public static function getString(string $field, int $minLen = null, int $maxLen = null, string $default = null): int
+    {
+        return 0;
+    }
+
+    public static function getStrings(string $field, int $min = null, int $max = null, array $default = null): int
+    {
+        return 0;
+    }
+
 }

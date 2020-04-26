@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -63,14 +63,14 @@ trait FilteringTrait
                 $args  = (array)$filter;
                 $value = $this->callStringCallback($key, $value, ...$args);
 
-                // closure
+            // closure
             } elseif (is_object($filter) && method_exists($filter, '__invoke')) {
                 $value = $filter($value);
-                // string, trim, ....
+            // string, trim, ....
             } elseif (is_string($filter)) {
                 $value = $this->callStringCallback($filter, $value);
 
-                // e.g ['Class', 'method'],
+            // e.g ['Class', 'method'],
             } else {
                 $value = Helper::call($filter, $value);
             }
@@ -94,21 +94,21 @@ trait FilteringTrait
         // if $filter is a custom by addFiler()
         if ($callback = $this->getFilter($filter)) {
             $value = $callback(...$args);
-            // if $filter is a custom method of the subclass.
+        // if $filter is a custom method of the subclass.
         } elseif (method_exists($this, $filter . 'Filter')) {
             $filter .= 'Filter';
             $value  = $this->$filter(...$args);
 
-            // if $filter is a custom add callback in the property {@see $_filters}.
+        // if $filter is a custom add callback in the property {@see $_filters}.
         } elseif ($callback = UserFilters::get($filter)) {
             $value = $callback(...$args);
 
-            // if $filter is a custom add callback in the property {@see $_filters}.
+        // if $filter is a custom add callback in the property {@see $_filters}.
             // $filter is a method of the class 'FilterList'
         } elseif (method_exists(Filters::class, $filterName)) {
             $value = Filters::$filterName(...$args);
 
-            // it is function name
+        // it is function name
         } elseif (function_exists($filter)) {
             $value = $filter(...$args);
         } else {

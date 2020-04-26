@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Validate\Traits;
 
@@ -309,7 +309,7 @@ trait ErrorMessageTrait
         // get message from built in dict.
         if (!$message) {
             $message = $this->findMessage($field, $rawName) ?: GlobalMessage::getDefault();
-            // is array. It's defined multi error messages
+        // is array. It's defined multi error messages
         } elseif (is_array($message)) {
             $message = $message[$rawName] ?? $this->findMessage($field, $rawName);
 
@@ -359,7 +359,7 @@ trait ErrorMessageTrait
 
         if (isset($this->_messages[$fullKey])) {
             $message = $this->_messages[$fullKey];
-            // eg 'required' => 'some message ...'
+        // eg 'required' => 'some message ...'
         } elseif (isset($this->_messages[$rawName])) {
             $message = $this->_messages[$rawName];
         } elseif (isset($this->_messages[$realName])) {

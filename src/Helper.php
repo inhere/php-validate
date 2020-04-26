@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -43,7 +43,9 @@ use const ENT_COMPAT;
 class Helper
 {
     public const IS_TRUE  = '|yes|on|1|true|';
+
     public const IS_FALSE = '|no|off|0|false|';
+
     public const IS_BOOL  = '|yes|on|1|true|no|off|0|false|';
 
     /**
@@ -252,7 +254,7 @@ class Helper
             // className::method
             if (strpos($cb, '::') > 0) {
                 $cb = explode('::', $cb, 2);
-                // function
+            // function
             } elseif (function_exists($cb)) {
                 return $cb(...$args);
             }

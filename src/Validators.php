@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @date 2015.08.04
  * 验证器列表
@@ -1307,8 +1307,11 @@ class Validators
      */
     public static function isDate($date): bool
     {
-        if (!preg_match('/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
-            $date, $matches)) {
+        if (!preg_match(
+            '/^([\d]{4})-((?:0?[\d])|(?:1[0-2]))-((?:0?[\d])|(?:[1-2][\d])|(?:3[01]))( [\d]{2}:[\d]{2}:[\d]{2})?$/',
+            $date,
+            $matches
+        )) {
             return false;
         }
 
