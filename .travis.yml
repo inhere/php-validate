@@ -13,8 +13,8 @@ php:
 
 install:
   - |
-    wget -O bin/php-cs-fixer "https://cs.symfony.com/download/php-cs-fixer-v2.phar"
-    chmod +x bin/php-cs-fixer
+    wget -O vendor/bin/php-cs-fixer "https://cs.symfony.com/download/php-cs-fixer-v2.phar"
+    chmod +x vendor/bin/php-cs-fixer
 
 before_script:
   - php -m
@@ -22,7 +22,7 @@ before_script:
 
 script:
   # check code style
-  # - composer check-cs
+  - composer check-cs
   # - phpunit --coverage-clover clover.xml
   - php vendor/bin/phpunit --coverage-clover clover.xml
 
