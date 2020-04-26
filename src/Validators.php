@@ -351,7 +351,7 @@ class Validators
      */
     public static function alpha($val): bool
     {
-        return is_string($val) && preg_match('/^(?:[a-zA-Z]+)$/', $val);
+        return is_string($val) && preg_match('/^(?:[a-zA-Z]+)$/', $val) === 1;
     }
 
     /**
@@ -363,11 +363,11 @@ class Validators
      */
     public static function alphaNum($val): bool
     {
-        if (!is_string($val) && !is_numeric($val)) {
+        if (!is_string($val) || !is_numeric($val)) {
             return false;
         }
 
-        return 1 === preg_match('/^(?:[a-zA-Z0-9]+)$/', $val);
+        return 1 === preg_match('/^(?:[a-zA-Z0-9]+)$/', (string)$val);
     }
 
     /**
@@ -792,7 +792,7 @@ class Validators
             return false;
         }
 
-        return preg_match('/^(([0-9a-fA-F]{2}-){5}|([0-9a-fA-F]{2}:){5})[0-9a-fA-F]{2}$/', $input);
+        return 1 === preg_match('/^(([0-9a-fA-F]{2}-){5}|([0-9a-fA-F]{2}:){5})[0-9a-fA-F]{2}$/', $input);
     }
 
     /**

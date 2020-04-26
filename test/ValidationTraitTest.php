@@ -34,6 +34,10 @@ class ValidationTraitTest extends TestCase
                     'attr' => [
                         'wid' => 1
                     ]
+                ],
+                'users' => [
+                    ['id' => 1,],
+                    ['id' => 2,]
                 ]
             ]
         ]);
@@ -49,6 +53,10 @@ class ValidationTraitTest extends TestCase
 
         $val = $v->getByPath('prod.*.attr');
         $this->assertSame([['wid' => 1]], $val);
+
+        // TODO ..
+        // $val = $v->getByPath('users.*.id');
+        // $this->assertSame([1, 2], $val);
 
         // $val = $v->getByPath('prod.*.attr.wid');
         // $this->assertSame([1], $val);

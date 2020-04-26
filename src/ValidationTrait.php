@@ -573,6 +573,7 @@ trait ValidationTrait
                 $result[] = isset($item[$field]) ? $item[$field] : new ArrayValueNotExists();
             }
         }
+
         return $result;
     }
 

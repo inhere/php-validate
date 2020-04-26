@@ -352,7 +352,7 @@ trait ScopedValidatorsTrait
             return true;
         }
 
-        if (!$suffix = trim(strrchr($file['name'], '.'), '.')) {
+        if (!$suffix = trim((string)strrchr($file['name'], '.'), '.')) {
             return false;
         }
 

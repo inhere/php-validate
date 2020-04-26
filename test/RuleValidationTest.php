@@ -692,6 +692,31 @@ class RuleValidationTest extends TestCase
     }
 
     /**
+     * @link https://github.com/inhere/php-validate/issues/17
+     */
+    public function tIssues17(): void
+    {
+        $rs = [
+            ['users.*.id', 'required'],
+            ['users.*.id', 'each', 'required'],
+            ['users.*.id', 'each', 'number', 'min' => 34, 'msg' => [
+                'min' 	 => 'xxx error',
+                'number' => 'xxx error',
+            ]],
+        ];
+
+        $v = RV::check([
+            'users' => [
+                ['id' => 12,],
+                ['id' => 23],
+            ],
+        ], $rs);
+
+        $this->assertFalse($v->isOk());
+        $this->assertSame('parameter users.*.id is required!', $v->firstError());
+    }
+
+    /**
      * @link https://github.com/inhere/php-validate/issues/21
      */
     public function tIssues21(): void

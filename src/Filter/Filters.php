@@ -276,7 +276,7 @@ final class Filters
     public static function lowercase($val): string
     {
         if (!$val || !is_string($val)) {
-            return is_int($val) ? $val : '';
+            return is_int($val) ? (string)$val: '';
         }
 
         if (function_exists('mb_strtolower')) {
@@ -308,7 +308,7 @@ final class Filters
     public static function uppercase($str): string
     {
         if (!$str || !is_string($str)) {
-            return is_int($str) ? $str : '';
+            return is_int($str) ? (string)$str : '';
         }
 
         if (function_exists('mb_strtoupper')) {

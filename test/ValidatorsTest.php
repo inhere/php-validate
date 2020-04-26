@@ -135,6 +135,7 @@ class ValidatorsTest extends TestCase
     {
         $this->assertFalse(Validators::alphaNum('='));
         $this->assertFalse(Validators::alphaNum(null));
+        $this->assertFalse(Validators::alphaNum(true));
         $this->assertFalse(Validators::alphaNum([]));
         $this->assertTrue(Validators::alphaNum(5));
         $this->assertTrue(Validators::alphaNum('5'));
