@@ -1,4 +1,4 @@
-# PHP validate
+# PHP Validate
 
 [![License](https://img.shields.io/packagist/l/inhere/php-validate.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.1-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/php-validate)
@@ -590,6 +590,54 @@ $v->validate();
 - 注意： 写在当前类里的过滤器方法必须带有后缀 `Filter`, 以防止对内部的其他的方法造成干扰
 - 通过类 `Filtration`，可以独立使用过滤器功能
 - php内置过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
+
+## 场景验证
+
+如果需要让定义的规则在多个类似情形下重复使用，可以设置规则的使用场景。 **在验证时也表明要验证的场景**
+
+### 方式1
+
+在继承类中使用 `scenarios()` 方法：
+
+```php
+    // 在继承了 Validation 的子类 ValidationClass 中 ...
+
+    // 定义不同场景需要验证的字段。
+    // 功能跟规则里的 'on' 类似，两者尽量不要同时使用，以免混淆。
+    public function scenarios(): array
+    {
+        return [
+            'create' => ['user', 'pwd', 'code'],
+            'update' => ['user', 'pwd'],
+        ];
+    }
+```
+
+### 方式2
+
+添加规则时配置 `on` 选项：
+
+```php
+    // 在继承了 Validation 的子类 ValidationClass 中 ...
+    public function rules(): array
+    {
+         return [
+            ['title', 'required' ],
+            ['userId', 'number', 'on' => 'create' ],
+            ['userId', 'int', 'on' => 'update' ],
+            ['name', 'string', 'on' => 'create,update' ],
+        ];
+    }
+```
+
+### 验证使用
+
+```php
+
+$v->setSecne('update')->validate();
+
+```
+
 
 <a name="built-in-filters"></a>
 ## 内置的过滤器
