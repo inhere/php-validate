@@ -9,6 +9,7 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Exception\ArrayValueNotExists;
 use Inhere\Validate\Traits\NameAliasTrait;
 use function array_diff;
 use function array_key_exists;

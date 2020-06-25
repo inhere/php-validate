@@ -10,6 +10,7 @@ namespace Inhere\Validate;
 
 use Closure;
 use Generator;
+use Inhere\Validate\Exception\ArrayValueNotExists;
 use Inhere\Validate\Filter\FilteringTrait;
 use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Traits\ErrorMessageTrait;

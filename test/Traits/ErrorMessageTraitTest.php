@@ -65,7 +65,6 @@ class ErrorMessageTraitTest extends TestCase
 
         // prettifyName
         $v->setPrettifyName(false);
-
         $this->assertFalse($v->isPrettifyName());
 
         // re-validate

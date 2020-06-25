@@ -2,6 +2,7 @@
 
 namespace Inhere\Validate;
 
+use Inhere\Validate\Exception\ValidateException;
 use function array_merge;
 use function is_int;
 use function is_numeric;

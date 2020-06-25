@@ -60,7 +60,7 @@ trait ErrorMessageTrait
     private $_stopOnError = true;
 
     /**
-     * prettify field name on get error message
+     * Prettify field name on get error message
      *
      * @var bool
      */

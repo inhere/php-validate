@@ -36,6 +36,7 @@
   },
   "scripts": {
     "check-cs": "./php-cs-fixer fix --dry-run --diff --diff-format=udiff",
-    "cs-fix": "./php-cs-fixer fix"
+    "cs-fix": "./php-cs-fixer fix",
+    "test": "vendor/bin/phpunit"
   }
 }
