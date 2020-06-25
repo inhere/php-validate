@@ -5,6 +5,7 @@
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/php-validate.svg)](https://packagist.org/packages/inhere/php-validate)
 [![Build Status](https://travis-ci.org/inhere/php-validate.svg?branch=master)](https://travis-ci.org/inhere/php-validate)
 [![Coverage Status](https://coveralls.io/repos/github/inhere/php-validate/badge.svg?branch=master)](https://coveralls.io/github/inhere/php-validate?branch=master)
+[![Github Actions Status](https://github.com/inhere/php-validate/workflows/Unit-tests/badge.svg)](https://github.com/inhere/php-validate/actions)
 
 一个简洁小巧且功能完善的php验证、过滤库。
 
@@ -971,7 +972,7 @@ phpunit
 
 ## License
 
-MIT
+[MIT](LICENSE)
 
 ## 我的其他项目
 
