@@ -55,8 +55,8 @@ validate 同时支持两种规则配置方式，对应了两种规则的收集�
 
 ## 项目地址
 
-- **github** https://github.com/inhere/php-validate.git
-- **gitee** https://gitee.com/inhere/php-validate.git
+- **github** <https://github.com/inhere/php-validate.git>
+- **gitee** <https://gitee.com/inhere/php-validate.git>
 
 > **注意：** master 分支是要求 `php7.1+` 的(推荐使用)。`1.x` 分支是支持php5的代码分支,但是基本上不再维护。
 
@@ -70,6 +70,7 @@ composer require inhere/php-validate
 ## 立即使用
 
 <a name="how-to-use1"></a>
+
 ### 方式1: 直接使用类 `Validation`
 
 需要快速简便的使用验证时，可直接使用 `Inhere\Validate\Validation`
@@ -101,7 +102,8 @@ class SomeController
 ```
 
 <a name="how-to-use2"></a>
-### 方式1: 继承类 `Validation`
+
+### 方式2: 继承类 `Validation`
 
 创建一个新的class，并继承 `Inhere\Validate\Validation`。用于一个（或一系列相关）请求的验证, 相当于 laravel 的 表单请求验证
 
@@ -226,6 +228,7 @@ $db->save($safeData);
 ```
 
 <a name="how-to-use3"></a>
+
 ### 方式3: 使用trait `ValidationTrait`
 
 创建一个新的class，并使用 Trait `Inhere\Validate\ValidationTrait`。
@@ -347,8 +350,8 @@ $v = Validation::make($_POST,[
 class AdemoValidator extends \Inhere\Validate\Validator\AbstractValidator
 {
 
-   
-    public function validate($value, $data): bool 
+
+    public function validate($value, $data): bool
     {
         if ($value == 1) {
             return true;
@@ -362,6 +365,7 @@ class AdemoValidator extends \Inhere\Validate\Validator\AbstractValidator
 ```
 
 <a name="on-in-Validation"></a>
+
 ## **验证前置/后置**处理
 
 * 方式1: 在 `Validation` 中
@@ -385,7 +389,9 @@ class PageValidation extends Validation
     }
 }
 ```
+
 * 方式2: `onBeforeValidate`&`onAfterValidate`
+
 ```php
 use Inhere\Validate\Validation;
 
@@ -398,7 +404,7 @@ $v->onBeforeValidate(function (Validation $v) {
 });
 
 $v->onAfterValidate(function (Validation $v) {
-    
+
 });
 
 $v->validate();
@@ -590,7 +596,7 @@ $v->validate();
 - 允许同时使用多个过滤器。字符串使用 `|` 分隔，或者配置为数组。
 - 注意： 写在当前类里的过滤器方法必须带有后缀 `Filter`, 以防止对内部的其他的方法造成干扰
 - 通过类 `Filtration`，可以独立使用过滤器功能
-- php内置过滤器请参看 http://php.net/manual/zh/filter.filters.sanitize.php
+- php内置过滤器请参看 <http://php.net/manual/zh/filter.filters.sanitize.php>
 
 ## 场景验证
 
@@ -639,8 +645,8 @@ $v->setSecne('update')->validate();
 
 ```
 
-
 <a name="built-in-filters"></a>
+
 ## 内置的过滤器
 
 > 一些 php 内置的函数可直接使用。 e.g `trim|ucfirst` `json_decode` `md5`
@@ -671,6 +677,7 @@ $v->setSecne('update')->validate();
 `quotes` | 应用 `addslashes()` 转义数据 | `['content', 'string', 'filter' => 'quotes'],`
 
 <a name="built-in-validators"></a>
+
 ## 内置的验证器
 
 > `/` 分隔的验证器，表明功能是一样的，只是有不同的别名
@@ -756,6 +763,7 @@ $v->setSecne('update')->validate();
 ### 一些补充说明
 
 <a name="about-empty-value"></a>
+
 #### 关于为空判断
 
 字段符合下方任一条件时即为「空」
@@ -767,6 +775,7 @@ $v->setSecne('update')->validate();
 - 该值为没有路径的上传文件
 
 <a name="about-bool-value"></a>
+
 #### 关于布尔值
 
 值符合下列的任意一项即认为是为bool值(不区分大小写)
@@ -978,4 +987,3 @@ phpunit
 
 - [inhere/console](https://github.com/inhere/php-validate) 轻量且功能丰富的命令行应用, 控制台交互，工具库
 - [inhere/sroute](https://github.com/inhere/php-srouter) 轻量且快速的HTTP请求路由库
-
