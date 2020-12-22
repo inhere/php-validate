@@ -1,12 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Validate\Validator;
+namespace Inhere\Validate\Locale;
+
+use Inhere\Validate\Validator\GlobalMessage;
 
 /**
- * Class GlobalMessage
- * - global error message storage
+ * Class LocaleZhCN
+ *
+ * @package Inhere\Validate\Locale
  */
-final class GlobalMessage
+class LocaleZhCN
 {
     /**
      * Default error messages
@@ -16,20 +19,20 @@ final class GlobalMessage
     public static $messages = [
         // 'int' 'integer'
         'integer'    => [
-            '{attr} must be an integer!',
-            '{attr} must be an integer and minimum value is {min}',
-            '{attr} must be an integer and value range {min} ~ {max}',
+            '{attr} 必须是整数!',
+            '{attr} 必须是整数并且最小值是 {min}',
+            '{attr} 必须是整数并且值的范围必须在 {min} ~ {max}',
         ],
         // 'num'
         'number'     => [
-            '{attr} must be an integer greater than 0!',
-            '{attr} must be an integer and minimum value is {min}',
-            '{attr} must be an integer and in the range {min} ~ {max}',
+            '{attr} 必须是整数并且大于0!',
+            '{attr} 必须是整数并且最小值是 {min}',
+            '{attr} 必须是整数并且值的范围必须在 {min} ~ {max}',
         ],
         // 'bool', 'boolean',
-        'boolean'    => '{attr} must be an boolean!',
-        'float'      => '{attr} must be an float!',
-        'url'        => '{attr} must be a URL address!',
+        'boolean'    => '{attr} 必须是布尔类型!',
+        'float'      => '{attr} 必须是浮点数!',
+        'url'        => '{attr} is not a url address!',
         'email'      => '{attr} is not a email address!',
         'date'       => '{attr} is not a date format!',
         'dateFormat' => '{attr} is not in a {value0} date format!',
@@ -113,59 +116,10 @@ final class GlobalMessage
     ];
 
     /**
-     * @param string $key
-     *
-     * @return string|array
+     * register to global message
      */
-    public static function get(string $key)
+    public static function register(): void
     {
-        return self::$messages[$key] ?? '';
-    }
-
-    /**
-     * @param string       $key
-     * @param string|array $msg
-     */
-    public static function set(string $key, $msg): void
-    {
-        if ($key && $msg) {
-            self::$messages[$key] = $msg;
-        }
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return bool
-     */
-    public static function has(string $key): bool
-    {
-        return isset(self::$messages[$key]);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getDefault(): string
-    {
-        return self::$messages['__default'];
-    }
-
-    /**
-     * @param array $messages
-     */
-    public static function setMessages(array $messages): void
-    {
-        foreach ($messages as $key => $value) {
-            self::set($key, $value);
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public static function getMessages(): array
-    {
-        return self::$messages;
+        GlobalMessage::setMessages(self::$messages);
     }
 }
