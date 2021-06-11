@@ -165,7 +165,7 @@ final class Filters
         $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
         $ret = filter_var($val, FILTER_SANITIZE_NUMBER_FLOAT, $options);
-        $new = strpos($ret, '.') ? (float)$ret : $ret;
+        $new = strpos($ret, '.') ? (float)$ret : (int)$ret;
 
         if (is_int($decimal)) {
             return round($new, $decimal);
@@ -565,10 +565,11 @@ final class Filters
      */
     public static function quotes(string $val): string
     {
-        $flag = FILTER_SANITIZE_MAGIC_QUOTES;
         if (PHP_VERSION_ID > 70300) {
             /** @noinspection PhpElementIsNotAvailableInCurrentPhpVersionInspection */
             $flag = FILTER_SANITIZE_ADD_SLASHES;
+        } else {
+            $flag = FILTER_SANITIZE_MAGIC_QUOTES;
         }
 
         return (string)filter_var($val, $flag);

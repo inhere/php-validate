@@ -12,7 +12,7 @@ Lightweight and feature-rich PHP validation and filtering library.
 - Simple and convenient, support to add custom validator
 - Support pre-verification check, customize how to judge non-empty
 - Support grouping rules by scene. Or partial verification
-- Supports the use of filters to purify and filter values ​​before verification [built-in filter](#built-in-filters)
+- Supports the use of filters to purify and filter values before verification [built-in filter](#built-in-filters)
 - Support pre-processing and post-processing of verification [independent verification processing](#on-in-Validation)
 - Support to customize the error message, field translation, message translation of each verification, and support the default value
 - Supports basic array checking, checking of children (`'goods.apple'`) values ​​of arrays, checking of children of wildcards (`'users.*.id' 'goods.*'`)

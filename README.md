@@ -191,6 +191,7 @@ class PageRequest extends Validation
     public function messages(): array
     {
         return [
+           // 使用验证器名字指定消息
           'required' => '{attr} 是必填项。',
           // 可以直接针对字段的某个规则进行消息定义
           'title.required' => 'O, 标题是必填项。are you known?',
@@ -278,7 +279,7 @@ class UserModel extends DataModel
     {
         return [
             ['username, passwd', 'required'],
-            ['passwd', 'compare', 'repasswd', 'on' => 'create']
+            ['passwd', 'compare', 'repasswd', 'on' => 'create'],
             ['username', 'string', 'min' => 2, 'max' => 20, 'on' => 'create' ],
             ['id', 'number', 'on' => 'update' ], // 仅作用于场景 update
             ['createdAt, updatedAt', 'safe'],

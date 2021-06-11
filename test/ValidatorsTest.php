@@ -6,6 +6,10 @@ use Inhere\Validate\Validators;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+/**
+ * Class ValidatorsTest
+ * @package Inhere\ValidateTest
+ */
 class ValidatorsTest extends TestCase
 {
     public function testAliases(): void
@@ -51,6 +55,8 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::float(3.4, 3.1, 5.4));
         $this->assertTrue(Validators::float(3.4, 4.1, 2.4));
         $this->assertTrue(Validators::float(3.4, null, 5.4));
+        $this->assertTrue(Validators::float(0.8, 0, 4));
+        $this->assertTrue(Validators::float(0.5, 0.3, 0.7));
     }
 
     public function testInteger(): void
@@ -243,6 +249,13 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::size(56, 20, 100));
         $this->assertTrue(Validators::size('test', 2, 4));
         $this->assertTrue(Validators::size([3, 'test', 'hi'], 1, 4));
+        $this->assertTrue(Validators::size(0.8, 0, 4));
+    }
+
+    public function testSize_float(): void
+    {
+        $this->assertTrue(Validators::size(0.8, 0, 4));
+        $this->assertTrue(Validators::size(0.5, 0.3, 0.7));
     }
 
     public function testFixedSize(): void

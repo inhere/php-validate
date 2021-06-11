@@ -77,7 +77,8 @@ class FieldValidationTest extends TestCase
 
         $errors = $v->getErrors();
         $this->assertNotEmpty($errors);
-        $this->assertCount(3, $errors);
+
+        $this->assertCount(4, $errors);
         $this->assertSame('freeTime is required!!!!', $v->getErrors('freeTime')[0]);
 
         $v = FieldValidation::check($this->data, [
@@ -206,5 +207,27 @@ class FieldValidationTest extends TestCase
 
         $this->assertFalse($v->isOk());
         $this->assertSame('age must be an integer!', $v->firstError());
+    }
+
+    /**
+     * @link https://github.com/inhere/php-validate/issues/36
+     */
+    public function testIssues36(): void
+    {
+        $params = [];
+
+        $v = FieldValidation::check($params, [
+            ['owner', 'required', 'msg' => ['owner' => 'owner 缺失']],
+        ]);
+
+        $this->assertTrue($v->isFail());
+        $this->assertSame('parameter owner is required!', $v->firstError());
+
+        $v = FieldValidation::check($params, [
+            ['owner', 'required', 'msg' => ['required' => 'owner 缺失']],
+        ]);
+
+        $this->assertTrue($v->isFail());
+        $this->assertSame('owner 缺失', $v->firstError());
     }
 }

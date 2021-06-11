@@ -23,3 +23,9 @@ spl_autoload_register(function ($class) use ($npMap) {
         }
     }
 });
+
+if (is_file(dirname(__DIR__, 3) . '/autoload.php')) {
+    require dirname(__DIR__, 3) . '/autoload.php';
+} elseif (is_file(dirname(__DIR__) . '/vendor/autoload.php')) {
+    require dirname(__DIR__) . '/vendor/autoload.php';
+}

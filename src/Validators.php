@@ -175,21 +175,28 @@ class Validators
     }
 
     /**
+     * check value is float
+     *
      * @param mixed              $val   要验证的变量
      * @param null|integer|float $min   最小值
      * @param null|int|float     $max   最大值
      *                                  $options = [
-     *                                  'default' => 'default value',
-     *                                  'decimal' => 2
+     *                                      'default' => 'default value',
+     *                                      'decimal' => 2
      *                                  ]
-     * @param int                $flags FILTER_FLAG_ALLOW_THOUSAND
+     * @param int|mixed          $flags FILTER_FLAG_ALLOW_THOUSAND
      *
-     * @return mixed
+     * @return bool
      */
-    public static function float($val, $min = null, $max = null, $flags = 0)
+    public static function float($val, $min = null, $max = null, $flags = 0): bool
     {
+        if (!is_numeric($val)) {
+            return false;
+        }
+
         $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
+        // NOTICE: FILTER_VALIDATE_FLOAT not support the 'min_range', 'max_range options.
         if (filter_var($val, FILTER_VALIDATE_FLOAT, $options) === false) {
             return false;
         }
@@ -223,12 +230,12 @@ class Validators
     /**
      * int 验证 (所有的最小、最大都是包含边界值的)
      *
-     * @param mixed        $val   要验证的变量
-     * @param null|integer $min   最小值
-     * @param null|int     $max   最大值
-     * @param int          $flags 标志
-     *                            FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
-     *                            FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
+     * @param int|string $val   要验证的变量
+     * @param null|int|string     $min   最小值
+     * @param null|int|string         $max   最大值
+     * @param int|string              $flags 标志
+     *                                FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
+     *                                FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
      *
      * @return bool false
      * @example
@@ -275,9 +282,9 @@ class Validators
 
     /**
      * @param int|mixed $val
-     * @param int|null $min
-     * @param int|null $max
-     * @param int  $flags
+     * @param int|null  $min
+     * @param int|null  $max
+     * @param int       $flags
      *
      * @return bool
      * @see integer()
@@ -312,9 +319,9 @@ class Validators
 
     /**
      * @param int|mixed $val
-     * @param int|null $min
-     * @param int|null $max
-     * @param int  $flags
+     * @param int|null  $min
+     * @param int|null  $max
+     * @param int       $flags
      *
      * @return bool
      * @see number()
@@ -540,15 +547,15 @@ class Validators
      * 范围检查
      * $min $max 即使传错位置也会自动调整
      *
-     * @param int|string|array $val 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
-     * @param null|integer     $min 最小值
-     * @param null|int         $max 最大值
+     * @param int|float|string|array $val 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
+     * @param null|integer|string    $min 最小值
+     * @param null|int|string        $max 最大值
      *
      * @return bool
      */
     public static function size($val, $min = null, $max = null): bool
     {
-        if (!is_int($val)) {
+        if (!is_numeric($val)) {
             if (is_string($val)) {
                 $val = Helper::strlen(trim($val));
             } elseif (is_array($val)) {
@@ -558,13 +565,15 @@ class Validators
             }
         }
 
-        return self::integer($val, $min, $max);
+        // fix: $val maybe an float.
+        // return self::integer($val, $min, $max);
+        return self::float($val, $min, $max);
     }
 
     /**
      * @param int|string|array|mixed $val
-     * @param int|null $min
-     * @param int|null $max
+     * @param int|string|null               $min
+     * @param int|string|null               $max
      *
      * @return bool
      * @see Validators::size()
@@ -845,18 +854,24 @@ class Validators
     /**
      * 验证字段值是否是一个有效的 JSON 字符串。
      *
-     * @param mixed $val
-     * @param bool  $strict
+     * @param mixed      $val
+     * @param bool|mixed $strict
      *
      * @return bool
      */
     public static function json($val, $strict = true): bool
     {
-        if (!$val || (!is_string($val) && !method_exists($val, '__toString'))) {
+        if (!$val) {
             return false;
         }
 
-        $val = (string)$val;
+        if (is_object($val) && method_exists($val, '__toString')) {
+            $val = (string)$val;
+        }
+
+        if (!is_string($val)) {
+            return false;
+        }
 
         // must start with: { OR [
         if ($strict && '[' !== $val[0] && '{' !== $val[0]) {
