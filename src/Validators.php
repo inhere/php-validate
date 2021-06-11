@@ -177,14 +177,14 @@ class Validators
     /**
      * check value is float
      *
-     * @param mixed              $val   要验证的变量
-     * @param null|integer|float $min   最小值
-     * @param null|int|float     $max   最大值
-     *                                  $options = [
+     * @param mixed              $val       要验证的变量
+     * @param null|integer|float $min       最小值
+     * @param null|int|float     $max       最大值
+     *                                      $options = [
      *                                      'default' => 'default value',
      *                                      'decimal' => 2
-     *                                  ]
-     * @param int|mixed          $flags FILTER_FLAG_ALLOW_THOUSAND
+     *                                      ]
+     * @param int|mixed          $flags     FILTER_FLAG_ALLOW_THOUSAND
      *
      * @return bool
      */
@@ -230,10 +230,10 @@ class Validators
     /**
      * int 验证 (所有的最小、最大都是包含边界值的)
      *
-     * @param int|string $val   要验证的变量
-     * @param null|int|string     $min   最小值
-     * @param null|int|string         $max   最大值
-     * @param int|string              $flags 标志
+     * @param int|string      $val    要验证的变量
+     * @param null|int|string $min    最小值
+     * @param null|int|string $max    最大值
+     * @param int|string      $flags  标志
      *                                FILTER_FLAG_ALLOW_OCTAL - 允许八进制数值
      *                                FILTER_FLAG_ALLOW_HEX - 允许十六进制数值
      *
@@ -281,10 +281,10 @@ class Validators
     }
 
     /**
-     * @param int|mixed $val
-     * @param int|null  $min
-     * @param int|null  $max
-     * @param int       $flags
+     * @param int|mixed        $val
+     * @param int|numeric|null $min
+     * @param int|numeric|null $max
+     * @param int|mixed        $flags
      *
      * @return bool
      * @see integer()
@@ -297,10 +297,10 @@ class Validators
     /**
      * check var is a integer and greater than 0
      *
-     * @param mixed        $val
-     * @param null|integer $min 最小值
-     * @param null|int     $max 最大值
-     * @param int          $flags
+     * @param mixed                $val
+     * @param null|numeric|integer $min 最小值
+     * @param null|numeric|int     $max 最大值
+     * @param int|mixed            $flags
      *
      * @return bool
      */
@@ -318,10 +318,10 @@ class Validators
     }
 
     /**
-     * @param int|mixed $val
-     * @param int|null  $min
-     * @param int|null  $max
-     * @param int       $flags
+     * @param int|mixed        $val
+     * @param int|numeric|null $min
+     * @param int|numeric|null $max
+     * @param int|mixed        $flags
      *
      * @return bool
      * @see number()
@@ -334,9 +334,9 @@ class Validators
     /**
      * check val is a string
      *
-     * @param mixed    $val
-     * @param int      $minLen
-     * @param null|int $maxLen
+     * @param mixed            $val
+     * @param int|numeric      $minLen
+     * @param null|int|numeric $maxLen
      *
      * @return bool
      */
@@ -347,7 +347,7 @@ class Validators
         }
 
         // only type check.
-        if ($minLen === 0 && $maxLen === null) {
+        if ($minLen < 1 && $maxLen === null) {
             return true;
         }
 
@@ -375,7 +375,7 @@ class Validators
     /**
      * 验证字段值是否仅包含字母字符
      *
-     * @param string $val
+     * @param string|mixed $val
      *
      * @return bool
      */
@@ -403,7 +403,7 @@ class Validators
     /**
      * 验证字段值是否仅包含字母、数字、破折号（ - ）以及下划线（ _ ）
      *
-     * @param string $val
+     * @param string|numeric $val
      *
      * @return bool
      */
@@ -434,9 +434,9 @@ class Validators
     /**
      * Must be equal to the given value
      *
-     * @param mixed $val
-     * @param mixed $expected
-     * @param bool  $strict
+     * @param mixed      $val
+     * @param mixed      $expected
+     * @param bool|mixed $strict
      *
      * @return bool
      */
@@ -448,9 +448,9 @@ class Validators
     /**
      * Cannot be equal to a given value
      *
-     * @param mixed $val
-     * @param mixed $expected
-     * @param bool  $strict
+     * @param mixed      $val
+     * @param mixed      $expected
+     * @param bool|mixed $strict
      *
      * @return bool
      */
@@ -517,26 +517,26 @@ class Validators
      * 最小值检查
      *
      * @param int|string|array $val
-     * @param integer          $minRange
+     * @param int|string       $minRange
      *
      * @return bool
      */
     public static function min($val, $minRange): bool
     {
-        return self::size($val, (int)$minRange);
+        return self::size($val, $minRange);
     }
 
     /**
      * 最大值检查
      *
      * @param int|string|array $val
-     * @param int              $maxRange
+     * @param int|string       $maxRange
      *
      * @return bool
      */
     public static function max($val, $maxRange): bool
     {
-        return self::size($val, null, (int)$maxRange);
+        return self::size($val, null, $maxRange);
     }
 
     /*******************************************************************************
@@ -548,8 +548,8 @@ class Validators
      * $min $max 即使传错位置也会自动调整
      *
      * @param int|float|string|array $val 待检测的值。 数字检查数字范围； 字符串、数组则检查长度
-     * @param null|integer|string    $min 最小值
-     * @param null|int|string        $max 最大值
+     * @param null|int|float|string  $min 最小值
+     * @param null|int|float|string  $max 最大值
      *
      * @return bool
      */
@@ -572,8 +572,8 @@ class Validators
 
     /**
      * @param int|string|array|mixed $val
-     * @param int|string|null               $min
-     * @param int|string|null               $max
+     * @param int|string|null        $min
+     * @param int|string|null        $max
      *
      * @return bool
      * @see Validators::size()
@@ -600,8 +600,8 @@ class Validators
      * 字符串/数组长度检查
      *
      * @param string|array $val    字符串/数组
-     * @param integer      $minLen 最小长度
-     * @param int          $maxLen 最大长度
+     * @param int|numeric  $minLen 最小长度
+     * @param int|numeric  $maxLen 最大长度
      *
      * @return bool
      */
@@ -611,14 +611,14 @@ class Validators
             return false;
         }
 
-        return self::size($val, $minLen, $maxLen);
+        return self::size($val, (int)$minLen, $maxLen);
     }
 
     /**
      * 固定的长度
      *
-     * @param mixed $val
-     * @param int   $size
+     * @param mixed       $val
+     * @param int|numeric $size
      *
      * @return bool
      */
@@ -638,8 +638,8 @@ class Validators
     }
 
     /**
-     * @param mixed $val
-     * @param int   $size
+     * @param mixed       $val
+     * @param int|numeric $size
      *
      * @return bool
      */
@@ -649,8 +649,8 @@ class Validators
     }
 
     /**
-     * @param mixed $val
-     * @param int   $size
+     * @param mixed       $val
+     * @param int|numeric $size
      *
      * @return bool
      */
@@ -695,13 +695,13 @@ class Validators
     /**
      * 用正则验证数据
      *
-     * @param string $val    要验证的数据
-     * @param string $regexp 正则表达式 "/^M(.*)/"
-     * @param null   $default
+     * @param string|numeric $val    要验证的数据
+     * @param string         $regexp 正则表达式 "/^M(.*)/"
+     * @param null           $default
      *
      * @return bool
      */
-    public static function regexp($val, $regexp, $default = null): bool
+    public static function regexp($val, string $regexp, $default = null): bool
     {
         $options = [
             'regexp' => $regexp
@@ -717,13 +717,13 @@ class Validators
     /**
      * alias of the 'regexp()'
      *
-     * @param string $val
-     * @param string $regexp
-     * @param null   $default
+     * @param string|numeric $val
+     * @param string         $regexp
+     * @param null           $default
      *
      * @return bool
      */
-    public static function regex($val, $regexp, $default = null): bool
+    public static function regex($val, string $regexp, $default = null): bool
     {
         return self::regexp($val, $regexp, $default);
     }
@@ -731,13 +731,13 @@ class Validators
     /**
      * url地址验证
      *
-     * @param string $val     要验证的数据
-     * @param mixed  $default 设置验证失败时返回默认值
-     * @param int    $flags   标志
-     *                        FILTER_FLAG_SCHEME_REQUIRED - 要求 URL 是 RFC 兼容 URL（比如 http://example）
-     *                        FILTER_FLAG_HOST_REQUIRED - 要求 URL 包含主机名（比如 http://www.example.com）
-     *                        FILTER_FLAG_PATH_REQUIRED - 要求 URL 在域名后存在路径（比如 www.example.com/example1/test2/）
-     *                        FILTER_FLAG_QUERY_REQUIRED - 要求 URL 存在查询字符串（比如 "example.php?name=Peter&age=37"）
+     * @param string|mixed $val     要验证的数据
+     * @param mixed        $default 设置验证失败时返回默认值
+     * @param int|numeric  $flags   标志
+     *                              FILTER_FLAG_SCHEME_REQUIRED - 要求 URL 是 RFC 兼容 URL（比如 http://example）
+     *                              FILTER_FLAG_HOST_REQUIRED - 要求 URL 包含主机名（比如 http://www.example.com）
+     *                              FILTER_FLAG_PATH_REQUIRED - 要求 URL 在域名后存在路径（比如 www.example.com/example1/test2/）
+     *                              FILTER_FLAG_QUERY_REQUIRED - 要求 URL 存在查询字符串（比如 "example.php?name=Peter&age=37"）
      *
      * @return bool
      */
@@ -774,13 +774,13 @@ class Validators
     /**
      * IP 地址验证
      *
-     * @param string $val     要验证的数据
-     * @param mixed  $default 设置验证失败时返回默认值
-     * @param int    $flags   标志
-     *                        FILTER_FLAG_IPV4 - 要求值是合法的 IPv4 IP（比如 255.255.255.255）
-     *                        FILTER_FLAG_IPV6 - 要求值是合法的 IPv6 IP（比如 2001:0db8:85a3:08d3:1319:8a2e:0370:7334）
-     *                        FILTER_FLAG_NO_PRIV_RANGE - 要求值不在 RFC 指定的私有范围 IP 内（比如 192.168.0.1）
-     *                        FILTER_FLAG_NO_RES_RANGE - 要求值不在保留的 IP 范围内。该标志接受 IPV4 和 IPV6 值
+     * @param string|mixed $val     要验证的数据
+     * @param mixed        $default 设置验证失败时返回默认值
+     * @param int|numeric  $flags   标志
+     *                              FILTER_FLAG_IPV4 - 要求值是合法的 IPv4 IP（比如 255.255.255.255）
+     *                              FILTER_FLAG_IPV6 - 要求值是合法的 IPv6 IP（比如 2001:0db8:85a3:08d3:1319:8a2e:0370:7334）
+     *                              FILTER_FLAG_NO_PRIV_RANGE - 要求值不在 RFC 指定的私有范围 IP 内（比如 192.168.0.1）
+     *                              FILTER_FLAG_NO_RES_RANGE - 要求值不在保留的 IP 范围内。该标志接受 IPV4 和 IPV6 值
      *
      * @return bool
      */
@@ -798,7 +798,7 @@ class Validators
     /**
      * IPv4 地址验证
      *
-     * @param string $val 要验证的数据
+     * @param string|mixed $val 要验证的数据
      *
      * @return bool
      */
@@ -810,7 +810,7 @@ class Validators
     /**
      * IPv6 地址验证
      *
-     * @param string $val 要验证的数据
+     * @param string|mixed $val 要验证的数据
      *
      * @return bool
      */
@@ -838,7 +838,7 @@ class Validators
     /**
      * english chars string
      *
-     * @param string $val
+     * @param string|mixed $val
      *
      * @return bool
      */
@@ -911,9 +911,7 @@ class Validators
             return false;
         }
 
-        /** @var array $val */
         $keys = array_keys($val);
-
         return array_keys($keys) !== $keys;
     }
 
@@ -930,9 +928,7 @@ class Validators
             return false;
         }
 
-        /** @var array $val */
         $keys = array_keys($val);
-
         return array_keys($keys) === $keys;
     }
 
@@ -950,8 +946,6 @@ class Validators
         }
 
         $lastK = -1;
-
-        /** @var array $val */
         foreach ($val as $k => $v) {
             if (!is_int($k) || $k !== $lastK + 1) {
                 return false;
@@ -981,8 +975,6 @@ class Validators
         }
 
         $lastK = -1;
-
-        /** @var array $val */
         foreach ($val as $k => $v) {
             if (!is_int($k) || $k !== $lastK + 1) {
                 return false;
@@ -1012,8 +1004,6 @@ class Validators
         }
 
         $lastK = -1;
-
-        /** @var array $val */
         foreach ($val as $k => $v) {
             if (!is_int($k) || $k !== $lastK + 1) {
                 return false;
@@ -1096,7 +1086,7 @@ class Validators
     /**
      * @param mixed        $val
      * @param array|string $dict
-     * @param bool         $strict Use strict check, will check data type.
+     * @param bool|mixed   $strict Use strict check, will check data type.
      *
      * @return bool
      */
@@ -1115,7 +1105,7 @@ class Validators
      *
      * @param mixed        $val
      * @param array|string $dict
-     * @param bool         $strict
+     * @param bool|mixed   $strict
      *
      * @return bool
      */
@@ -1127,7 +1117,7 @@ class Validators
     /**
      * @param mixed        $val
      * @param array|string $dict
-     * @param bool         $strict
+     * @param bool|mixed   $strict
      *
      * @return bool
      */
@@ -1146,8 +1136,8 @@ class Validators
 
     /**
      * @param mixed  $val
-     * @param string $start
-     * @param bool   $strict
+     * @param string|numeric $start
+     * @param bool|mixed   $strict
      *
      * @return bool
      */
@@ -1172,8 +1162,8 @@ class Validators
 
     /**
      * @param mixed  $val
-     * @param string $end
-     * @param bool   $strict
+     * @param string|numeric $end
+     * @param bool|mixed   $strict
      *
      * @return bool
      */
@@ -1200,27 +1190,31 @@ class Validators
     /**
      * 校验字段值是否是日期格式
      *
-     * @param string $val 日期
+     * @param string|mixed $val 日期
      *
      * @return boolean
      */
     public static function date($val): bool
     {
+        if (!$val) {
+            return false;
+        }
+
         // strtotime 转换不对，日期格式显然不对。
-        return strtotime((string)$val) ? true : false;
+        return strtotime((string)$val) > 1;
     }
 
     /**
      * 校验字段值是否是等于给定日期
      *
-     * @param string $val
-     * @param string $date 给定日期
+     * @param string|mixed $val
+     * @param string|mixed $date 给定日期
      *
      * @return boolean
      */
     public static function dateEquals($val, $date): bool
     {
-        if (!$val || (!$time = strtotime($val))) {
+        if (!$val || (!$time = strtotime((string)$val))) {
             return false;
         }
 
@@ -1230,12 +1224,12 @@ class Validators
     /**
      * 校验字段值是否是日期并且是否满足设定格式
      *
-     * @param string $val    日期
+     * @param string|mixed $val    日期
      * @param string $format 需要检验的格式数组
      *
-     * @return boolean
+     * @return bool
      */
-    public static function dateFormat($val, $format = 'Y-m-d'): bool
+    public static function dateFormat($val, string $format = 'Y-m-d'): bool
     {
         if (!$val || !($unixTime = strtotime($val))) {
             return false;
@@ -1248,13 +1242,13 @@ class Validators
     /**
      * 字段值必须是给定日期之前的值
      *
-     * @param string $val
-     * @param string $beforeDate 若为空，将使用当前时间
+     * @param string|mixed $val
+     * @param string|numeric $beforeDate 若为空，将使用当前时间
      * @param string $symbol     allow '<' '<='
      *
      * @return bool
      */
-    public static function beforeDate($val, $beforeDate = '', $symbol = '<'): bool
+    public static function beforeDate($val, $beforeDate = '', string $symbol = '<'): bool
     {
         if (!$val || !is_string($val)) {
             return false;
@@ -1276,8 +1270,8 @@ class Validators
     /**
      * 字段值必须是小于或等于给定日期的值
      *
-     * @param string $val
-     * @param string $beforeDate
+     * @param string|mixed $val
+     * @param string|numeric $beforeDate
      *
      * @return bool
      */
@@ -1295,7 +1289,7 @@ class Validators
      *
      * @return bool
      */
-    public static function afterDate($val, $afterDate, $symbol = '>'): bool
+    public static function afterDate($val, $afterDate, string $symbol = '>'): bool
     {
         if (!$val || !is_string($val)) {
             return false;
@@ -1317,8 +1311,8 @@ class Validators
     /**
      * 字段值必须是大于或等于给定日期的值
      *
-     * @param string $val
-     * @param string $afterDate
+     * @param string|mixed $val
+     * @param string|mixed $afterDate
      *
      * @return bool
      */
@@ -1368,13 +1362,13 @@ class Validators
      ******************************************************************************/
 
     /**
-     * @param $val
+     * @param string|mixed $val
      *
      * @return bool
      */
     public static function phone($val): bool
     {
-        return 1 === preg_match('/^1[2-9]\d{9}$/', $val);
+        return 1 === preg_match('/^1[2-9]\d{9}$/', (string)$val);
     }
 
     // public static function telNumber($val)
@@ -1383,37 +1377,37 @@ class Validators
     /**
      * Check for postal code validity
      *
-     * @param string $val Postal code to validate
+     * @param string|mixed $val Postal code to validate
      *
      * @return bool Validity is ok or not
      */
     public static function postCode($val): bool
     {
-        return $val && is_string($val) && preg_match('/^\d{6}$/', $val);
+        return $val && is_string($val) && preg_match('/^\d{6}$/', (string)$val);
     }
 
     /**
      * Check for price validity
      *
-     * @param string $price Price to validate
+     * @param string|mixed $price Price to validate
      *
      * @return bool Validity is ok or not
      */
     public static function price($price): bool
     {
-        return 1 === preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === preg_match('/^[\d]{1,10}(\.[\d]{1,9})?$/', (string)$price);
     }
 
     /**
      * Check for price validity (including negative price)
      *
-     * @param string $price Price to validate
+     * @param string|mixed $price Price to validate
      *
      * @return bool Validity is ok or not
      */
     public static function negativePrice($price): bool
     {
-        return 1 === preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', $price);
+        return 1 === preg_match('/^[-]?[\d]{1,10}(\.[\d]{1,9})?$/', (string)$price);
     }
 
     /**
@@ -1461,7 +1455,7 @@ class Validators
     /**
      * Check for an integer validity (unsigned)
      *
-     * @param int $value Integer to validate
+     * @param int|numeric $value Integer to validate
      *
      * @return bool Validity is ok or not
      */
@@ -1473,7 +1467,7 @@ class Validators
     /**
      * Check for MD5 string validity
      *
-     * @param string $val MD5 string to validate
+     * @param string|mixed $val MD5 string to validate
      *
      * @return bool Validity is ok or not
      */
@@ -1489,7 +1483,7 @@ class Validators
     /**
      * Check for SHA1 string validity
      *
-     * @param string $val SHA1 string to validate
+     * @param string|mixed $val SHA1 string to validate
      *
      * @return bool Validity is ok or not
      */
@@ -1505,7 +1499,7 @@ class Validators
     /**
      * Check object validity
      *
-     * @param string $val e.g '#dedede'
+     * @param string|mixed $val e.g '#dedede'
      *
      * @return bool Validity is ok or not
      */
@@ -1521,7 +1515,7 @@ class Validators
     /**
      * Check if URL is absolute
      *
-     * @param string $url URL to validate
+     * @param string|mixed $url URL to validate
      *
      * @return bool Validity is ok or not
      */
@@ -1537,7 +1531,7 @@ class Validators
     /**
      * Check for standard name file validity
      *
-     * @param string $name Name to validate
+     * @param string|mixed $name Name to validate
      *
      * @return bool Validity is ok or not
      */
@@ -1553,7 +1547,7 @@ class Validators
     /**
      * Check for standard name directory validity
      *
-     * @param string $dir Directory to validate
+     * @param string|mixed $dir Directory to validate
      *
      * @return bool Validity is ok or not
      */
