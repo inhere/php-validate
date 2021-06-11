@@ -17,7 +17,7 @@
 - 支持自定义每个验证的错误消息，字段翻译，消息翻译，支持默认值
 - 支持基本的数组检查，数组的子级(`'goods.apple'`)值检查, 通配符的子级检查 (`'users.*.id' 'goods.*'`)
 - 方便的获取错误信息，验证后的安全数据获取(只会收集有规则检查过的数据)
-- 已经内置了60多个常用的验证器[内置验证器](#built-in-validators)
+- 已经内置了大量的常用的验证器[内置验证器](#built-in-validators)
 - 规则设置参考 `yii`, `laravel`, `Respect/Validation`
 - 独立的过滤器 `Inhere\Validate\Filter\Filtration`，可单独用于数据过滤
 
@@ -62,7 +62,7 @@ validate 同时支持两种规则配置方式，对应了两种规则的收集�
 
 ## 安装
 
-```php
+```bash
 composer require inhere/php-validate
 // composer require inhere/php-validate ^2.2
 ```
@@ -135,11 +135,11 @@ class PageRequest extends Validation
             // 4<= tagId <=567
             ['tagId', 'size', 'min'=>4, 'max'=>567, 'filter' => 'int'],
 
-            // title length >= 40. 注意只需一个参数的验证，无需加 key, 如这里的 40
-            ['title', 'min', 40, 'filter' => 'trim'],
+            // title length >= 40. 注意只需一个参数的验证，无需加 key, 如这里的 40
+            ['title', 'min', 40, 'filter' => 'trim'],
 
-            // 大于 0
-            ['freeTime', 'number'],
+            // 大于 0
+            ['freeTime', 'number'],
 
             // 含有前置条件
             ['tagId', 'number', 'when' => function($data) {
@@ -147,7 +147,7 @@ class PageRequest extends Validation
             }],
 
             // 在验证前会先过滤转换为 int。并且仅会在指明场景名为 'scene1' 时规则有效
-            ['userId', 'number', 'on' => 'scene1', 'filter' => 'int'],
+            ['userId', 'number', 'on' => 'scene1', 'filter' => 'int'],
             ['username', 'string', 'on' => 'scene2', 'filter' => 'trim'],
 
             // 使用自定义正则表达式
@@ -164,8 +164,8 @@ class PageRequest extends Validation
                 return false;
             }],
 
-            // 标记字段是安全可靠的 无需验证
-            ['createdAt, updatedAt', 'safe'],
+            // 标记字段是安全可靠的 无需验证
+            ['createdAt, updatedAt', 'safe'],
         ];
     }
 
@@ -308,11 +308,20 @@ class UserController
 
 ## 添加自定义验证器
 
-- **方式1**在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use2)
+底层调用验证器是支持：
+
+- 一个闭包
+- 一个函数名称
+- 一个当前验证类的方法名
+  - 在继承了 `Inhere\Validate\Validation` 的子类添加验证方法. 请看上面的 [使用方式1](#how-to-use2)
+- 一个通过 `Validation->addValidator()` 添加的临时验证器
+- 一个通过 `Validator\UserValidators::set` 注册的全局验证器
+- 一个实现了 `Validator\ValidatorInterface` 的对象
+- 一个可调用的对象(有 `__invoke` 方法)
 
 > 注意： 写在当前类里的验证器方法必须带有后缀 `Validator`, 以防止对内部的其他的方法造成干扰
 
-- **方式2**通过 `Validation::addValidator()` 添加自定义验证器. e.g:
+### 示例
 
 ```php
 $v = Validation::make($_POST,[
@@ -329,7 +338,7 @@ $v = Validation::make($_POST,[
     ->validate();
 ```
 
-- **方式3**直接写闭包进行验证 e.g:
+直接写闭包进行验证 e.g:
 
 ```php
     ['status', function($status) { // 第一个参数是字段值。最后一个参数总是 $data
@@ -341,15 +350,13 @@ $v = Validation::make($_POST,[
     }]
 ```
 
-- **方式4**定义一个闭包验证类进行验证,这种方法能提高验证方法的复用性
+定义一个闭包验证类进行验证,这种方法能提高验证方法的复用性
 
 > 别忘了继承 `\Inhere\Validate\Validator\AbstractValidator`,和实现必须方法`validate`
 
 ```php
-
 class AdemoValidator extends \Inhere\Validate\Validator\AbstractValidator
 {
-
 
     public function validate($value, $data): bool
     {
@@ -361,7 +368,8 @@ class AdemoValidator extends \Inhere\Validate\Validator\AbstractValidator
 
 }
 
-    ['status', new AdemoValidator()]
+// 使用
+    ['status', new AdemoValidator()],
 ```
 
 <a name="on-in-Validation"></a>

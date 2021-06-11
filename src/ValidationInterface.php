@@ -87,7 +87,9 @@ interface ValidationInterface
     public function getMessages(): array;
 
     /**
+     * @param bool $asObject
+     *
      * @return array|stdClass
      */
-    public function getSafeData();
+    public function getSafeData(bool $asObject = false);
 }

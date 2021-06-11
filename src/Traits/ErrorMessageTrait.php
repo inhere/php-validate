@@ -239,7 +239,7 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @param bool|null $_stopOnError
+     * @param bool|mixed|null $_stopOnError
      *
      * @return $this
      */

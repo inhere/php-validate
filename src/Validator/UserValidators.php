@@ -18,7 +18,7 @@ use function trim;
 final class UserValidators
 {
     /**
-     * @var array user custom add's validators (global)
+     * @var array user custom added validators (global)
      */
     private static $validators = [];
 

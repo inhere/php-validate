@@ -39,8 +39,8 @@ class Validation extends AbstractValidation
     */
 
     /**
-     * @param string $key
-     * @param null   $value
+     * @param string     $key
+     * @param mixed|null $value
      *
      * @return mixed
      */

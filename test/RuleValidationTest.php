@@ -439,7 +439,7 @@ class RuleValidationTest extends TestCase
     /**
      * 测试自定义验证器
      */
-    public function testValidator()
+    public function testValidator(): void
     {
         $rule       = [
             [

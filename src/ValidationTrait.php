@@ -16,12 +16,14 @@ use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Traits\ErrorMessageTrait;
 use Inhere\Validate\Traits\ScopedValidatorsTrait;
 use Inhere\Validate\Validator\UserValidators;
+use Inhere\Validate\Validator\ValidatorInterface;
 use InvalidArgumentException;
 use stdClass;
 use function array_keys;
 use function array_merge;
 use function array_shift;
 use function array_values;
+use function count;
 use function explode;
 use function function_exists;
 use function in_array;
@@ -397,7 +399,7 @@ trait ValidationTrait
      * @param mixed                $value     Field value
      * @param Closure|string|mixed $validator Validator
      * @param array                $args      Arguments for validate
-     * @param string               $defMsg
+     * @param string|array         $defMsg
      *
      * @return bool
      * @throws InvalidArgumentException
@@ -411,15 +413,21 @@ trait ValidationTrait
         }
 
         $rawArgs = $args;
-        $args    = array_values($args);
+        $passed = false;
 
-        // if $validator is a closure OR a object has method '__invoke'
-        if (is_object($validator) && method_exists($validator, '__invoke')) {
-            $args[] = $this->data;
-            $passed = $validator($value, ...$args);
+        $args    = array_values($args);
+        if (is_object($validator)) {
+            // if $validator is a object has method '__invoke'
+            if (method_exists($validator, '__invoke')) {
+                $args[] = $this->data;
+                $passed = $validator($value, ...$args);
+            } elseif ($validator instanceof ValidatorInterface) {
+                 $args[] = $this->data;
+                 $passed = $validator->validate($value, ...$args);
+             }
         } elseif (is_string($validator)) {
             $realName = Validators::realName($validator);
-            // is global user validator
+            // is user validator
             if ($callback = $this->getValidator($validator)) {
                 $args[] = $this->data;
                 $passed = $callback($value, ...$args);
@@ -684,7 +692,7 @@ trait ValidationTrait
      */
     public function hasRule(): bool
     {
-        return $this->getRules() ? true : false;
+        return count($this->getRules()) > 0;
     }
 
     /**
@@ -698,7 +706,7 @@ trait ValidationTrait
     /**
      * @param array $rules
      *
-     * @return $this|mixed
+     * @return $this|static
      */
     public function setRules(array $rules)
     {
@@ -894,7 +902,7 @@ trait ValidationTrait
      *
      * @return array|stdClass
      */
-    public function safeData($asObject = false)
+    public function safeData(bool $asObject = false)
     {
         return $this->getSafeData($asObject);
     }
@@ -904,7 +912,7 @@ trait ValidationTrait
      *
      * @return array|stdClass
      */
-    public function getSafeData($asObject = false)
+    public function getSafeData(bool $asObject = false)
     {
         return $asObject ? (object)$this->_safeData : $this->_safeData;
     }
@@ -913,7 +921,7 @@ trait ValidationTrait
      * @param array $safeData
      * @param bool  $clearOld
      */
-    public function setSafeData(array $safeData, $clearOld = false): void
+    public function setSafeData(array $safeData, bool $clearOld = false): void
     {
         if ($clearOld) {
             $this->_safeData = [];
