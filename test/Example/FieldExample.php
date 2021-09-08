@@ -6,16 +6,16 @@
  * Time: 23:59
  */
 
-namespace Inhere\ValidateTest\Sample;
+namespace Inhere\ValidateTest\Example;
 
 use Inhere\Validate\FieldValidation;
 
 /**
- * Class FieldSample
+ * Class FieldExample
  *
- * @package Inhere\ValidateTest\Sample
+ * @package Inhere\ValidateTest\Example
  */
-class FieldSample extends FieldValidation
+class FieldExample extends FieldValidation
 {
     public function rules(): array
     {

@@ -4,7 +4,7 @@ namespace Inhere\ValidateTest;
 
 use Inhere\Validate\FieldValidation;
 use Inhere\Validate\FV;
-use Inhere\ValidateTest\Sample\FieldSample;
+use Inhere\ValidateTest\Example\FieldExample;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -138,7 +138,7 @@ class FieldValidationTest extends TestCase
             'code' => '1234',
         ];
 
-        $v = FieldSample::quick($data, 'create')->validate();
+        $v = FieldExample::quick($data, 'create')->validate();
         $this->assertTrue($v->isOk());
         $this->assertEmpty($v->getErrors());
 
@@ -148,11 +148,11 @@ class FieldValidationTest extends TestCase
             'code' => '12345',
         ];
 
-        $v = FieldSample::quick($data, 'create')->validate();
+        $v = FieldExample::quick($data, 'create')->validate();
         $this->assertFalse($v->isOk());
         $this->assertEquals('code length must is 4', $v->firstError());
 
-        $v = FieldSample::quick($data, 'update')->validate();
+        $v = FieldExample::quick($data, 'update')->validate();
         $this->assertTrue($v->isOk());
         $this->assertEmpty($v->getErrors());
     }

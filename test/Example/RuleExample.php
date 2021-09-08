@@ -6,15 +6,15 @@
  * Time: 00:00
  */
 
-namespace Inhere\ValidateTest\Sample;
+namespace Inhere\ValidateTest\Example;
 
 use Inhere\Validate\Validation;
 
 /**
- * Class RuleSample
+ * Class RuleExample
  *
- * @package Inhere\ValidateTest\Sample
+ * @package Inhere\ValidateTest\Example
  */
-class RuleSample extends Validation
+class RuleExample extends Validation
 {
 }

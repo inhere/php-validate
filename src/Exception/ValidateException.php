@@ -32,10 +32,11 @@ class ValidateException extends RuntimeException
      *
      * @param string $field
      * @param string $message
+     * @param int    $code
      */
-    public function __construct(string $field, string $message)
+    public function __construct(string $field, string $message, int $code = 500)
     {
-        parent::__construct($field . ' ' . $message, 500);
+        parent::__construct("'$field' $message", $code);
 
         // save field
         $this->field = $field;

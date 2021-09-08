@@ -6,7 +6,7 @@
  * Time: 23:35
  */
 
-namespace Inhere\ValidateTest\Sample;
+namespace Inhere\ValidateTest\Example;
 
 use Inhere\Validate\Validation;
 
