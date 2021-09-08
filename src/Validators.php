@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 /**
  * 验证器列表
+ *
  * @date        2015.08.04
  * @note        验证数据; 成功则返回预期的类型， 失败返回 false
  * @description INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV  几个输入数据常量中的值在请求时即固定下来了，
@@ -1135,9 +1136,9 @@ class Validators
      ******************************************************************************/
 
     /**
-     * @param mixed  $val
+     * @param mixed          $val
      * @param string|numeric $start
-     * @param bool|mixed   $strict
+     * @param bool|mixed     $strict
      *
      * @return bool
      */
@@ -1161,9 +1162,9 @@ class Validators
     }
 
     /**
-     * @param mixed  $val
+     * @param mixed          $val
      * @param string|numeric $end
-     * @param bool|mixed   $strict
+     * @param bool|mixed     $strict
      *
      * @return bool
      */
@@ -1191,17 +1192,20 @@ class Validators
      * 校验字段值是否是日期格式
      *
      * @param string|mixed $val 日期
+     * @param bool|string  $sholdGt0
      *
      * @return boolean
      */
-    public static function date($val): bool
+    public static function date($val, $sholdGt0 = false): bool
     {
         if (!$val) {
             return false;
         }
 
-        // strtotime 转换不对，日期格式显然不对。
-        return strtotime((string)$val) > 1;
+        // strtotime 转换不对，日期格式显然不对
+        $time = strtotime((string)$val);
+
+        return $sholdGt0 ? $sholdGt0 > 1 : $time !== false;
     }
 
     /**
@@ -1225,7 +1229,7 @@ class Validators
      * 校验字段值是否是日期并且是否满足设定格式
      *
      * @param string|mixed $val    日期
-     * @param string $format 需要检验的格式数组
+     * @param string       $format 需要检验的格式数组
      *
      * @return bool
      */
@@ -1242,9 +1246,9 @@ class Validators
     /**
      * 字段值必须是给定日期之前的值
      *
-     * @param string|mixed $val
+     * @param string|mixed   $val
      * @param string|numeric $beforeDate 若为空，将使用当前时间
-     * @param string $symbol     allow '<' '<='
+     * @param string         $symbol     allow '<' '<='
      *
      * @return bool
      */
@@ -1270,7 +1274,7 @@ class Validators
     /**
      * 字段值必须是小于或等于给定日期的值
      *
-     * @param string|mixed $val
+     * @param string|mixed   $val
      * @param string|numeric $beforeDate
      *
      * @return bool
