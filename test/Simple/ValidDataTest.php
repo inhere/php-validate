@@ -17,6 +17,7 @@ class ValidDataTest extends BaseValidateTestCase
         'num'  => '23',
         'str'  => 'abc',
         'str1' => ' abc ',
+        'flt'  => '2.33',
         'arr'  => ['ab', 'cd'],
         'ints' => ['23', 25],
         'strs' => ['23', 'cd', 25],
@@ -37,6 +38,8 @@ class ValidDataTest extends BaseValidateTestCase
         $data = $this->testData;
 
         $this->assertSame(23, VData::getInt('int'));
+        $this->assertSame(2.33, VData::getFloat('flt'));
+        $this->assertSame(23.0, VData::getFloat('int'));
         $this->assertSame('abc', VData::getString('str'));
         $this->assertSame('abc', VData::getString('str1'));
         $this->assertSame($data['arr'], VData::getArray('arr'));

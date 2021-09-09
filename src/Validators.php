@@ -787,6 +787,10 @@ class Validators
      */
     public static function ip($val, $default = null, $flags = 0): bool
     {
+        if (!is_string($val)) {
+            return false;
+        }
+
         $settings = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
         if ($default !== null) {

@@ -3,7 +3,6 @@
 namespace Inhere\ValidateTest;
 
 use Inhere\Validate\Validation;
-use function vdump;
 
 /**
  * class IssuesTest

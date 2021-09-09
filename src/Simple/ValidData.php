@@ -135,6 +135,38 @@ class ValidData
 
     /**
      * @param string      $field
+     * @param float|null    $min
+     * @param float|null    $max
+     * @param float|null $default
+     *
+     * @return float
+     */
+    public static function getFloat(string $field, float $min = null, float $max = null, float $default = null): float
+    {
+        if (!isset(self::$data[$field])) {
+            if ($default === null) {
+                throw self::newEx($field, 'is required and must be float');
+            }
+            return $default;
+        }
+
+        $val = self::$data[$field];
+        if (is_numeric($val)) {
+            $val = (float)$val;
+
+            // check min and max
+            if (!Validators::float($val, $min, $max)) {
+                throw static::newEx($field, self::fmtMinMaxToMsg('must be float', $min, $max));
+            }
+
+            return $val;
+        }
+
+        throw self::newEx($field, 'required and must be float value');
+    }
+
+    /**
+     * @param string      $field
      * @param int|null    $minLen
      * @param int|null    $maxLen
      * @param string|null $default
