@@ -309,6 +309,8 @@ class ValidatorsTest extends TestCase
         $this->assertTrue(Validators::ip('0.0.0.0'));
         $this->assertTrue(Validators::ip('127.0.0.1'));
         $this->assertTrue(Validators::ipv4('127.0.0.1'));
+        $this->assertTrue(Validators::ipv6('2400:3200::1'));
+        $this->assertTrue(Validators::ipv6('0:0:0:0:0:0:0:0'));
     }
 
     public function testEnglish(): void
