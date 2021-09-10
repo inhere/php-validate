@@ -64,7 +64,7 @@ class LocaleZhCN
         'max'      => '{attr} maximum boundary is {value0}',
         'lt'       => '{attr} value must be less than {value0}',
         'lte'      => '{attr} value must be less than or equals to {value0}',
-        'gt'       => '{attr} value must be greater than or equals to {value0}',
+        'gt'       => '{attr} value must be greater than {value0}',
         'gte'      => '{attr} value must be greater than or equals to {value0}',
 
         // field compare
