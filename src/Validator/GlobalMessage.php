@@ -56,7 +56,7 @@ final class GlobalMessage
 
         'eq'       => '{attr} must be equals to {value0}',
         // 'different'
-        'ne'       => '{attr} can not be equals to {value0}',
+        'ne'       => '{attr} cannot be equals to {value0}',
         'min'      => '{attr} minimum boundary is {value0}',
         'max'      => '{attr} maximum boundary is {value0}',
         'lt'       => '{attr} value must be less than {value0}',
@@ -65,8 +65,8 @@ final class GlobalMessage
         'gte'      => '{attr} value must be greater than or equals to {value0}',
 
         // field compare
-        'eqField'  => '{attr} value must be less than {value0}',
-        'neqField' => '{attr} value must be less than {value0}',
+        'eqField'  => '{attr} value must be equals to {value0}',
+        'neqField' => '{attr} value cannot be equals to {value0}',
         'ltField'  => '{attr} value must be less than {value0}',
         'lteField' => '{attr} value must be less than or equals to {value0}',
         'gtField'  => '{attr} value must be greater than {value0}',

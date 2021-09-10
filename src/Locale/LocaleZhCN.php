@@ -37,21 +37,21 @@ class LocaleZhCN
         'date'       => '{attr} 不是日期格式！',
         'dateFormat' => '{attr} is not in a {value0} date format!',
         'ip'         => '{attr} 不是IP地址！',
-        'ipv4'       => '{attr} is not a IPv4 address!',
-        'ipv6'       => '{attr} is not a IPv6 address!',
-        'required'   => 'parameter {attr} is required!',
-        'requiredIf' => 'parameter {attr} is required!',
+        'ipv4'       => '{attr} 不是 IPv4 地址！',
+        'ipv6'       => '{attr} 不是IPv6地址！',
+        'required'   => '字段 {attr} 是必须的！',
+        'requiredIf' => '字段 {attr} 是必须的！',
         'length'     => [
-            '{attr} length validation is not through!',
-            '{attr} must be an string/array and minimum length is {min}',
-            '{attr} must be an string/array and length range {min} ~ {max}',
+            '{attr} 长度验证未通过！',
+            '{attr} 必须是一个字符串/数组，最小长度是 {min}',
+            '{attr} 值不合法,长度范围只允许是 {min} ~ {max}',
         ],
         // 'range', 'between'
         'size'       => [
             '{attr} size validation is not through!',
-            '{attr} must be an integer/string/array and minimum value/length is {min}',
+            '{attr} 值不合法，最小是 {min}',
             // '{attr} must be an integer/string/array and value/length range {min} ~ {max}',
-            '{attr} must be in the range {min} ~ {max}',
+            '{attr} 值不合法，大小范围只允许是 {min} ~ {max}',
         ],
 
         // 'lengthEq', 'sizeEq'
@@ -68,21 +68,21 @@ class LocaleZhCN
         'gte'      => '{attr} value must be greater than or equals to {value0}',
 
         // field compare
-        'eqField'  => '{attr} value must be less than {value0}',
-        'neqField' => '{attr} value must be less than {value0}',
-        'ltField'  => '{attr} value must be less than {value0}',
-        'lteField' => '{attr} value must be less than or equals to {value0}',
-        'gtField'  => '{attr} value must be greater than {value0}',
-        'gteField' => '{attr} value must be greater than or equals to {value0}',
+        'eqField'  => '{attr} 值必须等于 {value0} 的值',
+        'neqField' => '{attr} 值不能等于 {value0} 的值',
+        'ltField'  => '{attr} 值必须小于 {value0} 的值',
+        'lteField' => '{attr} 值必须小于或等于 {value0} 的值',
+        'gtField'  => '{attr} 值必须大于 {value0} 的值',
+        'gteField' => '{attr} 值必须大于或等于 {value0} 的值',
 
         // 'in', 'enum',
         'enum'     => '{attr} must in ({value0})',
         'notIn'    => '{attr} cannot in ({value0})',
 
         'string' => [
-            '{attr} must be a string',
-            '{attr} must be a string and minimum length be {min}',
-            '{attr} must be a string and length range must be {min} ~ {max}',
+            '{attr} 必须是字符串',
+            '{attr} 必须是字符串并且最小长度为 {min}',
+            '{attr} 必须是字符串并且长度范围必须是 {min} ~ {max}',
         ],
 
         // 'regex', 'regexp',
@@ -94,22 +94,22 @@ class LocaleZhCN
         'compare' => '{attr} must be equals to {value0}',
         'same'    => '{attr} must be equals to {value0}',
 
-        'isArray' => '{attr} must be an array',
-        'isMap'   => '{attr} must be an array and is key-value format',
-        'isList'  => '{attr} must be an array of nature',
-        'intList' => '{attr} must be an array and value is all integers',
-        'numList' => '{attr} must be an array and value is all numbers',
-        'strList' => '{attr} must be an array and value is all strings',
-        'arrList' => '{attr} must be an array and value is all arrays',
+        'isArray' => '{attr} 必须是数组',
+        'isMap'   => '{attr} 必须是数组并且是键-值对格式',
+        'isList'  => '{attr} 必须是自然数组',
+        'intList' => '{attr} 必须是一个数组并且值都是整数',
+        'numList' => '{attr} 必须是一个数组并且值都是大于0的数字',
+        'strList' => '{attr} 必须是一个数组并且值都是字符串',
+        'arrList' => '{attr} 必须是一个数组，并且值也都是数组',
 
         'each'     => '{attr} each value must be through the "{value0}" verify',
-        'hasKey'   => '{attr} must be contains the key {value0}',
-        'distinct' => 'there should not be duplicate keys in the {attr}',
+        'hasKey'   => '{attr} 必须包含键字段 {value0}',
+        'distinct' => '{attr} 中不应该有重复的值',
 
-        'json' => '{attr} must be an json string',
+        'json' => '{attr} 必须是 json 字符串',
 
-        'file'  => '{attr} must be an uploaded file',
-        'image' => '{attr} must be an uploaded image file',
+        'file'  => '{attr} 必须是上传的文件',
+        'image' => '{attr} 必须是上传的图片文件',
 
         'callback'  => '{attr} don\'t pass the test and verify!',
         '__default' => '{attr} validation is not through!',
