@@ -47,7 +47,7 @@ trait ValidationTrait
 {
     use FilteringTrait, ErrorMessageTrait, ScopedValidatorsTrait;
 
-    /** @var array The rules is by setRules() */
+    /** @var array The rules are by setRules() */
     private $_rules = [];
 
     /** @var array Through the validation of the data */
@@ -147,9 +147,9 @@ trait ValidationTrait
      *
      * @param Closure $cb
      *
-     * @return $this|mixed
+     * @return $this
      */
-    public function onBeforeValidate(Closure $cb)
+    public function onBeforeValidate(Closure $cb): self
     {
         $this->_beforeHandler = $cb;
         return $this;
@@ -171,9 +171,9 @@ trait ValidationTrait
      *
      * @param Closure $cb
      *
-     * @return $this|mixed
+     * @return $this
      */
-    public function onAfterValidate(Closure $cb)
+    public function onAfterValidate(Closure $cb): self
     {
         $this->_afterHandler = $cb;
         return $this;
@@ -197,10 +197,10 @@ trait ValidationTrait
      * @param array     $onlyChecked You can set this field that needs verification
      * @param bool|null $stopOnError Stop verification if there is an error
      *
-     * @return $this|mixed
+     * @return $this
      * @throws InvalidArgumentException
      */
-    public function validate(array $onlyChecked = [], bool $stopOnError = null)
+    public function validate(array $onlyChecked = [], bool $stopOnError = null): self
     {
         if (!property_exists($this, 'data')) {
             throw new InvalidArgumentException('Must be defined property "data"(array) in the sub-class used.');
@@ -266,7 +266,7 @@ trait ValidationTrait
             $isEmpty = $rule['isEmpty'];
         }
 
-        // Preconditions for verification -- If do not meet the conditions, skip this rule
+        // Preconditions for verification -- If you do not meet the conditions, skip this rule
         $when = $rule['when'] ?? null;
         if ($when && ($when instanceof Closure) && $when($this->data, $this) !== true) {
             return;
@@ -406,7 +406,7 @@ trait ValidationTrait
      */
     protected function valueValidate(string $field, $value, $validator, array $args, $defMsg): bool
     {
-        // if field don't exists.
+        // if field don't exist.
         if (null === $value) {
             $this->addError($field, $this->getMessage($validator, $field, $args, $defMsg));
             return false;
@@ -417,7 +417,7 @@ trait ValidationTrait
 
         $args    = array_values($args);
         if (is_object($validator)) {
-            // if $validator is a object has method '__invoke'
+            // if $validator is an object has method '__invoke'
             if (method_exists($validator, '__invoke')) {
                 $args[] = $this->data;
                 $passed = $validator($value, ...$args);
@@ -706,9 +706,9 @@ trait ValidationTrait
     /**
      * @param array $rules
      *
-     * @return $this|static
+     * @return $this
      */
-    public function setRules(array $rules)
+    public function setRules(array $rules): self
     {
         $this->_rules = $rules;
         return $this;
@@ -733,9 +733,9 @@ trait ValidationTrait
     /**
      * @param string $scene
      *
-     * @return $this|mixed
+     * @return $this
      */
-    public function atScene(string $scene)
+    public function atScene(string $scene): self
     {
         $this->scene = trim($scene);
         return $this;
@@ -768,9 +768,9 @@ trait ValidationTrait
     /**
      * @param bool $_skipOnEmpty
      *
-     * @return $this|mixed
+     * @return $this
      */
-    public function setSkipOnEmpty(bool $_skipOnEmpty)
+    public function setSkipOnEmpty(bool $_skipOnEmpty): self
     {
         $this->_skipOnEmpty = $_skipOnEmpty;
         return $this;
@@ -828,9 +828,9 @@ trait ValidationTrait
      * @param string $key   The data key
      * @param mixed  $value The data value
      *
-     * @return $this|mixed
+     * @return $this
      */
-    public function setRaw(string $key, $value)
+    public function setRaw(string $key, $value): self
     {
         $this->data[$key] = $value;
         return $this;
