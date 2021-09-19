@@ -124,7 +124,7 @@ final class GlobalMessage
     }
 
     /**
-     * @param string $key
+     * @param string       $key
      * @param string|array $msg
      */
     public static function set(string $key, $msg): void
