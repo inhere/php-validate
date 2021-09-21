@@ -71,6 +71,7 @@ final class GlobalMessage
         'lteField' => '{attr} value must be less than or equals to {value0}',
         'gtField'  => '{attr} value must be greater than {value0}',
         'gteField' => '{attr} value must be greater than or equals to {value0}',
+        'inField'  => '{attr} value must be exists in {value0}',
 
         // 'in', 'enum',
         'enum'     => '{attr} must in ({value0})',
