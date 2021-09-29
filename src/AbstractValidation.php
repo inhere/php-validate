@@ -20,7 +20,7 @@ abstract class AbstractValidation implements ValidationInterface
     use ValidationTrait {
         //set as traitSet;
         // Methods to define an alias, can be used in the current class.
-        get as traitGet;
+        ValidationTrait::get as traitGet;
     }
 
     /**
