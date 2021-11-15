@@ -570,10 +570,21 @@ $v->validate();
 
 ```php
 ['users.*.id', 'each', 'required', 'isEmpty' => function($value) {
-    if ($value instanceof \Inhere\Validate\ArrayValueNotExists) {
+    if ($value instanceof \Inhere\Validate\Exception\ArrayValueNotExists) {
         return true;
     }
     // your code here ...
+}]
+```
+规则包含 .* 时的自定义验证,如: users.*.id
+```php
+['users.*.id', 'string', 'isEmpty' => function(array $value) {
+    foreach ($value as $item) {
+        if ($item instanceof \Inhere\Validate\Exception\ArrayValueNotExists) {
+            return true;
+        }
+        // your code here ...
+    }
 }]
 ```
 
