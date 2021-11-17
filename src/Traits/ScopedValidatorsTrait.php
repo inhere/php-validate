@@ -663,11 +663,12 @@ trait ScopedValidatorsTrait
 
     /**
      * @param string $name
-     *
+     * @param array $args
      * @return bool
      */
-    public static function isCheckRequired(string $name): bool
+    public static function isCheckRequired(string $name, array $args = []): bool
     {
+        $name = $name === 'each' ? (strval($args[0] ?? '')) : $name;
         return 0 === strpos($name, 'required');
     }
 

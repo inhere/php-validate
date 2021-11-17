@@ -41,6 +41,7 @@ validate 同时支持两种规则配置方式，对应了两种规则的收集�
 ### 单字段多规则
 
 - `FieldValidation`: **每条规则中，只能有一个字段，但允许多个验证器。** (_规则配置类似于Laravel_)
+- `FieldValidation`: 不支持验证器`each`
 
 配置示例:
 
@@ -570,21 +571,12 @@ $v->validate();
 
 ```php
 ['users.*.id', 'each', 'required', 'isEmpty' => function($value) {
-    if ($value instanceof \Inhere\Validate\Exception\ArrayValueNotExists) {
-        return true;
-    }
-    // your code here ...
-}]
-```
-规则包含 .* 时的自定义验证,如: users.*.id
-```php
-['users.*.id', 'string', 'isEmpty' => function(array $value) {
+    // each value must be verified
     foreach ($value as $item) {
         if ($item instanceof \Inhere\Validate\Exception\ArrayValueNotExists) {
             return true;
-        }
-        // your code here ...
     }
+    // your code here ...
 }]
 ```
 
