@@ -668,7 +668,9 @@ trait ScopedValidatorsTrait
      */
     public static function isCheckRequired(string $name, array $args = []): bool
     {
-        $name = $name === 'each' ? (strval($args[0] ?? '')) : $name;
+        // the $arg.0 is validator name.
+        $name = $name === 'each' ? ((string)($args[0] ?? '')) : $name;
+        
         return 0 === strpos($name, 'required');
     }
 
