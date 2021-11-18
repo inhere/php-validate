@@ -6,6 +6,8 @@ on:
       - '**.php'
       - 'composer.json'
       - '**.yml'
+  # Trigger the workflow on any pull request
+  pull_request:
 
 jobs:
   test:
