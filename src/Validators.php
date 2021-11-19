@@ -125,6 +125,14 @@ class Validators
     {
         if (is_string($val)) {
             $val = trim($val);
+        } elseif (is_array($val)) {
+            // each value must be verified
+            foreach ($val as $item) {
+                if (($item instanceof ArrayValueNotExists)) {
+                    $val = [];
+                    break;
+                }
+            }
         } elseif (is_object($val)) {
             if ($val instanceof ArrayValueNotExists) {
                 $val = '';

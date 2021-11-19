@@ -316,7 +316,7 @@ trait ValidationTrait
                 }
 
                 // required*系列字段检查 || 文件资源检查
-                if (self::isCheckRequired($validator) || self::isCheckFile($validator)) {
+                if (self::isCheckRequired($validator, $args) || self::isCheckFile($validator)) {
                     $result = $this->fieldValidate($field, $value, $validator, $args, $defMsg);
                     if (false === $result && $stopOnError) {
                         break;
@@ -375,6 +375,9 @@ trait ValidationTrait
         // other required* methods
         } elseif (method_exists($this, $validator)) {
             $passed = $this->$validator($field, $value, ...array_values($args));
+        } elseif (method_exists($this, $method = $validator . 'Validator')) {
+            $passed = $this->$method($value, ...$args);
+            // if $validator is a global custom validator {@see UserValidators::$validators}.
         } else {
             throw new InvalidArgumentException("The validator [$validator] is not exists!");
         }

@@ -770,7 +770,6 @@ class RuleValidationTest extends TestCase
             ],
         ];
         $rs = [
-            ['users.*.id', 'required'], // will passed. values like: [ArrayValueNotExists, ArrayValueNotExists]
             ['users.*.id', 'each', 'required'],
         ];
 
@@ -790,6 +789,18 @@ class RuleValidationTest extends TestCase
         $this->assertFalse($v->isOk());
         $this->assertSame('users.*.id each value must be through the "required" verify', $v->firstError());
 
+        $rs = [
+            ['users.*.id', 'required'], // will not pass.
+        ];
+
+        $v = RV::check($d1, $rs);
+        //parameter users.*.id is required!
+        $this->assertFalse($v->isOk());
+
+        $v = RV::check($d2, $rs);
+        //parameter users.*.id is required!
+        $this->assertFalse($v->isOk());
+
         $d3 = [
             'users' => [
                 ['id' => 1, 'name' => 'n1'],
@@ -802,5 +813,32 @@ class RuleValidationTest extends TestCase
         $v = RV::check($d3, $rs);
 
         $this->assertTrue($v->isOk());
+    }
+
+    /**
+     * @link https://github.com/inhere/php-validate/issues/33
+     */
+    public function testIssues33(): void
+    {
+        $d = [
+            'users' => [
+                ['id' => 34, 'name' => 'tom'],
+                ['id' => 89],
+            ],
+        ];
+
+        $rs1 = [
+            ['users.*.name', 'each', 'required'],
+            ['users.*.name', 'each', 'string']
+        ];
+        $v2 = RuleValidation::check($d, $rs1);
+
+        $this->assertTrue($v2->isFail());
+
+        $rs2[] = ['users.*.name', 'each', 'string'];
+
+        $v1 = RuleValidation::check($d, $rs2);
+        $this->assertFalse($v1->isFail());
+        $this->assertTrue($v1->isOk());
     }
 }
