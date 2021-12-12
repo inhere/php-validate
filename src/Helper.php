@@ -170,7 +170,7 @@ class Helper
      *
      * @return bool|int
      */
-    public static function strPos(string $str, $find, int $offset = 0, $encoding = 'UTF-8')
+    public static function strPos(string $str, string $find, int $offset = 0, string $encoding = 'UTF-8')
     {
         if (function_exists('mb_strpos')) {
             return mb_strpos($str, $find, $offset, $encoding);
@@ -187,7 +187,7 @@ class Helper
      *
      * @return bool|int
      */
-    public static function strrpos(string $str, $find, int $offset = 0, string $encoding = 'utf-8')
+    public static function strrpos(string $str, string $find, int $offset = 0, string $encoding = 'utf-8')
     {
         if (function_exists('mb_strrpos')) {
             return mb_strrpos($str, $find, $offset, $encoding);
