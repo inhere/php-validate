@@ -657,6 +657,27 @@ $v->setSecne('update')->validate();
 
 ```
 
+## 选项设置
+
+### `StopOnError`
+
+`stopOnError` 是否在出现第一个验证错误时就停止验证。 
+
+- 默认 `true`, 总是只会拿到第一个错误,这样性能更好。
+- 设置为 `false`, 则会检查全部规则,拿到全部的验证错误。
+
+```php
+$v->setStopOnError(false);
+```
+
+### `SkipOnEmpty`
+
+- `SkipOnEmpty` 为空是否跳过验证, 默认 `true` (此时需配合 `required` 验证不可为空)
+
+```php
+$v->setSkipOnEmpty(false);
+```
+
 <a name="built-in-filters"></a>
 
 ## 内置的过滤器
