@@ -2,7 +2,6 @@
 
 namespace Inhere\Validate\Traits;
 
-use Closure;
 use Inhere\Validate\Helper;
 use Inhere\Validate\Validator\GlobalMessage;
 use Inhere\Validate\Validators;
@@ -14,7 +13,6 @@ use function implode;
 use function is_array;
 use function is_int;
 use function is_string;
-use function strpos;
 use function strtr;
 
 /**
@@ -30,25 +28,26 @@ trait ErrorMessageTrait
      *
      * @var array
      */
-    private $_messages = [];
+    private array $_messages = [];
 
     /**
      * attribute field translate list
      *
      * @var array
      */
-    private $_translates = [];
+    private array $_translates = [];
 
     /**
      * Save all validation error messages
      *
+     *  [
+     *      ['name' => 'field', 'msg' => 'error Message1' ],
+     *      ['name' => 'field2', 'msg' => 'error Message2' ],
+     *  ]
+     *
      * @var array[]
-     * [
-     *     ['name' => 'field', 'msg' => 'error Message1' ],
-     *     ['name' => 'field2', 'msg' => 'error Message2' ],
-     * ]
      */
-    private $_errors = [];
+    private array $_errors = [];
 
     /**
      * Whether there is error stop validation 是否出现验证失败就立即停止验证
@@ -57,14 +56,14 @@ trait ErrorMessageTrait
      *
      * @var boolean
      */
-    private $_stopOnError = true;
+    private bool $_stopOnError = true;
 
     /**
      * Prettify field name on get error message
      *
      * @var bool
      */
-    private $_prettifyName = true;
+    private bool $_prettifyName = true;
 
     protected function prepareValidation(): void
     {
@@ -211,7 +210,7 @@ trait ErrorMessageTrait
      *
      * @return array|string
      */
-    public function firstError(bool $onlyMsg = true)
+    public function firstError(bool $onlyMsg = true): array|string
     {
         if (!$errors = $this->_errors) {
             return $onlyMsg ? '' : [];
@@ -228,7 +227,7 @@ trait ErrorMessageTrait
      *
      * @return array|string
      */
-    public function lastError(bool $onlyMsg = true)
+    public function lastError(bool $onlyMsg = true): array|string
     {
         if (!$errors = $this->_errors) {
             return $onlyMsg ? '' : [];
@@ -239,16 +238,15 @@ trait ErrorMessageTrait
     }
 
     /**
-     * @param bool|mixed|null $_stopOnError
+     * @param mixed|null $_stopOnError
      *
-     * @return $this
+     * @return static
      */
-    public function setStopOnError($_stopOnError = null): self
+    public function setStopOnError(mixed $_stopOnError = null): static
     {
         if (null !== $_stopOnError) {
             $this->_stopOnError = (bool)$_stopOnError;
         }
-
         return $this;
     }
 
@@ -266,9 +264,9 @@ trait ErrorMessageTrait
 
     /**
      * @param string       $key
-     * @param string|array $message
+     * @param array|string $message
      */
-    public function setMessage(string $key, $message): void
+    public function setMessage(string $key, array|string $message): void
     {
         if ($key && $message) {
             $this->_messages[$key] = $message;
@@ -286,9 +284,9 @@ trait ErrorMessageTrait
     /**
      * @param array $messages
      *
-     * @return $this
+     * @return static
      */
-    public function setMessages(array $messages): self
+    public function setMessages(array $messages): static
     {
         foreach ($messages as $key => $value) {
             $this->setMessage($key, $value);
@@ -299,14 +297,14 @@ trait ErrorMessageTrait
     /**
      * 各个验证器的提示消息
      *
-     * @param string|Closure    $validator 验证器
+     * @param callable|string $validator 验证器
      * @param string            $field
      * @param array             $args
-     * @param string|array|null $message   自定义提示消息
+     * @param array|string|null $message   自定义提示消息
      *
      * @return string
      */
-    public function getMessage($validator, string $field, array $args = [], $message = null): string
+    public function getMessage(callable|string $validator, string $field, array $args = [], array|string $message = null): string
     {
         $rawName = is_string($validator) ? $validator : 'callback';
         $params  = [
@@ -318,17 +316,11 @@ trait ErrorMessageTrait
             $message = $this->findMessage($field, $rawName) ?: GlobalMessage::getDefault();
             // is array. It's defined multi error messages
         } elseif (is_array($message)) {
-            if (isset($message[$field])) {
-                $message = $message[$field];
-            } else {
-                $message = $message[$rawName] ?? $this->findMessage($field, $rawName);
-            }
+            $message = $message[$field] ?? $message[$rawName] ?? $this->findMessage($field, $rawName);
 
             if (!$message) { // use default
                 return strtr(GlobalMessage::getDefault(), $params);
             }
-        } else {
-            $message = (string)$message;
         }
 
         /** @see GlobalMessage::$messages['size'] */
@@ -337,12 +329,12 @@ trait ErrorMessageTrait
             $message = $message[$msgKey] ?? $message[0];
         }
 
-        if (false === strpos($message, '{')) {
+        if (!str_contains($message, '{')) {
             return $message;
         }
 
         foreach ($args as $key => $value) {
-            $key = is_int($key) ? "value{$key}" : $key;
+            $key = is_int($key) ? "value$key" : $key;
             // build params
             $params['{' . $key . '}'] = is_array($value) ? implode(',', $value) : $value;
         }
@@ -356,7 +348,7 @@ trait ErrorMessageTrait
      *
      * @return string|array
      */
-    protected function findMessage(string $field, string $rawName)
+    protected function findMessage(string $field, string $rawName): array|string
     {
         // allow define a message for a validator.
         // eg: 'username.required' => 'some message ...'
@@ -387,9 +379,9 @@ trait ErrorMessageTrait
      *
      * @param array $fieldTrans
      *
-     * @return $this
+     * @return static
      */
-    public function setTranslates(array $fieldTrans): self
+    public function setTranslates(array $fieldTrans): static
     {
         return $this->addTranslates($fieldTrans);
     }
@@ -399,9 +391,9 @@ trait ErrorMessageTrait
      *
      * @param array $fieldTrans
      *
-     * @return $this
+     * @return static
      */
-    public function addTranslates(array $fieldTrans): self
+    public function addTranslates(array $fieldTrans): static
     {
         foreach ($fieldTrans as $field => $tran) {
             $this->_translates[$field] = $tran;

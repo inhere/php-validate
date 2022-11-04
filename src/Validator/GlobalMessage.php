@@ -13,7 +13,7 @@ final class GlobalMessage
      *
      * @var array
      */
-    public static $messages = [
+    public static array $messages = [
         // 'int' 'integer'
         'integer'    => [
             '{attr} must be an integer!',
@@ -118,16 +118,16 @@ final class GlobalMessage
      *
      * @return string|array
      */
-    public static function get(string $key)
+    public static function get(string $key): array|string
     {
         return self::$messages[$key] ?? '';
     }
 
     /**
      * @param string       $key
-     * @param string|array $msg
+     * @param array|string $msg
      */
-    public static function set(string $key, $msg): void
+    public static function set(string $key, array|string $msg): void
     {
         if ($key && $msg) {
             self::$messages[$key] = $msg;

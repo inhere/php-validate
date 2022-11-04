@@ -22,11 +22,11 @@ class UserValidatorsTest extends TestCase
     {
         UserValidators::removeAll();
         UserValidators::setValidators([
-            'name1' => function () {
+            'name1' => static function () {
             },
-            'name2' => function () {
+            'name2' => static function () {
             },
-            ''      => function () {
+            ''      => static function () {
             },
         ]);
 

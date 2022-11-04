@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ErrorMessageTraitTest extends TestCase
 {
-    private $sampleDate = [
+    private array $sampleDate = [
         // 'userId' => 234,
         'userId'      => 'is not an integer',
         'tagId'       => '234535',

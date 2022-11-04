@@ -11,23 +11,23 @@ class DataModel
 {
     use ValidationTrait;
 
-    protected $data = [];
+    protected array $data = [];
 
-    protected $db;
+    // protected $db;
 
     /**
      * @param array $data
      *
      * @return $this
      */
-    public function setData($data): self
+    public function setData(array $data): self
     {
         $this->data = $data;
 
         return $this;
     }
 
-    public function create()
+    public function create(): bool|int
     {
         if ($this->validate()->isFail()) {
             return false;

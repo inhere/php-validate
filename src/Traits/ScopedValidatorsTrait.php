@@ -19,7 +19,6 @@ use function in_array;
 use function is_object;
 use function is_string;
 use function method_exists;
-use function strpos;
 use function strrchr;
 use function strtolower;
 use function trim;
@@ -35,13 +34,13 @@ use const UPLOAD_ERR_OK;
 trait ScopedValidatorsTrait
 {
     /** @var array user custom add's validators(current scope) */
-    protected $_validators = [];
+    protected array $_validators = [];
 
     /**
      * @see $_FILES
      * @var array[]
      */
-    private $uploadedFiles = [];
+    private array $uploadedFiles = [];
 
     /*******************************************************************************
      * custom validators
@@ -159,14 +158,14 @@ trait ScopedValidatorsTrait
      * The verification field must exist and the input data is not empty.
      *
      * @param string     $field
-     * @param null|mixed $value
+     * @param mixed|null $value
      *
      * @return bool
      * - True  field exists and value is not empty.
      * - False field not exists or value is empty.
      * @see Validators::isEmpty() 如何鉴定为空
      */
-    public function required(string $field, $value = null): bool
+    public function required(string $field, mixed $value = null): bool
     {
         if (null !== $value) {
             $val = $value;
@@ -185,17 +184,19 @@ trait ScopedValidatorsTrait
     /**
      * 如果指定的另一个字段（ anotherField ）值等于任何一个 value 时，此字段为 必填 (refer laravel)
      *
+     * returns:
+     *  - TRUE  check successful
+     *  - FALSE check failed
+     *  - NULL  skip check the field
+     *
      * @param string       $field
      * @param mixed        $fieldVal
      * @param string       $anotherField
-     * @param array|string $values
+     * @param array|string|int $values
      *
      * @return bool|null
-     * - TRUE  check successful
-     * - FALSE check failed
-     * - NULL  skip check the field
      */
-    public function requiredIf(string $field, $fieldVal, string $anotherField, $values): ?bool
+    public function requiredIf(string $field, mixed $fieldVal, string $anotherField, array|string|int $values): ?bool
     {
         if (isset($this->data[$anotherField])) {
             $anotherVal = $this->data[$anotherField];
@@ -220,7 +221,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredUnless(string $field, $fieldVal, string $anotherField, $values): ?bool
+    public function requiredUnless(string $field, mixed $fieldVal, string $anotherField, array|string $values): ?bool
     {
         if (isset($this->data[$anotherField])) {
             $anotherVal = $this->data[$anotherField];
@@ -244,7 +245,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredWith(string $field, $fieldVal, $fields): ?bool
+    public function requiredWith(string $field, mixed $fieldVal, array|string $fields): ?bool
     {
         foreach ((array)$fields as $name) {
             if ($this->required($name)) {
@@ -265,7 +266,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredWithAll(string $field, $fieldVal, $fields): ?bool
+    public function requiredWithAll(string $field, mixed $fieldVal, array|string $fields): ?bool
     {
         $allHasValue = true;
 
@@ -289,7 +290,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredWithout(string $field, $fieldVal, $fields): ?bool
+    public function requiredWithout(string $field, mixed $fieldVal, array|string $fields): ?bool
     {
         $allHasValue = true;
 
@@ -313,7 +314,7 @@ trait ScopedValidatorsTrait
      * @return bool|null
      * @see requiredIf()
      */
-    public function requiredWithoutAll(string $field, $fieldVal, $fields): ?bool
+    public function requiredWithoutAll(string $field, mixed $fieldVal, array|string $fields): ?bool
     {
         $allNoValue = true;
 
@@ -335,11 +336,11 @@ trait ScopedValidatorsTrait
      * 验证的字段必须是成功上传的文件
      *
      * @param string       $field
-     * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
+     * @param array|string|null $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      *
      * @return bool
      */
-    public function fileValidator(string $field, $suffixes = null): bool
+    public function fileValidator(string $field, array|string $suffixes = null): bool
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -357,7 +358,7 @@ trait ScopedValidatorsTrait
             return false;
         }
 
-        $suffixes = is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
+        $suffixes = is_string($suffixes) ? Filters::explode($suffixes) : $suffixes;
 
         return in_array(strtolower($suffix), $suffixes, true);
     }
@@ -366,11 +367,11 @@ trait ScopedValidatorsTrait
      * 验证的字段必须是成功上传的图片文件
      *
      * @param string       $field
-     * @param string|array $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
+     * @param array|string|null $suffixes e.g ['jpg', 'jpeg', 'png', 'gif', 'bmp']
      *
      * @return bool
      */
-    public function imageValidator(string $field, $suffixes = null): bool
+    public function imageValidator(string $field, array|string $suffixes = null): bool
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -402,7 +403,7 @@ trait ScopedValidatorsTrait
             }
 
             $suffix   = Helper::getImageExtByMime($mime);
-            $suffixes = is_string($suffixes) ? Filters::explode($suffixes) : (array)$suffixes;
+            $suffixes = is_string($suffixes) ? Filters::explode($suffixes) : $suffixes;
 
             return in_array($suffix, $suffixes, true);
         }
@@ -415,11 +416,11 @@ trait ScopedValidatorsTrait
      * ['video', 'mimeTypes', 'video/avi,video/mpeg,video/quicktime']
      *
      * @param string       $field
-     * @param string|array $types
+     * @param array|string $types
      *
      * @return bool
      */
-    public function mimeTypesValidator(string $field, $types): bool
+    public function mimeTypesValidator(string $field, array|string $types): bool
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -444,12 +445,12 @@ trait ScopedValidatorsTrait
      * ['photo', 'mimes', 'jpeg,bmp,png']
      *
      * @param string       $field
-     * @param string|array $types
+     * @param array|string|null $types
      * return bool
      *
      * @todo
      */
-    public function mimesValidator(string $field, $types = null): void
+    public function mimesValidator(string $field, array|string $types = null): void
     {
     }
 
@@ -465,7 +466,7 @@ trait ScopedValidatorsTrait
      *
      * @return bool
      */
-    public function compareValidator($val, string $compareField): bool
+    public function compareValidator(mixed $val, string $compareField): bool
     {
         return $compareField && ($val === $this->getByPath($compareField));
     }
@@ -483,7 +484,7 @@ trait ScopedValidatorsTrait
      *
      * @return bool
      */
-    public function neqFieldValidator($val, string $compareField): bool
+    public function neqFieldValidator(mixed $val, string $compareField): bool
     {
         return $compareField && ($val !== $this->getByPath($compareField));
     }
@@ -491,12 +492,12 @@ trait ScopedValidatorsTrait
     /**
      * 字段值比较：当前字段值 要小于 给定字段的值
      *
-     * @param string|int $val
+     * @param int|string $val
      * @param string     $compareField
      *
      * @return bool
      */
-    public function ltFieldValidator($val, string $compareField): bool
+    public function ltFieldValidator(int|string $val, string $compareField): bool
     {
         $maxVal = $this->getByPath($compareField);
 
@@ -510,12 +511,12 @@ trait ScopedValidatorsTrait
     /**
      * 字段值比较：当前字段值 要小于等于 给定字段的值
      *
-     * @param string|int $val
+     * @param int|string $val
      * @param string     $compareField
      *
      * @return bool
      */
-    public function lteFieldValidator($val, string $compareField): bool
+    public function lteFieldValidator(int|string $val, string $compareField): bool
     {
         $maxVal = $this->getByPath($compareField);
 
@@ -529,12 +530,12 @@ trait ScopedValidatorsTrait
     /**
      * 字段值比较：当前字段值 要大于 给定字段的值
      *
-     * @param string|int $val
+     * @param int|string $val
      * @param string     $compareField
      *
      * @return bool
      */
-    public function gtFieldValidator($val, string $compareField): bool
+    public function gtFieldValidator(int|string $val, string $compareField): bool
     {
         $minVal = $this->getByPath($compareField);
 
@@ -548,12 +549,12 @@ trait ScopedValidatorsTrait
     /**
      * 字段值比较：当前字段值 要大于等于 给定字段的值
      *
-     * @param string|int $val
+     * @param int|string $val
      * @param string     $compareField
      *
      * @return bool
      */
-    public function gteFieldValidator($val, string $compareField): bool
+    public function gteFieldValidator(int|string $val, string $compareField): bool
     {
         $minVal = $this->getByPath($compareField);
 
@@ -572,7 +573,7 @@ trait ScopedValidatorsTrait
      *
      * @return bool
      */
-    public function inFieldValidator($val, string $anotherField): bool
+    public function inFieldValidator(mixed $val, string $anotherField): bool
     {
         if ($anotherField && $dict = $this->getByPath($anotherField)) {
             return Validators::in($val, $dict);
@@ -591,7 +592,7 @@ trait ScopedValidatorsTrait
      *
      * @todo
      */
-    public function intervalDayValidator($val, string $compareField, int $expected, string $op = '>='): void
+    public function intervalDayValidator(string $val, string $compareField, int $expected, string $op = '>='): void
     {
     }
 
@@ -601,7 +602,7 @@ trait ScopedValidatorsTrait
      * `['goods.*', 'each', 'string']`
      *
      * @param array $values
-     * @param array ...$args
+     * @param mixed ...$args
      *  - string|\Closure $validator
      *  - ... args for $validator
      *
@@ -658,7 +659,7 @@ trait ScopedValidatorsTrait
      */
     public static function isCheckFile(string $name): bool
     {
-        return false !== strpos(Helper::$fileValidators, '|' . $name . '|');
+        return str_contains(Helper::$fileValidators, '|' . $name . '|');
     }
 
     /**
@@ -670,8 +671,8 @@ trait ScopedValidatorsTrait
     {
         // the $arg.0 is validator name.
         $name = $name === 'each' ? ((string)($args[0] ?? '')) : $name;
-        
-        return 0 === strpos($name, 'required');
+
+        return str_starts_with($name, 'required');
     }
 
     /**
@@ -695,11 +696,11 @@ trait ScopedValidatorsTrait
     /**
      * @param array $uploadedFiles
      *
-     * @return $this
+     * @return static
      */
-    public function setUploadedFiles($uploadedFiles): self
+    public function setUploadedFiles(array $uploadedFiles): static
     {
-        $this->uploadedFiles = (array)$uploadedFiles;
+        $this->uploadedFiles = $uploadedFiles;
         return $this;
     }
 }

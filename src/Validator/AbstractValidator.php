@@ -4,6 +4,7 @@ namespace Inhere\Validate\Validator;
 
 /**
  * Class AbstractValidator
+ *
  * @package Inhere\Validate\Validator
  */
 abstract class AbstractValidator implements ValidatorInterface
@@ -16,7 +17,7 @@ abstract class AbstractValidator implements ValidatorInterface
      *
      * @return bool
      */
-    public function __invoke($value, array $data): bool
+    public function __invoke(mixed $value, array $data): bool
     {
         return $this->validate($value, $data);
     }

@@ -44,7 +44,7 @@ class Validation extends AbstractValidation
      *
      * @return mixed
      */
-    public function get(string $key, $value = null)
+    public function get(string $key, $value = null): mixed
     {
         return $this->traitGet($key, $value);
     }

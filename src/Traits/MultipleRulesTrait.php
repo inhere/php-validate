@@ -101,7 +101,7 @@ trait MultipleRulesTrait
     protected function parseRule(string $rule, array $row): array
     {
         $rule = trim($rule, ': ');
-        if (false === strpos($rule, ':')) {
+        if (!str_contains($rule, ':')) {
             $row[0] = $rule;
             return $row;
         }

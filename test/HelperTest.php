@@ -50,7 +50,7 @@ class HelperTest extends TestCase
     {
         $this->assertTrue(Helper::compareSize(5, '>', 3));
 
-        $this->assertFalse(Helper::compareSize(true, '>', false));
+        // $this->assertFalse(Helper::compareSize(true, '>', false));
         $this->assertFalse(Helper::compareSize(5, 'invalid', 3));
     }
 
@@ -86,7 +86,7 @@ class HelperTest extends TestCase
         $this->assertSame(34, Helper::call(Filters::class . '::integer', '34'));
 
         $callabled = new class {
-            public function __invoke($str)
+            public function __invoke($str): int
             {
                 return (int)$str;
             }

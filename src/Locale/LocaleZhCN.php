@@ -16,7 +16,7 @@ class LocaleZhCN
      *
      * @var array
      */
-    public static $messages = [
+    public static array $messages = [
         // 'int' 'integer'
         'integer'    => [
             '{attr} 必须是整数!',

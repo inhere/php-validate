@@ -18,7 +18,6 @@ use Inhere\Validate\Traits\ScopedValidatorsTrait;
 use Inhere\Validate\Validator\UserValidators;
 use Inhere\Validate\Validator\ValidatorInterface;
 use InvalidArgumentException;
-use stdClass;
 use function array_keys;
 use function array_merge;
 use function array_shift;
@@ -48,28 +47,28 @@ trait ValidationTrait
     use FilteringTrait, ErrorMessageTrait, ScopedValidatorsTrait;
 
     /** @var array The rules are by setRules() */
-    private $_rules = [];
+    private array $_rules = [];
 
     /** @var array Through the validation of the data */
-    private $_safeData = [];
+    private array $_safeData = [];
 
     /** @var array The cached values. like get 'users.*.id' */
-    private $_dataCaches = [];
+    private array $_dataCaches = [];
 
     /** @var bool Mark validate has running */
-    private $_validated = false;
+    private bool $_validated = false;
 
-    /** @var Closure before validate handler */
-    private $_beforeHandler;
+    /** @var ?Closure before validate handler */
+    private ?Closure $_beforeHandler = null;
 
-    /** @var Closure after validate handler */
-    private $_afterHandler;
+    /** @var ?Closure  after validate handler */
+    private ?Closure $_afterHandler = null;
 
     /** @var array Used rules at current scene */
-    protected $_usedRules = [];
+    protected array $_usedRules = [];
 
-    /** @var ArrayValueNotExists */
-    private $_arrayNotKeyValue;
+    /** @var ?ArrayValueNotExists */
+    private ?ArrayValueNotExists $_arrayNotKeyValue = null;
 
     /**
      * Whether to skip when empty(When not required)
@@ -77,7 +76,7 @@ trait ValidationTrait
      *
      * @var bool
      */
-    private $_skipOnEmpty = true;
+    private bool $_skipOnEmpty = true;
 
     /**
      * Setting current scenario name
@@ -90,7 +89,7 @@ trait ValidationTrait
      *
      * @var string
      */
-    protected $scene = '';
+    protected string $scene = '';
 
     /**
      * @return array
@@ -147,9 +146,9 @@ trait ValidationTrait
      *
      * @param Closure $cb
      *
-     * @return $this
+     * @return static
      */
-    public function onBeforeValidate(Closure $cb): self
+    public function onBeforeValidate(Closure $cb): static
     {
         $this->_beforeHandler = $cb;
         return $this;
@@ -171,9 +170,9 @@ trait ValidationTrait
      *
      * @param Closure $cb
      *
-     * @return $this
+     * @return static
      */
-    public function onAfterValidate(Closure $cb): self
+    public function onAfterValidate(Closure $cb): static
     {
         $this->_afterHandler = $cb;
         return $this;
@@ -197,10 +196,9 @@ trait ValidationTrait
      * @param array     $onlyChecked You can set this field that needs verification
      * @param bool|null $stopOnError Stop verification if there is an error
      *
-     * @return $this
-     * @throws InvalidArgumentException
+     * @return static
      */
-    public function validate(array $onlyChecked = [], bool $stopOnError = null): self
+    public function validate(array $onlyChecked = [], bool $stopOnError = null): static
     {
         if (!property_exists($this, 'data')) {
             throw new InvalidArgumentException('Must be defined property "data"(array) in the sub-class used.');
@@ -250,14 +248,14 @@ trait ValidationTrait
     /**
      * apply validate rule for given fields
      *
-     * @param string|array $fields
+     * @param array|string $fields
      * @param array        $rule
      * @param array        $onlyChecked
      * @param bool         $stopOnError
      */
-    protected function applyRule($fields, array $rule, array $onlyChecked, bool $stopOnError): void
+    protected function applyRule(array|string $fields, array $rule, array $onlyChecked, bool $stopOnError): void
     {
-        $fields    = is_string($fields) ? Filters::explode($fields) : (array)$fields;
+        $fields    = is_string($fields) ? Filters::explode($fields) : $fields;
         $validator = array_shift($rule);
 
         // How to determine the property is empty(default use the Validators::isEmpty)
@@ -276,7 +274,7 @@ trait ValidationTrait
         $skipOnEmpty = $rule['skipOnEmpty'] ?? $this->_skipOnEmpty;
 
         $filters  = $rule['filter'] ?? null;  // filter
-        $defMsg   = $rule['msg'] ?? null; // Custom error message
+        $defMsg   = $rule['msg'] ?? ''; // Custom error message
         $defValue = $rule['default'] ?? null; // Allow default
         $before   = $rule['before'] ?? null; // Before validate function
         $after    = $rule['after'] ?? null;  // After validate function
@@ -349,19 +347,21 @@ trait ValidationTrait
     /**
      * field require/exists validate 字段存在检查
      *
+     * returns:
+     *  - TRUE  check successful
+     *  - FALSE check failed
+     *  - NULL  skip check(for `required*`)
+     *
      * @param string       $field     Attribute name
      * @param mixed        $value     Attribute value
      * @param string       $validator required* Validator name
      * @param array        $args      Verify the required parameters
-     * @param string|array $defMsg
+     * @param array|string $defMsg
      *
      * @return bool|null
-     * - TRUE  check successful
-     * - FALSE check failed
-     * - NULL  skip check(for `required*`)
      * @throws InvalidArgumentException
      */
-    protected function fieldValidate(string $field, $value, string $validator, array $args, $defMsg): ?bool
+    protected function fieldValidate(string $field, mixed $value, string $validator, array $args, array|string $defMsg): ?bool
     {
         // required check
         if ($validator === 'required') {
@@ -402,12 +402,12 @@ trait ValidationTrait
      * @param mixed                $value     Field value
      * @param Closure|string|mixed $validator Validator
      * @param array                $args      Arguments for validate
-     * @param string|array         $defMsg
+     * @param array|string $defMsg
      *
      * @return bool
      * @throws InvalidArgumentException
      */
-    protected function valueValidate(string $field, $value, $validator, array $args, $defMsg): bool
+    protected function valueValidate(string $field, mixed $value, mixed $validator, array $args, array|string $defMsg): bool
     {
         // if field don't exist.
         if (null === $value) {
@@ -470,11 +470,11 @@ trait ValidationTrait
      * @param string $field
      * @param mixed  $value
      */
-    protected function collectSafeValue(string $field, $value): void
+    protected function collectSafeValue(string $field, mixed $value): void
     {
         // 进行的是子级属性检查 eg: 'goods.apple'
         if ($pos = strpos($field, '.')) {
-            $field = (string)substr($field, 0, $pos);
+            $field = substr($field, 0, $pos);
             $value = $this->getRaw($field, []);
         }
 
@@ -596,11 +596,11 @@ trait ValidationTrait
      *  支持以 '.' 分割进行子级值获取 eg: $this->get('goods.apple')
      *
      * @param string $key     The data key
-     * @param mixed  $default The default value
+     * @param mixed|null $default The default value
      *
      * @return mixed The key's value, or the default value
      */
-    public function getByPath(string $key, $default = null)
+    public function getByPath(string $key, mixed $default = null): mixed
     {
         if (isset($this->_dataCaches[$key])) {
             return $this->_dataCaches[$key];
@@ -623,12 +623,12 @@ trait ValidationTrait
 
     /**
      * @param string     $path 'users.*.id' 'goods.*' 'foo.bar.*.id'
-     * @param null|mixed $default
+     * @param mixed|null $default
      * @param array      $data
      *
      * @return mixed
      */
-    protected function getByWildcard(string $path, $default = null, array $data = [])
+    protected function getByWildcard(string $path, mixed $default = null, array $data = []): mixed
     {
         $data = $data ?: $this->data;
 
@@ -709,9 +709,9 @@ trait ValidationTrait
     /**
      * @param array $rules
      *
-     * @return $this
+     * @return static
      */
-    public function setRules(array $rules): self
+    public function setRules(array $rules): static
     {
         $this->_rules = $rules;
         return $this;
@@ -736,9 +736,9 @@ trait ValidationTrait
     /**
      * @param string $scene
      *
-     * @return $this
+     * @return static
      */
-    public function atScene(string $scene): self
+    public function atScene(string $scene): static
     {
         $this->scene = trim($scene);
         return $this;
@@ -749,9 +749,9 @@ trait ValidationTrait
      *
      * @param string $scene
      *
-     * @return $this|mixed
+     * @return static
      */
-    public function setScene(string $scene)
+    public function setScene(string $scene): static
     {
         return $this->atScene($scene);
     }
@@ -761,9 +761,9 @@ trait ValidationTrait
      *
      * @param string $scene
      *
-     * @return $this|mixed
+     * @return static
      */
-    public function onScene(string $scene)
+    public function onScene(string $scene): static
     {
         return $this->atScene($scene);
     }
@@ -771,9 +771,9 @@ trait ValidationTrait
     /**
      * @param bool $_skipOnEmpty
      *
-     * @return $this
+     * @return static
      */
-    public function setSkipOnEmpty(bool $_skipOnEmpty): self
+    public function setSkipOnEmpty(bool $_skipOnEmpty): static
     {
         $this->_skipOnEmpty = $_skipOnEmpty;
         return $this;
@@ -805,22 +805,22 @@ trait ValidationTrait
      * Get data item by key
      *
      * @param string $key     The data key
-     * @param mixed  $default The default value to return if data key does not exist
+     * @param mixed|null $default The default value to return if data key does not exist
      *
      * @return mixed The key's value, or the default value
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         return $this->has($key) ? $this->data[$key] : $default;
     }
 
     /**
      * @param string $key
-     * @param null   $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function getRaw(string $key, $default = null)
+    public function getRaw(string $key, mixed $default = null): mixed
     {
         return $this->has($key) ? $this->data[$key] : $default;
     }
@@ -831,9 +831,9 @@ trait ValidationTrait
      * @param string $key   The data key
      * @param mixed  $value The data value
      *
-     * @return $this
+     * @return static
      */
-    public function setRaw(string $key, $value): self
+    public function setRaw(string $key, mixed $value): static
     {
         $this->data[$key] = $value;
         return $this;
@@ -843,11 +843,11 @@ trait ValidationTrait
      * alias of the setRow()
      *
      * @param string $key
-     * @param        $value
+     * @param mixed $value
      *
-     * @return $this|mixed
+     * @return static
      */
-    public function setValue(string $key, $value)
+    public function setValue(string $key, mixed $value): static
     {
         return $this->setRaw($key, $value);
     }
@@ -856,24 +856,11 @@ trait ValidationTrait
      * alias of the 'getSafe()'
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function val(string $key, $default = null)
-    {
-        return $this->getSafe($key, $default);
-    }
-
-    /**
-     * alias of the 'getSafe()'
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function safe(string $key, $default = null)
+    public function val(string $key, mixed $default = null): mixed
     {
         return $this->getSafe($key, $default);
     }
@@ -882,11 +869,11 @@ trait ValidationTrait
      * get safe field value
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function getSafe(string $key, $default = null)
+    public function getSafe(string $key, mixed $default = null): mixed
     {
         return $this->_safeData[$key] ?? $default;
     }
@@ -895,7 +882,7 @@ trait ValidationTrait
      * @param string $key
      * @param mixed  $value
      */
-    public function setSafe(string $key, $value): void
+    public function setSafe(string $key, mixed $value): void
     {
         $this->_safeData[$key] = $value;
     }
@@ -903,19 +890,9 @@ trait ValidationTrait
     /**
      * @param bool $asObject
      *
-     * @return array|stdClass
+     * @return array|object
      */
-    public function safeData(bool $asObject = false)
-    {
-        return $this->getSafeData($asObject);
-    }
-
-    /**
-     * @param bool $asObject
-     *
-     * @return array|stdClass
-     */
-    public function getSafeData(bool $asObject = false)
+    public function getSafeData(bool $asObject = false): object|array
     {
         return $asObject ? (object)$this->_safeData : $this->_safeData;
     }

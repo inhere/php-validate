@@ -14,12 +14,12 @@ class ValidValue
     /**
      * @var int
      */
-    private static $throwCode = 404;
+    private static int $throwCode = 404;
 
     /**
      * @var string
      */
-    private static $throwClass = InvalidArgumentException::class;
+    private static string $throwClass = InvalidArgumentException::class;
 
     /**
      * Validate and return valid string
@@ -40,7 +40,7 @@ class ValidValue
      */
     public static function getString(string $value, ?int $min, ?int $max, array $opt = []): string
     {
-
+        return '';
     }
 
     /**

@@ -1,12 +1,10 @@
 <?php declare(strict_types=1);
 /**
  * @author inhere
- * @date   : 2015-08-11
+ * @date   2015-08-11
  */
 
 namespace Inhere\Validate;
-
-use stdClass;
 
 /**
  * Interface ValidationInterface
@@ -42,7 +40,7 @@ interface ValidationInterface
      *
      * @return static
      */
-    public function validate(array $onlyChecked = [], bool $stopOnError = null);
+    public function validate(array $onlyChecked = [], bool $stopOnError = null): static;
 
     /**
      * alias of the fail()
@@ -70,7 +68,7 @@ interface ValidationInterface
      *
      * @return array|string
      */
-    public function firstError(bool $onlyMsg = true);
+    public function firstError(bool $onlyMsg = true): array|string;
 
     /**
      * Get the last error message
@@ -79,7 +77,7 @@ interface ValidationInterface
      *
      * @return array|string
      */
-    public function lastError(bool $onlyMsg = true);
+    public function lastError(bool $onlyMsg = true): array|string;
 
     /**
      * @return array
@@ -89,7 +87,7 @@ interface ValidationInterface
     /**
      * @param bool $asObject
      *
-     * @return array|stdClass
+     * @return array|object
      */
-    public function getSafeData(bool $asObject = false);
+    public function getSafeData(bool $asObject = false): object|array;
 }

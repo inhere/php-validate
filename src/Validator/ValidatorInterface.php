@@ -15,5 +15,5 @@ interface ValidatorInterface
      *
      * @return bool
      */
-    public function validate($value, array $data): bool;
+    public function validate(mixed $value, array $data): bool;
 }

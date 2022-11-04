@@ -14,7 +14,7 @@ class ValidateException extends RuntimeException
     /**
      * @var string
      */
-    public $field;
+    public string $field;
 
     /**
      * @param string $field

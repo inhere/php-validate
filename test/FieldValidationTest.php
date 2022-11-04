@@ -15,7 +15,7 @@ use Throwable;
  */
 class FieldValidationTest extends TestCase
 {
-    public $data = [
+    public array $data = [
         // 'userId' => 234,
         'userId'      => 'is not an integer',
         'tagId'       => '234535',

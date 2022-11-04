@@ -12,7 +12,7 @@ use function get_class;
  */
 class ValidDataTest extends BaseValidateTestCase
 {
-    public $testData = [
+    public array $testData = [
         'int'  => 23,
         'num'  => '23',
         'str'  => 'abc',

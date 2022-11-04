@@ -90,7 +90,7 @@ class ValidationTraitTest extends TestCase
     /**
      * @var \array[][] see PR https://github.com/inhere/php-validate/pull/19
      */
-    public $deepData = [
+    public array $deepData = [
         'companies' => [
             [
                 'name' => 'ms',

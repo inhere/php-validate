@@ -18,7 +18,7 @@ final class UserFilters
     /**
      * @var array user custom filters
      */
-    private static $filters = [];
+    private static array $filters = [];
 
     /**
      * @param string $name

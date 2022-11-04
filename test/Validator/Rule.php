@@ -21,7 +21,7 @@ final class Rule
     /**
      * @var string
      */
-    public $field;
+    public string $field;
 
     /**
      * validator name OR validator object
@@ -33,29 +33,29 @@ final class Rule
     /**
      * @var array
      */
-    public $params = [];
+    public array $params = [];
 
     /**
      * @var Closure
      */
-    public $when;
+    public Closure $when;
 
     /**
      * @var mixed
      */
-    public $value;
+    public mixed $value;
 
     /**
      * @var mixed
      */
-    public $default;
+    public mixed $default;
 
     /**
      * default error message
      *
      * @var mixed
      */
-    public $message;
+    public mixed $message;
 
     /**
      * check Empty
@@ -67,12 +67,12 @@ final class Rule
     /**
      * @var bool
      */
-    public $skipOnEmpty = true;
+    public bool $skipOnEmpty = true;
 
     /**
      * @var array|null
      */
-    public $filters;
+    public ?array $filters;
 
     public static function createByArray(array $config): void
     {
@@ -81,14 +81,14 @@ final class Rule
     /**
      * @param string         $field     属性名称
      * @param mixed          $value     属性值
-     * @param Closure|string $validator 验证器
+     * @param string|Closure $validator 验证器
      * @param array          $params    验证需要的参数
-     * @param string         $message   default error message
+     * @param string $message   default error message
      * @param mixed          $default   default value
      *
      * @return Rule
      */
-    public function init(string $field, $value, $validator, array $params, $message, $default): Rule
+    public function init(string $field, mixed $value, string|Closure $validator, array $params, string $message, mixed $default): Rule
     {
         $this->field     = $field;
         $this->value     = $value;

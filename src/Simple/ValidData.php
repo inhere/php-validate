@@ -26,18 +26,18 @@ class ValidData
     /**
      * @var array
      */
-    protected static $data = [];
+    protected static array $data = [];
 
     /**
      * @var int
      */
-    private static $throwCode = 404;
+    private static int $throwCode = 404;
 
     /**
      * @var string
      * @psalm-var class-string
      */
-    private static $throwClass = ValidateException::class;
+    private static string $throwClass = ValidateException::class;
 
     /**
      * @param array $data
@@ -338,7 +338,7 @@ class ValidData
             throw self::newEx($field, 'must be valid JSON string');
         }
 
-        $arr = json_decode($val, true);
+        $arr = json_decode($val, true, 512, JSON_THROW_ON_ERROR);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw self::newEx($field, 'must be valid JSON string');
         }

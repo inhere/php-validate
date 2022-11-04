@@ -14,7 +14,7 @@ $npMap  = [
     'Inhere\\ValidateTest\\' => $libDir . '/test/',
 ];
 
-spl_autoload_register(function ($class) use ($npMap) {
+spl_autoload_register(static function ($class) use ($npMap) {
     foreach ($npMap as $np => $dir) {
         $file = $dir . str_replace('\\', '/', substr($class, strlen($np))) . '.php';
 

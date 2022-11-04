@@ -55,7 +55,7 @@ class Helper
      *
      * @link https://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
      */
-    public static $imgMimeTypes = [
+    public static array $imgMimeTypes = [
         'bmp'  => 'image/bmp',
         'gif'  => 'image/gif',
         'ief'  => 'image/ief',
@@ -70,7 +70,7 @@ class Helper
     /**
      * @var array
      */
-    public static $imgMimeConstants = [
+    public static array $imgMimeConstants = [
         IMAGETYPE_GIF,
         IMAGETYPE_JPEG,
         IMAGETYPE_PNG,
@@ -80,7 +80,7 @@ class Helper
     ];
 
     /** @var string */
-    public static $fileValidators = '|file|image|mimeTypes|mimes|';
+    public static string $fileValidators = '|file|image|mimeTypes|mimes|';
 
     /**
      * @param string $ext
@@ -128,11 +128,11 @@ class Helper
     }
 
     /**
-     * @param int|string|array $val
+     * @param array|int|string $val
      *
      * @return int
      */
-    public static function length($val): int
+    public static function length(array|int|string $val): int
     {
         if (is_int($val)) {
             return $val;
@@ -170,7 +170,7 @@ class Helper
      *
      * @return bool|int
      */
-    public static function strPos(string $str, $find, int $offset = 0, $encoding = 'UTF-8')
+    public static function strPos(string $str, string $find, int $offset = 0, string $encoding = 'UTF-8'): bool|int
     {
         if (function_exists('mb_strpos')) {
             return mb_strpos($str, $find, $offset, $encoding);
@@ -187,7 +187,7 @@ class Helper
      *
      * @return bool|int
      */
-    public static function strrpos(string $str, $find, int $offset = 0, string $encoding = 'utf-8')
+    public static function strrpos(string $str, string $find, int $offset = 0, string $encoding = 'utf-8'): bool|int
     {
         if (function_exists('mb_strrpos')) {
             return mb_strrpos($str, $find, $offset, $encoding);
@@ -210,11 +210,11 @@ class Helper
 
     /**
      * @param string       $scene Current scene value
-     * @param string|array $ruleOn
+     * @param array|string $ruleOn
      *
      * @return bool
      */
-    public static function ruleIsAvailable(string $scene, $ruleOn): bool
+    public static function ruleIsAvailable(string $scene, array|string $ruleOn): bool
     {
         // - rule is not limit scene
         if (!$ruleOn) {
@@ -228,7 +228,7 @@ class Helper
             return false;
         }
 
-        $scenes = is_string($ruleOn) ? Filters::explode($ruleOn) : (array)$ruleOn;
+        $scenes = is_string($ruleOn) ? Filters::explode($ruleOn) : $ruleOn;
 
         return in_array($scene, $scenes, true);
     }
@@ -236,13 +236,13 @@ class Helper
     /**
      * getValueOfArray 支持以 '.' 分割进行子级值获取 eg: 'goods.apple'
      *
-     * @param array        $array
-     * @param array|string $key
-     * @param mixed        $default
+     * @param array $array
+     * @param array|string|null $key
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public static function getValueOfArray(array $array, $key, $default = null)
+    public static function getValueOfArray(array $array, array|string|null $key, mixed $default = null): mixed
     {
         if (null === $key) {
             return $array;
@@ -276,7 +276,7 @@ class Helper
      * @return mixed
      * @throws InvalidArgumentException
      */
-    public static function call($cb, ...$args)
+    public static function call(mixed $cb, ...$args): mixed
     {
         if (is_string($cb)) {
             // className::method
@@ -305,13 +305,13 @@ class Helper
      * - string Compare length
      * - array  Compare length
      *
-     * @param mixed  $val
-     * @param mixed  $expected
+     * @param int|string|array  $val
      * @param string $operator
+     * @param int|string|array  $expected
      *
      * @return bool
      */
-    public static function compareSize($val, string $operator, $expected): bool
+    public static function compareSize(int|string|array $val, string $operator, int|string|array $expected): bool
     {
         // type must be same
         if (gettype($val) !== gettype($expected)) {
@@ -351,7 +351,7 @@ class Helper
      *
      * @return bool
      */
-    public static function inArray($val, array $list): bool
+    public static function inArray(mixed $val, array $list): bool
     {
         if (!is_scalar($val)) {
             return false;

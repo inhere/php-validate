@@ -17,7 +17,7 @@ class AdemoValidatorTest extends AbstractValidator
      *
      * @return bool
      */
-    public function validate($value, array $data): bool
+    public function validate(mixed $value, array $data): bool
     {
         return $value === 1;
     }

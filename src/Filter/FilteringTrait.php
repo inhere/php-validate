@@ -25,36 +25,36 @@ use function trim;
 trait FilteringTrait
 {
     /** @var array user custom filters */
-    private $_filters = [];
+    private array $_filters = [];
 
     /**
      * value sanitize 直接对给的值进行过滤
      *
-     * @param mixed        $value
-     * @param string|array $filters
-     *          string:
+     * filters:
+     *   string:
      *          'string|trim|upper'
-     *          array:
-     *          [
+     *   array:
+     *      [
      *          'string',
      *          'trim',
      *          ['Class', 'method'],
      *          // 追加额外参数. 传入时，第一个参数总是要过滤的字段值，其余的依次追加
      *          'myFilter' => ['arg1', 'arg2'],
      *          function($val) {
-     *          return str_replace(' ', '', $val);
+     *              return str_replace(' ', '', $val);
      *          },
-     *          ]
+     *     ]
+     *
+     * @param mixed $value
+     * @param array|string|callable $filters
      *
      * @return mixed
-     * @throws InvalidArgumentException
      */
-    protected function valueFiltering($value, $filters)
+    protected function valueFiltering(mixed $value, array|string|callable $filters): mixed
     {
-        $filters = is_string($filters) ? Filters::explode($filters, '|') : $filters;
-
-        // fix: must ensure is array
-        if (!is_array($filters)) {
+        if (is_string($filters)) {
+            $filters = Filters::explode($filters, '|');
+        } elseif (!is_array($filters)) {
             $filters = [$filters];
         }
 
@@ -64,14 +64,14 @@ trait FilteringTrait
                 $args  = (array)$filter;
                 $value = $this->callStringCallback($key, $value, ...$args);
 
-            // closure
+                // closure
             } elseif (is_object($filter) && method_exists($filter, '__invoke')) {
                 $value = $filter($value);
-            // string, trim, ....
+                // string, trim, ....
             } elseif (is_string($filter)) {
                 $value = $this->callStringCallback($filter, $value);
 
-            // e.g ['Class', 'method'],
+                // e.g ['Class', 'method'],
             } else {
                 $value = Helper::call($filter, $value);
             }
@@ -87,7 +87,7 @@ trait FilteringTrait
      * @return mixed
      * @throws InvalidArgumentException
      */
-    protected function callStringCallback(string $filter, ...$args)
+    protected function callStringCallback(string $filter, ...$args): mixed
     {
         // if is alias name
         $filterName = Filters::realName($filter);
@@ -95,21 +95,21 @@ trait FilteringTrait
         // if $filter is a custom by addFiler()
         if ($callback = $this->getFilter($filter)) {
             $value = $callback(...$args);
-        // if $filter is a custom method of the subclass.
+            // if $filter is a custom method of the subclass.
         } elseif (method_exists($this, $filter . 'Filter')) {
             $filter .= 'Filter';
             $value  = $this->$filter(...$args);
 
-        // if $filter is a custom add callback in the property {@see $_filters}.
+            // if $filter is a custom add callback in the property {@see $_filters}.
         } elseif ($callback = UserFilters::get($filter)) {
             $value = $callback(...$args);
 
-        // if $filter is a custom add callback in the property {@see $_filters}.
+            // if $filter is a custom add callback in the property {@see $_filters}.
             // $filter is a method of the class 'FilterList'
         } elseif (method_exists(Filters::class, $filterName)) {
             $value = Filters::$filterName(...$args);
 
-        // it is function name
+            // it is function name
         } elseif (function_exists($filter)) {
             $value = $filter(...$args);
         } else {
@@ -134,28 +134,27 @@ trait FilteringTrait
     }
 
     /**
-     * @param string   $name
+     * @param string $name
      * @param callable $filter
      *
-     * @return $this
+     * @return static
      */
-    public function addFilter(string $name, callable $filter): self
+    public function addFilter(string $name, callable $filter): static
     {
         return $this->setFilter($name, $filter);
     }
 
     /**
-     * @param string   $name
+     * @param string $name
      * @param callable $filter
      *
-     * @return $this
+     * @return static
      */
-    public function setFilter(string $name, callable $filter): self
+    public function setFilter(string $name, callable $filter): static
     {
         if ($name = trim($name)) {
             $this->_filters[$name] = $filter;
         }
-
         return $this;
     }
 

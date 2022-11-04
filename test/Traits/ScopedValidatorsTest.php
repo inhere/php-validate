@@ -25,11 +25,11 @@ class ScopedValidatorsTest extends TestCase
         $v = Validation::make([]);
         $v->clearValidators();
         $v->addValidators([
-            'name1' => function () {
+            'name1' => static function () {
             },
-            'name2' => function () {
+            'name2' => static function () {
             },
-            ''      => function () {
+            ''      => static function () {
             },
         ]);
 
@@ -40,7 +40,7 @@ class ScopedValidatorsTest extends TestCase
         $this->assertNotEmpty($v->getValidator('name2'));
         $this->assertEmpty($v->getValidator('name3'));
 
-        $v->addValidator('name4', function () {
+        $v->addValidator('name4', static function () {
         });
         $this->assertNotEmpty($v->getValidator('name4'));
 

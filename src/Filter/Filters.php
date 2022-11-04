@@ -40,7 +40,6 @@ use const FILTER_NULL_ON_FAILURE;
 use const FILTER_SANITIZE_EMAIL;
 use const FILTER_SANITIZE_ENCODED;
 use const FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-use const FILTER_SANITIZE_MAGIC_QUOTES;
 use const FILTER_SANITIZE_NUMBER_FLOAT;
 use const FILTER_SANITIZE_NUMBER_INT;
 use const FILTER_SANITIZE_SPECIAL_CHARS;
@@ -48,7 +47,6 @@ use const FILTER_SANITIZE_URL;
 use const FILTER_UNSAFE_RAW;
 use const FILTER_VALIDATE_BOOLEAN;
 use const MB_CASE_TITLE;
-use const PHP_VERSION_ID;
 
 /**
  * Class Filters
@@ -60,7 +58,7 @@ final class Filters
     use NameAliasTrait;
 
     /** @var array filter aliases map */
-    private static $aliases = [
+    private static array $aliases = [
         'substr'       => 'subStr',
         'substring'    => 'subStr',
         'str2list'     => 'explode',
@@ -85,11 +83,11 @@ final class Filters
      * 注意： NULL 不是标量类型
      *
      * @param mixed $val
-     * @param bool  $nullAsFalse
+     * @param bool $nullAsFalse
      *
      * @return bool
      */
-    public static function boolean($val, $nullAsFalse = false): bool
+    public static function boolean(mixed $val, bool $nullAsFalse = false): bool
     {
         if ($val !== null && !is_scalar($val)) {
             return (bool)$val;
@@ -102,9 +100,8 @@ final class Filters
 
     /**
      * @see Validators::boolean()
-     * {@inheritdoc}
      */
-    public static function bool($val, $nullAsFalse = false): bool
+    public static function bool(mixed $val, $nullAsFalse = false): bool
     {
         return self::boolean($val, $nullAsFalse);
     }
@@ -118,7 +115,7 @@ final class Filters
      *
      * @return int|array
      */
-    public static function integer($val)
+    public static function integer(mixed $val): array|int
     {
         if (is_array($val)) {
             return array_map(self::class . '::integer', $val);
@@ -129,9 +126,8 @@ final class Filters
 
     /**
      * @see Filters::integer()
-     * {@inheritdoc}
      */
-    public static function int($val)
+    public static function int(mixed $val): array|int
     {
         return self::integer($val);
     }
@@ -141,7 +137,7 @@ final class Filters
      *
      * @return int
      */
-    public static function abs($val): int
+    public static function abs(mixed $val): int
     {
         return abs((int)$val);
     }
@@ -152,15 +148,15 @@ final class Filters
      * @note 该过滤器默认允许所有数字以及 + -
      *
      * @param mixed    $val   要过滤的变量
-     * @param null|int $decimal
-     * @param int      $flags 标志
+     * @param int|null $decimal
+     * @param int|string $flags 标志
      *                        FILTER_FLAG_ALLOW_FRACTION - 允许小数分隔符 （比如 .）
      *                        FILTER_FLAG_ALLOW_THOUSAND - 允许千位分隔符（比如 ,）
      *                        FILTER_FLAG_ALLOW_SCIENTIFIC - 允许科学记数法（比如 e 和 E）
      *
-     * @return mixed
+     * @return int|float
      */
-    public static function float($val, $decimal = null, $flags = FILTER_FLAG_ALLOW_FRACTION)
+    public static function float(mixed $val, int $decimal = null, int|string $flags = FILTER_FLAG_ALLOW_FRACTION): int|float
     {
         $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
@@ -177,8 +173,8 @@ final class Filters
     /**
      * 去除标签，去除或编码特殊字符。
      *
-     * @param string|array $val
-     * @param int          $flags 标志
+     * @param mixed $val
+     * @param int|string $flags 标志
      *                            FILTER_FLAG_NO_ENCODE_QUOTES - 该标志不编码引号
      *                            FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
      *                            FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 127 以上的字符
@@ -188,7 +184,7 @@ final class Filters
      *
      * @return string|array
      */
-    public static function string($val, $flags = 0)
+    public static function string(mixed $val, int|string $flags = 0): array|string
     {
         if (is_array($val)) {
             return array_map(self::class . '::string', $val);
@@ -196,14 +192,13 @@ final class Filters
 
         $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
-        return (string)filter_var($val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options);
+        return (string)filter_var((string)$val, FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options);
     }
 
     /**
      * @see Filters::string()
-     * {@inheritdoc}
      */
-    public static function stripped($val, $flags = 0)
+    public static function stripped($val, int|string $flags = 0): array|string
     {
         return self::string($val, $flags);
     }
@@ -215,23 +210,23 @@ final class Filters
      *
      * @return string New string
      */
-    public static function nl2br($str): string
+    public static function nl2br(string $str): string
     {
-        return str_replace(["\r\n", "\r", "\n"], '<br/>', (string)$str);
+        return str_replace(["\r\n", "\r", "\n"], '<br/>', $str);
     }
 
     /**
      * simple trim space
      *
-     * @param string|array $val
+     * @param array|string $val
      *
      * @return string|array
      */
-    public static function trim($val)
+    public static function trim(array|string $val): array|string
     {
-        return is_array($val) ? array_map(function ($val) {
+        return is_array($val) ? array_map(static function ($val) {
             return is_string($val) ? trim($val) : $val;
-        }, $val) : trim((string)$val);
+        }, $val) : trim($val);
     }
 
     /**
@@ -241,9 +236,9 @@ final class Filters
      *
      * @return mixed
      */
-    public static function clearSpace($val): string
+    public static function clearSpace(string $val): string
     {
-        return str_replace(' ', '', trim((string)$val));
+        return str_replace(' ', '', trim($val));
     }
 
     /**
@@ -253,9 +248,9 @@ final class Filters
      *
      * @return mixed
      */
-    public static function clearNewline($val): string
+    public static function clearNewline(string $val): string
     {
-        return str_replace(["\r\n", "\r", "\n"], '', trim((string)$val));
+        return str_replace(["\r\n", "\r", "\n"], '', trim($val));
     }
 
     /**
@@ -265,7 +260,7 @@ final class Filters
      *
      * @return string
      */
-    public static function lower($val): string
+    public static function lower(string $val): string
     {
         return self::lowercase($val);
     }
@@ -273,11 +268,11 @@ final class Filters
     /**
      * string to lowercase
      *
-     * @param string|int $val
+     * @param int|string $val
      *
      * @return string
      */
-    public static function lowercase($val): string
+    public static function lowercase(int|string $val): string
     {
         if (!$val || !is_string($val)) {
             return is_int($val) ? (string)$val : '';
@@ -297,7 +292,7 @@ final class Filters
      *
      * @return string
      */
-    public static function upper($val): string
+    public static function upper(string $val): string
     {
         return self::uppercase($val);
     }
@@ -305,11 +300,11 @@ final class Filters
     /**
      * string to uppercase
      *
-     * @param string|int $str
+     * @param int|string $str
      *
      * @return string
      */
-    public static function uppercase($str): string
+    public static function uppercase(int|string $str): string
     {
         if (!$str || !is_string($str)) {
             return is_int($str) ? (string)$str : '';
@@ -323,13 +318,13 @@ final class Filters
     }
 
     /**
-     * @param string|mixed $str
+     * @param string $str
      *
      * @return string
      */
-    public static function ucfirst($str): string
+    public static function ucfirst(string $str): string
     {
-        if (!$str || !is_string($str)) {
+        if (!$str) {
             return '';
         }
 
@@ -337,13 +332,13 @@ final class Filters
     }
 
     /**
-     * @param string|mixed $str
+     * @param string $str
      *
      * @return string
      */
-    public static function ucwords($str): string
+    public static function ucwords(string $str): string
     {
-        if (!$str || !is_string($str)) {
+        if (!$str) {
             return '';
         }
 
@@ -362,7 +357,7 @@ final class Filters
      *
      * @return string
      */
-    public static function snake($val, string $sep = '_'): string
+    public static function snake(string $val, string $sep = '_'): string
     {
         return self::snakeCase($val, $sep);
     }
@@ -377,9 +372,9 @@ final class Filters
      *
      * @return string
      */
-    public static function snakeCase($val, string $sep = '_'): string
+    public static function snakeCase(string $val, string $sep = '_'): string
     {
-        if (!$val || !is_string($val)) {
+        if (!$val) {
             return '';
         }
 
@@ -391,12 +386,12 @@ final class Filters
     /**
      * string to camelcase
      *
-     * @param string|mixed $val
-     * @param bool         $ucFirst
+     * @param string $val
+     * @param bool $ucFirst
      *
      * @return string
      */
-    public static function camel($val, $ucFirst = false): string
+    public static function camel(string $val, bool $ucFirst = false): string
     {
         return self::camelCase($val, $ucFirst);
     }
@@ -405,23 +400,22 @@ final class Filters
      * Translates a string with underscores into camel case (e.g. first_name -> firstName)
      *
      * @param string $val
-     * @param bool   $ucFirst
+     * @param bool $ucFirst
      *
      * @return string
      */
-    public static function camelCase($val, $ucFirst = false): string
+    public static function camelCase(string $val, bool $ucFirst = false): string
     {
-        if (!$val || !is_string($val)) {
+        if (!$val) {
             return '';
         }
 
         $str = self::lowercase($val);
-
         if ($ucFirst) {
             $str = self::ucfirst($str);
         }
 
-        return preg_replace_callback('/_+([a-z])/', function ($c) {
+        return preg_replace_callback('/_+([a-z])/', static function ($c) {
             return strtoupper($c[1]);
         }, $str);
     }
@@ -433,7 +427,7 @@ final class Filters
      *
      * @return int
      */
-    public static function timestamp($val): int
+    public static function timestamp(string $val): int
     {
         return self::strToTime($val);
     }
@@ -445,9 +439,9 @@ final class Filters
      *
      * @return int
      */
-    public static function strToTime($val): int
+    public static function strToTime(string $val): int
     {
-        if (!$val || !is_string($val)) {
+        if (!$val) {
             return 0;
         }
 
@@ -462,7 +456,7 @@ final class Filters
      *
      * @return bool|string
      */
-    public static function subStr(string $str, int $start, int $length = 0, string $encoding = 'utf-8')
+    public static function subStr(string $str, int $start, int $length = 0, string $encoding = 'utf-8'): bool|string
     {
         $length = $length === 0 ? Helper::strlen($str) : $length;
 
@@ -511,22 +505,22 @@ final class Filters
 
     /**
      * @param mixed       $val
-     * @param null|string $allowedTags
+     * @param string|null $allowedTags
      *
      * @return string
      */
-    public static function clearTags($val, $allowedTags = null): string
+    public static function clearTags(mixed $val, string $allowedTags = null): string
     {
         return self::stripTags($val, $allowedTags);
     }
 
     /**
      * @param mixed       $val
-     * @param null|string $allowedTags e.g '<p><a>' 允许 <p> 和 <a>
+     * @param string|null $allowedTags e.g '<p><a>' 允许 <p> 和 <a>
      *
      * @return string
      */
-    public static function stripTags($val, $allowedTags = null): string
+    public static function stripTags(mixed $val, string $allowedTags = null): string
     {
         if (!$val || !is_string($val)) {
             return '';
@@ -565,12 +559,7 @@ final class Filters
      */
     public static function quotes(string $val): string
     {
-        if (PHP_VERSION_ID > 70300) {
-            /** @noinspection PhpElementIsNotAvailableInCurrentPhpVersionInspection */
-            $flag = FILTER_SANITIZE_ADD_SLASHES;
-        } else {
-            $flag = FILTER_SANITIZE_MAGIC_QUOTES;
-        }
+        $flag = FILTER_SANITIZE_ADD_SLASHES;
 
         return (string)filter_var($val, $flag);
     }
@@ -586,7 +575,7 @@ final class Filters
      *
      * @return string
      */
-    public static function specialChars($val, int $flags = 0): string
+    public static function specialChars(string $val, int $flags = 0): string
     {
         $settings = $flags !== 0 ? ['flags' => $flags] : [];
 
@@ -595,11 +584,11 @@ final class Filters
 
     /**
      * @param string $val
-     * @param int    $flags
+     * @param int $flags
      *
      * @return string
      */
-    public static function escape($val, $flags = 0): string
+    public static function escape(string $val, int $flags = 0): string
     {
         return self::specialChars($val, $flags);
     }
@@ -612,7 +601,7 @@ final class Filters
      *
      * @return string
      */
-    public static function fullSpecialChars($val, int $flags = 0): string
+    public static function fullSpecialChars(string $val, int $flags = 0): string
     {
         $settings = $flags !== 0 ? ['flags' => $flags] : [];
 
@@ -622,29 +611,25 @@ final class Filters
     /**
      * 字符串长度过滤截取
      *
-     * @param string  $string
-     * @param integer $start
-     * @param int     $length
+     * @param string $string
+     * @param int|string $start
+     * @param int|string $length
      *
      * @return string
      */
-    public static function stringCute($string, $start = 0, $length = 0): string
+    public static function stringCute(string $string, int|string $start = 0, int|string $length = 0): string
     {
-        if (!is_string($string)) {
-            return '';
-        }
-
         return self::subStr($string, (int)$start, (int)$length);
     }
 
     /**
      * @param string $string
-     * @param int    $start
-     * @param int    $length
+     * @param int|string $start
+     * @param int|string $length
      *
      * @return string
      */
-    public static function cut($string, $start = 0, $length = 0): string
+    public static function cut(string $string, int|string $start = 0, int|string $length = 0): string
     {
         return self::stringCute($string, $start, $length);
     }
@@ -652,18 +637,14 @@ final class Filters
     /**
      * url地址过滤 移除所有不符合 url 的字符
      *
-     * @note 该过滤器允许所有的字母、数字以及 $-_.+!*'(),{}|\^~[]`"><#%;/?:@&=
+     * - 该过滤器允许所有的字母、数字以及 $-_.+!*'(),{}|\^~[]`"><#%;/?:@&=
      *
      * @param string $val 要过滤的数据
      *
      * @return string
      */
-    public static function url($val): string
+    public static function url(string $val): string
     {
-        if (!is_string($val)) {
-            return '';
-        }
-
         return (string)filter_var($val, FILTER_SANITIZE_URL);
     }
 
@@ -674,12 +655,8 @@ final class Filters
      *
      * @return string
      */
-    public static function email($val): string
+    public static function email(string $val): string
     {
-        if (!is_string($val)) {
-            return '';
-        }
-
         return (string)filter_var($val, FILTER_SANITIZE_EMAIL);
     }
 
@@ -689,7 +666,7 @@ final class Filters
      * 如果不规定标志，则该过滤器没有任何行为。
      *
      * @param string $string
-     * @param int    $flags 标志
+     * @param int|string $flags 标志
      *                      FILTER_FLAG_STRIP_LOW - 去除 ASCII 值在 32 以下的字符
      *                      FILTER_FLAG_STRIP_HIGH - 去除 ASCII 值在 32 以上的字符
      *                      FILTER_FLAG_ENCODE_LOW - 编码 ASCII 值在 32 以下的字符
@@ -698,7 +675,7 @@ final class Filters
      *
      * @return string|mixed
      */
-    public static function unsafeRaw($string, $flags = 0)
+    public static function unsafeRaw(string $string, int|string $flags = 0): mixed
     {
         $settings = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
@@ -713,7 +690,7 @@ final class Filters
      *
      * @return bool|mixed
      */
-    public static function callback($val, $callback)
+    public static function callback(mixed $val, callable $callback): mixed
     {
         return filter_var($val, FILTER_CALLBACK, ['options' => $callback]);
     }
@@ -725,7 +702,7 @@ final class Filters
      *
      * @return array
      */
-    public static function unique($val): array
+    public static function unique(mixed $val): array
     {
         if (!$val || !is_array($val)) {
             return (array)$val;

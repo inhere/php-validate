@@ -94,10 +94,10 @@ class FiltersTest extends TestCase
         $this->assertSame("O\'Reilly?", Filters::quotes("O'Reilly?"));
 
         // email
-        $this->assertSame('', Filters::email([]));
+        $this->assertSame('', Filters::email(''));
 
         // url
-        $this->assertSame('', Filters::url([]));
+        $this->assertSame('', Filters::url(''));
         $this->assertSame('abc/hi', Filters::url('abc/hi'));
 
         // unsafeRaw
@@ -159,24 +159,20 @@ class FiltersTest extends TestCase
         // ucfirst
         $this->assertSame('Abc', Filters::ucfirst('abc'));
         $this->assertSame('', Filters::ucfirst(''));
-        $this->assertSame('', Filters::ucfirst([]));
 
         // ucwords
         $this->assertSame('Hello World', Filters::ucwords('hello world'));
         $this->assertSame('', Filters::ucwords(''));
-        $this->assertSame('', Filters::ucwords([]));
 
         // snake case
         $this->assertSame('hello_world', Filters::snake('HelloWorld'));
         $this->assertSame('hello-world', Filters::snake('HelloWorld', '-'));
         $this->assertSame('', Filters::snake(''));
-        $this->assertSame('', Filters::snake([]));
 
         // camel case
         $this->assertSame('helloWorld', Filters::camel('hello_world'));
         $this->assertSame('HelloWorld', Filters::camel('hello_world', true));
         $this->assertSame('', Filters::camel(''));
-        $this->assertSame('', Filters::camel([]));
     }
 
     public function testTime(): void

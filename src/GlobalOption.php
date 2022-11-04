@@ -14,5 +14,5 @@ final class GlobalOption
      *
      * @var bool
      */
-    public static $prettifyName = true;
+    public static bool $prettifyName = true;
 }

@@ -244,7 +244,7 @@ class RuleValidationTest extends TestCase
         $this->assertCount(4, $v->getUsedRules());
     }
 
-    public $data = [
+    public array $data = [
         // 'userId' => 234,
         'userId'      => 'is not an integer',
         'tagId'       => '35',

@@ -22,11 +22,11 @@ class UserFiltersTest extends TestCase
     {
         UserFilters::removeAll();
         UserFilters::setFilters([
-            'name1' => function () {
+            'name1' => static function () {
             },
-            'name2' => function () {
+            'name2' => static function () {
             },
-            ''      => function () {
+            ''      => static function () {
             },
         ]);
 
@@ -37,7 +37,7 @@ class UserFiltersTest extends TestCase
         $this->assertNotEmpty(UserFilters::get('name2'));
         $this->assertEmpty(UserFilters::get('name3'));
 
-        UserFilters::add('new1', function () {
+        UserFilters::add('new1', static function () {
         });
         $this->assertTrue(UserFilters::has('new1'));
 

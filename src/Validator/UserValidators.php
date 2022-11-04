@@ -20,7 +20,7 @@ final class UserValidators
     /**
      * @var array user custom added validators (global)
      */
-    private static $validators = [];
+    private static array $validators = [];
 
     /**
      * add a custom validator

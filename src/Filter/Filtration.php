@@ -8,7 +8,6 @@
 
 namespace Inhere\Validate\Filter;
 
-use InvalidArgumentException;
 use function array_merge;
 use function is_string;
 
@@ -29,10 +28,10 @@ class Filtration
     use FilteringTrait;
 
     /** @var array raw data */
-    private $_data;
+    private array $_data;
 
     /** @var array the rules is by setRules() */
-    private $_rules;
+    private array $_rules;
 
     /**
      * @param array $data
@@ -72,7 +71,6 @@ class Filtration
      * @param array $rules
      *
      * @return array
-     * @throws InvalidArgumentException
      */
     public function filtering(array $rules = []): array
     {
@@ -86,7 +84,6 @@ class Filtration
      * @param array $data
      *
      * @return array Return filtered data
-     * @throws InvalidArgumentException
      */
     public function applyRules(array $rules = [], array $data = []): array
     {
@@ -122,12 +119,11 @@ class Filtration
      * value sanitize Filter the value directly
      *
      * @param mixed        $value
-     * @param string|array $filters
+     * @param array|string $filters
      *
      * @return mixed
-     * @throws InvalidArgumentException
      */
-    public function sanitize($value, $filters)
+    public function sanitize(mixed $value, array|string $filters): mixed
     {
         return $this->valueFiltering($value, $filters);
     }
@@ -135,14 +131,13 @@ class Filtration
     /**
      * get a field value from {@see $data}
      *
-     * @param string|int   $field
-     * @param string|array $filters
-     * @param mixed        $default
+     * @param int|string $field
+     * @param array|string|null $filters
+     * @param mixed|null $default
      *
      * @return mixed
-     * @throws InvalidArgumentException
      */
-    public function get($field, $filters = null, $default = null)
+    public function get(int|string $field, array|string $filters = null, mixed $default = null): mixed
     {
         if (!isset($this->_data[$field])) {
             return $default;
@@ -158,11 +153,11 @@ class Filtration
     }
 
     /**
-     * @param string|int $field
+     * @param int|string $field
      *
      * @return bool
      */
-    public function has($field): bool
+    public function has(int|string $field): bool
     {
         return isset($this->_data[$field]);
     }

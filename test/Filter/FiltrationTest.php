@@ -20,7 +20,7 @@ use function trim;
  */
 class FiltrationTest extends TestCase
 {
-    private $data = [
+    private array $data = [
         'name'    => ' tom ',
         'status'  => ' 23 ',
         'word'    => 'word',
@@ -49,12 +49,12 @@ class FiltrationTest extends TestCase
         $fl = Filtration::make($this->data);
         $fl->clearFilters();
         $fl->addFilters([
-            'name1'   => function () {
+            'name1'   => static function () {
             },
             'newTrim' => function ($val) {
                 return trim($val);
             },
-            ''        => function () {
+            ''        => static function () {
             },
         ]);
 
@@ -63,7 +63,7 @@ class FiltrationTest extends TestCase
         $this->assertNotEmpty($fl->getFilter('newTrim'));
         $this->assertEmpty($fl->getFilter('name3'));
 
-        $fl->addFilter('new1', function () {
+        $fl->addFilter('new1', static function () {
         });
         $this->assertNotEmpty($fl->getFilter('new1'));
 
