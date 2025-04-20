@@ -5,7 +5,7 @@ namespace Inhere\ValidateTest;
 use Inhere\Validate\RuleValidation;
 use Inhere\Validate\RV;
 use Inhere\Validate\Validation;
-use Inhere\ValidateTest\Validator\AdemoValidatorTest as AdemoValidator;
+use Inhere\ValidateTest\Validator\AdemoValidator as AdemoValidator;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Version;
 use Throwable;

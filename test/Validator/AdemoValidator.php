@@ -9,7 +9,7 @@ use Inhere\Validate\Validator\AbstractValidator;
  *
  * @package Inhere\ValidateTest\Validator
  */
-class AdemoValidatorTest extends AbstractValidator
+class AdemoValidator extends AbstractValidator
 {
     /**
      * @param mixed $value
