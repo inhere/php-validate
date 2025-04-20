@@ -80,7 +80,7 @@ class ValidData
      *
      * @return int
      */
-    public static function getInt(string $field, int $min = null, ?int $max = null, ?int $default = null): int
+    public static function getInt(string $field, ?int $min = null, ?int $max = null, ?int $default = null): int
     {
         if (!isset(self::$data[$field])) {
             if ($default === null) {
@@ -110,7 +110,7 @@ class ValidData
      *
      * @return array
      */
-    public static function getInts(string $field, int $min = null, int $max = null, array $default = null): array
+    public static function getInts(string $field, ?int $min = null, ?int $max = null, ?array $default = null): array
     {
         $arr = self::getArray($field, $min, $max, $default);
 
@@ -126,7 +126,7 @@ class ValidData
      *
      * @return array
      */
-    public static function getIntsBySplit(string $field, int $min = null, int $max = null, array $default = null, string $sep = ','): array
+    public static function getIntsBySplit(string $field, ?int $min = null, ?int $max = null, ?array $default = null, string $sep = ','): array
     {
         $arr = self::getArrayBySplit($field, $min, $max, $default, $sep);
 
@@ -141,7 +141,7 @@ class ValidData
      *
      * @return float
      */
-    public static function getFloat(string $field, float $min = null, float $max = null, float $default = null): float
+    public static function getFloat(string $field, ?float $min = null, ?float $max = null, ?float $default = null): float
     {
         if (!isset(self::$data[$field])) {
             if ($default === null) {
@@ -173,7 +173,7 @@ class ValidData
      *
      * @return string
      */
-    public static function getString(string $field, int $minLen = null, int $maxLen = null, string $default = null): string
+    public static function getString(string $field, ?int $minLen = null, ?int $maxLen = null, ?string $default = null): string
     {
         if (!isset(self::$data[$field])) {
             if ($default === null) {
@@ -206,7 +206,7 @@ class ValidData
      *
      * @return array
      */
-    public static function getStrings(string $field, int $min = null, int $max = null, array $default = null): array
+    public static function getStrings(string $field, ?int $min = null, ?int $max = null, ?array $default = null): array
     {
         if (!isset(self::$data[$field])) {
             if ($default === null) {
@@ -244,7 +244,7 @@ class ValidData
      *
      * @return array
      */
-    public static function getArray(string $field, int $min = null, int $max = null, array $default = null): array
+    public static function getArray(string $field, ?int $min = null, ?int $max = null, ?array $default = null): array
     {
         if (!isset(self::$data[$field])) {
             if ($default === null) {
@@ -280,7 +280,7 @@ class ValidData
      *
      * @return array
      */
-    public static function getArrayBySplit(string $field, int $min = null, int $max = null, array $default = null, string $sep = ','): array
+    public static function getArrayBySplit(string $field, ?int $min = null, ?int $max = null, ?array $default = null, string $sep = ','): array
     {
         if (!isset(self::$data[$field])) {
             if ($default === null) {
@@ -315,7 +315,7 @@ class ValidData
      *
      * @return array
      */
-    public static function getArrayByJSON(string $field, int $min = null, int $max = null, array $default = null): array
+    public static function getArrayByJSON(string $field, ?int $min = null, ?int $max = null, ?array $default = null): array
     {
         if (!isset(self::$data[$field])) {
             if ($default === null) {
@@ -359,7 +359,7 @@ class ValidData
      *
      * @return string
      */
-    public static function fmtMinMaxToMsg(string $prefix, int $min = null, int $max = null, string $sepMsg = 'and'): string
+    public static function fmtMinMaxToMsg(string $prefix, ?int $min = null, ?int $max = null, string $sepMsg = 'and'): string
     {
         if ($min !== null && $max !== null) {
             return "$prefix $sepMsg must be >= $min and <= $max";

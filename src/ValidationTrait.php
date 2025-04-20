@@ -198,7 +198,7 @@ trait ValidationTrait
      *
      * @return static
      */
-    public function validate(array $onlyChecked = [], bool $stopOnError = null): static
+    public function validate(array $onlyChecked = [], ?bool $stopOnError = null): static
     {
         if (!property_exists($this, 'data')) {
             throw new InvalidArgumentException('Must be defined property "data"(array) in the sub-class used.');

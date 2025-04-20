@@ -12,3 +12,4 @@ composer.lock
 *.swo
 .DS_Store
 .phpunit.result.cache
+*.cache

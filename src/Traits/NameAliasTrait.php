@@ -15,7 +15,7 @@ namespace Inhere\Validate\Traits;
  */
 trait NameAliasTrait
 {
-    /** @var array Name aliases map. please define on main-class */
+    /* var array Name aliases map. please define on main-class */
     // protected static $aliases = [];
 
     /**

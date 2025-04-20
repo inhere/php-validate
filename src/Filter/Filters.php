@@ -156,7 +156,7 @@ final class Filters
      *
      * @return int|float
      */
-    public static function float(mixed $val, int $decimal = null, int|string $flags = FILTER_FLAG_ALLOW_FRACTION): int|float
+    public static function float(mixed $val, ?int $decimal = null, int|string $flags = FILTER_FLAG_ALLOW_FRACTION): int|float
     {
         $options = (int)$flags !== 0 ? ['flags' => (int)$flags] : [];
 
@@ -509,7 +509,7 @@ final class Filters
      *
      * @return string
      */
-    public static function clearTags(mixed $val, string $allowedTags = null): string
+    public static function clearTags(mixed $val, ?string $allowedTags = null): string
     {
         return self::stripTags($val, $allowedTags);
     }
@@ -520,7 +520,7 @@ final class Filters
      *
      * @return string
      */
-    public static function stripTags(mixed $val, string $allowedTags = null): string
+    public static function stripTags(mixed $val, ?string $allowedTags = null): string
     {
         if (!$val || !is_string($val)) {
             return '';

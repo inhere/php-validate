@@ -40,7 +40,7 @@ interface ValidationInterface
      *
      * @return static
      */
-    public function validate(array $onlyChecked = [], bool $stopOnError = null): static;
+    public function validate(array $onlyChecked = [], ?bool $stopOnError = null): static;
 
     /**
      * alias of the fail()

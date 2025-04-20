@@ -11,18 +11,17 @@ on:
 
 jobs:
   test:
-    name: Test on php ${{ matrix.php}} and ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Test on php ${{ matrix.php}}
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.1, 8.2] # 7.1, 7.2,
-        os: [ubuntu-latest] # windows-latest, macOS-latest
+        php: [ 8.1, 8.2, 8.3, 8.4] # 7.1, 7.2,
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # usage refer https://github.com/shivammathur/setup-php
       - name: Setup PHP
@@ -46,4 +45,4 @@ jobs:
 
       - name: Run unit tests
         # run: composer run test
-        run: phpunit -vv
+        run: phpunit

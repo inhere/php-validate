@@ -7,17 +7,15 @@ on:
 
 jobs:
   release:
-    name: Test on php ${{ matrix.php}}
+    name: New tag release
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: true
-      matrix:
-        php: [8.1]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -35,7 +33,7 @@ jobs:
 
       # https://github.com/softprops/action-gh-release
       - name: Create release and upload assets
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

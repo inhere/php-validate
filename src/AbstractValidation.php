@@ -26,7 +26,7 @@ abstract class AbstractValidation implements ValidationInterface
     /**
      * @var array
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * @param array  $data

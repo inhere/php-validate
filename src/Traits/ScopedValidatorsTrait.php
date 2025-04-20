@@ -8,9 +8,11 @@
 
 namespace Inhere\Validate\Traits;
 
+use Inhere\Validate\AbstractValidation;
 use Inhere\Validate\Filter\Filters;
 use Inhere\Validate\Helper;
 use Inhere\Validate\Validators;
+use Inhere\ValidateTest\Example\DataModel;
 use InvalidArgumentException;
 use function array_shift;
 use function function_exists;
@@ -33,7 +35,7 @@ use const UPLOAD_ERR_OK;
  */
 trait ScopedValidatorsTrait
 {
-    /** @var array user custom add's validators(current scope) */
+    /** @var array user custom adds validators(current scope) */
     protected array $_validators = [];
 
     /**
@@ -61,7 +63,7 @@ trait ScopedValidatorsTrait
      * @param callable $callback
      * @param string   $message
      *
-     * @return $this
+     * @return AbstractValidation|ScopedValidatorsTrait|DataModel
      */
     public function addValidator(string $name, callable $callback, string $message = ''): self
     {
@@ -75,7 +77,7 @@ trait ScopedValidatorsTrait
      * @param callable $callback
      * @param string   $message
      *
-     * @return self
+     * @return static
      */
     public function setValidator(string $name, callable $callback, string $message = ''): self
     {
