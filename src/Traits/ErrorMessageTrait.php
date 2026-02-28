@@ -304,7 +304,7 @@ trait ErrorMessageTrait
      *
      * @return string
      */
-    public function getMessage(callable|string $validator, string $field, array $args = [], array|string $message = null): string
+    public function getMessage(callable|string $validator, string $field, array $args = [], null|array|string $message = null): string
     {
         $rawName = is_string($validator) ? $validator : 'callback';
         $params  = [
