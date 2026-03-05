@@ -708,11 +708,11 @@ class Validators
      *
      * @param string|numeric $val 要验证的数据
      * @param string $regexp 正则表达式 "/^M(.*)/"
-     * @param null $default
+     * @param mixed $default
      *
      * @return bool
      */
-    public static function regexp(float|int|string $val, string $regexp, null $default = null): bool
+    public static function regexp(float|int|string $val, string $regexp, mixed $default = null): bool
     {
         $options = [
             'regexp' => $regexp
@@ -730,11 +730,11 @@ class Validators
      *
      * @param string|numeric $val
      * @param string $regexp
-     * @param null $default
+     * @param mixed $default
      *
      * @return bool
      */
-    public static function regex(float|int|string $val, string $regexp, null $default = null): bool
+    public static function regex(float|int|string $val, string $regexp, mixed $default = null): bool
     {
         return self::regexp($val, $regexp, $default);
     }
