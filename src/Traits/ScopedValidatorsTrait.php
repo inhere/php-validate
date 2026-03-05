@@ -342,7 +342,7 @@ trait ScopedValidatorsTrait
      *
      * @return bool
      */
-    public function fileValidator(string $field, array|string $suffixes = null): bool
+    public function fileValidator(string $field, null|array|string $suffixes = null): bool
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -373,7 +373,7 @@ trait ScopedValidatorsTrait
      *
      * @return bool
      */
-    public function imageValidator(string $field, array|string $suffixes = null): bool
+    public function imageValidator(string $field, null|array|string $suffixes = null): bool
     {
         if (!$file = $this->uploadedFiles[$field] ?? null) {
             return false;
@@ -452,7 +452,7 @@ trait ScopedValidatorsTrait
      *
      * @todo
      */
-    public function mimesValidator(string $field, array|string $types = null): void
+    public function mimesValidator(string $field, null|array|string $types = null): void
     {
     }
 

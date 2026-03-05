@@ -197,7 +197,7 @@ class Validators
      *
      * @return bool
      */
-    public static function float(mixed $val, float|string|int $min = null, string|float|int $max = null, string|int $flags = 0): bool
+    public static function float(mixed $val, null|float|string|int $min = null, null|string|float|int $max = null, string|int $flags = 0): bool
     {
         if (!is_numeric($val)) {
             return false;
@@ -254,7 +254,7 @@ class Validators
      *    // 'default' => 3, // value to return if the filter fails
      * ]
      */
-    public static function integer(mixed $val, int|string $min = null, int|string $max = null, int|string $flags = 0): bool
+    public static function integer(mixed $val, null|int|string $min = null, null|int|string $max = null, int|string $flags = 0): bool
     {
         if (!is_numeric($val)) {
             return false;
@@ -298,7 +298,7 @@ class Validators
      * @return bool
      * @see integer()
      */
-    public static function int(mixed $val, float|int|string $min = null, float|int|string $max = null, string|int $flags = 0): bool
+    public static function int(mixed $val, null|float|int|string $min = null, null|float|int|string $max = null, string|int $flags = 0): bool
     {
         return self::integer($val, $min, $max, $flags);
     }
@@ -313,7 +313,7 @@ class Validators
      *
      * @return bool
      */
-    public static function number(mixed $val, float|int|string $min = null, float|int|string $max = null, string|int $flags = 0): bool
+    public static function number(mixed $val, null|float|int|string $min = null, null|float|int|string $max = null, string|int $flags = 0): bool
     {
         if (!is_numeric($val)) {
             return false;
@@ -335,7 +335,7 @@ class Validators
      * @return bool
      * @see number()
      */
-    public static function num(mixed $val, float|int|string $min = null, float|int|string $max = null, string|int $flags = 0): bool
+    public static function num(mixed $val, null|float|int|string $min = null, null|float|int|string $max = null, string|int $flags = 0): bool
     {
         return self::number($val, $min, $max, $flags);
     }
@@ -349,7 +349,7 @@ class Validators
      *
      * @return bool
      */
-    public static function string(mixed $val, float|int|string $minLen = 0, float|int|string $maxLen = null): bool
+    public static function string(mixed $val, float|int|string $minLen = 0, null|float|int|string $maxLen = null): bool
     {
         if (!is_string($val)) {
             return false;
@@ -564,7 +564,7 @@ class Validators
      *
      * @return bool
      */
-    public static function size(float|array|int|string $val, float|int|string $min = null, float|int|string $max = null): bool
+    public static function size(float|array|int|string $val, null|float|int|string $min = null, null|float|int|string $max = null): bool
     {
         if (!is_numeric($val)) {
             if (is_string($val)) {
@@ -589,7 +589,7 @@ class Validators
      * @return bool
      * @see Validators::size()
      */
-    public static function between(float|array|int|string $val, int|string $min = null, int|string $max = null): bool
+    public static function between(float|array|int|string $val, null|int|string $min = null, null|int|string $max = null): bool
     {
         return self::size($val, $min, $max);
     }
@@ -602,7 +602,7 @@ class Validators
      * @return bool
      * @see Validators::size()
      */
-    public static function range(float|array|int|string $val, int|string $min = null, int|string $max = null): bool
+    public static function range(float|array|int|string $val, null|int|string $min = null, null|int|string $max = null): bool
     {
         return self::size($val, $min, $max);
     }
@@ -616,7 +616,7 @@ class Validators
      *
      * @return bool
      */
-    public static function length(array|string $val, float|int|string $minLen = 0, float|int|string $maxLen = null): bool
+    public static function length(array|string $val, null|float|int|string $minLen = 0, null|float|int|string $maxLen = null): bool
     {
         if (!is_string($val) && !is_array($val)) {
             return false;
@@ -708,11 +708,11 @@ class Validators
      *
      * @param string|numeric $val 要验证的数据
      * @param string $regexp 正则表达式 "/^M(.*)/"
-     * @param null $default
+     * @param mixed $default
      *
      * @return bool
      */
-    public static function regexp(float|int|string $val, string $regexp, $default = null): bool
+    public static function regexp(float|int|string $val, string $regexp, mixed $default = null): bool
     {
         $options = [
             'regexp' => $regexp
@@ -730,11 +730,11 @@ class Validators
      *
      * @param string|numeric $val
      * @param string $regexp
-     * @param null $default
+     * @param mixed $default
      *
      * @return bool
      */
-    public static function regex(float|int|string $val, string $regexp, $default = null): bool
+    public static function regex(float|int|string $val, string $regexp, mixed $default = null): bool
     {
         return self::regexp($val, $regexp, $default);
     }
